@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug DX11|Win32">
+      <Configuration>Debug DX11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug DX9|Win32">
+      <Configuration>Debug DX9</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug OpenGL|Win32">
+      <Configuration>Debug OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release DX9|Win32">
+      <Configuration>Release DX9</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release OpenGL|Win32">
+      <Configuration>Release OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{72F4B279-4610-4D51-B31C-C0334DD5F1CC}</ProjectGuid>
+    <RootNamespace>Interface</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">
+    <OutDir>.\..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Interface___Win32_Client_Debug_OpenGL\</IntDir>
+    <TargetName>$(ProjectName)D-OGL</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">
+    <OutDir>.\..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Release\Interface___Win32_Client_Release_OpenGL\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
+    <OutDir>.\..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Interface___Win32_Client_Debug-dx9\</IntDir>
+    <TargetName>$(ProjectName)D-DX9</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">
+    <OutDir>.\..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Interface___Win32_Client_Debug-dx11\</IntDir>
+    <TargetName>$(ProjectName)D-DX11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>..\Objs\Release\Interface___Win32_Client_ReleaseDX9\</IntDir>
+    <TargetName>Interface-DX9</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Interface.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;INTERFACE_EXPORTS;_CRT_SECURE_NO_WARNINGS;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Interface___Win32_Client_DebugOGL/Interface.pch</PrecompiledHeaderOutputFile>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)D-OGL.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Interface.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Interface.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;INTERFACE_EXPORTS;_CRT_SECURE_NO_WARNINGS;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Interface___Win32_Client_Release/Interface.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Release\Interface___Win32_Client_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Release\Interface___Win32_Client_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Release\Interface___Win32_Client_Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)OGL.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Interface.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Interface.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Interface___Win32_Client_Debug/Interface.pch</PrecompiledHeaderOutputFile>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)D-DX9.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Interface.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Interface.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;TUD11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Interface___Win32_Client_Debug/Interface.pch</PrecompiledHeaderOutputFile>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)D-DX9.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Interface.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Interface.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;TUD9;WIN32;NDEBUG;_WINDOWS;INTERFACE_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Interface___Win32_Client_ReleaseDX9/Interface.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\Objs\Release\Interface___Win32_Client_ReleaseDX9/</AssemblerListingLocation>
+      <ObjectFileName>..\Objs\Release\Interface___Win32_Client_ReleaseDX9/</ObjectFileName>
+      <ProgramDataBaseFileName>..\Objs\Release\Interface___Win32_Client_ReleaseDX9/vc110.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AssemblerOutput>All</AssemblerOutput>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-DX9.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Interface.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\LibCode\Interface\Common\Canvas.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\cJSON.c" />
+    <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.cpp" />
+    <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp" />
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX9Device\d3dapp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX9Device\DX9Device.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\FontDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Image.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\InterfaceDeviceDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\InterfaceInternals.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Maths.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Jpeg\Jpegfile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Jpeg\ShowJpeg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\FontGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\ImageGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\InterfaceDeviceGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\InterfaceInternalsGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\VertexBufferGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\TextureLoader\InterfaceTextureManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\TextureLoader\TextureLoader.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\Overlays\OverlaysGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Win32\Interface-Win32.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceCommon.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\Canvas.h" />
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Image.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h" />
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dapp.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dres.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dutil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\DX9Device.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\dxutil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\FontDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceInternalsDX.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceUtil.h" />
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Maths.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Jpeg\Jpegfile.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Jpeg\ShowJpeg.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\ImageGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\InterfaceInternalsGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\VertexBufferGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\TextureLoader\InterfaceTextureManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\TextureLoader\TextureLoader.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <ClInclude Include="..\Include\Interface.h" />
+    <ClInclude Include="..\LibCode\Interface\OpenGL\FontGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Win32\Interface-Win32.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceCommon.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceDevice.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\Overlays\Overlays.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

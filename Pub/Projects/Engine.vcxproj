@@ -1,0 +1,787 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug DX11|Win32">
+      <Configuration>Debug DX11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug DX9|Win32">
+      <Configuration>Debug DX9</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug OpenGL|Win32">
+      <Configuration>Debug OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release DX9|Win32">
+      <Configuration>Release DX9</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release OpenGL|Win32">
+      <Configuration>Release OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Tool Debug|Win32">
+      <Configuration>Tool Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Tool Release|Win32">
+      <Configuration>Tool Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}</ProjectGuid>
+    <RootNamespace>Engine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Release\Engine___Win32_Tool_Release\</IntDir>
+    <TargetName>EngineTool</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Engine___Win32_Tool_Debug\</IntDir>
+    <TargetName>EngineToolD</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">
+    <OutDir>.\..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL\</IntDir>
+    <TargetName>$(ProjectName)D-OGL</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">
+    <OutDir>.\..\Objs\Release\Engine___Win32_Client_Release_OpenGL\</OutDir>
+    <IntDir>.\..\Objs\Release\Engine___Win32_Client_Release_OpenGL\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Engine___Win32_Client_Debug_DX9\</IntDir>
+    <TargetName>$(ProjectName)D-DX9</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Debug\Engine___Win32_Client_Debug_DX11\</IntDir>
+    <TargetName>$(ProjectName)D-DX11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Release\Engine___Win32_Client_Release\</IntDir>
+    <TargetName>Engine-DX9</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINEDX;WIN32;NDEBUG;_LIB;TOOL;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Engine___Win32_Tool_Release/Engine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Release\Engine___Win32_Tool_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Release\Engine___Win32_Tool_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Release\Engine___Win32_Tool_Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\EngineTool.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Release\Engine___Win32_Tool_Release/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINEDX;WIN32;_DEBUG;_LIB;TOOL;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Tool_Debug/Engine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Debug\Engine___Win32_Tool_Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Debug\Engine___Win32_Tool_Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Debug\Engine___Win32_Tool_Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\EngineToolD.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Debug\Engine___Win32_Tool_Debug/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL/Engine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)D-OGL.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Engine___Win32_Client_Release/Engine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Release\Engine___Win32_Client_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Release\Engine___Win32_Client_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Release\Engine___Win32_Client_Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\EngineOGL.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Release\Engine___Win32_Client_Release/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINEDX;WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.pch</PrecompiledHeaderOutputFile>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\EngineD-DX9.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINEDX;WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.pch</PrecompiledHeaderOutputFile>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\EngineD-DX11.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINEDX;TUD9;WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Engine___Win32_Client_Release/Engine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Release\Engine___Win32_Client_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Release\Engine___Win32_Client_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Release\Engine___Win32_Client_Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat />
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\Libs\Engine-DX9.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Objs\Release\Engine___Win32_Client_Release/Engine.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\fbxsdk.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxclassid.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxconnectionpoint.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxdatatypes.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxemitter.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxevent.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxeventhandler.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxlistener.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxloadingstrategy.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxmanager.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxmodule.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxobject.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxperipheral.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxplugin.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxplugincontainer.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxproperty.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxpropertydef.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxpropertyhandle.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxpropertypage.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxpropertytypes.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxquery.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxqueryevent.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxscopedloadingdirectory.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxscopedloadingfilename.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxstream.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxsymbol.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxsystemunit.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\fbxxref.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxaffinematrix.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxdualquaternion.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxmath.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxmatrix.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxquaternion.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxtransforms.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxvector2.h" />
+    <ClInclude Include="..\Include\fbxsdk\core\math\fbxvector4.h" />
+    <ClInclude Include="..\Include\fbxsdk\fbxsdk_def.h" />
+    <ClInclude Include="..\Include\fbxsdk\fbxsdk_nsbegin.h" />
+    <ClInclude Include="..\Include\fbxsdk\fbxsdk_nsend.h" />
+    <ClInclude Include="..\Include\fbxsdk\fbxsdk_version.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxaxissystem.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxcollection.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxcollectionexclusive.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxcontainer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxcontainertemplate.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxdisplaylayer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxdocument.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxdocumentinfo.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxenvironment.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxgroupname.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxlibrary.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxobjectfilter.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxobjectmetadata.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxobjectscontainer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxpose.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxreference.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxscene.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxselectionnode.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxselectionset.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxtakeinfo.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxthumbnail.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\fbxvideo.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxblendshape.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxblendshapechannel.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcache.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcachedeffect.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcamera.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcamerastereo.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcameraswitcher.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxcluster.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxdeformer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxgenericnode.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxgeometry.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxgeometrybase.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxgeometryweightedmap.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxlayer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxlayercontainer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxlight.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxlimitsutilities.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxline.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxlodgroup.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxmarker.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxmesh.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnode.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnodeattribute.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnull.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnurbs.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnurbscurve.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxnurbssurface.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxopticalreference.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxpatch.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxproceduralgeometry.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxshape.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxskeleton.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxskin.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxsubdeformer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxsubdiv.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxtrimnurbssurface.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxvertexcachedeformer.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\geometry\fbxweightedmapping.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxbindingoperator.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxbindingsentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxbindingtable.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxbindingtablebase.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxbindingtableentry.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxconstantentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxfiletexture.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbximplementation.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbximplementationfilter.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbximplementationutils.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxlayeredtexture.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxlayerentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxoperatorentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxproceduraltexture.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxpropertyentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxsemanticentryview.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxshadingconventions.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxsurfacelambert.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxsurfacematerial.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxsurfacephong.h" />
+    <ClInclude Include="..\Include\fbxsdk\scene\shading\fbxtexture.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxclonemanager.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxdeformationsevaluator.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxembeddedfilesaccumulator.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxgeometryconverter.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxmanipulators.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxmaterialconverter.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxnamehandler.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxprocessor.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxprocessorshaderdependency.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxprocessorxref.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxprocessorxrefuserlib.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategy.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategybase.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategyfbx5.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategyfbx6.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategyfbx7.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrenamingstrategyutilities.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxrootnodeutility.h" />
+    <ClInclude Include="..\Include\fbxsdk\utils\fbxusernotification.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\collmathsdefines.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\dist_pointline.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\intr_lineline.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\intr_sphereline.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\intr_spheretri.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\intr_tripoint.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\plane.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\sphere.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\vec2f.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths\vec3f.h" />
+    <ClInclude Include="..\LibCode\Engine\BSPRender\BSPModel.h" />
+    <ClInclude Include="..\LibCode\Engine\DirectX\CascadeShadowMapDX.h" />
+    <ClInclude Include="..\LibCode\Engine\DirectX\OculusDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\DirectX\PostProcessDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\DirectX\ShaderLoaderDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\DirectX\ShadowMapDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\FileFormats\3dsLoader.h" />
+    <ClInclude Include="..\LibCode\Engine\FileFormats\fbxLoader.h" />
+    <ClInclude Include="..\LibCode\Engine\FileFormats\ObjLoader.h" />
+    <ClInclude Include="..\LibCode\Engine\Loader.h" />
+    <ClInclude Include="..\LibCode\Engine\RenderScene\RenderScene.h" />
+    <ClInclude Include="..\LibCode\Engine\Scene\SceneMap.h" />
+    <ClInclude Include="..\LibCode\Engine\Scene\SceneMapElements.h" />
+    <ClInclude Include="..\Include\CodeUtil.h" />
+    <ClInclude Include="..\Include\Interface.h" />
+    <ClInclude Include="..\Include\StandardDef.h" />
+    <ClInclude Include="..\Include\StdWinInclude.h" />
+    <ClInclude Include="..\Include\System.h" />
+    <ClInclude Include="..\Include\zconf.h" />
+    <ClInclude Include="..\Include\zlib.h" />
+    <CustomBuild Include="..\LibCode\Engine\DirectX\BaseMeshDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\CollisionDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\dxutil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\EngineCameraDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\EngineDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\ModelRenderingDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\ShadowVolumeDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\SkinMeshLoaderDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\SkinMeshRenderDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\SkinnedMeshDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\DirectX\TextureManagerDX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\OpenGL\BaseMeshGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\OpenGL\EngineCameraGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\OpenGL\EngineGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\OpenGL\EngineVertexBufferGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Engine\OpenGL\ModelRenderingGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <ClInclude Include="..\LibCode\Engine\BaseMesh.h" />
+    <ClInclude Include="..\LibCode\Engine\CollisionMaths.h" />
+    <ClInclude Include="..\Include\Engine.h" />
+    <ClInclude Include="..\LibCode\Engine\EngineCamera.h" />
+    <ClInclude Include="..\Include\EngineMaths.h" />
+    <ClInclude Include="..\LibCode\Engine\EngineMesh.h" />
+    <ClInclude Include="..\LibCode\Engine\ModelArchive.h" />
+    <ClInclude Include="..\LibCode\Engine\ModelFiles.h" />
+    <ClInclude Include="..\LibCode\Engine\ModelMaterialData.h" />
+    <ClInclude Include="..\LibCode\Engine\ModelRendering.h" />
+    <ClInclude Include="..\Include\Rendering.h" />
+    <ClInclude Include="..\LibCode\Engine\SkinnedModel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\dist_pointline.cpp" />
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\intr_lineline.cpp" />
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\intr_sphereline.cpp" />
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\intr_spheretri.cpp" />
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\intr_tripoint.cpp" />
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths\plane.cpp" />
+    <ClCompile Include="..\LibCode\Engine\BSPRender\BSPModel.cpp" />
+    <ClCompile Include="..\LibCode\Engine\DirectX\CascadeShadowMapDX.cpp" />
+    <ClCompile Include="..\LibCode\Engine\DirectX\OculusDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\PostProcessDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\ShaderLoaderDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\ShadowMapDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\FileFormats\3dsLoader.cpp" />
+    <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp" />
+    <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Loader.cpp" />
+    <ClCompile Include="..\LibCode\Engine\RenderScene\RenderScene.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Scene\SceneMap.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Scene\SceneMapElements.cpp" />
+    <ClCompile Include="..\LibCode\Engine\DirectX\BaseMeshDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\CollisionDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\dxutil.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\EngineCameraDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\EngineDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\MathsDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\ModelRenderingDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\ShadowVolumeDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\SkinMeshLoaderDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\SkinMeshRenderDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\SkinnedMeshDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\DirectX\TextureManagerDX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\BaseMeshGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\EngineCameraGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\EngineGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\EngineVertexBufferGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\MathsGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\OpenGL\ModelRenderingGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\CollisionMaths.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Engine.cpp" />
+    <ClCompile Include="..\LibCode\Engine\EngineCamera.cpp" />
+    <ClCompile Include="..\LibCode\Engine\EngineMesh.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Maths.cpp" />
+    <ClCompile Include="..\LibCode\Engine\ModelArchive.cpp" />
+    <ClCompile Include="..\LibCode\Engine\ModelFiles.cpp" />
+    <ClCompile Include="..\LibCode\Engine\ModelMaterialData.cpp" />
+    <ClCompile Include="..\LibCode\Engine\ModelRendering.cpp" />
+    <ClCompile Include="..\LibCode\Engine\SkinnedModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.vsh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Basic.vsh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurFull.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurH.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurV.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Fog.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.vsh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundBasic.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundSimplified.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Highpass.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.vsh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\LandscapeGen.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Lighting.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.vsh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Shadows.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.psh" />
+    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.vsh" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

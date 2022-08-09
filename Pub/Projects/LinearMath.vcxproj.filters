@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\Include\LinearMath\btAabbUtil2.h" />
+    <ClInclude Include="..\Include\LinearMath\btAlignedAllocator.h" />
+    <ClInclude Include="..\Include\LinearMath\btAlignedObjectArray.h" />
+    <ClInclude Include="..\Include\LinearMath\btConvexHull.h" />
+    <ClInclude Include="..\Include\LinearMath\btConvexHullComputer.h" />
+    <ClInclude Include="..\Include\LinearMath\btDefaultMotionState.h" />
+    <ClInclude Include="..\Include\LinearMath\btGeometryUtil.h" />
+    <ClInclude Include="..\Include\LinearMath\btGrahamScan2dConvexHull.h" />
+    <ClInclude Include="..\Include\LinearMath\btHashMap.h" />
+    <ClInclude Include="..\Include\LinearMath\btIDebugDraw.h" />
+    <ClInclude Include="..\Include\LinearMath\btList.h" />
+    <ClInclude Include="..\Include\LinearMath\btMatrix3x3.h" />
+    <ClInclude Include="..\Include\LinearMath\btMatrixX.h" />
+    <ClInclude Include="..\Include\LinearMath\btMinMax.h" />
+    <ClInclude Include="..\Include\LinearMath\btMotionState.h" />
+    <ClInclude Include="..\Include\LinearMath\btPolarDecomposition.h" />
+    <ClInclude Include="..\Include\LinearMath\btPoolAllocator.h" />
+    <ClInclude Include="..\Include\LinearMath\btQuadWord.h" />
+    <ClInclude Include="..\Include\LinearMath\btQuaternion.h" />
+    <ClInclude Include="..\Include\LinearMath\btQuickprof.h" />
+    <ClInclude Include="..\Include\LinearMath\btRandom.h" />
+    <ClInclude Include="..\Include\LinearMath\btScalar.h" />
+    <ClInclude Include="..\Include\LinearMath\btSerializer.h" />
+    <ClInclude Include="..\Include\LinearMath\btStackAlloc.h" />
+    <ClInclude Include="..\Include\LinearMath\btTransform.h" />
+    <ClInclude Include="..\Include\LinearMath\btTransformUtil.h" />
+    <ClInclude Include="..\Include\LinearMath\btVector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Include\LinearMath\btAlignedAllocator.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btConvexHull.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btConvexHullComputer.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btGeometryUtil.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btPolarDecomposition.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btQuickprof.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btSerializer.cpp" />
+    <ClCompile Include="..\Include\LinearMath\btVector3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Include\LinearMath\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Include\LinearMath\premake4.lua" />
+  </ItemGroup>
+</Project>

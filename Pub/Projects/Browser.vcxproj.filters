@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{fd769345-5373-44b4-8a06-0f453ac53317}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\CodeUtil.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Interface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\StandardDef.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\System.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Browser\HTMLElement.h" />
+    <ClInclude Include="..\LibCode\Browser\HTMLImage.h" />
+    <ClInclude Include="..\LibCode\Browser\HTMLParser.h" />
+    <ClInclude Include="..\LibCode\Browser\HTMLTable.h" />
+    <ClInclude Include="..\LibCode\Browser\UniversalBrowser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\LibCode\Browser\HTMLElement.cpp" />
+    <ClCompile Include="..\LibCode\Browser\HTMLImage.cpp" />
+    <ClCompile Include="..\LibCode\Browser\HTMLParser.cpp" />
+    <ClCompile Include="..\LibCode\Browser\HTMLTable.cpp" />
+    <ClCompile Include="..\LibCode\Browser\UniversalBrowser.cpp" />
+  </ItemGroup>
+</Project>

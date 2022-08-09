@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Client Debug|Win32">
+      <Configuration>Client Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Client Release|Win32">
+      <Configuration>Client Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{65B9AD05-46EC-4FC0-9C16-741F413F3375}</ProjectGuid>
+    <RootNamespace>Arcade</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>..\Objs\Debug\Arcade___Win32_Client_Debug\</IntDir>
+    <TargetName>$(ProjectName)DX</TargetName>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>.\..\Objs\Release\Arcade___Win32_Client_Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Arcade.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\Objs\Debug\Arcade___Win32_Client_Debug\</AssemblerListingLocation>
+      <ObjectFileName>..\Objs\Debug\Arcade___Win32_Client_Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>..\Objs\Debug\Arcade___Win32_Client_Debug\</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)DX.lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Arcade.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Libs/Arcade.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../Include;../Include/DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\..\Objs\Release\Arcade___Win32_Client_Release/Arcade.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Objs\Release\Arcade___Win32_Client_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Objs\Release\Arcade___Win32_Client_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Objs\Release\Arcade___Win32_Client_Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Libs/Arcade.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\LibCode\Arcade\Invaders\Invaders.c" />
+    <ClCompile Include="..\LibCode\Arcade\Tetris\Tetris.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban_History.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban_Level.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban_Path.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban_Settings.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Tractoban\Tractoban_Text.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Arcade.cpp" />
+    <ClCompile Include="..\LibCode\Arcade\Arcade_Data.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">Default</CompileAs>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\LibCode\Arcade\Invaders\Invaders.h" />
+    <ClInclude Include="..\LibCode\Arcade\Tetris\Tetris.h" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban.h" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_History.hpp" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_Level.hpp" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_Levels_Design.hpp" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_Path.hpp" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_Settings.hpp" />
+    <ClInclude Include="..\LibCode\Arcade\Tractoban\Tractoban_Text.hpp" />
+    <ClInclude Include="..\Include\Audio.h" />
+    <ClInclude Include="..\Include\CodeUtil.h" />
+    <ClInclude Include="..\Include\Compat.h" />
+    <ClInclude Include="..\Include\Interface.h" />
+    <ClInclude Include="..\Include\StandardDef.h" />
+    <ClInclude Include="..\Include\System.h" />
+    <ClInclude Include="..\LibCode\Arcade\Arcade Data.h" />
+    <ClInclude Include="..\Include\Arcade.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

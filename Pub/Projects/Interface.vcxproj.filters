@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DirectX">
+      <UniqueIdentifier>{da0ed744-f77c-4d74-ba91-546f71646e1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\Jpeg">
+      <UniqueIdentifier>{fd6d42cf-b999-4123-9467-a4a1bdc62d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{1e43e635-9825-4421-9ee0-2b5d94422c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\Console">
+      <UniqueIdentifier>{a5c6e112-0e12-449c-b669-531f5bf32a6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\Jpeg">
+      <UniqueIdentifier>{af49d0c6-b9e6-4fe5-8164-bcab86c36f86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\Win32">
+      <UniqueIdentifier>{c62e5997-ff81-4126-8930-53c9f8d6348a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\TextureLoader">
+      <UniqueIdentifier>{12f5c723-c67c-4809-9ce3-efb2b045b1b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\Overlays">
+      <UniqueIdentifier>{41985902-5ed6-4cb4-bccc-646ce8472a46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{918c86ec-b289-414a-ba50-dc6f5c6139a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32">
+      <UniqueIdentifier>{7347b6d0-33fc-43de-9019-88989624a630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a580f915-5f78-45e2-ac70-dc14fc3e28ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Overlays">
+      <UniqueIdentifier>{3be88b5b-2d1f-4d63-a2e8-b92893c57ad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\DX9Device">
+      <UniqueIdentifier>{e932ac70-9970-4f60-970b-8bf6668ec503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\DX11Device">
+      <UniqueIdentifier>{55298229-f1e7-4c72-ae3e-7857799daf16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Font">
+      <UniqueIdentifier>{915baba3-5292-45ff-b484-2095a020104c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\Console">
+      <UniqueIdentifier>{5aae864b-25d7-45bf-8f81-0d305e078bb8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Image.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\InterfaceDeviceDX.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\InterfaceInternals.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Maths.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Jpeg\Jpegfile.cpp">
+      <Filter>DirectX\Jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Jpeg\ShowJpeg.cpp">
+      <Filter>DirectX\Jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\ImageGL.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\InterfaceDeviceGL.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\InterfaceInternalsGL.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\VertexBufferGL.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\TextureLoader\InterfaceTextureManager.cpp">
+      <Filter>OpenGL\TextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\TextureLoader\TextureLoader.cpp">
+      <Filter>OpenGL\TextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\Overlays\OverlaysGL.cpp">
+      <Filter>OpenGL\Overlays</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Win32\Interface-Win32.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceCommon.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\Canvas.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX9Device\d3dapp.cpp">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX9Device\DX9Device.cpp">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.cpp">
+      <Filter>DirectX\DX11Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp">
+      <Filter>Common\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\FontDX.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\OpenGL\FontGL.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\cJSON.c">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.cpp">
+      <Filter>Common\Overlays</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp">
+      <Filter>DirectX\Console</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceInternalsDX.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceUtil.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Interface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Win32\Interface-Win32.h">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceCommon.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceDevice.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\Overlays\Overlays.h">
+      <Filter>Common\Overlays</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Canvas.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dapp.h">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dres.h">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\d3dutil.h">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\dxutil.h">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX9Device\DX9Device.h">
+      <Filter>DirectX\DX9Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.h">
+      <Filter>DirectX\DX11Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h">
+      <Filter>Common\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\FontDX.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\OpenGL\FontGL.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h">
+      <Filter>Common\Overlays</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Image.h">
+      <Filter>DirectX</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Maths.h">
+      <Filter>DirectX</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Jpeg\Jpegfile.h">
+      <Filter>DirectX\Jpeg</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\DirectX\Jpeg\ShowJpeg.h">
+      <Filter>DirectX\Jpeg</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\ImageGL.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\InterfaceInternalsGL.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\VertexBufferGL.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\TextureLoader\InterfaceTextureManager.h">
+      <Filter>OpenGL\TextureLoader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\LibCode\Interface\OpenGL\TextureLoader\TextureLoader.h">
+      <Filter>OpenGL\TextureLoader</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

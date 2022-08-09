@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\BulletDynamics\Character\btCharacterControllerInterface.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Character\btKinematicCharacterController.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btConeTwistConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btConstraintSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btContactConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btContactSolverInfo.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btFixedConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGearConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btHinge2Constraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btHingeConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btJacobianEntry.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btSliderConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btSolverBody.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btSolverConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btTypedConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btUniversalConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Dynamics\btActionInterface.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Dynamics\btDynamicsWorld.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Dynamics\btRigidBody.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Dynamics\btSimpleDynamicsWorld.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBody.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraintSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyDynamicsWorld.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyJointLimitConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyJointMotor.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyLink.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyLinkCollider.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodyPoint2Point.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Featherstone\btMultiBodySolverConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btDantzigLCP.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btDantzigSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btMLCPSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btMLCPSolverInterface.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btPATHSolver.h" />
+    <ClInclude Include="..\Include\BulletDynamics\MLCPSolvers\btSolveProjectedGaussSeidel.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Vehicle\btRaycastVehicle.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Vehicle\btVehicleRaycaster.h" />
+    <ClInclude Include="..\Include\BulletDynamics\Vehicle\btWheelInfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Include\BulletDynamics\Character\btKinematicCharacterController.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btContactConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btFixedConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGearConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btHinge2Constraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btHingeConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btSliderConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btTypedConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btUniversalConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Dynamics\btRigidBody.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Dynamics\Bullet-C-API.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBody.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraintSolver.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyDynamicsWorld.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyJointLimitConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyJointMotor.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyPoint2Point.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\MLCPSolvers\btMLCPSolver.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Vehicle\btRaycastVehicle.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\Vehicle\btWheelInfo.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0C19C813-1A5E-4D18-B4FC-992A38BC7797}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>BulletDynamics</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>..\Objs\$(ProjectName)D\</IntDir>
+    <TargetExt>.lib</TargetExt>
+    <TargetName>$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\Libs\</OutDir>
+    <IntDir>..\Objs\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ProgramDataBaseFileName>$(OutDir)$(ProjectName)D.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
