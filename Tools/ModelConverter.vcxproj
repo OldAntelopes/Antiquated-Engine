@@ -41,13 +41,13 @@
     <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Exe\</OutDir>
+    <OutDir>..\Exe\</OutDir>
     <IntDir>.\Objs\ModelConverter___Win32_Tool_Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>ModelConverterD</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Exe\</OutDir>
+    <OutDir>..\Exe\</OutDir>
     <IntDir>.\Objs/ModelConverter___Win32_Tool_Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>ModelConverter</TargetName>
@@ -83,7 +83,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Exe\ModelConverterD.exe</OutputFile>
+      <OutputFile>..\Exe\ModelConverterD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -135,7 +135,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>IPHlpApi.Lib;libfbxsdk.lib;jpeglib.lib;CodeUtil.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;Interface-dx9.lib;EngineTool.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Exe\ModelConverter.exe</OutputFile>
+      <OutputFile>..\Exe\ModelConverter.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
