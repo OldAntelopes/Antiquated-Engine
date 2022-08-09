@@ -1,0 +1,58 @@
+// Global variables
+extern float4 AmbientColor;
+extern float AmbientIntensity;
+ 
+extern float3 LightDirection;
+extern float4 DiffuseColor;
+extern float DiffuseIntensity;
+ 
+// Pixel shader input structure
+struct PS_INPUT
+{
+    float4 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+
+};
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+
+sampler tex0: register(s0);
+texture tex1: register(s1);
+
+sampler2D samplerNormalMap = sampler_state
+{
+	Texture = tex1;
+	AddressU = Wrap;
+	AddressV = Wrap;
+	AddressW = Clamp;
+	MinFilter = ANISOTROPIC;
+	MagFilter = ANISOTROPIC;
+	MipFilter = ANISOTROPIC;	
+};
+
+//-------------------------------------
+// Water Pixel Shader
+//-------------------------------------
+PS_OUTPUT ps_main( PS_INPUT input )
+{
+    PS_OUTPUT Out;                             //create an output pixel
+
+	float4 color = tex2D(tex0, input.TexCoord);
+ 
+	float		fDiffuseStrength = 1.0f;
+ 
+//    Out.Color =   color * AmbientColor * AmbientIntensity*0.5 + 
+//				  color * AmbientColor * AmbientIntensity*0.5*ambientBounce + 
+//				  color * fDiffuseStrength * DiffuseColor * diffuse;
+
+	Out.Color = color;
+	Out.Color.w = Out.Color.w * 2.0f;
+
+    return Out;  
+}
+

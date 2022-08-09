@@ -1,0 +1,116 @@
+// Global variables
+extern float4 AmbientColor;
+extern float AmbientIntensity;
+ 
+extern float3 LightDirection;
+extern float4 DiffuseColor;
+extern float DiffuseIntensity;
+ 
+extern float4 SpecularColor;
+extern float3 EyePosition;
+extern float	SpecularMap;
+
+// Pixel shader input structure
+struct PS_INPUT
+{
+    float4 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+    float3 View : TEXCOORD1;
+	float4 ShadowMapSamplingPos : TEXCOORD2;  
+	float4 RealDistance         : TEXCOORD3;
+    float3x3 WorldToTangentSpace : TEXCOORD4;
+
+};
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+
+sampler tex0: register(s0);
+texture tex1: register(s1);
+sampler tex2: register(s2);
+texture tex3: register(s3);
+
+sampler2D samplerNormalMap = sampler_state
+{
+	Texture = tex1;
+	AddressU = Wrap;
+	AddressV = Wrap;
+	AddressW = Clamp;
+	MinFilter = ANISOTROPIC;
+	MagFilter = ANISOTROPIC;
+	MipFilter = ANISOTROPIC;	
+};
+
+sampler2D samplerShadowMap = sampler_state
+{
+	Texture = tex3;
+	AddressU = Wrap;
+	AddressV = Wrap;
+	AddressW = Clamp;
+	MinFilter = ANISOTROPIC;
+	MagFilter = ANISOTROPIC;
+	MipFilter = ANISOTROPIC;	
+};
+
+//-------------------------------------
+// Water Pixel Shader
+//-------------------------------------
+PS_OUTPUT ps_main( PS_INPUT input )
+{
+    PS_OUTPUT Out;                             //create an output pixel
+
+	float4 color = tex2D(tex0, input.TexCoord);
+ 
+	float		fDiffuseStrength = 1.0f;
+
+    float2 ProjectedTexCoords;
+    ProjectedTexCoords[0] = input.ShadowMapSamplingPos.x/input.ShadowMapSamplingPos.w/2.0f + 0.5f;
+    ProjectedTexCoords[1] = -input.ShadowMapSamplingPos.y/input.ShadowMapSamplingPos.w/2.0f  +0.5f;
+
+	if ((saturate(ProjectedTexCoords.x) == ProjectedTexCoords.x) && (saturate(ProjectedTexCoords.y) == ProjectedTexCoords.y))
+   {    
+		float StoredDepthInShadowMap = tex2D(samplerShadowMap, ProjectedTexCoords).x;  
+
+		if ( (input.RealDistance.x - 1.0f/100.0f) <= StoredDepthInShadowMap)    
+        {
+			fDiffuseStrength = 0.0f;
+			Out.Color.x = 0.0f;
+			Out.Color.y = 1.0f;
+			Out.Color.z = 0.0f;
+			Out.Color.w = 1.0f;
+		    return Out;  
+         }
+    }
+    float3 normalMap = 2.0 * (tex2D(samplerNormalMap, input.TexCoord)) - 1.0;
+    normalMap = normalize(mul(normalMap, input.WorldToTangentSpace));
+    float4 normal = float4(normalMap,1.0);
+	
+    float4 ambientBounce = saturate(dot(-LightDirection,normal));
+ 
+	fDiffuseStrength = DiffuseIntensity * fDiffuseStrength;
+
+    float4 diffuse = saturate(dot(LightDirection,normal));
+//    float4 reflect = normalize(2*diffuse*normal-float4(LightDirection,1.0));
+    float3 reflection = reflect(-LightDirection,normal);
+    float specular = pow(saturate(dot(reflection,input.View)),20);
+
+	if ( SpecularMap > 0 )
+	{
+		specular = specular * (tex2D(tex2, input.TexCoord));
+	}
+ 
+    Out.Color =   color * AmbientColor * AmbientIntensity*0.5 + 
+				  color * AmbientColor * AmbientIntensity*0.5*ambientBounce + 
+				  color * fDiffuseStrength * DiffuseColor * diffuse +
+				  color * SpecularColor* specular;
+//	Out.Color = tex2D(tex1, input.TexCoord);
+//	Out.Color = normal;
+//	Out.Color = diffuse;
+//  Out.Color = color * fDiffuseStrength * DiffuseColor * diffuse;
+    return Out;  
+}
+
