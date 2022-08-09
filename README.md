@@ -4,9 +4,9 @@ Old windows C/C++ game framework and legacy DX9 graphics engine
 
 The code contained here was generated over many years as part of various hobby projects largely centered around the game 'The Universal', which was a never-quite-good-enough attempt at making a distributed MMO in the early 2000s.  
 
-It is not well designed, well implemented, well structured or well.. anything but it is what it is.  Considering that most of it was written very late at night, often after a few whiskeys, its always surprising any of it works at all.
+It is not well designed, well implemented, well structured or well.. anything but it is what it is.  Considering that most of it was written very late at night, often after a few whiskeys, its always surprising any of it works at all. (Which it probably doesnt)
 
-This project has mostly been created for the sake of posterity rather than any expectation of practical value.
+This project has mostly been created for the sake of posterity rather than any expectation of practical value. 
 
 Overall structure of the repo
 -----------------------------
@@ -27,3 +27,16 @@ Preconditions
 
 - Put **[path_to_antiquated_repo]\Pub\Include**  somewhere in your include path otherwise nothing will compile.
 - I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..)
+
+Disclaimer
+--------------
+There's a bit in the MIT license about this all being provided AS IS and don't blame me for any of it. This **really** applies here. Even looking at this stuff is probably bad for your eyes, don't do it.
+
+Do not hold me to account for terrible coding practices contained within. Most of the stuff here was made purely for fun and never intended to be made public.  Some of it was written really really late at night and is probably breaking every good practice or sensible coding rule. 
+
+It is not actively maintained. Most of it doesnt work. Those bits that do work are pretty much useless, and in every case there's better ways of doing stuff than repeating whats done here.
+
+Also, it is not a reflection of my current coding practices or skills. This is historical shit, treat it like leeches or 1970s tv entertainers. Point and laugh.
+
+
+
