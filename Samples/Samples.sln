@@ -1,0 +1,94 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00_HelloWorld", "00_HelloWorld.vcxproj", "{89619E02-B991-480E-97E6-D379026EA7D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_BasicInterface", "01_BasicInterface.vcxproj", "{97097347-2E69-45AB-8AEF-8A2D147CF7BB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_BasicEngine", "02_BasicEngine.vcxproj", "{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_ArcadeGameSample", "03_ArcadeGameSample.vcxproj", "{B272C1A2-235D-4330-993D-0C9DCA64A426}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DX11|Win32 = Debug DX11|Win32
+		Debug DX9|Win32 = Debug DX9|Win32
+		Debug GL|Win32 = Debug GL|Win32
+		Debug OpenGL|Win32 = Debug OpenGL|Win32
+		Release DX9|Win32 = Release DX9|Win32
+		Release OpenGL|Win32 = Release OpenGL|Win32
+		Tool Debug|Win32 = Tool Debug|Win32
+		Tool Release|Win32 = Tool Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug GL|Win32.ActiveCfg = Debug GL|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug GL|Win32.Build.0 = Debug GL|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug OpenGL|Win32.ActiveCfg = Debug GL|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Debug OpenGL|Win32.Build.0 = Debug GL|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Release DX9|Win32.ActiveCfg = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Release DX9|Win32.Build.0 = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Release OpenGL|Win32.ActiveCfg = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Release OpenGL|Win32.Build.0 = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Tool Debug|Win32.ActiveCfg = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Tool Debug|Win32.Build.0 = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{89619E02-B991-480E-97E6-D379026EA7D1}.Tool Release|Win32.Build.0 = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug GL|Win32.ActiveCfg = Debug GL|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug GL|Win32.Build.0 = Debug GL|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug OpenGL|Win32.ActiveCfg = Debug GL|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Debug OpenGL|Win32.Build.0 = Debug GL|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Release DX9|Win32.ActiveCfg = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Release DX9|Win32.Build.0 = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Release OpenGL|Win32.ActiveCfg = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Release OpenGL|Win32.Build.0 = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Tool Debug|Win32.ActiveCfg = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Tool Debug|Win32.Build.0 = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{97097347-2E69-45AB-8AEF-8A2D147CF7BB}.Tool Release|Win32.Build.0 = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug GL|Win32.ActiveCfg = Debug GL|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug GL|Win32.Build.0 = Debug GL|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug OpenGL|Win32.ActiveCfg = Debug GL|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Debug OpenGL|Win32.Build.0 = Debug GL|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Release DX9|Win32.ActiveCfg = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Release DX9|Win32.Build.0 = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Release OpenGL|Win32.ActiveCfg = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Release OpenGL|Win32.Build.0 = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Debug|Win32.ActiveCfg = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Debug|Win32.Build.0 = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.Build.0 = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug GL|Win32.ActiveCfg = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug GL|Win32.Build.0 = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug OpenGL|Win32.ActiveCfg = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug OpenGL|Win32.Build.0 = Debug DX9|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release DX9|Win32.ActiveCfg = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release DX9|Win32.Build.0 = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release OpenGL|Win32.ActiveCfg = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release OpenGL|Win32.Build.0 = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Debug|Win32.ActiveCfg = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Debug|Win32.Build.0 = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
