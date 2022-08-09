@@ -20,6 +20,7 @@ In addition to the 2 sets of framework code there is:
 
 3) **Samples** : Some very basic samples of the core Pub libraries in use, including a Hello World
 4) **Tools** : Some tools that were created using the libraries, including the **ModelConverter** which is a windows tool for loading, exporting and manipulating the **.atm** model format that is a key component of the **Engine**.
+5) **Exe** : Contains some necessary data files and dlls required to run any of the generated programs.
 
 
 Preconditions
