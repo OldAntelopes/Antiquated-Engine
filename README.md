@@ -6,7 +6,7 @@ The code contained here was generated over many years as part of various hobby p
 
 It is not well designed, well implemented, well structured or well.. anything but it is what it is.  Considering that most of it was written very late at night, often after a few whiskeys, its always surprising any of it works at all. (Which it probably doesnt)
 
-This project has mostly been created for the sake of posterity rather than any expectation of practical value. 
+This github project has mostly been created for the sake of posterity rather than any expectation of practical value. 
 
 Overall structure of the repo
 -----------------------------
