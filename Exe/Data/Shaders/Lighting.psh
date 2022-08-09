@@ -1,0 +1,196 @@
+
+extern float	gNumPointLights;
+extern float3	gPointLightPositions[8];
+extern float3	gPointLightColours[8];
+extern float	gPointLightRanges[8];
+
+extern float	gNumSpotLights;
+extern float3	gSpotLightPositions[8];
+extern float3	gSpotLightDirections[8];
+extern float3	gSpotLightColours[8];
+
+
+float4 GetSpotLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos, float fDistSqr, float LightRangeSquared, int bAdjustLightingForLandscape )
+{
+	float		lightRange = 400;
+	float3		LightPosition = gSpotLightPositions[lightNum];
+	float3		LightDirection = gSpotLightDirections[lightNum];
+	float3		lightDiffuse;
+
+	lightDiffuse.x = 1.5;
+	lightDiffuse.y = 1.5;
+	lightDiffuse.z = 1.5;
+
+    //Create the vector between light position and pixels position
+    float3 lightToPixelVec = LightPosition - WorldPos;
+        
+    //Find the distance between the light pos and pixel pos
+    float d = length(lightToPixelVec);
+    
+    //If pixel is too far, return pixel color with ambient light
+    if( d > lightRange )
+        return float4( 0.0f, 0.0f, 0.0f, 0.0f );
+        
+    //Turn lightToPixelVec into a unit length vector describing
+    //the pixels direction from the lights position
+    lightToPixelVec /= d; 
+        
+    //Calculate how much light the pixel gets by the angle
+    //in which the light strikes the pixels surface
+    float howMuchLight = dot(lightToPixelVec, Normal);
+
+	float3		diffuseLighting;
+	diffuseLighting.x = 0;
+	diffuseLighting.y = 0;
+	diffuseLighting.z = 0;
+
+    //If light is striking the front side of the pixel
+    if( howMuchLight > -0.2f )
+    {    
+		if ( bAdjustLightingForLandscape == 1 )
+		{
+	        diffuseLighting += lightDiffuse;
+		}
+		else
+		{
+			howMuchLight = 0.2f + saturate( howMuchLight );
+		    //Add light to the finalColor of the pixel
+			diffuseLighting += lightDiffuse * howMuchLight;
+		}
+                    
+        //Calculate Light's Distance Falloff factor
+        diffuseLighting /= (0.2 * d);        
+
+        //Calculate falloff from center to edge of pointlight cone
+		float		fLightCone = 10.0f;
+        diffuseLighting *= pow(max(dot(-lightToPixelVec, LightDirection), 0.0f), fLightCone);
+    }
+ 
+   return float4( ( diffuseLighting), 1.0 );
+}
+
+
+//---------------------------------------------------------- Point lights : 0.1
+float4 GetPointLightSpecular( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos )
+{
+  float3		LightPosition = gPointLightPositions[lightNum];
+  float3		LightSpecularColor = { 0.2,0.2,0.2 };
+  float			SpecularPower = 2.0; 
+  float			LightDistanceSquared = 400.0;
+
+  // Get light direction for this fragment
+  float3 lightDir = normalize(WorldPos - LightPosition); // per pixel diffuse lighting
+
+  float fDist = dot(LightPosition - WorldPos, LightPosition - WorldPos);
+
+  // Using Blinn half angle modification for perofrmance over correctness
+  float3 h = normalize(normalize(CameraPos - WorldPos) - lightDir);
+  float specLighting = pow(saturate(dot(h, Normal)), SpecularPower);
+  specLighting *= saturate(LightDistanceSquared / (fDist * 10.0));
+
+  return float4( ( LightSpecularColor * specLighting), 1.0 ); // Use light specular vector as intensity multiplier
+}
+
+float4 GetPointLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos, float fDistSqr, float LightRangeSquared, int bAdjustLightingForLandscape )
+{
+  // Phong relfection is ambient + light-diffuse + spec highlights.
+  // I = Ia*ka*Oda + fatt*Ip[kd*Od(N.L) + ks(R.V)^n]
+  // Ref: http://www.whisqu.se/per/docs/graphics8.htm
+  // and http://en.wikipedia.org/wiki/Phong_shading
+ 
+  float3		LightPosition = gPointLightPositions[lightNum];
+  float3		LightDiffuseColor = gPointLightColours[lightNum];
+
+  // Get light direction for this fragment
+  float3 lightDir = normalize(WorldPos - LightPosition); // per pixel diffuse lighting
+ 
+  // Note: Non-uniform scaling not supported
+  float diffuseLighting = saturate(dot(Normal, -lightDir));
+
+	if ( bAdjustLightingForLandscape == 1)
+	{ 
+ 	  if ( fDistSqr < LightRangeSquared * 4 )
+	  {
+		diffuseLighting = 0.1f + (0.9f * diffuseLighting);
+	  }
+	  else if ( fDistSqr < LightRangeSquared * 8 )
+	  {
+		diffuseLighting = 0.05f + (0.95f * diffuseLighting);
+	  }
+	  else
+	  {
+		diffuseLighting = 0.01f + (0.99f * diffuseLighting);
+	  }
+	}
+	 
+  // Introduce fall-off of light intensity
+  diffuseLighting *= saturate(LightRangeSquared / (fDistSqr) );
+ 
+   return float4( ( LightDiffuseColor * diffuseLighting), 1.0 );
+}
+
+float4		GetCombinedSpotLightDiffuse( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape )
+{
+	float4		colorPoint = { 0.0f, 0.0f, 0.0f, 1.0f };
+	int			loop;
+	float		fDistSqr;
+	float3		LightPosition;
+	float		LightRangeSquared;
+
+	for( loop = 0; loop < gNumSpotLights; loop++ )
+	{
+	  	LightRangeSquared = 400;
+
+		LightPosition = gSpotLightPositions[loop];
+		fDistSqr = dot(LightPosition - WorldPos, LightPosition - WorldPos);
+		if ( fDistSqr < LightRangeSquared * 80 )
+		{
+			colorPoint += GetSpotLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape); 
+		}
+	}
+	return( colorPoint );
+}
+
+
+float4		GetCombinedPointLightDiffuse( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape )
+{
+	float4		colorPoint = { 0.0f, 0.0f, 0.0f, 1.0f };
+	int		loop;
+	float		fDistSqr;
+	float3		LightPosition;
+	  float			LightRangeSquared;
+
+	for( loop = 0; loop < gNumPointLights; loop++ )
+	{
+	  	LightRangeSquared = gPointLightRanges[loop];
+		LightPosition = gPointLightPositions[loop];
+		fDistSqr = dot(LightPosition - WorldPos, LightPosition - WorldPos);
+		float3		lightCol = gPointLightColours[loop];
+		float	fBrightnessRangeMod = (lightCol.x + lightCol.y + lightCol.z) / 3;
+		float	fRangeMod = 12.0f;
+
+		if ( fBrightnessRangeMod > 1.0f )
+		{
+			fRangeMod *= fBrightnessRangeMod;
+		}
+
+		if ( fDistSqr < LightRangeSquared * fRangeMod )
+		{
+			colorPoint += GetPointLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape); 
+		}
+	}
+	return( colorPoint );
+}
+
+
+float4		GetCombinedLightingDiffuse( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape )
+{
+	float4	diffuseCombined = GetCombinedPointLightDiffuse( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape );
+
+	diffuseCombined += GetCombinedSpotLightDiffuse( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape );
+	
+	return( diffuseCombined );
+}
+
+
+//--------------------------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

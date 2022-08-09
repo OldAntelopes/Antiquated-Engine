@@ -1,0 +1,44 @@
+
+
+
+//---------------------------------------------------------- ShadowMap : 0.1
+float		ShadowMapGetPrimaryLightAmount( float4 vPosLight  )
+{
+	// Shadowmap lookup 
+    float2 ShadowTexC = 0.5 * vPosLight.xy / vPosLight.w + float2( 0.5, 0.5 );
+    ShadowTexC.y = 1.0f - ShadowTexC.y;
+
+	float	LightAmount = 1.0;
+
+	if ( ( ShadowTexC.x >= 0 ) &&
+		 ( ShadowTexC.x < 1.0 ) &&
+		 ( ShadowTexC.y >= 0 ) &&
+		 ( ShadowTexC.y < 1.0 ) )
+	{
+		// transform to texel space
+        float2 texelpos = gShadowMapSize * ShadowTexC;
+        
+        // Determine the lerp amounts           
+        float2 lerps = frac( texelpos );
+
+        //read in bilerp stamp, doing the shadow checks
+        float sourcevals[4];
+		float dx = 1.0 / gShadowMapSize;
+        sourcevals[0] = (tex2D( shadowMapSampler, ShadowTexC ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
+        sourcevals[1] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, 0) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
+        sourcevals[2] = (tex2D( shadowMapSampler, ShadowTexC + float2(0, dx) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
+        sourcevals[3] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, dx) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
+        
+        // lerp between the shadow values to calculate our light amount
+        LightAmount = lerp( lerp( sourcevals[0], sourcevals[1], lerps.x ),
+                                  lerp( sourcevals[2], sourcevals[3], lerps.x ),
+                                  lerps.y );
+
+//		LightAmount *= ((sourcevals[0]+sourcevals[1]+sourcevals[2]+sourcevals[3])*0.25f);
+	}
+
+	return( LightAmount );  
+}
+
+
+

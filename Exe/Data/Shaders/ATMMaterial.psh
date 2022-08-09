@@ -1,0 +1,177 @@
+
+//------------------------------------------------------
+// Global variables
+extern float4	gAmbientColor;
+extern float4	gMaterialDiffuse;
+extern float4	gMaterialAmbient;
+extern float4	gMaterialSpecular;
+extern float4	gMaterialEmissive;
+
+extern float4	gDiffuseColor;
+ 
+extern float4	gSpecularColor;
+
+extern float3	gLightDirection;
+extern float3	xCamPos;
+
+extern float	gHasDiffuseMap;
+extern float	gHasSpecularMap;
+extern float	gHasNormalMap;
+
+extern float	gMaterialSpecularPower;
+extern float	gAmbientIntensity;
+extern float	gDiffuseIntensity;
+
+extern float	gShadowMapSize;
+extern float	gShadowEpsilon;
+
+//------------------------------------------------------
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+
+sampler diffuseSampler: register(s0);
+sampler shadowMapSampler: register(s1);
+sampler normalMapSampler: register(s2);
+sampler specularMapSampler: register(s3);
+
+#include "Lighting.psh"
+#include "Shadows.psh"
+#include "Fog.psh"
+
+
+//-------------------------------------
+// Standard material Pixel Shader
+//-------------------------------------
+PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
+				   float3 View : TEXCOORD1,
+				   float3 vNormal : TEXCOORD2,
+				   float4  vPosLight         : TEXCOORD3,
+				   float4  VertCol           : TEXCOORD4,
+				   float4  PositionWS : TEXCOORD5,
+				   float3  TangentWorldSpace : TEXCOORD6,
+				   float3  BiTangentWorldSpace : TEXCOORD7   )
+{
+    PS_OUTPUT Out;                             //create an output pixel
+
+	float4 texColor;
+
+	if ( gHasDiffuseMap > 0 )
+	{
+		texColor = tex2D(diffuseSampler, TexCoord);
+	}
+	else
+	{
+		texColor = float4( 0.6f, 0.6, 0.6, 1.0 );
+	}
+
+	if ( texColor.w == 0.0f )
+	{
+		Out.Color.x = 0;
+		Out.Color.y = 0;
+		Out.Color.z = 0;
+		Out.Color.w = texColor.w;
+	    return Out;  
+	}
+	texColor *= VertCol;
+
+	// Shadowmap lookup 
+
+	float fPrimaryDiffuseShadowingStrength = ShadowMapGetPrimaryLightAmount( vPosLight  );
+//  fPrimaryDiffuseShadowingStrength = 1.0f;
+
+	float3x3  WorldToTangentSpace;
+
+	WorldToTangentSpace[0] = TangentWorldSpace;
+	WorldToTangentSpace[1] = BiTangentWorldSpace;
+    WorldToTangentSpace[2] = vNormal;
+	
+	float4 normal;
+	if ( gHasNormalMap > 0 )
+	{
+	    float3 normalMap = 2.0 * (tex2D(normalMapSampler, TexCoord)) - 1.0;
+		normalMap = normalize(mul(normalMap, WorldToTangentSpace));
+		normal = normalize( float4(normalMap,1.0) );
+	}
+	else
+	{
+		normal = normalize( float4(vNormal,0.0) );
+	}
+
+
+	float4	lightDirection = float4(-gLightDirection,1.0);
+
+    float4 ambientBounce = saturate(dot(-lightDirection,normal));
+ 
+
+//    float4 diffuse = saturate(dot(lightDirection,normal));
+    float4 diffuse = dot(lightDirection,normal);
+	diffuse *= diffuse;
+	diffuse *= 0.6;
+
+	float4	specularColor = float4( 0.0, 0.0, 0.0, 0.0 );
+	
+	if ( gMaterialSpecularPower > 1.0 )
+	{
+		if ( gMaterialSpecular.w > 0 )
+		{
+		   float3 reflection = reflect(-lightDirection,normal);
+		   // TODO - Get Power value from input
+		   float specular = pow(saturate(dot(reflection,View)),gMaterialSpecularPower);
+			specular *= fPrimaryDiffuseShadowingStrength;
+			specular *= 0.5f;
+			if ( gHasSpecularMap > 0 )
+			{
+	//			specular = specular * (tex2D(specularMapSampler, TexCoord));
+			}
+
+			specularColor = saturate(gSpecularColor * specular * gMaterialSpecular);
+//			specularColor *= 0.5;
+		}
+   }
+
+	fPrimaryDiffuseShadowingStrength = gDiffuseIntensity * fPrimaryDiffuseShadowingStrength;
+
+	ambientBounce *= 0.125;
+			
+	float4	diffuseMain = fPrimaryDiffuseShadowingStrength * gDiffuseColor * gMaterialDiffuse * diffuse;
+	float4	 colorPoint = float4( 0.0f, 0.0f, 0.0f, 1.0f );
+
+	if ( gNumPointLights + gNumSpotLights > 0)
+	{
+		colorPoint = GetCombinedLightingDiffuse( PositionWS, normal, View, 0 );
+		diffuseMain = saturate( (diffuseMain + (colorPoint * gMaterialDiffuse) ) );
+
+//		specularMain += GetPointLightSpecular( 0, PositionWS, normal, xCamPos ); 
+	}
+
+//	float4		fAmbientMain = (texColor * gAmbientColor * gMaterialAmbient);
+//	float4		fAmbientBounce = (texColor * gAmbientColor * gMaterialAmbient * ambientBounce);
+//	float4		fEmissive = (texColor * gMaterialEmissive);
+//	float4		fDiffuse = saturate( texColor * diffuseMain );
+//  Out.Color =  saturate( fAmbientMain + fAmbientBounce + fEmissive + fDiffuse );
+
+	float4		fAmbientMain = (gAmbientColor * gMaterialAmbient);
+	float4		fAmbientBounce = (gAmbientColor * gMaterialAmbient * ambientBounce);
+	Out.Color = texColor * saturate( fAmbientMain + fAmbientBounce + gMaterialEmissive + diffuseMain );
+
+	Out.Color = saturate( Out.Color + specularColor );
+	Out.Color.w = texColor.w * saturate(gMaterialDiffuse.w + specularColor.w);
+//	Out.Color = fPrimaryDiffuseShadowingStrength;
+
+	// --------------- Fog ----------------------
+	Out.Color = FogApply( Out.Color, xCamPos, PositionWS );
+
+//	Out.Color = gMaterialEmissive;
+//	Out.Color.x = 0;
+//	Out.Color.y = 1.0f;
+//	Out.Color.z = 0;
+//	Out.Color.w = 0.6f;
+
+    return Out;  
+}
+

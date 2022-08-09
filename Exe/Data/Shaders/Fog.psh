@@ -1,0 +1,19 @@
+
+float4	xFogCol;
+extern float gFogStart;
+extern float gFogEnd;
+
+float4 FogApply( float4 color, float3 camPosWS, float3 pixelPosWS )
+{
+	
+	if ( gFogEnd > 0 )
+	{
+		float DistFog = distance(camPosWS, pixelPosWS);
+		float foglevel = saturate( (DistFog - gFogStart) / (gFogEnd - gFogStart ) );
+		float4 outColor = lerp( color, xFogCol, foglevel );
+		return( outColor );
+	}
+	return( color );
+
+
+}
