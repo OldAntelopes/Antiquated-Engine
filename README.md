@@ -40,3 +40,8 @@ It is not actively maintained. Most of it doesnt work. Those bits that do work a
 
 Also, it is not a reflection of my current coding practices or skills. This is historical shit, treat it like medicinal leeches or 1970s tv entertainers. Just point and laugh and perhaps wonder why anybody used to do things like that. Ok?
 
+Shared Code
+-------------
+The engine makes use of :
+- Bullet physics ( https://github.com/bulletphysics )
+- curl ( https://curl.se/ )
