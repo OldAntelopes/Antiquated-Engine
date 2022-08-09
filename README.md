@@ -38,5 +38,5 @@ Do not hold me to account for terrible coding practices contained within. Most o
 
 It is not actively maintained. Most of it doesnt work. Those bits that do work are pretty much useless, and in every case there's alternative, modern and better ways of doing stuff than repeating whats done here. 
 
-Also, it is not a reflection of my current coding practices or skills. This is historical shit, treat it like leeches or 1970s tv entertainers. Just point and laugh. Ok?
+Also, it is not a reflection of my current coding practices or skills. This is historical shit, treat it like medicinal leeches or 1970s tv entertainers. Just point and laugh and perhaps wonder why anybody used to do things like that. Ok?
 
