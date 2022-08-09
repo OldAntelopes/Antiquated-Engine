@@ -82,7 +82,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>IPHlpApi.Lib;libovr.lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Exe\ModelConverterD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

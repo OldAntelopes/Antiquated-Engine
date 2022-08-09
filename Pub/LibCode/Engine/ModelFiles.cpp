@@ -17,7 +17,7 @@
 #include <zlib.h>
 
 #ifndef STANDALONE
-#include "Security.h"
+#include "UnivObfuscation.h"
 #endif
 
 #ifdef SERVER

@@ -36,191 +36,81 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Tools\ModelConverter\Util\Line Renderer.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Util\Point Renderer.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Scene\ModelEditorSceneObject.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CodeUtil.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Engine.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\EngineMaths.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\LibCode\Engine\ModelFiles.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\LibCode\Engine\ModelMaterialData.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Rendering.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StandardDef.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\System.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Animation Builder.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\MaterialBrowser.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\ModelConverter.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\resource.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\SubModelBrowser.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\UVUnwrap.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\Dialogs\CreateSceneFromModel.h">
-      <Filter>Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\AddPrimitives\AddPrimitives.h">
-      <Filter>AddPrimitives</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\RecalcNormals.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\MeshManipulate.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\ScaleModel.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\MoveModel.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Dialogs\MaterialsDialog.h">
-      <Filter>Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\UVGenerate.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\ModelConvMouseControl.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\PlaneCutter.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Dialogs\AttachDialog.h">
-      <Filter>Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\VertexColours.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\Tools\VertexManipulate.h">
-      <Filter>Scene\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\CombineMaterials.h" />
-    <ClInclude Include="..\..\Tools\ModelConverter\AddPrimitives\CurvedWall.h">
-      <Filter>AddPrimitives</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\GameCommon\Util\cJSON.h">
-      <Filter>GameCommon\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Tools\ModelConverter\RenderEffects\RenderEffects.h">
-      <Filter>RenderEffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\GameCommon\RenderUtil\Sprites3D.h">
-      <Filter>GameCommon\RenderUtil</Filter>
-    </ClInclude>
+    <ClInclude Include="..\GameCommon\RenderUtil\Sprites3D.h" />
+    <ClInclude Include="..\GameCommon\Util\cJSON.h" />
+    <ClInclude Include="ModelConverter\AddPrimitives\AddPrimitives.h" />
+    <ClInclude Include="ModelConverter\AddPrimitives\CurvedWall.h" />
+    <ClInclude Include="ModelConverter\CombineMaterials.h" />
+    <ClInclude Include="ModelConverter\Dialogs\AttachDialog.h" />
+    <ClInclude Include="ModelConverter\Dialogs\CreateSceneFromModel.h" />
+    <ClInclude Include="ModelConverter\Dialogs\MaterialsDialog.h" />
+    <ClInclude Include="ModelConverter\ModelConvMouseControl.h" />
+    <ClInclude Include="ModelConverter\RenderEffects\RenderEffects.h" />
+    <ClInclude Include="ModelConverter\Tools\MeshManipulate.h" />
+    <ClInclude Include="ModelConverter\Tools\MoveModel.h" />
+    <ClInclude Include="ModelConverter\Tools\PlaneCutter.h" />
+    <ClInclude Include="ModelConverter\Tools\RecalcNormals.h" />
+    <ClInclude Include="ModelConverter\Tools\ScaleModel.h" />
+    <ClInclude Include="ModelConverter\Tools\UVGenerate.h" />
+    <ClInclude Include="ModelConverter\Tools\VertexColours.h" />
+    <ClInclude Include="ModelConverter\Tools\VertexManipulate.h" />
+    <ClInclude Include="ModelConverter\Util\Line Renderer.h" />
+    <ClInclude Include="ModelConverter\Util\Point Renderer.h" />
+    <ClInclude Include="ModelConverter\Scene\ModelEditorSceneObject.h" />
+    <ClInclude Include="..\Pub\Include\CodeUtil.h" />
+    <ClInclude Include="..\Pub\Include\Engine.h" />
+    <ClInclude Include="..\Pub\Include\EngineMaths.h" />
+    <ClInclude Include="..\Pub\Include\Interface.h" />
+    <ClInclude Include="..\Pub\LibCode\Engine\ModelFiles.h" />
+    <ClInclude Include="..\Pub\LibCode\Engine\ModelMaterialData.h" />
+    <ClInclude Include="..\Pub\Include\Rendering.h" />
+    <ClInclude Include="..\Pub\Include\StandardDef.h" />
+    <ClInclude Include="..\Pub\Include\System.h" />
+    <ClInclude Include="ModelConverter\Animation Builder.h" />
+    <ClInclude Include="ModelConverter\MaterialBrowser.h" />
+    <ClInclude Include="ModelConverter\ModelConverter.h" />
+    <ClInclude Include="ModelConverter\resource.h" />
+    <ClInclude Include="ModelConverter\SubModelBrowser.h" />
+    <ClInclude Include="ModelConverter\UVUnwrap.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Tools\ModelConverter\Util\Line_Renderer.cpp">
-      <Filter>Util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Util\Point_Renderer.cpp">
-      <Filter>Util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Scene\ModelEditorSceneObject.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Animation_Builder.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\MaterialBrowser.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\ModelConverter.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\SubModelBrowser.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\UVUnwrap.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\Dialogs\CreateSceneFromModel.cpp">
-      <Filter>Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\AddPrimitives\AddPrimitives.cpp">
-      <Filter>AddPrimitives</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\RecalcNormals.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\MeshManipulate.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\ScaleModel.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\MoveModel.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Dialogs\MaterialsDialog.cpp">
-      <Filter>Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\UVGenerate.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\ModelConvMouseControl.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\PlaneCutter.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Dialogs\AttachDialog.cpp">
-      <Filter>Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\VertexColours.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\Tools\VertexManipulate.cpp">
-      <Filter>Scene\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\CombineMaterials.cpp" />
-    <ClCompile Include="..\..\Tools\ModelConverter\AddPrimitives\CurvedWall.cpp">
-      <Filter>AddPrimitives</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\GameCommon\Util\cJSON.c">
-      <Filter>GameCommon\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Tools\ModelConverter\RenderEffects\RenderEffects.cpp">
-      <Filter>RenderEffects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\GameCommon\RenderUtil\Sprites3D.cpp">
-      <Filter>GameCommon\RenderUtil</Filter>
-    </ClCompile>
+    <ClCompile Include="..\GameCommon\RenderUtil\Sprites3D.cpp" />
+    <ClCompile Include="..\GameCommon\Util\cJSON.c" />
+    <ClCompile Include="ModelConverter\AddPrimitives\AddPrimitives.cpp" />
+    <ClCompile Include="ModelConverter\AddPrimitives\CurvedWall.cpp" />
+    <ClCompile Include="ModelConverter\CombineMaterials.cpp" />
+    <ClCompile Include="ModelConverter\Dialogs\AttachDialog.cpp" />
+    <ClCompile Include="ModelConverter\Dialogs\CreateSceneFromModel.cpp" />
+    <ClCompile Include="ModelConverter\Dialogs\MaterialsDialog.cpp" />
+    <ClCompile Include="ModelConverter\ModelConvMouseControl.cpp" />
+    <ClCompile Include="ModelConverter\RenderEffects\RenderEffects.cpp" />
+    <ClCompile Include="ModelConverter\Tools\MeshManipulate.cpp" />
+    <ClCompile Include="ModelConverter\Tools\MoveModel.cpp" />
+    <ClCompile Include="ModelConverter\Tools\PlaneCutter.cpp" />
+    <ClCompile Include="ModelConverter\Tools\RecalcNormals.cpp" />
+    <ClCompile Include="ModelConverter\Tools\ScaleModel.cpp" />
+    <ClCompile Include="ModelConverter\Tools\UVGenerate.cpp" />
+    <ClCompile Include="ModelConverter\Tools\VertexColours.cpp" />
+    <ClCompile Include="ModelConverter\Tools\VertexManipulate.cpp" />
+    <ClCompile Include="ModelConverter\Util\Line_Renderer.cpp" />
+    <ClCompile Include="ModelConverter\Util\Point_Renderer.cpp" />
+    <ClCompile Include="ModelConverter\Scene\ModelEditorSceneObject.cpp" />
+    <ClCompile Include="ModelConverter\Animation_Builder.cpp" />
+    <ClCompile Include="ModelConverter\MaterialBrowser.cpp" />
+    <ClCompile Include="ModelConverter\ModelConverter.cpp" />
+    <ClCompile Include="ModelConverter\SubModelBrowser.cpp" />
+    <ClCompile Include="ModelConverter\UVUnwrap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\Tools\ModelConverter\ModelConverter.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="ModelConverter\ModelConverter.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\Tools\ModelConverter\Icons\centreicon.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\moveicon.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\moveiconsel.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\rotateicon.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\rotateiconsel.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\zoomicon.bmp">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="..\..\Tools\ModelConverter\Icons\zoomiconsel.bmp">
-      <Filter>Resources</Filter>
-    </Image>
+    <Image Include="ModelConverter\Icons\centreicon.bmp" />
+    <Image Include="ModelConverter\Icons\moveicon.bmp" />
+    <Image Include="ModelConverter\Icons\moveiconsel.bmp" />
+    <Image Include="ModelConverter\Icons\rotateicon.bmp" />
+    <Image Include="ModelConverter\Icons\rotateiconsel.bmp" />
+    <Image Include="ModelConverter\Icons\zoomicon.bmp" />
+    <Image Include="ModelConverter\Icons\zoomiconsel.bmp" />
   </ItemGroup>
 </Project>
