@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Tool Debug|Win32">
+      <Configuration>Tool Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Tool Release|Win32">
+      <Configuration>Tool Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D8607267-2451-4F6B-9C64-96F282833876}</ProjectGuid>
+    <RootNamespace>InteriorMapEditor</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <ProjectName>SceneEditor</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">
+    <OutDir>.\Exe\</OutDir>
+    <IntDir>.\Objs\SceneEditor___Win32_Tool_Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>SceneEditorD</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">
+    <OutDir>.\Exe\</OutDir>
+    <IntDir>.\Objs\SceneEditor___Win32_Tool_Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Objs\Tool_Debug/SceneEditor.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\Pub\Include;..\Pub\Include\DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_DEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Objs\Tool_Debug/InteriorMapEditor.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\Tool_Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\Tool_Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\Tool_Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>libcrypto.lib;libssl.lib;Ws2_32.lib;Wldap32.lib;IPHlpApi.Lib;CodeUtilD.lib;libfbxsdkD.lib;jpeglib.lib;zlib.lib;InterfaceD-DX9.lib;EngineToolD.lib;dxerr8.lib;libcurl.lib;comctl32.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;d3d9.lib;dxerr9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../Exe/SceneEditorD.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>../Pub/Libs;../Pub/Libs/DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Objs\Tool_Debug/SceneEditorD.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Objs\Tool_Debug/SceneEditor.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tool Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Objs\Tool Release/SceneEditor.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\Pub\Include;..\Pub\Include\DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Objs\Tool Release/InteriorMapEditor.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\Tool Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\Tool Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\Tool Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>libcrypto.lib;libssl.lib;Ws2_32.lib;Wldap32.lib;libcurl.lib;jpeglib.lib;zlib.lib;libfbxsdk.lib;CodeUtil.lib;dxerr9.lib;EngineTool.lib;Interface-DX9.lib;comctl32.lib;d3dx9.lib;msvcrt.lib;dxguid.lib;d3dxof.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../Exe/SceneEditor.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>../Pub/Libs;../Pub/Libs/DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ProgramDatabaseFile>.\Objs\Tool Release/InteriorMapEditor.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Objs\Tool Release/InteriorMapEditor.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\GameCommon\Util\cJSON.c" />
+    <ClCompile Include="SceneEditor\Code\Framework\SceneEditor.cpp" />
+    <ClCompile Include="SceneEditor\Code\Main.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\HTTP.c" />
+    <ClCompile Include="SceneEditor\Code\Util\HTTPDownload.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\Line_Renderer.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\MouseCam.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\GameCommon\Util\cJSON.h" />
+    <ClInclude Include="SceneEditor\Code\Framework\SceneEditor.h" />
+    <ClInclude Include="SceneEditor\Code\Main.h" />
+    <ClInclude Include="SceneEditor\Code\Util\HTTP.h" />
+    <ClInclude Include="SceneEditor\Code\Util\HTTPDownload.h" />
+    <ClInclude Include="SceneEditor\Code\Util\Line Renderer.h" />
+    <ClInclude Include="SceneEditor\Code\Util\MouseCam.h" />
+    <ClInclude Include="SceneEditor\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="SceneEditor\centreicon.bmp" />
+    <Image Include="SceneEditor\moveicon.bmp" />
+    <Image Include="SceneEditor\moveiconsel.bmp" />
+    <Image Include="SceneEditor\rotateicon.bmp" />
+    <Image Include="SceneEditor\rotateiconsel.bmp" />
+    <Image Include="SceneEditor\zoomicon.bmp" />
+    <Image Include="SceneEditor\zoomiconsel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SceneEditor\InteriorMapEditor.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

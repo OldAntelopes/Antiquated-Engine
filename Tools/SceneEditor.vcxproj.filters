@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Util">
+      <UniqueIdentifier>{35e80cac-7224-4359-8667-1932273b52e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{6043ef2a-8210-4907-968f-8aa6d389612d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameCommon">
+      <UniqueIdentifier>{0530bfa7-50a8-4698-a276-da0a2df46b56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameCommon\Util">
+      <UniqueIdentifier>{40b2455b-c3a1-4400-a371-7135b103ccbc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\GameCommon\Util\cJSON.c" />
+    <ClCompile Include="SceneEditor\Code\Framework\SceneEditor.cpp" />
+    <ClCompile Include="SceneEditor\Code\Main.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\HTTP.c" />
+    <ClCompile Include="SceneEditor\Code\Util\HTTPDownload.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\Line_Renderer.cpp" />
+    <ClCompile Include="SceneEditor\Code\Util\MouseCam.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\GameCommon\Util\cJSON.h" />
+    <ClInclude Include="SceneEditor\Code\Framework\SceneEditor.h" />
+    <ClInclude Include="SceneEditor\Code\Main.h" />
+    <ClInclude Include="SceneEditor\Code\Util\HTTP.h" />
+    <ClInclude Include="SceneEditor\Code\Util\HTTPDownload.h" />
+    <ClInclude Include="SceneEditor\Code\Util\Line Renderer.h" />
+    <ClInclude Include="SceneEditor\Code\Util\MouseCam.h" />
+    <ClInclude Include="SceneEditor\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="SceneEditor\centreicon.bmp" />
+    <Image Include="SceneEditor\moveicon.bmp" />
+    <Image Include="SceneEditor\moveiconsel.bmp" />
+    <Image Include="SceneEditor\rotateicon.bmp" />
+    <Image Include="SceneEditor\rotateiconsel.bmp" />
+    <Image Include="SceneEditor\zoomicon.bmp" />
+    <Image Include="SceneEditor\zoomiconsel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SceneEditor\InteriorMapEditor.rc" />
+  </ItemGroup>
+</Project>
