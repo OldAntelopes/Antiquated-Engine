@@ -45,3 +45,5 @@ Shared Code
 The engine makes use of :
 - Bullet physics ( https://github.com/bulletphysics )
 - curl ( https://curl.se/ )
+- cjson ( https://github.com/DaveGamble/cJSON )
+
