@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "Rendering.h"
 
-#include "../../../LibCode/Engine/ModelRendering.h"
+#include "../../../Pub/LibCode/Engine/ModelRendering.h"		// Temp - shouldnt be doing this :)
 
 #include "../Scene/ModelEditorSceneObject.h"
 #include "../Util/Line Renderer.h"

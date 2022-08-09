@@ -7,7 +7,7 @@
 #include "Engine.h"
 #include "Rendering.h"
 
-#include "../../../LibCode/Engine/ModelRendering.h"
+#include "../../../Pub/LibCode/Engine/ModelRendering.h"		// TEMP - Shouldnt be doing this :)
 
 #include "../ModelConverter.h"
 

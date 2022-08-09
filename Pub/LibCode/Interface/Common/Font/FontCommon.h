@@ -1,9 +1,6 @@
 #ifndef FONT_COMMON_H
 #define FONT_COMMON_H
 
-#ifdef TUD9
-#include "..\..\..\..\..\Universal\Include\LegacyDXInclude.h"		// TEMP - Need to remove this
-#endif
 
 #define		MAX_FONTS_IN_GAME		8
 #define		SIZE_OF_FONT_VERTEX_BUFFER		1020

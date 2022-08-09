@@ -5,7 +5,7 @@
 #include <Engine.h>
 #include <Interface.h>
 
-#include "../../Universal/GameCode/FrontEnd/Screens/FEVideoOptions.h"		// TEMP - for debug indicators
+//#include "../../Universal/GameCode/FrontEnd/Screens/FEVideoOptions.h"		// TEMP - for debug indicators
 
 #include "TextureManagerDX.h"
 #include "ShaderLoaderDX.h"
