@@ -27,7 +27,7 @@ Preconditions
 -------------
 
 - Put **[path_to_antiquated_repo]\Pub\Include**  somewhere in your include path otherwise nothing will compile.
-- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you'll probably have some work to do to use anything other than the V110 toolchain
+- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you'll probably have some work to do to use anything other than the V120 toolchain
 - Executables will get placed in the Exe folder which contains some required dlls and data files. When debugging you'll need to set your working directory there for things to be happy.
 
 Disclaimer
