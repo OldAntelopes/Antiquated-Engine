@@ -305,7 +305,7 @@ int		nHeaderX = X + (int)( W * 0.1f );
 	}
 
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
-	InterfaceTextBox( 1, nHeaderX, Y, "To sign in, use your account details registered on the forums at http://oldmangamedevelopment.com", 0xd0d0d0d0, 0, nHeaderW, TRUE );
+	InterfaceTextBox( 1, nHeaderX, Y, "To sign in, use your account details registered on the forums at http://gamesformay.com", 0xd0d0d0d0, 0, nHeaderW, TRUE );
 	InterfaceSetFontFlags( 0 );
 
 	nButtonX = nColumnX + 10;

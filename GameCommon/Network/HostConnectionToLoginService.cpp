@@ -30,7 +30,6 @@ public:
 
 // Need to get an equivalent of the msServiceConfig in here...
 char		mszUserLoginServiceURL[256] = "";
-//char		mszUserLoginServiceURL[256] = "http://52.91.46.154:8080";
 
 SessionCache*		mspSessionCache = NULL;
 ValidateSessionResponse		mfnSessionValidateResponseCallback = NULL;
