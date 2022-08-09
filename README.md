@@ -42,8 +42,10 @@ Also, it is not a reflection of my current coding practices or skills. This is h
 
 Shared Code
 -------------
-The engine makes use of :
+The engine includes and makes use of versions of:
 - Bullet physics ( https://github.com/bulletphysics )
 - curl ( https://curl.se/ )
 - cjson ( https://github.com/DaveGamble/cJSON )
+- zlib ( https://github.com/madler/zlib )
+- libjpeg ( https://github.com/kornelski/libjpeg ) 
 
