@@ -1,0 +1,479 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Texture Manager</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<p align="center"><font size="+3" face="Arial, Helvetica, sans-serif">Texture 
+  Loader (Version 1.4)</font><br>
+  <font face="Arial, Helvetica, sans-serif">(For use with Win32 openGL Applications)</font></p>
+<p align="center"><font size="+2" face="Arial, Helvetica, sans-serif">By Chris 
+  Leathley (Black)<br>
+  <font size="+1">Originally Based on Jeff Molofee's (<a href="http://nehe.gamedev.net/" target="_blank">Nehe</a>) 
+  IPicture Basecode</font></font></p>
+<p align="left"><font size="+1" face="Arial, Helvetica, sans-serif"><strong>Introduction</strong></font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">This document describes 
+  how the Texture Loader works and how to use it. When I first started on openGL 
+  I wanted to make a texture manager which was flexible for the type of applications 
+  I was used to (totally out of my control, user controlled stuff, etc..). I based 
+  this project from Nehes Ipicture source and expanded it for my requirements. 
+  This code is the result of that process and is in constant development to improve 
+  it and make it more flexible.</font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">It supports -</font></p>
+<ul>
+  <li><font face="Arial, Helvetica, sans-serif">BMP (8/16/32 Bit format), GIF, 
+    JPG and TGA (24/32 bit) file formats (handles the ImgIdent field correctly).</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Load from Disk, Internet Stream, 
+    Ram (useful if you store images in other file formats (ie. IStorage/IStream 
+    containers) and from Resources (VC6).</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Load Textures (including TGA) 
+    of any Dimension (automatically scaled to correct size).</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Automatically scales all Textures 
+    to the maximum size allowed for the Target Video card.</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Generate Alpha Maps on BMP files 
+    based on definable colour matching.</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Low Quality Texture support (Generates 
+    smaller Textures for use on low spec video cards).</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">3 Filter Types (None, Bilinear 
+    and Trilinear).</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Normal or Mipmapping Texture Generation.</font></li>
+  <li><font face="Arial, Helvetica, sans-serif">Free'ing (releasing) Textures 
+    from openGL.</font></li>
+</ul>
+<p align="left"><font face="Arial, Helvetica, sans-serif">You are free to use 
+  this code in your application in any way you see fit. </font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Enjoy and Many Thanks 
+  to Nehe for his site..</font></p>
+<p align="left">&nbsp;</p>
+<hr width="90%" noshade>
+<p><font size="+1" face="Arial, Helvetica, sans-serif"><strong>Download</strong></font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">You can download the 
+  source here .. <a href="http://members.iinet.net.au/%7Ecleathley/openGL/TextureLoader.zip">TextureLoader.zip</a></font></p>
+<p align="left">&nbsp;</p>
+<hr width="90%" noshade>
+<p><font size="+1" face="Arial, Helvetica, sans-serif"><strong>Common Data Types</strong></font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Most commands require 
+  the application to hold it's texture information in the following data type. 
+  This structure contains the openGL Texture ID as well as any other information 
+  about the texture (such as it's width, height and Bit Depth)</font></p>
+<p><font face="Courier New, Courier, mono">typedef struct<br>
+  {<br>
+  &nbsp;&nbsp;GLuint TextureID; &nbsp;&nbsp;// Texture ID Used To Select A Texture<br>
+  &nbsp;&nbsp;eglTexType TexType; // Texture Format<br>
+  &nbsp;&nbsp;GLuint Width; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Image Width<br>
+  &nbsp;&nbsp;GLuint Height; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Image Height<br>
+  &nbsp;&nbsp;GLuint Type; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Image 
+  Type (GL_RGB, GL_RGBA)<br>
+  &nbsp;&nbsp;GLuint Bpp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Image 
+  Color Depth In Bits Per Pixel<br>
+  } glTexture; </font></p>
+<p><br>
+  <font size="+1" face="Arial, Helvetica, sans-serif"><strong>Binding The Loaded 
+  Texture</strong></font></p>
+<p><font face="Arial, Helvetica, sans-serif">When you have loaded all your textures, 
+  then you must tell openGL to bind the texture before you can use it (this is 
+  standard openGL programming) and nothing specific for the Texture Loader.</font></p>
+<p><font face="Arial, Helvetica, sans-serif">To Bind your texture, just pass it 
+  the TextureID field from the glTexture Structure..</font></p>
+<p><font face="Arial, Helvetica, sans-serif">eg..</font></p>
+<blockquote>
+  <p><font face="Courier New, Courier, mono">glBindTexture(GL_TEXTURE_2D, m_MyWallTexture.TextureID);</font></p>
+</blockquote>
+<p>&nbsp; </p>
+  <hr width="90%" noshade>
+<p align="left"><font size="+1" face="Arial, Helvetica, sans-serif"><strong>API</strong></font></p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif" align="left">Initialisation</font></p>
+<blockquote>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">You need to create 
+    an instance of the texture loader before it can be used (yeah I know.. teaching 
+    you to suck eggs). This can be done 2 ways by either by making a New class 
+    at run time</font></p>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">eg.. </font></p>
+  <blockquote>
+    <p align="left"><font face="Courier New, Courier, mono"> TextureLoader *pTextureLoader 
+      = <strong>new</strong> TextureLoader();</font></p>
+  </blockquote>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">or by defining the 
+    Texture Loader as a data/class variable as in your main Application/Game code 
+    header file.. </font></p>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">eg..</font></p>
+  <blockquote>
+    <p align="left"><font face="Courier New, Courier, mono"><strong>class</strong> 
+      MyClass<br>
+      </font><font face="Courier New, Courier, mono">{<br>
+      </font><font face="Courier New, Courier, mono">&nbsp;&nbsp;TextureLoader 
+      m_TextureLoader;<br>
+      }</font><font face="Courier New, Courier, mono">;</font></p>
+  </blockquote>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">The Texture Loader 
+    defaults to Alpha Matching BMP files with colour 0,0,0 (Black), High Quality 
+    Textures, Bilinear Filtering and Normal Texture Generation (as apposed to 
+    mipmap generation).</font></p>
+</blockquote>
+<p align="left">&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif" align="left">SetAlphaMatch</font></p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono"> SetAlphaMatch(GLboolean fEnabled,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    GLubyte &nbsp; RedAlphaMatch,</font><font face="Courier New, Courier, mono"><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    </font><font face="Courier New, Courier, mono">GLubyte &nbsp; GreenAlphaMatch, 
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    </font><font face="Courier New, Courier, mono"> GLubyte &nbsp; BlueAlphaMatch)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">When Bitmap (BMP) files are loaded, 
+    the Texture Loader can look though the image data at create a Alpha Mask based 
+    on a specified colour. This allows you to make a single colour Transparent 
+    in your image. (such as a sprite). TGA files can contain their own Alpha Mask 
+    so that is used instead of generating one based on the Match colour. Because 
+    of the dithering the JPG files have (plus the loss compression). Matching 
+    a precise colour with JPG is basically impossible so it is best (and faster) 
+    to disable Alpha Matching when you know that the file format is JPG.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This command should be given before 
+    the texture is loaded.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Default is for Alpha Matching 
+    to be enabled with the Colour being Black (0,0,0).</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>SetAlphaMatch</em> 
+    are;</font></p>
+  <table border="0">
+    <tr> 
+      <td width="181"><font face="Courier New, Courier, mono">fEnabled</font></td>
+      <td width="478"><font face="Arial, Helvetica, sans-serif">If <strong>TRUE</strong> 
+        then alpha matching is performed. If <strong>FALSE</strong> then it is 
+        not.</font></td>
+    </tr>
+    <tr> 
+      <td><font face="Courier New, Courier, mono">RedAlphaMatch</font></td>
+      <td><font face="Arial, Helvetica, sans-serif">Defines the Red Component 
+        of the Colour to Alpha Match against.</font></td>
+    </tr>
+    <tr> 
+      <td><font face="Courier New, Courier, mono">GreenAlphaMatch</font></td>
+      <td><font face="Arial, Helvetica, sans-serif">as above but for the Green 
+        Component.</font></td>
+    </tr>
+    <tr> 
+      <td><font face="Courier New, Courier, mono">BlueAlphaMatch</font></td>
+      <td><font face="Arial, Helvetica, sans-serif">as above but for the Blue 
+        Component</font></td>
+    </tr>
+  </table>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Set Alpha Matching to Bright 
+      Pink<br>
+      </font><font face="Courier New, Courier, mono">pTextureLoader-&gt;SetAlphaMatch(TRUE, 
+      0, 0xFF, 0xFF);</font></p>
+    </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">SetHighQualityTextures</font></p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono"> </font><font face="Courier New, Courier, mono">SetHighQualityTextures(GLboolean 
+    fEnabled)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This flag when set, will automatically 
+    scale each image in Half to reduce the Texture memory required in the video 
+    card by 4 for each texture. This allow for more textures to be stored on low 
+    spec systems. If is best to have an option for this in your applications settings 
+    to allow the use to turn it on or off depending on their machine.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This command should be given before 
+    the texture is loaded.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif"></font><font face="Arial, Helvetica, sans-serif">The 
+    Default is for High Quality Textures to be Enabled.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>SetHighQualityTextures</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">fEnabled</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">If <strong>TRUE</strong> 
+          then High Quality Textures will be created. If <strong>FALSE</strong> 
+          then each image is reduced in size.</font></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Generate Low-Quality Textures<br>
+      pTextureLoader-&gt;SetHighQualityTextures(FALSE);</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">SetMipMapping</font></p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono"> </font><font face="Courier New, Courier, mono">SetMipMapping(GLboolean 
+    fEnabled)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This flag when set, will create 
+    MipMaps instead of normal Textures. Mipmaps serve 2 purposes. They are used 
+    in Trilinear filtering to give much nicer detail to the texture aswell as 
+    defining multiple Textures for openGL to use depending on the distance of 
+    the texture from the view point (this making rendering faster)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Please note that Mip Map Generation 
+    is only looked at if the Filter type is set to Bilinear as Trilinear requires 
+    MipMaps anyway.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Default is for MipMapping Disabled.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This command should be given before 
+    the texture is loaded.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>SetMipMapping</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">fEnabled</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">If <strong>TRUE</strong> 
+          then MipMap Textures will be created. If <strong>FALSE</strong> then 
+          the default for the Filter type will be used.</font></td>
+      </tr>
+    </table>
+  </blockquote>
+</blockquote>
+<blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Generate MipMapped Textures<br>
+      pTextureLoader-&gt;SetMipMapping(TRUE);</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">SetTextureFilter</font></p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono">SetTextureFilter(eglTexFilterType 
+    type)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This allows you to specify the 
+    type of filtering to be used when openGL processes the Texture. There are 
+    3 types. No Filtering, Bilinear and Trilinear. </font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Bilinear and Trilinear Filtering 
+    looks a lot nicer but also requires (in the case of Trilinear) more processing 
+    time and more video ram on the graphics card.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Default is Bilinear Filtering.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This command should be given before 
+    the texture is loaded.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>SetTextureFilter</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr align="left" valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">eglTexFilterType</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Defines the filtering 
+            type to use. Valid values are; <strong>txNoFilter</strong>, <strong>txBilinear</strong> 
+            &amp; <strong>txTrilinear</strong>.</font></p></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Set Filter to Trilinear<br>
+      pTextureLoader-&gt;SetTextureFilter(txTrilinear);</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">LoadTextureFromDisk</font>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono">LoadTextureFromDisk(char &nbsp; &nbsp; 
+    &nbsp;*szFileName, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    &nbsp; &nbsp; &nbsp; glTexture *pglTexture)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Load a Texture (BMP, GIF, JPG or 
+    TGA) from either a physical hard disk or an Internet Stream. </font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This function looks at the extension 
+    of the file being loaded to make a decision as to which image decoder to use, 
+    so it must be correct and represent the actual format of the file.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">If you are loading from disk then 
+    the starting directory will be the same directory as which the application 
+    was run from.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>LoadTextureFromDisk</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">szFileName</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">File name (or Internet Address) 
+          to load the Image from. As mentioned above. the filename must also include 
+          an extension for this command to work.</font></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">pglTexture</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Pointer to a <strong>glTexture</strong> 
+            structure which will be populated on return with the Texture ID to 
+            use for openGL.</font></p></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example: (Loading from Disk)</font></p>
+</blockquote>
+<blockquote> 
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Load wall.tga from my Data directory<br>
+      </font><font face="Courier New, Courier, mono">glTexture m_MyWallTexture;<br>
+      </font><font face="Courier New, Courier, mono"> pTextureLoader-&gt;LoadTextureFromDisk(&quot;Data\\Wall.tga&quot;, 
+      &amp;m_MyWallTexture);</font></p>
+    <p> <font face="Arial, Helvetica, sans-serif">If your application resides 
+      in &quot;C:\Program Files\MyApp&quot; then the image is loaded from &quot;C:\Program 
+      Files\MyApp\Data\Wall.tga&quot;.</font></p>
+  </blockquote>
+  <p align="left"><font face="Arial, Helvetica, sans-serif">Example: (Loading 
+    from a Stream)</font></p>
+  <blockquote>
+    <p><font face="Courier New, Courier, mono">// Load the Logo from my website..<br>
+      </font><font face="Courier New, Courier, mono">glTexture m_MyLogoTexture;<br>
+      </font><font face="Courier New, Courier, mono"> pTextureLoader-&gt;LoadTextureFromDisk(&quot;http://mywebsite.com/logo.jpg&quot;, 
+      &amp;m_MyLogoTexture);</font></p>
+    <p><font face="Arial, Helvetica, sans-serif">of course you must have a internet 
+      connection present for the above to work.</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">LoadTextureFromRam</font> 
+</p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono">LoadTextureFromRam(unsigned char 
+    *pData,<br>
+    </font><font face="Courier New, Courier, mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    &nbsp;&nbsp; &nbsp; &nbsp; int &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Length, 
+    <br>
+    &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    glTexture &nbsp; &nbsp; *pglTexture, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 
+    &nbsp;&nbsp; &nbsp; eglTexType&nbsp; &nbsp; TexType)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Load a Texture (BMP, GIF, JPG or 
+    TGA) from a RAM Location. This is usefull when you have your own file storage 
+    system.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This function will create a temporary 
+    file in the current directory which is deleted after use.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>LoadTextureFromRam</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">pData</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">Pointer to a memory location 
+          which contains the Raw Binary data of an Image file.</font></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">Length</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">The Length of the Raw Binary 
+          data.</font></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">pglTexture</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Pointer to a <strong>glTexture</strong> 
+            structure which will be populated on return with the Texture ID to 
+            use for openGL.</font></p></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">eglTexType</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Defines the Image format 
+            type of the data pointed to by pData. Valid values are; <strong>txBmp</strong>, 
+            <strong>txGif</strong>, <strong> txJpg</strong> &amp; <strong>txTga</strong>. 
+            This must be of the correct type for this command to work.</font></p></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+</blockquote>
+<blockquote> 
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Load wall.gif from my ram location<br>
+      </font><font face="Courier New, Courier, mono">glTexture m_MyWallTexture;<br>
+      </font><font face="Courier New, Courier, mono"> pTextureLoader-&gt;LoadTextureFromRam(pMyImageData, 
+      imageDataSize, &amp;m_MyWallTexture, txGif);</font></p>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">LoadTextureFromResource</font></p>
+<blockquote> 
+  <p><font face="Courier New, Courier, mono">LoadTextureFromResource(unsigned 
+    int ResourceName,<br>
+    </font><font face="Courier New, Courier, mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    &nbsp;&nbsp; &nbsp; &nbsp; char&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;*pResourceType, 
+    <br>
+    &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    glTexture &nbsp; &nbsp;*pglTexture, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    &nbsp; &nbsp;&nbsp; &nbsp; eglTexType&nbsp; &nbsp;TexType)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Load a Texture (GIF, JPG or TGA) 
+    from a Resource (Visual Studio C++ Version 6). This is use full when you which 
+    to include images within your EXE and not have external files. Currently BMP 
+    files are not supported (due to a bug I'm trying to work around)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">This function will create a temporary 
+    file in the current directory which is deleted after use.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>LoadTextureFromResource 
+    </em>are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">ResourceName</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">The Resource ID as defined 
+          by you in Visual C++. (usually prefixed with IDR_)</font></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">pResourceType</font></td>
+        <td><font face="Arial, Helvetica, sans-serif">Pointer to the Name of the 
+          Resource Group to load the texture from. When importing 'Custom' resources 
+          into a VC Project it must go into a area defined by You. Pass the name 
+          of that area in this parameter.</font></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td><font face="Courier New, Courier, mono">pglTexture</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Pointer to a <strong>glTexture</strong> 
+            structure which will be populated on return with the Texture ID to 
+            use for openGL.</font></p></td>
+      </tr>
+      <tr align="left" valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">eglTexType</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Defines the Image format 
+            type of the data in the resource. Valid values are; <strong>txGif</strong>, 
+            <strong> txJpg</strong> &amp; <strong>txTga</strong>.</font><font face="Arial, Helvetica, sans-serif"> 
+            </font></p></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example:</font></p>
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Load my title image from the 
+      resources <br>
+      </font><font face="Courier New, Courier, mono">glTexture m_MyTitleLogoTexture;<br>
+      </font><font face="Courier New, Courier, mono"> pTextureLoader-&gt;LoadTextureFromResource(IDR_TITLE_LOGO,<br>
+      </font><font face="Courier New, Courier, mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp; &nbsp; &quot;IMAGES&quot;, <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp; &nbsp; &amp;m_MyTitleLogoTexture, <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      &nbsp; &nbsp;&nbsp; &nbsp; txTga);</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<p><font size="+1" face="Arial, Helvetica, sans-serif">FreeTexture</font> </p>
+<blockquote>
+<p><font face="Courier New, Courier, mono">FreeTexture(glTexture *pglTexture)</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">Frees a texture created with LoadTextureFrom.. 
+    and releases it from openGL. Should always be done when you application exits.</font></p>
+  <p><font face="Arial, Helvetica, sans-serif">The Parameters passed into <em>FreeTexture</em> 
+    are;</font></p>
+  <blockquote> 
+    <table border="0">
+      <tr align="left" valign="top"> 
+        <td width="181"><font face="Courier New, Courier, mono">pglTexture</font></td>
+        <td> <p><font face="Arial, Helvetica, sans-serif">Pointer to a <strong>glTexture</strong> 
+            structure which has the <strong><em>TextureID</em></strong></font><font face="Arial, Helvetica, sans-serif"> 
+            field populated with a call to one of the <em>LoadTextureFrom</em>.. 
+            functions.</font></p></td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><font face="Arial, Helvetica, sans-serif">Example: </font></p>
+</blockquote>
+<blockquote> 
+  <blockquote> 
+    <p><font face="Courier New, Courier, mono">// Free my Wall texture<br>
+      </font><font face="Courier New, Courier, mono">pTextureLoader-&gt;FreeTexture(&amp;m_MyWallTexture);</font></p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>
