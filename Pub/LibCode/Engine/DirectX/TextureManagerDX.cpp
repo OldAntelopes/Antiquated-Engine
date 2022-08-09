@@ -8,7 +8,7 @@
 #include <Rendering.h>
 #include <Interface.h>
 
-#include "../../Universal/GameCode/FrontEnd/Screens/FEVideoOptions.h"		// TEMP - for debug indicators
+//#include "../../Universal/GameCode/FrontEnd/Screens/FEVideoOptions.h"		// TEMP - for debug indicators
 
 #include "../LibCode/CodeUtil/Archive.h"
 #include "../LibCode/Interface/DirectX/InterfaceInternalsDX.h"
