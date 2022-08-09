@@ -8,3 +8,8 @@ It is not well designed, well implemented, well structured or well.. anything bu
 
 This project has mostly been created for the sake of posterity rather than any expectation of practical value.
 
+Overall structure of the repo
+-----------------------------
+The repo consists of two main blocks of code that reflect different coding periods:
+1) 'Pub' :
+2) Everything else : largely stems from a brief stint around 2016-2017 spent trying to form a set of generic C++ game components that could be used in new projects.
