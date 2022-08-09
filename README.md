@@ -26,7 +26,7 @@ Preconditions
 -------------
 
 - Put **[path_to_antiquated_repo]\Pub\Include**  somewhere in your include path otherwise nothing will compile.
-- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..)
+- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you'll probably have some work to do to use anything other than the V110 toolchain
 
 Disclaimer
 --------------
