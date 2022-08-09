@@ -58,19 +58,19 @@
     <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
-    <IntDir>.\..\..\Objs\BasicEngine\Debug\</IntDir>
+    <OutDir>..\Exe\</OutDir>
+    <IntDir>.\Objs\BasicEngine\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>02_BasicEngine-debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
-    <IntDir>.\..\..\Objs\BasicEngine\Release\</IntDir>
+    <OutDir>..\Exe\</OutDir>
+    <IntDir>.\Objs\BasicEngine\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>02_BasicEngine</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug GL|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
+    <OutDir>..\Exe\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)D-OGL</TargetName>
@@ -81,20 +81,20 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicEngine\Debug/02_BasicEngine.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Pub/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\..\Objs\BasicEngine\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\Objs\BasicEngine\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\Objs\BasicEngine\Debug/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicEngine\Debug/02_BasicEngine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\BasicEngine\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\BasicEngine\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\BasicEngine\Debug/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -104,13 +104,13 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;dxerr9.lib;zlibstat.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;odbc32.lib;odbccp32.lib;d3d9.lib;jpeglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\02_BasicEngine-debug.exe</OutputFile>
+      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;dxerr9.lib;zlib.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;odbc32.lib;odbccp32.lib;d3d9.lib;jpeglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\Exe\02_BasicEngine-debug.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;..\..\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine-debug.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicEngine\Debug/02_BasicEngine-debug.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -119,7 +119,7 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicEngine\Debug/02_BasicEngine.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,21 +128,21 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicEngine\Release/02_BasicEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicEngine\Release/02_BasicEngine.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Pub/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicEngine\Release/02_BasicEngine.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\..\Objs\BasicEngine\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\Objs\BasicEngine\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\Objs\BasicEngine\Release/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicEngine\Release/02_BasicEngine.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\BasicEngine\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\BasicEngine\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\BasicEngine\Release/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
@@ -151,12 +151,12 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;dxguid.lib;d3dx9.lib;d3d9.lib;d3dxof.lib;jpeglib.lib;zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\02_BasicEngine.exe</OutputFile>
+      <AdditionalDependencies>CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;dxguid.lib;d3dx9.lib;d3d9.lib;d3dxof.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\Exe\02_BasicEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;..\..\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicEngine\Release/02_BasicEngine.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicEngine\Release/02_BasicEngine.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -165,7 +165,7 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicEngine\Release/02_BasicEngine.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicEngine\Release/02_BasicEngine.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug GL|Win32'">
@@ -174,20 +174,20 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicEngine\Debug/02_BasicEngine.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Pub/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngineOGL.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\..\Objs\BasicEngine\DebugOGL/</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\Objs\BasicEngine\DebugOGL/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\Objs\BasicEngine\DebugOGL/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicEngine\Debug/02_BasicEngineOGL.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\BasicEngine\DebugOGL/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\BasicEngine\DebugOGL/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\BasicEngine\DebugOGL/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -198,12 +198,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;zlib.lib;libpng16d.lib;CodeUtilD.lib;EngineD-OGL.lib;InterfaceD-OGL.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\02_BasicEngineD-OGL.exe</OutputFile>
+      <OutputFile>..\Exe\02_BasicEngineD-OGL.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngineOGL-debug.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicEngine\Debug/02_BasicEngineOGL-debug.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -212,27 +212,27 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicEngine\Debug/02_BasicEngine.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicEngine\Debug/02_BasicEngine.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\CodeUtil.h" />
-    <ClInclude Include="..\..\Include\Engine.h" />
-    <ClInclude Include="..\..\Include\EngineMaths.h" />
-    <ClInclude Include="..\..\Include\Interface.h" />
-    <ClInclude Include="..\..\Include\Rendering.h" />
-    <ClInclude Include="..\..\Include\StandardDef.h" />
-    <ClInclude Include="..\..\Include\StdWinInclude.h" />
-    <ClInclude Include="..\..\Include\System.h" />
-    <ClInclude Include="..\..\Samples\02_BasicEngine\Model.h" />
-    <ClInclude Include="..\..\Samples\02_BasicEngine\OSD.h" />
-    <ClInclude Include="..\..\Samples\02_BasicEngine\Scene.h" />
+    <ClInclude Include="..\Pub\Include\CodeUtil.h" />
+    <ClInclude Include="..\Pub\Include\Engine.h" />
+    <ClInclude Include="..\Pub\Include\EngineMaths.h" />
+    <ClInclude Include="..\Pub\Include\Interface.h" />
+    <ClInclude Include="..\Pub\Include\Rendering.h" />
+    <ClInclude Include="..\Pub\Include\StandardDef.h" />
+    <ClInclude Include="..\Pub\Include\StdWinInclude.h" />
+    <ClInclude Include="..\Pub\Include\System.h" />
+    <ClInclude Include="02_BasicEngine\Model.h" />
+    <ClInclude Include="02_BasicEngine\OSD.h" />
+    <ClInclude Include="02_BasicEngine\Scene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Samples\02_BasicEngine\main.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\Model.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\OSD.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\Scene.cpp" />
+    <ClCompile Include="02_BasicEngine\main.cpp" />
+    <ClCompile Include="02_BasicEngine\Model.cpp" />
+    <ClCompile Include="02_BasicEngine\OSD.cpp" />
+    <ClCompile Include="02_BasicEngine\Scene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

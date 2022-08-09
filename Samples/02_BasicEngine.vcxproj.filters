@@ -6,38 +6,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\CodeUtil.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Engine.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\EngineMaths.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Rendering.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StandardDef.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StdWinInclude.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\System.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Samples\02_BasicEngine\Model.h" />
-    <ClInclude Include="..\..\Samples\02_BasicEngine\OSD.h" />
-    <ClInclude Include="..\..\Samples\02_BasicEngine\Scene.h" />
+    <ClInclude Include="..\Pub\Include\CodeUtil.h" />
+    <ClInclude Include="..\Pub\Include\Engine.h" />
+    <ClInclude Include="..\Pub\Include\EngineMaths.h" />
+    <ClInclude Include="..\Pub\Include\Interface.h" />
+    <ClInclude Include="..\Pub\Include\Rendering.h" />
+    <ClInclude Include="..\Pub\Include\StandardDef.h" />
+    <ClInclude Include="..\Pub\Include\StdWinInclude.h" />
+    <ClInclude Include="..\Pub\Include\System.h" />
+    <ClInclude Include="02_BasicEngine\Model.h" />
+    <ClInclude Include="02_BasicEngine\OSD.h" />
+    <ClInclude Include="02_BasicEngine\Scene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Samples\02_BasicEngine\main.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\Model.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\OSD.cpp" />
-    <ClCompile Include="..\..\Samples\02_BasicEngine\Scene.cpp" />
+    <ClCompile Include="02_BasicEngine\main.cpp" />
+    <ClCompile Include="02_BasicEngine\Model.cpp" />
+    <ClCompile Include="02_BasicEngine\OSD.cpp" />
+    <ClCompile Include="02_BasicEngine\Scene.cpp" />
   </ItemGroup>
 </Project>

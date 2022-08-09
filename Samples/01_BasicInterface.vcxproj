@@ -58,19 +58,19 @@
     <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
-    <IntDir>.\..\..\Objs\BasicInterface\Release\</IntDir>
+    <OutDir>..\Exe\</OutDir>
+    <IntDir>.\Objs\BasicInterface\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>01_BasicInterface</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
-    <IntDir>.\..\..\Objs\BasicInterface\Debug\</IntDir>
+    <OutDir>..\Exe\</OutDir>
+    <IntDir>.\Objs\BasicInterface\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>01_BasicInterface-debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug GL|Win32'">
-    <OutDir>..\..\Exe\</OutDir>
+    <OutDir>..\Exe\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)D-OGL</TargetName>
@@ -81,7 +81,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicInterface\Release/01_BasicInterface.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicInterface\Release/01_BasicInterface.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
@@ -92,10 +92,10 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicInterface\Release/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\..\Objs\BasicInterface\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\Objs\BasicInterface\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\Objs\BasicInterface\Release/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicInterface\Release/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\BasicInterface\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\BasicInterface\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\BasicInterface\Release/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
@@ -105,11 +105,11 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;d3dx9.lib;d3d9.lib;jpeglib.lib;zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\01_BasicInterface.exe</OutputFile>
+      <OutputFile>..\Exe\01_BasicInterface.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;..\..\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicInterface\Release/01_BasicInterface.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicInterface\Release/01_BasicInterface.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -118,7 +118,7 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicInterface\Release/01_BasicInterface.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicInterface\Release/01_BasicInterface.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">
@@ -127,20 +127,20 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicInterface\Debug/01_BasicInterface.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Pub\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\..\Objs\BasicInterface\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\Objs\BasicInterface\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\Objs\BasicInterface\Debug/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicInterface\Debug/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Objs\BasicInterface\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Objs\BasicInterface\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Objs\BasicInterface\Debug/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -150,13 +150,13 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;odbc32.lib;odbccp32.lib;d3dx9.lib;d3d9.lib;dxerr9.lib;jpeglib.lib;zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\01_BasicInterface-debug.exe</OutputFile>
+      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;odbc32.lib;odbccp32.lib;d3dx9.lib;d3d9.lib;dxerr9.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\Exe\01_BasicInterface-debug.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;..\..\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface-debug.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicInterface\Debug/01_BasicInterface-debug.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -165,7 +165,7 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicInterface\Debug/01_BasicInterface.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug GL|Win32'">
@@ -174,17 +174,17 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Objs\BasicInterface\Debug/01_BasicInterface.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Pub/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Objs\BasicInterface\Debug/01_BasicInterface.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>$(Configuration)\$(ProjectName)\</AssemblerListingLocation>
       <ObjectFileName>$(Configuration)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(Configuration)\$(ProjectName)\</ProgramDataBaseFileName>
@@ -198,11 +198,11 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;jpeglib.lib;libpng16d.lib;zlib.lib;InterfaceD-OGL.lib;CodeUtilD.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Exe\01_BasicInterfaceD-OGL.exe</OutputFile>
+      <OutputFile>..\Exe\01_BasicInterfaceD-OGL.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\Libs\;..\..\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface-debug.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Objs\BasicInterface\Debug/01_BasicInterface-debug.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -211,20 +211,20 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\Objs\BasicInterface\Debug/01_BasicInterface.bsc</OutputFile>
+      <OutputFile>.\Objs\BasicInterface\Debug/01_BasicInterface.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\CodeUtil.h" />
-    <ClInclude Include="..\..\Include\Interface.h" />
-    <ClInclude Include="..\..\Include\StandardDef.h" />
-    <ClInclude Include="..\..\Include\StdWinInclude.h" />
-    <ClInclude Include="..\..\Include\System.h" />
-    <ClInclude Include="..\..\Samples\01_BasicInterface\OSD.h" />
+    <ClInclude Include="..\Pub\Include\CodeUtil.h" />
+    <ClInclude Include="..\Pub\Include\Interface.h" />
+    <ClInclude Include="..\Pub\Include\StandardDef.h" />
+    <ClInclude Include="..\Pub\Include\StdWinInclude.h" />
+    <ClInclude Include="..\Pub\Include\System.h" />
+    <ClInclude Include="01_BasicInterface\OSD.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Samples\01_BasicInterface\main.cpp" />
-    <ClCompile Include="..\..\Samples\01_BasicInterface\OSD.cpp" />
+    <ClCompile Include="01_BasicInterface\main.cpp" />
+    <ClCompile Include="01_BasicInterface\OSD.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,25 +6,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\CodeUtil.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StandardDef.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StdWinInclude.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\System.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Samples\01_BasicInterface\OSD.h" />
+    <ClInclude Include="..\Pub\Include\CodeUtil.h" />
+    <ClInclude Include="..\Pub\Include\Interface.h" />
+    <ClInclude Include="..\Pub\Include\StandardDef.h" />
+    <ClInclude Include="..\Pub\Include\StdWinInclude.h" />
+    <ClInclude Include="..\Pub\Include\System.h" />
+    <ClInclude Include="01_BasicInterface\OSD.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Samples\01_BasicInterface\main.cpp" />
-    <ClCompile Include="..\..\Samples\01_BasicInterface\OSD.cpp" />
+    <ClCompile Include="01_BasicInterface\main.cpp" />
+    <ClCompile Include="01_BasicInterface\OSD.cpp" />
   </ItemGroup>
 </Project>
