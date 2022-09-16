@@ -1,8 +1,3 @@
-
-// ---- todo - this file should really be called UserLoginClient has it handles the communication
-//   between client and UserLoginService
-//  (tho also contains some useful more generic functions like 'WebServerDecrypt')
-
 #include <stdio.h>
 #include "StandardDef.h"
 #include "Interface.h"
@@ -181,8 +176,7 @@ void		UserLoginClientGetSteamSessionResponseHandler( int nResponseCode, unsigned
 		mpcSessionKey = (char*)( SystemMalloc( strlen(pcMySessionKey) + 1 ) );
 		strcpy( mpcSessionKey, pcMySessionKey );
 
-		// TEMP! Contents of ticket response should be encrypted
-		// (and possibly not just sent here as its not exactly scalable)
+		// TEMP! Contents of ticket response should be encrypted (and possibly not just sent here as its not exactly scalable)
 		pItem = cJSON_GetObjectItem( pJSONRoot, "TICKETSV1" );
 		if ( pItem )
 		{
@@ -574,6 +568,7 @@ int		nSalt1 = ( rand() << 16 ) | ( rand() );
 	msUserLoginClientLoginState = LOGIN_IN_PROGRESS;
 
 #ifdef LOGIN_WITH_DEV_FLAG_SET
+	// Dirty testing hack that won't work for long :)
 	sprintf( acLoginURL, "%s/SteamLogin?dflag=f1gp8tr", mszLoginServerBaseURL );
 #else
 	sprintf( acLoginURL, "%s/SteamLogin", mszLoginServerBaseURL );
@@ -601,7 +596,8 @@ int		nSalt1 = ( rand() << 16 ) | ( rand() );
 
 	msUserLoginClientLoginState = LOGIN_IN_PROGRESS;
 
-#ifdef LOGIN_WITH_DEV_FLAG_SET
+#ifdef LOGIN_WITH_DEV_FLAG_SET   
+	// Dirty testing hack that won't work for long :)
 	sprintf( acLoginURL, "%s/login?dflag=f1gp8tr", mszLoginServerBaseURL );
 #else
 	sprintf( acLoginURL, "%s/login", mszLoginServerBaseURL );
@@ -613,7 +609,6 @@ int		nSalt1 = ( rand() << 16 ) | ( rand() );
 
 void		UserLoginClientUpdate( float fDelta )
 {
-	// todo
 
 }
 
@@ -671,7 +666,7 @@ int		nContentLength;
 int		nSalt1 = (rand() << 16) | (rand() );
 
 	memset( acBuff, 0, 512 );
-	// todo
+
 	sprintf( acBuff, "%08xlogin=%s&pass=%s&name=%s", nSalt1, szLoginEmail, szPassword, szUsername );
 	nContentLength = strlen( acBuff ) + 1;
 
@@ -686,7 +681,42 @@ int		nSalt1 = (rand() << 16) | (rand() );
 	
 }
 
+const char*		UserLoginClientNewUserGetEmail( void )
+{
+	return( UITextBoxGetText( mhNewUserLoginEmailTextbox ) );
+}
+
+const char*		UserLoginClientNewUserGetPassword( void )
+{
+	return( UITextBoxGetText( mhNewUserPasswordTextbox ) );
+}
+
+BOOL				UserLoginClientHasTicket( ulong ulProductID )
+{
+	// TEMP - TRUE if the user got any form of TICKET response 
+	if ( mpcTicketResponse )
+	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+
+BOOL				UserLoginClientNewUserCreated( void )
+{
+	if ( mnNewUserLoginStage == NEWUSER_VALID_RESPONSE )
+	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+
 #ifndef NODISPLAY
+
+//-----------------------------------------------------------------------------------------------
+//  Display functions 
+//  coz mixing models and views is fun after midnight
 
 void	UserLoginClientNewUserDialogButtonHandler( int nButtonID, ulong ulParam )
 {
@@ -799,37 +829,6 @@ int		nTextOffsetY = (nButtonH / 2) - 11;
 	UIButtonDraw( UIRESERVEDBUTTONID_USERLOGINCLIENT_NEWUSER, X + 50, nLineY, W - 100, nButtonH, "CREATE ACCOUNT", 0, 0 );
 }
 
-const char*		UserLoginClientNewUserGetEmail( void )
-{
-	return( UITextBoxGetText( mhNewUserLoginEmailTextbox ) );
-}
-
-const char*		UserLoginClientNewUserGetPassword( void )
-{
-	return( UITextBoxGetText( mhNewUserPasswordTextbox ) );
-}
-
-BOOL				UserLoginClientHasTicket( ulong ulProductID )
-{
-	// TODO
-	// TEMP - FOR TESTING!! - If the user got any form of TICKET
-	// response we'll say they are a member for now.
-	if ( mpcTicketResponse )
-	{
-		return( TRUE );
-	}
-	return( FALSE );
-}
-
-
-BOOL				UserLoginClientNewUserCreated( void )
-{
-	if ( mnNewUserLoginStage == NEWUSER_VALID_RESPONSE )
-	{
-		return( TRUE );
-	}
-	return( FALSE );
-}
 
 
 void		UserLoginClientNewUserDialogRender( int X, int Y, int W, int H )
