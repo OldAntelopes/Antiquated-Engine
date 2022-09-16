@@ -25,7 +25,7 @@ In addition to the 2 sets of framework code there is:
 Preconditions
 -------------
 
-- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you'll probably have some work to do to use anything other than the V120 toolchain
+- I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you may have some work to do to use anything other than the V120 toolchain
 - Executables will get placed in the Exe folder which contains some required dlls and data files. When debugging you'll need to set your working directory there for things to be happy.
 - If you were to try to use any parts of this in an external project, you'd need to put **[path_to_antiquated_repo]\Pub\Include**  somewhere in your project's include path to keep things happy.
 
@@ -33,7 +33,7 @@ Disclaimer
 --------------
 There's a bit in the MIT license about this all being provided AS IS and don't blame me for any of it. This **really** applies here. Even looking at this stuff is probably bad for your eyes, don't do it.
 
-Do not hold me to account for terrible coding practices contained within. Most of the stuff here was made purely for fun and never intended to be made public.  Some of it was written really really late at night and in places I've broken every good practice or sensible coding rule. There is much stuff that was done as a necessity for maintaining a lil indie game that ran publicly for 15 odd years with rarely more than 1 part-time coder involved, but which shouldn't have been done that way then, and absolutely shouldn't be done that way now.
+Do not hold me to account for terrible coding practices contained within. Most of the stuff here was made purely for fun and never intended to be made public. Some of it was written rapidly really really late at night and in places I've broken every good practice or sensible coding rule. There is much stuff that was done as a necessity for maintaining a lil indie game that ran publicly for 15 odd years with rarely more than 1 very part-time coder involved, but which shouldn't have been done that way then, and absolutely shouldn't be done that way now.
 
 It is not actively maintained. Most of it doesnt work. Those bits that do work are pretty much useless, and in every case there's alternative, modern and better ways of doing stuff than repeating whats done here. 
 
