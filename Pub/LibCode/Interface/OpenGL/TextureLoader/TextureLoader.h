@@ -2,7 +2,7 @@
 #define _TEXTURE_LOADER_H_
 
 #include <windows.h>	
-#include <glew.h>
+#include "gl/glew.h"
 // Header File For Windows
 #include <gl\gl.h>											// Header File For The OpenGL32 Library
 #include <gl\glu.h>											// Header File For The GLu32 Library

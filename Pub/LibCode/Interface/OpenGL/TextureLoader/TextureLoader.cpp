@@ -41,7 +41,7 @@
 
 #include <StandardDef.h>
 #include <Interface.h>
-#include <png.h>
+#include "png/png.h"
 
 // Constructor
 //

@@ -280,6 +280,12 @@ typedef enum
 
 extern INTERFACE_API void	InterfaceSetGlobalParam( INTF_DRAW_PARAM nParam, int nState );
 
+/**********************************************************
+ ***** Canvas						                *******
+ *****  (never really pursued this yet)			    *******
+ **********************************************************/
+
+extern void		CanvasText( int nLayer, float fX, float fY, const char* szText, ulong ulCol, int nFont = 0, float fMaxWidth = 0.0f, float fScale = 1.0f );
 
 /**********************************************************
  ***** Odds n ends					                *******

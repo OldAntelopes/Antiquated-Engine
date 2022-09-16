@@ -2,8 +2,8 @@
 #ifdef USING_OPENGL
 	
 #include <windows.h>				// For OpenGL
-#include <glew.h>
-#include <gl/gl.h>
+#include "gl/glew.h"
+#include "gl/gl.h"
 #include "../InterfaceInternalsGL.h"
 
 #include <StandardDef.h>

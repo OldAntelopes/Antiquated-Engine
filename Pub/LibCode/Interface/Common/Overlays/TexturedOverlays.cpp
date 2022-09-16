@@ -2,9 +2,9 @@
 
 #ifdef USING_OPENGL
 #include <windows.h>					// For OpenGL
-#include <glew.h>
 
-#include <gl/gl.h>
+#include "gl/glew.h"
+#include "gl/gl.h"
 #include "../../OpenGL/InterfaceInternalsGL.h"
 #include "../../OpenGL/VertexBufferGL.h"
 #include "../../OpenGL/TextureLoader/InterfaceTextureManager.h"

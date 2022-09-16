@@ -2,8 +2,6 @@
 #include "StandardDef.h"
 #include "Interface.h"
 
-#include "Canvas.h"
-
 const char*		CanvasTextGetTag( const char* pcRunner, char* pcTagOut )
 {
 int		nCount = 0;
