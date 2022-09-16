@@ -4,7 +4,7 @@
 #ifdef TUD11
 #include <d3d11.h>
 #else
-#include <d3dx9.h>
+#include "../../../Include/DirectX/d3dx9.h"
 #endif
 
 #ifdef __cplusplus

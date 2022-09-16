@@ -5,7 +5,7 @@
 //
 //---------------------------------------------------------------
 #include "EngineDX.h"
-#include <d3dx9shader.h>
+#include "../../../Include/DirectX/d3dx9shader.h"
 
 #include <StandardDef.h>
 #include <Rendering.h>
