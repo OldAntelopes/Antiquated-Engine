@@ -17,8 +17,7 @@ enum
 
 //#define HTTP_POST_LOGGING
 
-
-HTTPDownloadDetails		maHTTPDownloadDetails[MAX_HTTP_DOWNLOADS];
+HTTPDownloadDetails		maHTTPDownloadDetails[MAX_HTTP_DOWNLOADS];		// Ahh, the old days
 unsigned int			mhHTTPDownloadThread = NOTFOUND;
 volatile BOOL			mbHTTPDownloadJobPending = FALSE;
 HTTPDownloadDetails*	mpxHTTPDownloadNextJob = NULL;
@@ -144,16 +143,12 @@ int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHa
 			pxNewDetails->pcPostFields = (char*)( SystemMalloc( nBodyLen + 1 ) );
 			memcpy( pxNewDetails->pcPostFields, pbBody, nBodyLen );
 			pxNewDetails->pcPostFields[nBodyLen] = 0;
-
-	//		pxNewDetails->bIgnoreCache = bIgnoreCache;
-
-	//		HTTPValidateString( pxNewDetails->acFullURL );
-	//		hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)HTTPDownloadNewThread,(LPVOID)(pxNewDetails),0,&iID);
 		}
 		else
 		{
-			// TODO Will need to fail and callback elegantly here..
+			// TODO Will need to fail and callback elegantly here..?
 			// (Tho this shouldnt really ever happen anyway..)
+			SysUserPrint( 0, "ERROR: HTTP Post failed - couldn't get new details" );
 		}
 	}
 	else
@@ -186,16 +181,11 @@ int		HTTPGetFile( const char *acFullURL, const char* szLocalFilename, HTTPRespon
 			pxNewDetails->pbResponseBuffer = NULL;
 			pxNewDetails->nResponseBufferSize = 0;
 			strcpy( pxNewDetails->acLocalFilename, szLocalFilename );
-			pxNewDetails->pcPostFields = NULL;
-		
-	//		pxNewDetails->bIgnoreCache = bIgnoreCache;
-
-	//		HTTPValidateString( pxNewDetails->acFullURL );
-	//		hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)HTTPDownloadNewThread,(LPVOID)(pxNewDetails),0,&iID);
+			pxNewDetails->pcPostFields = NULL;	
 		}
 		else
 		{
-			// TODO Will need to fail and callback elegantly here..
+			// TODO Will need to fail and callback elegantly here.. ?
 			// (Tho this shouldnt really ever happen anyway..)
 			SysUserPrint( 0, "ERROR: HTTP GET failed - couldn't get new details" );
 		}
@@ -269,13 +259,10 @@ void	HTTPResetDownloadDetails( HTTPDownloadDetails*	pxDownloadDetails )
 }
 
 //------------------------------------------------------------------------------------
-
-// todo HTTPUpdate to trigger callbacks on all downloads in 
-// HTTP_DOWNLOAD_COMPLETED state
-//  then free up allocated data within the details
-//  and set back to HTTP_DOWNLOAD_STATE_NONE
-
 //-  HTTPUpdate ---------- Must be called regularly to receive callbacks
+//   (When a download gets to HTTP_DOWNLOAD_COMPLETED state, this frees up allocated data within the details
+//  and set back to HTTP_DOWNLOAD_STATE_NONE
+//----------------------------------------------------------------
 void		HTTPUpdate( float fDelta )
 {
 	if ( mnHTTPNumDownloadsInProgress > 0 )
