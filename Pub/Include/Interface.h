@@ -26,15 +26,16 @@ typedef unsigned int			uint;
  **********************************************
  **                                          **
  **	This library includes all the basic      **
- ** initialisation calls to create and render**
- ** to a graphics window.					 **
+ ** initialisation calls to create and		 **
+ ** render to a graphics window in the early **
+ ** 21st century.							 **
  **											 **
- ** It also includes a number of 2d drawing  **
+ ** It includes 2d drawing					 **
  ** functions for the rendering of text,     **
  ** untextured rectangles, and textured		 **
- ** rectangles & triangles				     **
+ ** rectangles & triangles and etc		     **
  **											 **
- **  Made by Mit : 2000 - 2010				 **
+ **  Made by Mit : 2000 - 2010 ish			 **
  **		           http://theuniversal.net	 **
  **********************************************/
 
@@ -228,7 +229,7 @@ extern INTERFACE_API void InterfaceGetInitialScreenSize( int*, int* );
 extern INTERFACE_API void InterfaceSetInitialSmall( BOOL );
 
 extern INTERFACE_API float	InterfaceGetFPS( void );
-extern INTERFACE_API void		InterfaceSetMaximumFrontBufferWidth( int nMaxWidth );
+extern INTERFACE_API void	InterfaceSetMaximumFrontBufferWidth( int nMaxWidth );
 
 
 extern INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle );
@@ -285,7 +286,9 @@ extern INTERFACE_API void	InterfaceSetGlobalParam( INTF_DRAW_PARAM nParam, int n
  *****  (never really pursued this yet)			    *******
  **********************************************************/
 
+#ifdef __cplusplus
 extern void		CanvasText( int nLayer, float fX, float fY, const char* szText, ulong ulCol, int nFont = 0, float fMaxWidth = 0.0f, float fScale = 1.0f );
+#endif
 
 /**********************************************************
  ***** Odds n ends					                *******
@@ -313,11 +316,10 @@ extern void	InterfaceSetDrawCallback( InterfaceDrawCallback fnOnDrawCallback );
 
 //-----------------------------------------------------
 //-----------------------------------------------------
-//-----   Legacy Stuff
+//-----   Legacy / Deprecated Stuff
 //
 //
-// The things below are either gonna be changed or removed
-// in future updates of this lib.
+// The things below should probably be changed or removed 
 // ----------------------------------------------------
 
 
@@ -520,14 +522,10 @@ enum // Preset colour enums for font draw
  ** You are welcome to distribute, use,      **
  ** abuse, tinker with, criticise, point &   **
  ** laugh at anything to do with this        **
- ** library. It'd be nice if the URL         **
- ** was left around somewhere tho :)         **
+ ** library. 
  **                                          **
  ** Feedback, comments, etc etc to..         **
- **          mit2@gameislands.net            **
- **  or on the forums at..				     **
- **											 **
- **    http://theuniversal.net				 **
+ **   OldAntelopes on github				 **
  **                                          **
  **********************************************
 */

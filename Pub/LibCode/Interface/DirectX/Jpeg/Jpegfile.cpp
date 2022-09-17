@@ -33,7 +33,7 @@ extern "C"
 	extern "C" {
 #endif // __cplusplus
 
-#include "jpeglib.h"
+#include "jpg/jpeglib.h"
 
 #ifdef __cplusplus
 	}

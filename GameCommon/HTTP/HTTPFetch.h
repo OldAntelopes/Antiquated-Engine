@@ -1,6 +1,9 @@
 #ifndef HTTP_FETCH_H
 #define HTTP_FETCH_H
 
+//----------------------------------------------------------------------------
+//  Internal http fetch process used by the external functions defined in HTTP.h
+//-----------------------------------------------------
 
 class HTTPDownloadDetails
 {
@@ -24,7 +27,8 @@ public:
 	}
 
 	HTTPResponseHandler				fnResponseCallback;
-//	HTTPDownloadUpdateCallback			fnUpdateCallback;
+//	HTTPDownloadUpdateCallback		fnUpdateCallback;
+
 	char		acLocalFilename[256];
 	char*		pcFullURL;
 	char*		pcPostFields;

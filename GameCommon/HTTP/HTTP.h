@@ -14,6 +14,8 @@ extern int		HTTPGet( const char *acFullURL, HTTPResponseHandler fnResponseHandle
 extern int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam );
 
 
+//-----------------------------------------------
+
 void		HTTPInitialise( void );
 
 //-  HTTPUpdate ---------- Must be called regularly to receive callbacks
