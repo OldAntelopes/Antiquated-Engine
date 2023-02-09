@@ -466,9 +466,10 @@ ENGINE_LIGHT	xLight;
 		VectNormalize( &xLight.Direction );
 		EngineActivateLight( 0, &xLight );
 
-		light.Diffuse.r = 0.2f;
-		light.Diffuse.g = 0.2f;
-		light.Diffuse.b = 0.2f;
+		// Small amount of directional/diffuse light in roughly the opposite direction
+		light.Diffuse.r = 0.4f;
+		light.Diffuse.g = 0.4f;
+		light.Diffuse.b = 0.4f;
 		light.Ambient.r = 0.0f;
 		light.Ambient.g = 0.0f;
 		light.Ambient.b = 0.0f;
@@ -1301,6 +1302,75 @@ int		nScreenX, nScreenY;
 	InterfaceText( 0, nScreenX - 5, nScreenY - 15, "Z", 0xD04040A0, 0 );
 }
 
+
+void		ModelConverterKeyControlsUpdate( ulong ulTick )
+{
+float		fDelta = ((float)ulTick) / 1000.0f;
+float		fMoveAmount = 1.0f;
+VECT		xCamDir = *EngineCameraGetDirection();
+VECT		xCamUp = *EngineCameraGetUpVect();
+VECT		xCamRight;
+VECT		xMove;
+float		fMinDist;
+
+	VectNormalize( &xCamDir );
+	VectNormalize( &xCamUp );
+	VectCross( &xCamRight, &xCamUp, &xCamDir );
+
+	if ( SysCheckKeyState( KEY_SHIFT ) == TRUE )
+	{
+		fMoveAmount = 3.0f;
+	}
+	fMinDist = 3.0f + (fDelta * fMoveAmount);
+	
+	if ( SysCheckKeyState( KEY_WASD_UP ) == TRUE )
+	{
+		if ( mfCamDist > fMinDist )
+		{
+			mfCamDist -= fDelta * fMoveAmount;
+		}
+		else
+		{
+			VectScale( &xMove, &xCamDir, fDelta * fMoveAmount );
+			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+		}
+	}
+	else if ( SysCheckKeyState( KEY_WASD_DOWN ) == TRUE )
+	{
+		if ( mfCamDist < 15.0f )
+		{
+			mfCamDist += fDelta * fMoveAmount;
+		}
+		else
+		{
+			VectScale( &xMove, &xCamDir, fDelta * fMoveAmount * -1.0f );
+			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+		}
+	}
+
+	if ( SysCheckKeyState( KEY_WASD_LEFT ) == TRUE )
+	{
+		VectScale( &xMove, &xCamRight, fDelta * fMoveAmount * -1.0f );
+		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+	}
+	else if ( SysCheckKeyState( KEY_WASD_RIGHT ) == TRUE )
+	{
+		VectScale( &xMove, &xCamRight, fDelta * fMoveAmount );
+		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+	}
+
+	if ( SysCheckKeyState( KEY_WASD_ACTION1 ) == TRUE )
+	{
+		VectScale( &xMove, &xCamUp, fDelta * fMoveAmount );
+		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+	}
+	else if ( SysCheckKeyState( KEY_WASD_ACTION2 ) == TRUE )
+	{
+		VectScale( &xMove, &xCamUp, fDelta * fMoveAmount * -1.0f );
+		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+	}
+}
+
 /***************************************************************************
  * Function    : ModelConverterDisplayFrame
  * Params      :
@@ -1327,8 +1397,10 @@ float	fDelta;
 		m_MainSceneObject.OnModelChanged( FALSE );
 	}
 
+	
 	ulTickGap = GetTickCount()-gulLastTick;
 	if ( ulTickGap > 100 ) ulTickGap = 100;
+	ModelConverterKeyControlsUpdate( ulTickGap );
 	ModelRenderingUpdate( ulTickGap / 10 );
 	ModelConvUpdated3dPointerCoord();
 	EngineUpdate(TRUE);
@@ -1848,6 +1920,22 @@ void	ModelConvLeftMouseUp( int mouseX, int mouseY )
 }
 
 
+void	ModelConvFocusCameraOnObject( int nHandle )
+{
+MODEL_RENDER_DATA*		pxModelData;
+float		fCamDist = 1.0f;
+
+	pxModelData = &maxModelRenderData[ nHandle ];
+
+	mxCamFocus = pxModelData->xStats.xBoundBoxCentre;
+
+	fCamDist = pxModelData->xStats.fBoundSphereRadius * 1.5f;
+	mfCamDist = fCamDist;
+
+	mfViewAngleVert = A30;
+	mfViewAngleHoriz = 0.0f;
+	ModelConverterSetupCamera();
+}
 
 /***************************************************************************
  * Function    : ModelConverterOpenDialog
@@ -1894,6 +1982,10 @@ char	acString[256];
 //		sprintf( acString, "   Filesize data : %dkbytes geometry, %dkbytes animation, %d kbytes textures, %d kbytes model data" .. );
 		
 		ModelConvTextAdd( acString );
+		if ( nSubModelNum == kMAIN )
+		{
+			ModelConvFocusCameraOnObject( nHandle );
+		}
 
 		ModelConverterDisplayFrame(FALSE);
 

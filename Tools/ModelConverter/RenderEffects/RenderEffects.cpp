@@ -2,7 +2,7 @@
 #include "StandardDef.h"
 #include "Engine.h"
 
-#include "../../../../GameCommon/RenderUtil/Sprites3d.h"
+#include "../../../GameCommon/RenderUtil/Sprites3d.h"
 #include "RenderEffects.h"
 
 int		mshRenderEffectsSmokeTexture = NOTFOUND;

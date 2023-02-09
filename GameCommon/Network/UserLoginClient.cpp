@@ -681,16 +681,6 @@ int		nSalt1 = (rand() << 16) | (rand() );
 	
 }
 
-const char*		UserLoginClientNewUserGetEmail( void )
-{
-	return( UITextBoxGetText( mhNewUserLoginEmailTextbox ) );
-}
-
-const char*		UserLoginClientNewUserGetPassword( void )
-{
-	return( UITextBoxGetText( mhNewUserPasswordTextbox ) );
-}
-
 BOOL				UserLoginClientHasTicket( ulong ulProductID )
 {
 	// TEMP - TRUE if the user got any form of TICKET response 
@@ -717,6 +707,15 @@ BOOL				UserLoginClientNewUserCreated( void )
 //-----------------------------------------------------------------------------------------------
 //  Display functions 
 //  coz mixing models and views is fun after midnight
+const char*		UserLoginClientNewUserGetEmail( void )
+{
+	return( UITextBoxGetText( mhNewUserLoginEmailTextbox ) );
+}
+
+const char*		UserLoginClientNewUserGetPassword( void )
+{
+	return( UITextBoxGetText( mhNewUserPasswordTextbox ) );
+}
 
 void	UserLoginClientNewUserDialogButtonHandler( int nButtonID, ulong ulParam )
 {
