@@ -330,6 +330,20 @@ ulong	ulResult;
 }
 
 
+int	 RandInt( int nMin, int nMax )		// returns a random int between min and max inclusive
+{
+
+	if ( nMax <= nMin )
+	{
+		return( nMin );
+	}
+	else
+	{
+	int	val;
+		val = (rand() % ((nMax-nMin)+1)) + nMin;
+		return( val );
+	}
+}
 
 float	FRand( float fLow, float fHigh )
 {

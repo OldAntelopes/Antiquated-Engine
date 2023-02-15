@@ -98,7 +98,7 @@ extern unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, fl
 #define	frand()		FRand()
 
 extern float FRand( float, float );
-
+extern int	 RandInt( int, int );
 
 
 

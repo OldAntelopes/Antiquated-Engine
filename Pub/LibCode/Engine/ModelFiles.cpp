@@ -2121,7 +2121,7 @@ short	wResult;
 			pxFileHeader->bCompressedFlag = 1;
 			pxFileHeader->ulUncompressedSize = nFileSize - sizeof( ATM_FILE_HEADER );
 			pFile = SysFileOpen( szFilename, "wb" );
-
+			 
 			// if the file could be opened
 			if ( pFile != NULL )
 			{
