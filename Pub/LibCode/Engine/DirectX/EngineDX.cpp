@@ -949,6 +949,28 @@ IGRAPHICSFORMAT		dxFormat;
 	return( dxFormat );
 }
 
+D3DVIEWPORT9		mxRestoreViewport;
+
+void		EngineSetViewport( int X, int Y, int W, int H )
+{
+D3DVIEWPORT9		xViewport;
+	g_pd3dDevice->GetViewport( &mxRestoreViewport );
+	xViewport = mxRestoreViewport;
+	xViewport.X = X;
+	xViewport.Y = Y;
+	xViewport.Width = W;
+	xViewport.Height = H;
+	xViewport.MinZ = 0.0f;
+	xViewport.MaxZ = 0.1f;
+
+	g_pd3dDevice->SetViewport( &xViewport );
+}
+
+void		EngineRestoreViewport( void )
+{
+	g_pd3dDevice->SetViewport( &mxRestoreViewport );
+}
+
 
 void	EngineGetRayForScreenCoord( int nScreenX, int nScreenY, VECT* pxRayStart, VECT* pxRayDir )
 {

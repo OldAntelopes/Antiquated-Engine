@@ -129,6 +129,8 @@ extern	void	EngineEnableWireframe( int nFlag );
 extern  void	EngineEnablePointFill( int nFlag );
 extern  void	EngineSetShadeMode( int nFlag );
 
+extern void		EngineSetViewport( int X, int Y, int W, int H );
+extern void		EngineRestoreViewport( void );
 
 extern	void	EngineSetZBias( int Value );
 extern	void	EngineSetFog( unsigned long ulFogCol, float fFogStart, float fFogEnd );
