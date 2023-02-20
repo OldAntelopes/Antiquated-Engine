@@ -5,6 +5,7 @@
 
 #include "WebServerConnectionManager.h"
 #include "WebServerTCPConnections.h"
+#include "DefaultPageRequestHandler.h"
 #include "BasicWebServer.h"
 
 BasicWebServerRequestHandler			mfnWebServerGETHandler = NULL;
@@ -19,7 +20,10 @@ BLOWFISH_KEY		mxBlowfishClientKey;
 //---------------------------------------------------------------------------
 int			BasicWebServerInit( int nPort )
 {
+
 	TCPConnections::InitialiseTCPListener( nPort );
+
+	DefaultPageRequestHandlerInit();
 
 	return( 1 );
 }
@@ -41,6 +45,8 @@ int		BasicWebServerShutdown( void )
 	TCPConnections::ShutdownTCP();
 
 	WebServerConnectionManager::Get().DeleteAllConnections();
+
+	DefaultPageRequestHandlerShutdown();
 
 	return( 1 );
 }

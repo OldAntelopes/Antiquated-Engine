@@ -3,12 +3,7 @@
 #include <UnivSocket.h>
 #include <StandardDef.h>
 #include <CodeUtil.h>
-
-#ifdef MARMALADE
-#include <s3eSocket.h>
-#else
 #include "TCP4u/TCP4u.h"
-#endif
 
 #include "Networking.h"
 #include "NetworkConnection.h"
@@ -35,15 +30,10 @@ WSADATA ws;
 #endif
 
 int		mnNumReroutes = 0;
-#ifdef MARMALADE
-
-s3eInetAddress		mxLastMessageSourceAddress;
-#else
 struct sockaddr_in	maxReRouteAddrSrc[MAX_REROUTES];
 struct sockaddr_in	maxReRouteAddrDest[MAX_REROUTES];
 
 struct	sockaddr_in			mxLastMessageSourceAddress;
-#endif
 
 BOOL	mboUDPConnected = FALSE;
 int		mnConnectionMode = 0;
@@ -227,46 +217,12 @@ ulong	ulTick = SysGetTick();
 
 const char*		NetworkGetIPAddressText( ulong ulIP )
 {
-#ifdef MARMALADE
-static	char	acIPAddressBuffer[64] = "";
-
-	s3eInetNtoa( (s3eInetIPAddress)ulIP, acIPAddressBuffer, 63 );
-	return( acIPAddressBuffer );
-#else
 	return( inet_ntoa( *((struct in_addr*)(&ulIP))) );
-#endif
 }
 
 ulong			NetworkGetIPAddress( const char* szIPAddressString )
 {
-#ifdef MARMALADE
-char	acNumBuffer[32];
-const char*		pcRunner = szIPAddressString;
-char*			pcOutRunner = acNumBuffer;
-ulong	ulIPAddr = 0;
-int		nShift = 0;
-
-	while( *pcRunner != 0 ) 
-	{
-		if ( *pcRunner == '.' )
-		{
-			*pcOutRunner = 0;
-			ulIPAddr |= ( strtoul( acNumBuffer, NULL, 10 ) << nShift );
-			pcOutRunner = acNumBuffer;
-			nShift += 8;
-			pcRunner++;
-		}
-		else
-		{
-			*pcOutRunner++ = *pcRunner++;
-		}
-	}
-	*pcOutRunner = 0;
-	ulIPAddr |= ( strtoul( acNumBuffer, NULL, 10 ) << nShift );
-	return( ulIPAddr );
-#else
 	return( (ulong)(inet_addr( szIPAddressString )) );
-#endif
 
 }
 
@@ -291,23 +247,14 @@ int NetworkConnectionGenericSendMessageNoScramble( const char* pcMsg, int nMsgLe
 
 unsigned long	GetLastGuestIP( void )
 {
-#ifdef MARMALADE
-	return( (ulong)mxLastMessageSourceAddress.m_IPAddress );
-#else
 	return( *( (ulong*)(&mxLastMessageSourceAddress.sin_addr) ) );
-#endif
 }
 
 unsigned short	GetLastGuestPort( void )
 {
-#ifdef MARMALADE
-	return( s3eInetNtohs( mxLastMessageSourceAddress.m_Port ) );
-#else
 	return( ntohs( mxLastMessageSourceAddress.sin_port ) );
-#endif
 }
 
-#ifndef MARMALADE
 struct sockaddr_in*	GetLastGuestAddress( void )
 {
 	return( &mxLastMessageSourceAddress );
@@ -323,7 +270,6 @@ int	NetworkingGetSocket( void )
 	return( NetworkConnection::Get().GetSocket() );
 }
 
-#endif
 
 /***************************************************************************
  * Function    : NetworkConnectionScrambleMessage
@@ -355,7 +301,6 @@ int		nLoop;
 
 void	ParseRerouteLine( int nLineNum, char* pcBuff )
 {
-#ifndef MARMALADE
 char*	pcRouteIP1;
 char*	pcRouteIP2;
 char*	pcRoutePort1;
@@ -427,7 +372,6 @@ ushort	wPort;
 
 		}
 	}
-#endif
 }
 
 
@@ -480,11 +424,7 @@ char*		pcScriptPos;
 
 NetworkConnection::NetworkConnection()
 {
-#ifdef MARMALADE
-	m_pUDPSocket = NULL;
-#else
 	m_hSocket = -1;
-#endif
 	m_fnIncomingMessageHandler = NULL;
 	m_fnLogAnnotationHandler = NULL;
 }
@@ -511,10 +451,8 @@ SOCKET		m_pendingNewConnection = 0;		// TODO - will need more of these..
 
 long WINAPI NetworkTCPListenThread(long lParam)
 { 
-#ifndef MARMALADE
 SOCKET		xNewConnection;
 int		ret;
-#endif
 BOOL	bHasErrored = FALSE;
 
 	do
@@ -522,10 +460,6 @@ BOOL	bHasErrored = FALSE;
 		// Only process one connection at a time
 		if ( m_bNewTCPConnectionsPending == FALSE )
 		{
-#ifdef MARMALADE
-			// TODO - MARMALADE TODO
-
-#else
 			ret = TcpAccept(&xNewConnection, m_ListenSocket, 1, NULL);
 
 			// If we've got a new TCP connection comin in
@@ -542,7 +476,6 @@ BOOL	bHasErrored = FALSE;
 			{
 				bHasErrored = TRUE;
 			}
-#endif
 		}
 		SysSleep( 10 );
 		
@@ -559,14 +492,9 @@ PeerConnection*		pNewConnection;
 #endif
 ulong	ulIPAddress = 0;
 
-#ifdef MARMALADE
-	// MARMALADE TODO	
-
-#else
 	char StationName[64];
 
 	TcpGetRemoteID (m_pendingNewConnection, StationName, sizeof StationName, &ulIPAddress);
-#endif
 
 
 #ifndef NO_PEER_CONN
@@ -594,9 +522,6 @@ ulong	ulIPAddress = 0;
 
 void	NetworkConnection::ShutdownTCP( void )
 {
-#ifdef MARMALADE
-	// MARMALADE TODO
-#else
 	TcpAbort();
 
 	m_bNetworkThreadShutdown = TRUE;
@@ -604,15 +529,10 @@ void	NetworkConnection::ShutdownTCP( void )
 
 	TcpClose ( &m_ListenSocket ); 
 	Tcp4uCleanup();
-#endif
 }
 
 void	NetworkConnection::InitialiseTCPListener( ushort uwPort, NetworkConnectionMessageReceiveHandler messageHandler, int nMode )
 {
-#ifdef MARMALADE
-		// MARMALADE TODO
-
-#else
 int		ret;
 ulong	iID;
 
@@ -624,20 +544,17 @@ ulong	iID;
 		printf("[NetworkConnection] TCP listen socket open on %d\n", uwPort );
 		m_hConnectionListenThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)NetworkTCPListenThread,(LPVOID)(NULL),0,&iID);
 	}
-#endif
 }
 
 
 BOOL	NetworkConnection::InitialiseUDP( ushort uwPort, NetworkConnectionMessageReceiveHandler messageHandler, int nMode )
 {
-#ifndef MARMALADE
 struct sockaddr_in client_addr;
 struct hostent *hp = NULL;
 int nRet;
 int	nSize;
 int	nVal;
 ulong	ulBlockingOff;
-#endif
 ulong	ulTick = SysGetTick();
 
 	mnConnectionMode = nMode;
@@ -657,21 +574,6 @@ ulong	ulTick = SysGetTick();
 
 	ZeroMemory( m_abMsgBuffer, MAXBUFLEN );
 
-#ifdef MARMALADE
-
-	// MARMALADE TODO
-	m_pUDPSocket = s3eSocketCreate( S3E_SOCKET_UDP, 0 );
-
-	if ( uwPort == 0 )
-	{
-		s3eSocketBind( m_pUDPSocket, NULL, 1 );
-	}
-	else
-	{
-		// TODO - Bind to a particular port..
-	}
-
-#else
 	nRet = WSAStartup(0x0101,&ws);
                 
 	m_hSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -693,7 +595,7 @@ ulong	ulTick = SysGetTick();
 		return( FALSE );
 	}
 
-	printf("UDP Socket opened on %d\n", uwPort );
+//	printf("UDP Socket opened on %d\n", uwPort );
 
 	ulBlockingOff = 1;
 	/** Set socket to non-blocking **/
@@ -723,7 +625,6 @@ ulong	ulTick = SysGetTick();
 	int nLen = sizeof( client_addr );	
 	getsockname ( m_hSocket, (struct sockaddr *)&client_addr, &nLen );
 	UPNPSetMyInternalPort( ntohs(client_addr.sin_port) );
-#endif
 #endif
 
 	LoadRerouteText();
@@ -779,25 +680,16 @@ int		nMsgLen = 0;
 void	NetworkConnection::Update( float fDeltaTime )
 {
 int nRet;
-#ifndef MARMALADE
 int	nAddrLen;
 int		nLastError;
-#endif
 uchar*	pcIncoming;
 int		nRead = 0;
 
-#ifdef MARMALADE
-	if ( m_pUDPSocket == NULL )
-	{
-		return;
-	}
-#else
 	if ( m_hSocket == -1 )
 	{
 		return;
 	}
 	nAddrLen = sizeof( mxLastMessageSourceAddress );
-#endif
 
 	if ( m_bNewTCPConnectionsPending )
 	{
@@ -806,14 +698,6 @@ int		nRead = 0;
 
 	while ( 1 )
 	{
-#ifdef MARMALADE
-		// MARMALADE TODO
-		nRet = s3eSocketRecvFrom( m_pUDPSocket, (char*)m_abMsgBuffer, MAXBUFLEN, 0, &mxLastMessageSourceAddress);
-		if ( nRet == -1 )
-		{
-			return;
-		}
-#else
 		// Read the next message
 		nRet = recvfrom(m_hSocket,(char*)m_abMsgBuffer,MAXBUFLEN,0,(struct sockaddr *)&mxLastMessageSourceAddress,&nAddrLen);
 
@@ -832,7 +716,6 @@ int		nRead = 0;
 				return;
 			}
 		}
-#endif
 
 		if ( nRet == MAXBUFLEN )
 		{
@@ -908,14 +791,6 @@ int		nRead = 0;
 			}
 			else
 			{	
-/*
-				if ( nRead > MAXBUFLEN )
-				{
-				int		nError = 0;
-					nError++;
-					printf( "Error %d", nError );
-				}
-*/
 				memset( pcIncoming, 0, nRead );
 			}
 			pcIncoming += nRead;
@@ -929,10 +804,6 @@ int		nRead = 0;
 
 void	NetworkConnection::ShutdownUDP( void )
 {
-#ifdef MARMALADE
-
-
-#else
 	if ( m_hSocket != -1 )
 	{
 		closesocket(m_hSocket);
@@ -940,7 +811,6 @@ void	NetworkConnection::ShutdownUDP( void )
 
 		WSACleanup();
 	}
-#endif
 
 	if ( mpNetworkConnectionPacketLogFile != NULL )
 	{
@@ -949,35 +819,6 @@ void	NetworkConnection::ShutdownUDP( void )
 	}
 }
 
-#ifdef MARMALADE
-int		NetworkConnection::Send( const char* pMsg, int nMsgLength, ulong ulIP, ushort uwPort, BOOL bIsResend, BOOL bScramble )
-{
-s3eInetAddress		xDestinationAddress;
-int		nBytesSent;
-char	szBuffer[8192];
-
-	memcpy( szBuffer, pMsg, nMsgLength );
-	memset( &xDestinationAddress, 0, sizeof( xDestinationAddress ) );
-	xDestinationAddress.m_IPAddress = ulIP;
-	xDestinationAddress.m_Port = s3eInetHtons( uwPort );
-	
-		// MARMALADE TODO 
-	NetworkingStatsAddSend( (byte*)(szBuffer), (nMsgLength + 8), FALSE );
-	if ( bScramble )
-	{
-		NetworkConnectionScrambleMessage( (byte*)szBuffer, nMsgLength );
-	}
-
-	nBytesSent = s3eSocketSendTo( m_pUDPSocket, (const char*)szBuffer, nMsgLength, 0, &xDestinationAddress );
-
-	if ( bScramble )
-	{
-		NetworkConnectionUnscrambleMessage( (byte*)szBuffer, nMsgLength );
-	}
-
-	return( nBytesSent );
-}
-#else
 
 int		NetworkConnection::Send( const char* pMsg, int nMsgLength, ulong ulIP, ushort uwPort, BOOL bIsResend, BOOL bScramble )
 {
@@ -1088,6 +929,5 @@ struct sockaddr_in*		pxSendAddress = (struct sockaddr_in*)( &xDestAddress );
 	return( nRet );
 }
 
-#endif		// win32 version
 
 

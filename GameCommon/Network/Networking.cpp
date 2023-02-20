@@ -26,9 +26,11 @@ BOOL	bRet = TRUE;
 #ifdef NETWORK_AUDIO
 	VoiceComms::Get().Initialise();
 #endif // #ifdef NETWORK_AUDIO
-	ConnectionManager::Get().RegisterNewConnectionCallback( pParams->m_fnNewConnectionCallback );
 
+#ifndef NO_PEER_CONN
+	ConnectionManager::Get().RegisterNewConnectionCallback( pParams->m_fnNewConnectionCallback );
 	FileTransfer::SetMaximumTransferRate( pParams->m_nMaxFileTransferSpeed );
+#endif
 
 	if ( pParams->m_bUseNetworkConnection )
 	{
@@ -57,7 +59,10 @@ void	Networking::Update( float fDeltaTime )
 #ifdef NETWORK_AUDIO
 	VoiceComms::Get().Update( fDeltaTime );
 #endif // #ifdef NETWORK_AUDIO
+	
+#ifndef NO_PEER_CONN
 	ConnectionManager::Get().UpdateAllConnections(fDeltaTime);
+#endif
 	NetworkConnection::Get().Update(fDeltaTime);
 
 #ifdef NETWORK_UPNP
@@ -76,7 +81,10 @@ void	Networking::Shutdown( void )
 #ifdef NETWORK_AUDIO
 	VoiceComms::Get().Shutdown();
 #endif // #ifdef NETWORK_AUDIO
+
+#ifndef NO_PEER_CONN
 	ConnectionManager::Get().CloseAllConnections();
+#endif
 	NetworkConnection::Get().ShutdownTCP();
 	NetworkConnection::Get().ShutdownUDP();
 }
@@ -87,7 +95,12 @@ void	Networking::Shutdown( void )
 
 void		NetworkingGetFileTransferStats( int* pnActiveSends, int* pnDesiredBytesPerSec )
 {
+#ifdef NO_PEER_CONN
+	*pnActiveSends = 0;
+	*pnDesiredBytesPerSec = 0;
+#else
 	FileTransfer::GetTransferThrottleStats( pnActiveSends, pnDesiredBytesPerSec );
+#endif
 }
 
 
@@ -125,7 +138,7 @@ BOOL	NetworkingIsVoiceCommsEnabled( void )
 }
 
 
-
+#ifndef NO_PEER_CONN
 int		NetworkingPeerConnectionReceiveGuaranteedMessage( BYTE* pbMsg )
 {
 //	NetworkingUserDebugPrint( 0, "PeerConnGuar : msgID %d", *((short*)pbMsg +2) );
@@ -137,6 +150,7 @@ int		NetworkingPeerConnectionReceiveSysMessage( BYTE* pbMsg )
 	return( ConnectionManager::Get().ReceiveSysMessage( pbMsg ) );
 
 }
+#endif // #ifndef NO_PEER_CONN
 
 void	NetworkingUpdate( float fDeltaTime )
 {

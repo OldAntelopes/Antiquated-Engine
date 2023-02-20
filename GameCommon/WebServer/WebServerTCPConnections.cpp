@@ -99,7 +99,7 @@ ulong	iID;
 	ret = TcpGetListenSocket (&m_WebServerListenSocket, NULL, &uwPort, 4);
 	if ( ret == TCP4U_SUCCESS )
 	{
-		printf("TCP listen socket open on %d\n", uwPort );
+		printf("BasicWebServer TCP listen socket open on %d\n", uwPort );
 		m_hWebServerConnectionListenThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)WebServerTCPListenThread,(LPVOID)(NULL),0,&iID);
 	}
 	else
