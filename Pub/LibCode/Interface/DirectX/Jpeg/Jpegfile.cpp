@@ -20,25 +20,13 @@
 
 #include <mmsystem.h>
 
-extern "C"
-{
 #include <StandardDef.h>
 #include <Interface.h>
-}
 
 
 #define HAVE_BOOLEAN
 
-#ifdef __cplusplus
-	extern "C" {
-#endif // __cplusplus
-
 #include "jpg/jpeglib.h"
-
-#ifdef __cplusplus
-	}
-#endif // __cplusplus
-
 #include "JpegFile.h"
 
 
