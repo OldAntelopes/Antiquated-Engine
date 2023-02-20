@@ -186,7 +186,7 @@ ATM_FILE_HEADER		xFileHeader;
 ATM_CHUNK_HEADER	xChunkHeader;
 ATM_OLD_BASIC_CONTENTS	xContentsChunk;
 
-	pFile = SysFileOpen( szFilename, "rb" );
+	pFile = (FILE*)SysFileOpen( szFilename, "rb" );
 	if ( pFile != NULL )
 	{
 		SysFileRead( (unsigned char*)&xFileHeader, 8, 1, pFile );

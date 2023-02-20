@@ -22,13 +22,13 @@
     <ClInclude Include="..\LibCode\Browser\HTMLImage.h" />
     <ClInclude Include="..\LibCode\Browser\HTMLParser.h" />
     <ClInclude Include="..\LibCode\Browser\HTMLTable.h" />
-    <ClInclude Include="..\LibCode\Browser\UniversalBrowser.h" />
+    <ClInclude Include="..\LibCode\Browser\NoddyBrowser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\Browser\HTMLElement.cpp" />
     <ClCompile Include="..\LibCode\Browser\HTMLImage.cpp" />
     <ClCompile Include="..\LibCode\Browser\HTMLParser.cpp" />
     <ClCompile Include="..\LibCode\Browser\HTMLTable.cpp" />
-    <ClCompile Include="..\LibCode\Browser\UniversalBrowser.cpp" />
+    <ClCompile Include="..\LibCode\Browser\NoddyBrowser.cpp" />
   </ItemGroup>
 </Project>
