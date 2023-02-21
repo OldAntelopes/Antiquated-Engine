@@ -95,7 +95,9 @@ long		lRetCode = 0;
 	curl_easy_setopt( pxCurl, CURLOPT_TIMEOUT, 30 );
 
 	struct curl_slist *headers=NULL;
-	headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+//	headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+	// CHanging the above to the below prevented 406 errors on comms out from EC2 instances. This needs investigating further and not just random guessing at :) Bet Adrian will know ;)
+	headers = curl_slist_append(headers, "Content-Type: application/json");
 	 /* pass our list of custom made headers */
 	 curl_easy_setopt(pxCurl, CURLOPT_HTTPHEADER, headers);
 
