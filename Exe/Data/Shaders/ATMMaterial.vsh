@@ -62,7 +62,7 @@ VS_OUTPUT vs_main( VS_INPUT input )
     output.TangentWorldSpace = mul(normalize(input.Tangent), gMatWorld);
     output.BiTangentWorldSpace = mul(normalize(BiTangent), gMatWorld);
      
-    output.View = normalize(float4(gEyePosition,0.0) - worldPosition);
+    output.View = normalize(float4(gEyePosition,1.0) - worldPosition);
 	output.VertCol = input.Color;
 
     return output;                      //return output vertex

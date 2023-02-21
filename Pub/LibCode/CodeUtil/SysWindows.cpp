@@ -354,52 +354,6 @@ void		SysRegisterDebugPrintHandler( fnDebugPrintHandler pDebugPrintHandler )
 }
 
 
-void*	SysFileOpen( const char* szFilename, const char* szOpenMode )
-{
-FILE* pFile = fopen( szFilename, szOpenMode );
-
-	return( pFile );
-}
-
-int		SysFileRead( unsigned char* pcOutMem, int nReadSize, int nNumReads, void* pFile )
-{
-	return( fread( pcOutMem, nReadSize, nNumReads, (FILE*)pFile ) );
-
-}
-
-void	SysFileClose( void* pFile )
-{
-	fclose( (FILE*)pFile );
-
-}
-
-
-int		SysGetFileSize( void* pFile )
-{
-	if ( pFile != NULL )
-	{
-	int		nFileSize;
-		fseek( (FILE*)pFile, 0, SEEK_END );
-		nFileSize = ftell((FILE*)pFile);
-		rewind( (FILE*)pFile );
-		return( nFileSize );
-	}
-	return( 0 );
-}
-
-int		SysFileWrite( unsigned char* pOutMem, int nWriteSize, int nNumWrites, void* pFile )
-{
-	return( fwrite( pOutMem, nWriteSize, nNumWrites, (FILE*)pFile ) );
-	
-}
-
-int		SysFileSeek( void* pFile, int offset, int mode )
-{
-	fseek( (FILE*)pFile, offset, SEEK_CUR );
-	return( 1 );
-}
-
-
 
 typedef struct
 {

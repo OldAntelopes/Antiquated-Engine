@@ -131,7 +131,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcrypto.lib;libssl.lib;Ws2_32.lib;Wldap32.lib;libcurl.lib;jpeglib.lib;zlib.lib;libfbxsdk.lib;CodeUtil.lib;dxerr9.lib;EngineTool.lib;Interface-DX9.lib;comctl32.lib;d3dx9.lib;msvcrt.lib;dxguid.lib;d3dxof.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Wldap32.lib;jpeglib.lib;zlib.lib;libfbxsdk.lib;CodeUtil.lib;dxerr9.lib;EngineTool.lib;Interface-DX9.lib;comctl32.lib;d3dx9.lib;msvcrt.lib;dxguid.lib;d3dxof.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>../Exe/SceneEditor.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../Pub/Libs;../Pub/Libs/DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -152,8 +152,6 @@
     <ClCompile Include="..\GameCommon\Util\cJSON.c" />
     <ClCompile Include="SceneEditor\Code\Framework\SceneEditor.cpp" />
     <ClCompile Include="SceneEditor\Code\Main.cpp" />
-    <ClCompile Include="SceneEditor\Code\Util\HTTP.c" />
-    <ClCompile Include="SceneEditor\Code\Util\HTTPDownload.cpp" />
     <ClCompile Include="SceneEditor\Code\Util\Line_Renderer.cpp" />
     <ClCompile Include="SceneEditor\Code\Util\MouseCam.cpp" />
   </ItemGroup>
@@ -161,8 +159,6 @@
     <ClInclude Include="..\GameCommon\Util\cJSON.h" />
     <ClInclude Include="SceneEditor\Code\Framework\SceneEditor.h" />
     <ClInclude Include="SceneEditor\Code\Main.h" />
-    <ClInclude Include="SceneEditor\Code\Util\HTTP.h" />
-    <ClInclude Include="SceneEditor\Code\Util\HTTPDownload.h" />
     <ClInclude Include="SceneEditor\Code\Util\Line Renderer.h" />
     <ClInclude Include="SceneEditor\Code\Util\MouseCam.h" />
     <ClInclude Include="SceneEditor\resource.h" />

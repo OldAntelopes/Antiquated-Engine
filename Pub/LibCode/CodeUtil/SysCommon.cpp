@@ -40,6 +40,7 @@ typedef struct _SYSTEMTIME {
 
 fnUserPrintFunction		mfnSysUserPrintFunction = NULL;
 
+float mfSysFrameDelta = 0.01f;
 
 void		SysRegisterUserPrintHandler( fnUserPrintFunction pUserPrintHandler )
 {
@@ -100,6 +101,16 @@ int		SysGetFileSize( void* pFile )
 	return( 0 );
 }
 */
+
+float			SysGetFrameDelta()
+{
+	return( mfSysFrameDelta );
+}
+
+void				SysSetFrameDelta( float fDelta )
+{
+	mfSysFrameDelta = fDelta;
+}
 
 #ifdef WIN32
 ulong	SysGetTimeLong(void )
@@ -356,3 +367,72 @@ float	fRand;
 	fRand += fLow;
 	return( fRand );
 }
+
+int		mnSystemNumFilesOpen = 0;	
+
+int		SysFileGetNumOpenHandles( void )
+{
+	return( mnSystemNumFilesOpen );
+}
+
+FILE*	SysFileOpen( const char* szFilename, const char* szOpenMode )
+{
+FILE* pFile = fopen( szFilename, szOpenMode );
+
+	if ( pFile )
+	{
+		mnSystemNumFilesOpen++;
+	}
+	return( pFile );
+}
+
+int		SysFileRead( unsigned char* pcOutMem, int nReadSize, int nNumReads, FILE* pFile )
+{
+	return( fread( pcOutMem, nReadSize, nNumReads, (FILE*)pFile ) );
+
+}
+
+
+void	SysFileCloseAll( void )
+{
+	mnSystemNumFilesOpen = 0;
+	fcloseall();
+}
+
+void	SysFileClose( FILE* pFile )
+{
+	if ( ( pFile ) &&
+		 ( mnSystemNumFilesOpen > 0 ) )
+	{
+		mnSystemNumFilesOpen--;
+	}
+	fclose( (FILE*)pFile );
+}
+
+
+int		SysGetFileSize( FILE* pFile )
+{
+	if ( pFile != NULL )
+	{
+	int		nFileSize;
+		fseek( (FILE*)pFile, 0, SEEK_END );
+		nFileSize = ftell((FILE*)pFile);
+		rewind( (FILE*)pFile );
+		return( nFileSize );
+	}
+	return( 0 );
+}
+
+int		SysFileWrite( unsigned char* pOutMem, int nWriteSize, int nNumWrites, FILE* pFile )
+{
+	return( fwrite( pOutMem, nWriteSize, nNumWrites, (FILE*)pFile ) );
+	
+}
+
+int		SysFileSeek( FILE* pFile, int offset, int mode )
+{
+	fseek( (FILE*)pFile, offset, SEEK_CUR );
+	return( 1 );
+}
+
+

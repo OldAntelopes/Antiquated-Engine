@@ -4,9 +4,10 @@
 
 #include <StandardDef.h>
 #include <Interface.h>
+
 extern "C"
 {
-extern void	DoSetMouseOverCursor( BOOL );
+extern void	DoSetMouseOverCursor( BOOL );			// TEMP - Needs Fixing
 }
 
 #include "HTMLImage.h"

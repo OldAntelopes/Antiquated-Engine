@@ -55,6 +55,9 @@ extern unsigned long	SysGetTick( void );		// millisecond tick
 extern u64				SysGetMicrosecondTick( void );		
 extern void				SysGetLocalTimeFromUnixTimestamp( ulong ulUnixTime, SYS_LOCALTIME* pTime );
 extern ulong			SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime );
+extern float			SysGetFrameDelta();
+
+extern void				SysSetFrameDelta( float fDelta );
 
 // ----------------------------  Keyboard input
 enum					// See SysCheckKeyState, SysWasJustPressed 
@@ -134,12 +137,15 @@ extern BOOL		SysSetCurrentDir( const char* szDir );
 extern BOOL		SysDoesDirExist( const char* szDir );
 extern void		SysRecurseCopyFolders( const char* szFolder, const char* szCopyRoot );
 extern void		SysCopyFolderContents( const char* szSrcFolder, const char* szDestFolder );
-extern int		SysGetFileSize( void* );
-extern void*	SysFileOpen( const char* szFilename, const char* szOpenMode );
-extern int		SysFileRead( unsigned char*, int, int, void* );
-extern int		SysFileWrite( unsigned char*, int, int, void* );
-extern int		SysFileSeek( void*, int, int mode );
-extern void		SysFileClose( void* );
+extern int		SysGetFileSize( FILE* );
+extern FILE*	SysFileOpen( const char* szFilename, const char* szOpenMode );
+extern int		SysFileRead( unsigned char*, int, int, FILE* );
+extern int		SysFileWrite( unsigned char*, int, int, FILE* );
+extern int		SysFileSeek( FILE*, int, int mode );
+extern void		SysFileClose( FILE* );
+extern void		SysFileCloseAll( void );
+
+extern int		SysFileGetNumOpenHandles( void );
 
 
 extern int		SysSaveDataLoad( byte* pbData, int nSize );

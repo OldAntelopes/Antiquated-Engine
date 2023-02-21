@@ -5,11 +5,8 @@
 #include <Interface.h>
 #include <CodeUtil.h>
 
-extern "C"
-{
 #include "../../../Universal/GameCode/Globals/Globals.h"		// Temp needs fixing
 #include "../../../Universal/LibCode/Networking/HTTP/HttpDownload.h"		// Temp needs fixing
-}
 
 #include "NoddyBrowser.h"
 #include "HTMLParser.h"

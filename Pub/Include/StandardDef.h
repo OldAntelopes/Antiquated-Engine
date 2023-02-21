@@ -13,6 +13,7 @@ extern "C"
 #include <stdlib.h>
 #endif
 #include <string.h>
+#include <stdio.h>
 
 #ifdef I3D_PLATFORM_S3E
 #define MARMALADE

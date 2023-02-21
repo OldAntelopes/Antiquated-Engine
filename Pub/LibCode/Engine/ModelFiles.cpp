@@ -22,7 +22,7 @@
 
 #ifdef SERVER
 #include "../GameCode/Server/Server.h"
-#include "../GameCode/Server/Windows/Registration.h"	
+#include "../GameCode/Server/Files/ServerRegistration.h"
 #endif
 
 
@@ -181,12 +181,12 @@ ulong		mulExportLockFlags = 0;
  ***************************************************************************/
 int		ModelGetLockState( const char* szFilename )
 {
-void*	pFile;
+FILE*	pFile;
 ATM_FILE_HEADER		xFileHeader;
 ATM_CHUNK_HEADER	xChunkHeader;
 ATM_OLD_BASIC_CONTENTS	xContentsChunk;
 
-	pFile = (FILE*)SysFileOpen( szFilename, "rb" );
+	pFile = SysFileOpen( szFilename, "rb" );
 	if ( pFile != NULL )
 	{
 		SysFileRead( (unsigned char*)&xFileHeader, 8, 1, pFile );
@@ -634,7 +634,7 @@ int			nTotalSize = 0;
 int			nNumMaterials = pxModelData->xStats.nNumMaterials;
 int			loop;
 const char*		szFilename;
-void*		pFile;
+FILE*		pFile;
 int			nFileSize = 0;
 int			nTextSize;
 int			texchanloop;
@@ -1897,7 +1897,7 @@ byte*		ModelExportBuildChunk( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int
  * Params      :
  * Description : Recursed off ExportATM to save any sub models within the main atm file
  ***************************************************************************/
-void		ModelWriteSubModelATM( MODEL_RENDER_DATA* pxModelData, void* pFile, int nLevel )
+void		ModelWriteSubModelATM( MODEL_RENDER_DATA* pxModelData, FILE* pFile, int nLevel )
 {
 MODEL_RENDER_DATA* pxBaseModelData;
 int		nSubModelPasses = 0;
@@ -2095,7 +2095,7 @@ byte*	pbMemToCompress;
 int		nFileSize;
 ATM_FILE_HEADER*	pxFileHeader;
 ulong	ulCompressedSize;
-void*	pFile;
+FILE*	pFile;
 short	wResult;
 
 	pFile = SysFileOpen( szFilename, "rb" );
@@ -2148,7 +2148,7 @@ short	wResult;
 void		ModelExportATM( int nModelHandle, const char* szFilename, ulong ulSaveFlags, ulong ulLockFlags )
 {
 MODEL_RENDER_DATA* pxModelData;
-void*	pFile;
+FILE*	pFile;
 ATM_FILE_HEADER		xFileHeader;
 
 	mulExportFlags = ulSaveFlags;
@@ -3961,7 +3961,7 @@ MODEL_RENDER_DATA*		pxModelData;
 int		ModelLoad( const char* szFilename, ulong ulLoadFlags, float fScale )
 {
 int		nHandle;
-void*	pFile;
+FILE*	pFile;
 int		nFileSize;
 BOOL	bLoadSuccess = FALSE;
 byte*	pbFileInMem;

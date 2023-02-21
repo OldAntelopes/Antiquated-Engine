@@ -5,13 +5,10 @@
 #include <StandardDef.h>
 
 
-extern "C"
-{
 #include <Interface.h>
 
 #include "../../../Universal/GameCode/Globals/Globals.h"		// TEMP - Needs fixing
 #include "../../../Universal/LibCode/Networking/HTTP/HttpDownload.h"		// TEMP - Needs fixing
-}
 
 #include "HTMLParser.h"
 #include "HTMLImage.h"

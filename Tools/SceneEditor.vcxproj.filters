@@ -15,34 +15,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\GameCommon\Util\cJSON.c" />
     <ClCompile Include="SceneEditor\Code\Framework\SceneEditor.cpp" />
     <ClCompile Include="SceneEditor\Code\Main.cpp" />
-    <ClCompile Include="SceneEditor\Code\Util\HTTP.c" />
-    <ClCompile Include="SceneEditor\Code\Util\HTTPDownload.cpp" />
-    <ClCompile Include="SceneEditor\Code\Util\Line_Renderer.cpp" />
     <ClCompile Include="SceneEditor\Code\Util\MouseCam.cpp" />
+    <ClCompile Include="..\GameCommon\Util\cJSON.c">
+      <Filter>GameCommon\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneEditor\Code\Util\Line_Renderer.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\GameCommon\Util\cJSON.h" />
     <ClInclude Include="SceneEditor\Code\Framework\SceneEditor.h" />
     <ClInclude Include="SceneEditor\Code\Main.h" />
-    <ClInclude Include="SceneEditor\Code\Util\HTTP.h" />
-    <ClInclude Include="SceneEditor\Code\Util\HTTPDownload.h" />
-    <ClInclude Include="SceneEditor\Code\Util\Line Renderer.h" />
     <ClInclude Include="SceneEditor\Code\Util\MouseCam.h" />
     <ClInclude Include="SceneEditor\resource.h" />
+    <ClInclude Include="..\GameCommon\Util\cJSON.h">
+      <Filter>GameCommon\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneEditor\Code\Util\Line Renderer.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="SceneEditor\centreicon.bmp" />
-    <Image Include="SceneEditor\moveicon.bmp" />
-    <Image Include="SceneEditor\moveiconsel.bmp" />
-    <Image Include="SceneEditor\rotateicon.bmp" />
-    <Image Include="SceneEditor\rotateiconsel.bmp" />
-    <Image Include="SceneEditor\zoomicon.bmp" />
-    <Image Include="SceneEditor\zoomiconsel.bmp" />
+    <Image Include="SceneEditor\centreicon.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\moveicon.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\moveiconsel.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\rotateicon.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\rotateiconsel.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\zoomicon.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="SceneEditor\zoomiconsel.bmp">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SceneEditor\InteriorMapEditor.rc" />
+    <ResourceCompile Include="SceneEditor\InteriorMapEditor.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
