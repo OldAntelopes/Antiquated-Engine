@@ -142,6 +142,8 @@ extern INTERFACE_API void	InterfaceTextureGetColourAtPoint( int nTextureHandle, 
 extern INTERFACE_API void	InterfaceUnlockTexture( int nTextureHandle );
 extern INTERFACE_API void	InterfaceReleaseTexture( int nTextureHandle );
 
+#define SAFE_RELEASE_TEXTURE(p)      { if(p != NOTFOUND) { InterfaceReleaseTexture(p); p=NOTFOUND; } }
+
 // ------------- Textured overlays - Textures need to loaded once (see above), but each frame a new
 // -------------	 				 overlay needs to be created for any textures that you intend to use.
 extern INTERFACE_API int	InterfaceCreateNewTexturedOverlay( int nLayer, int nTextureHandle );
