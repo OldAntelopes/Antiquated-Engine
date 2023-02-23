@@ -4,6 +4,7 @@
 #include "StandardDef.h"
 
 #include "../Console/Console.h"
+#include "../Console/DevLogging.h"
 
 #include "HTTP.h"
 #include "HTTPFetch.h"
@@ -49,6 +50,45 @@ int progress_callback(void *clientp,   curl_off_t dltotal,   curl_off_t dlnow,  
 	return( 0 );
 }
 
+static
+int my_trace(CURL *handle, curl_infotype type, char *data, size_t size,   void *userp)
+{
+//  struct data *config = (struct data *)userp;
+  const char *text;
+  (void)handle; /* prevent compiler warning */
+ 
+  switch(type) {
+  case CURLINFO_TEXT:
+    DevLog( DEVLOG_CURLVERBOSE,"== Info: %s", data);
+    /* FALLTHROUGH */
+  default: /* in case a new one is introduced to shock us */
+    return 0;
+ 
+  case CURLINFO_HEADER_OUT:
+    text = "=> Send header";
+    break;
+  case CURLINFO_DATA_OUT:
+    text = "=> Send data";
+    break;
+  case CURLINFO_SSL_DATA_OUT:
+    text = "=> Send SSL data";
+    break;
+  case CURLINFO_HEADER_IN:
+    text = "<= Recv header";
+    break;
+  case CURLINFO_DATA_IN:
+    text = "<= Recv data";
+    break;
+  case CURLINFO_SSL_DATA_IN:
+    text = "<= Recv SSL data";
+    break;
+  }
+ 
+  DevLog( DEVLOG_CURLVERBOSE, text);
+//  dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+  return 0;
+}
+
 int HTTPPerformFetch( char *acFullURL, HTTPDownloadDetails* pxDetails )
 {
 CURL*		pxCurl = mpxCurl;
@@ -57,6 +97,8 @@ char		acErrorMsg[CURL_ERROR_SIZE];
 double		dTotalBytes = 0;
 double		dTransferedBytes = 0;
 long		lRetCode = 0;
+int			nNumRetries = 0;
+bool		bRetry = false;
 
 	acErrorMsg[0] = 0;
 	pxDetails->nBytesReceived = 0;
@@ -76,17 +118,21 @@ long		lRetCode = 0;
 	{
 		return( -1 );
 	}
+
+	if ( DevLoggingIsLogEnabled( DEVLOG_CURLVERBOSE ) )
+	{
+		curl_easy_setopt(pxCurl, CURLOPT_DEBUGFUNCTION, my_trace);
+		curl_easy_setopt(pxCurl, CURLOPT_VERBOSE, 1);
+	}
 	curl_easy_setopt( pxCurl, CURLOPT_ERRORBUFFER, &acErrorMsg );
 //	curl_easy_setopt( pxCurl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
 #ifdef ENABLE_CURL_LOG	
 	curl_easy_setopt( pxCurl, CURLOPT_NOPROGRESS, 1);
 	
 	curl_easy_setopt( pxCurl, CURLOPT_XFERINFOFUNCTION, progress_callback );
-//	curl_easy_setopt( pxCurl, CURLOPT_DEBUGFUNCTION
 #else
 	curl_easy_setopt( pxCurl, CURLOPT_NOPROGRESS, 1);
 #endif
-//	curl_easy_setopt( pxCurl, CURLOPT_VERBOSE, 1);
 //	curl_easy_setopt( pxCurl, CURLOPT_MUTE, 1);
 	curl_easy_setopt( pxCurl, CURLOPT_URL, acFullURL );
 	curl_easy_setopt( pxCurl, CURLOPT_CONNECTTIMEOUT, 15 );
@@ -123,36 +169,59 @@ long		lRetCode = 0;
 	}
 */
  
+
 	curl_easy_setopt(pxCurl, CURLOPT_SSL_VERIFYPEER , 0);
 	curl_easy_setopt(pxCurl, CURLOPT_SSL_VERIFYHOST , 1);
     /* Provide CA Certs from http://curl.haxx.se/docs/caextract.html */
-    curl_easy_setopt(pxCurl, CURLOPT_CAINFO, "cacert.pem");
+//    curl_easy_setopt(pxCurl, CURLOPT_CAINFO, "cacert.pem");
+    curl_easy_setopt(pxCurl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
 
-	nRes = curl_easy_perform( pxCurl );
-	
-	curl_slist_free_all(headers);
-
-	if ( nRes == CURLE_URL_MALFORMAT )
+	do
 	{
-		return( -4 );
-	}
+		bRetry = false;
+		nRes = curl_easy_perform( pxCurl );
+	
+		switch( nRes )
+		{
+		case CURLE_URL_MALFORMAT:
+			lRetCode = -1;
+			break;
+		case CURLE_SSL_CACERT:
+			lRetCode = -3;
+			break;
+		case CURLE_SEND_ERROR:
+			lRetCode = nRes;			
+			bRetry = true;
+			break;
+		case 0:
+			curl_easy_getinfo( pxCurl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &dTotalBytes );
+			curl_easy_getinfo( pxCurl, CURLINFO_SIZE_DOWNLOAD, &dTransferedBytes );
+			curl_easy_getinfo( pxCurl, CURLINFO_RESPONSE_CODE, &lRetCode );
+			pxDetails->nTotalBytes = (int)dTotalBytes;
+			break;
+		default:
+			lRetCode = nRes;
+			break;
+		}
+		
+		if ( bRetry )
+		{
+			Sleep(10);
+			DevLog( DEVLOG_CURLVERBOSE, "*** Retrying (%d attempt)", nNumRetries );
+			nNumRetries++;
+		}
+
+	} while( ( bRetry ) &&
+		     ( nNumRetries < 5 ) );
+
+	curl_slist_free_all(headers);
 
 	if ( pxDetails->pLocalFile )
 	{
 		fclose( (FILE*)pxDetails->pLocalFile );
 	}
-
-	if ( nRes == CURLE_SSL_CACERT )
-	{
-		return( -3 );
-	}
-
-	curl_easy_getinfo( pxCurl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &dTotalBytes );
-	curl_easy_getinfo( pxCurl, CURLINFO_SIZE_DOWNLOAD, &dTransferedBytes );
-	curl_easy_getinfo( pxCurl, CURLINFO_RESPONSE_CODE, &lRetCode );
-
-		pxDetails->nTotalBytes = (int)dTotalBytes;
 	return( lRetCode );
+
 }
 
 
