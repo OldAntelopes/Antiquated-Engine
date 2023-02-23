@@ -21,7 +21,7 @@ void	PhysicsVehicleSetup::SetMass( float fMass )
 void	PhysicsVehicleSetup::SetEnginePower( float fPowerRating )
 {
 	mfEnginePowerRating = fPowerRating;
-}
+} 
 
 void	PhysicsVehicleSetup::SetSuspensionStiffness( float fSuspensionStiffness )
 {

@@ -130,7 +130,16 @@ public:
 	                          const void* heightfieldData, btScalar heightScale,
 	                          btScalar minHeight, btScalar maxHeight,
 	                          int upAxis, PHY_ScalarType heightDataType,
-	                          bool flipQuadEdges );
+	                          bool flipQuadEdges);
+
+	/// legacy constructor
+	/**
+	  The legacy constructor assumes the heightfield has a minimum height
+	  of zero.  Only unsigned char or floats are supported.  For legacy
+	  compatibility reasons, heightScale is calculated as maxHeight / 65535 
+	  (and is only used when useFloatData = false).
+ 	 */
+	btHeightfieldTerrainShape(int heightStickWidth,int heightStickLength,const void* heightfieldData, btScalar maxHeight,int upAxis,bool useFloatData,bool flipQuadEdges);
 
 	virtual ~btHeightfieldTerrainShape();
 

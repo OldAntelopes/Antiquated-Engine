@@ -296,32 +296,10 @@ void btRaycastVehicle::updateVehicle( btScalar step )
 	int i=0;
 	for (i=0;i<m_wheelInfo.size();i++)
 	{
-		btScalar depth; 
-		depth = rayCast( m_wheelInfo[i]);
+		//btScalar depth; 
+		//depth = 
+		rayCast( m_wheelInfo[i]);
 	}
-
-//*********************************************************************************************
-//************************** Added to original bullet code from forum suggestion 
-//                            --------------- 25-Feb-2018 ---------------
-	// Work around: make sure that either both wheels on one axis
-    // are on ground, or none of them. This avoids the problem of
-    // the kart suddenly getting additional angular velocity because
-    // e.g. only one rear wheel is on the ground.
-    for(i=0; i<4; i+=2)
-    {
-        if(m_wheelInfo[i].m_raycastInfo.m_isInContact &&
-           !(m_wheelInfo[i+1].m_raycastInfo.m_isInContact))
-        {
-            m_wheelInfo[i+1].m_raycastInfo = m_wheelInfo[i].m_raycastInfo;
-        }
-        if(!(m_wheelInfo[i].m_raycastInfo.m_isInContact) &&
-           m_wheelInfo[i+1].m_raycastInfo.m_isInContact)
-        {
-           m_wheelInfo[i].m_raycastInfo = m_wheelInfo[i+1].m_raycastInfo;
-        }
-    }   // for i=0; i<4; i+=2
-//*********************************************************************************************
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	updateSuspension(step);
 

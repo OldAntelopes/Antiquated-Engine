@@ -582,7 +582,7 @@ void		PhysicsBeginGenerateLandscapeBVH( int nHeightfieldWidth, int nHeightfieldH
 
 	mhPhysicsBVHGenerationThread = SysCreateThread( (fnThreadFunction)PhysicsGenerateBVHThread, (void*)NULL, 0, 0 );
 
-}
+} 
 
 BOOL		PhysicsLandscapeGenerationInProgress( void )
 {

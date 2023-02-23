@@ -15,8 +15,9 @@ subject to the following restrictions:
 
 #include "btWorldImporter.h"
 #include "btBulletDynamicsCommon.h"
+#ifdef USE_GIMPACT
 #include "BulletCollision/Gimpact/btGImpactShape.h"
-
+#endif
 btWorldImporter::btWorldImporter(btDynamicsWorld* world)
 :m_dynamicsWorld(world),
 m_verboseMode(0)
@@ -177,6 +178,7 @@ btCollisionShape* btWorldImporter::convertCollisionShape(  btCollisionShapeData*
 		}
 	case GIMPACT_SHAPE_PROXYTYPE:
 		{
+#ifdef USE_GIMPACT
 			btGImpactMeshShapeData* gimpactData = (btGImpactMeshShapeData*) shapeData;
 			if (gimpactData->m_gimpactSubType == CONST_GIMPACT_TRIMESH_SHAPE)
 			{
@@ -195,12 +197,49 @@ btCollisionShape* btWorldImporter::convertCollisionShape(  btCollisionShapeData*
 			{
 				printf("unsupported gimpact sub type\n");
 			}
+#endif//USE_GIMPACT
 			break;
 		}
+	//The btCapsuleShape* API has issue passing the margin/scaling/halfextents unmodified through the API
+	//so deal with this
+		case CAPSULE_SHAPE_PROXYTYPE:
+		{
+			btCapsuleShapeData* capData = (btCapsuleShapeData*)shapeData;
+			
 
+			switch (capData->m_upAxis)
+			{
+			case 0:
+				{
+					shape = createCapsuleShapeX(1,1);
+					break;
+				}
+			case 1:
+				{
+					shape = createCapsuleShapeY(1,1);
+					break;
+				}
+			case 2:
+				{
+					shape = createCapsuleShapeZ(1,1);
+					break;
+				}
+			default:
+				{
+					printf("error: wrong up axis for btCapsuleShape\n");
+				}
+
+
+			};
+			if (shape)
+			{
+				btCapsuleShape* cap = (btCapsuleShape*) shape;
+				cap->deSerializeFloat(capData);
+			}
+			break;
+		}
 		case CYLINDER_SHAPE_PROXYTYPE:
 		case CONE_SHAPE_PROXYTYPE:
-		case CAPSULE_SHAPE_PROXYTYPE:
 		case BOX_SHAPE_PROXYTYPE:
 		case SPHERE_SHAPE_PROXYTYPE:
 		case MULTI_SPHERE_SHAPE_PROXYTYPE:
@@ -227,36 +266,7 @@ btCollisionShape* btWorldImporter::convertCollisionShape(  btCollisionShapeData*
 							shape = createSphereShape(implicitShapeDimensions.getX());
 							break;
 						}
-					case CAPSULE_SHAPE_PROXYTYPE:
-						{
-							btCapsuleShapeData* capData = (btCapsuleShapeData*)shapeData;
-							switch (capData->m_upAxis)
-							{
-							case 0:
-								{
-									shape = createCapsuleShapeX(implicitShapeDimensions.getY()+bsd->m_collisionMargin*2,2*implicitShapeDimensions.getX());
-									break;
-								}
-							case 1:
-								{
-									shape = createCapsuleShapeY(implicitShapeDimensions.getX()+bsd->m_collisionMargin*2,2*implicitShapeDimensions.getY());
-									break;
-								}
-							case 2:
-								{
-									shape = createCapsuleShapeZ(implicitShapeDimensions.getX()+bsd->m_collisionMargin*2,2*implicitShapeDimensions.getZ());
-									break;
-								}
-							default:
-								{
-									printf("error: wrong up axis for btCapsuleShape\n");
-								}
-								bsd->m_collisionMargin = 0.f;
-
-							};
-							
-							break;
-						}
+					
 					case CYLINDER_SHAPE_PROXYTYPE:
 						{
 							btCylinderShapeData* cylData = (btCylinderShapeData*) shapeData;
@@ -946,6 +956,95 @@ void	btWorldImporter::convertConstraintFloat(btTypedConstraintFloatData* constra
 				constraint = gear;
 				break;
 			}
+		case D6_SPRING_2_CONSTRAINT_TYPE:
+			{
+							
+			btGeneric6DofSpring2ConstraintData* dofData = (btGeneric6DofSpring2ConstraintData*)constraintData;
+		
+			btGeneric6DofSpring2Constraint* dof = 0;
+						
+			if (rbA && rbB)
+			{
+				btTransform rbAFrame,rbBFrame;
+				rbAFrame.deSerializeFloat(dofData->m_rbAFrame);
+				rbBFrame.deSerializeFloat(dofData->m_rbBFrame);
+				dof = createGeneric6DofSpring2Constraint(*rbA,*rbB,rbAFrame,rbBFrame, dofData->m_rotateOrder);
+			} else
+			{
+				printf("Error in btWorldImporter::createGeneric6DofSpring2Constraint: requires rbA && rbB\n");
+			}
+
+			if (dof)
+			{
+				btVector3 angLowerLimit,angUpperLimit, linLowerLimit,linUpperlimit;
+				angLowerLimit.deSerializeFloat(dofData->m_angularLowerLimit);
+				angUpperLimit.deSerializeFloat(dofData->m_angularUpperLimit);
+				linLowerLimit.deSerializeFloat(dofData->m_linearLowerLimit);
+				linUpperlimit.deSerializeFloat(dofData->m_linearUpperLimit);
+					
+				angLowerLimit.setW(0.f);
+				dof->setAngularLowerLimit(angLowerLimit);
+				dof->setAngularUpperLimit(angUpperLimit);
+				dof->setLinearLowerLimit(linLowerLimit);
+				dof->setLinearUpperLimit(linUpperlimit);
+
+				int i;
+				if (fileVersion>280)
+				{
+					//6-dof: 3 linear followed by 3 angular
+					for (i=0;i<3;i++)
+					{
+						dof->setStiffness(i,dofData->m_linearSpringStiffness.m_floats[i],dofData->m_linearSpringStiffnessLimited[i]!=0);
+						dof->setEquilibriumPoint(i,dofData->m_linearEquilibriumPoint.m_floats[i]);
+						dof->enableSpring(i,dofData->m_linearEnableSpring[i]!=0);
+						dof->setDamping(i,dofData->m_linearSpringDamping.m_floats[i],dofData->m_linearSpringDampingLimited[i]);
+					}
+					for (i=0;i<3;i++)
+					{
+						dof->setStiffness(i+3,dofData->m_angularSpringStiffness.m_floats[i],dofData->m_angularSpringStiffnessLimited[i]);
+						dof->setEquilibriumPoint(i+3,dofData->m_angularEquilibriumPoint.m_floats[i]);
+						dof->enableSpring(i+3,dofData->m_angularEnableSpring[i]!=0);
+						dof->setDamping(i+3,dofData->m_angularSpringDamping.m_floats[i],dofData->m_angularSpringDampingLimited[i]);
+					}
+
+				}
+			}
+
+			constraint = dof;
+			break;
+			
+			}
+			case FIXED_CONSTRAINT_TYPE:
+			{
+				
+				btGeneric6DofSpring2Constraint* dof = 0;
+				if (rbA && rbB)
+				{
+					btTransform rbAFrame,rbBFrame;
+					//compute a shared world frame, and compute frameInA, frameInB relative to this
+					btTransform sharedFrame;
+					sharedFrame.setIdentity();
+					btVector3 centerPos = btScalar(0.5)*(rbA->getWorldTransform().getOrigin()+
+											rbB->getWorldTransform().getOrigin());
+					sharedFrame.setOrigin(centerPos);
+					rbAFrame = rbA->getWorldTransform().inverse()*sharedFrame;
+					rbBFrame = rbB->getWorldTransform().inverse()*sharedFrame;
+					
+					
+					dof = createGeneric6DofSpring2Constraint(*rbA,*rbB,rbAFrame,rbBFrame, RO_XYZ);
+					dof->setLinearUpperLimit(btVector3(0,0,0));
+					dof->setLinearLowerLimit(btVector3(0,0,0));
+					dof->setAngularUpperLimit(btVector3(0,0,0));
+					dof->setAngularLowerLimit(btVector3(0,0,0));
+					
+				} else
+				{
+					printf("Error in btWorldImporter::createGeneric6DofSpring2Constraint: requires rbA && rbB\n");
+				}
+				
+				constraint = dof;
+				break;
+			}
 		default:
 			{
 				printf("unknown constraint type\n");
@@ -1176,7 +1275,7 @@ void	btWorldImporter::convertConstraintDouble(btTypedConstraintDoubleData* const
 					btVector3 axisInA,axisInB;
 					axisInA.deSerializeDouble(gearData->m_axisInA);
 					axisInB.deSerializeDouble(gearData->m_axisInB);
-					gear = createGearConstraint(*rbA, *rbB, axisInA,axisInB, (btScalar)gearData->m_ratio);
+					gear = createGearConstraint(*rbA, *rbB, axisInA,axisInB, gearData->m_ratio);
 				} else
 				{
 					btAssert(0);
@@ -1186,6 +1285,97 @@ void	btWorldImporter::convertConstraintDouble(btTypedConstraintDoubleData* const
 				constraint = gear;
 				break;
 			}
+
+		case D6_SPRING_2_CONSTRAINT_TYPE:
+			{
+							
+			btGeneric6DofSpring2ConstraintDoubleData2* dofData = (btGeneric6DofSpring2ConstraintDoubleData2*)constraintData;
+		
+			btGeneric6DofSpring2Constraint* dof = 0;
+						
+			if (rbA && rbB)
+			{
+				btTransform rbAFrame,rbBFrame;
+				rbAFrame.deSerializeDouble(dofData->m_rbAFrame);
+				rbBFrame.deSerializeDouble(dofData->m_rbBFrame);
+				dof = createGeneric6DofSpring2Constraint(*rbA,*rbB,rbAFrame,rbBFrame, dofData->m_rotateOrder);
+			} else
+			{
+				printf("Error in btWorldImporter::createGeneric6DofSpring2Constraint: requires rbA && rbB\n");
+			}
+
+			if (dof)
+			{
+				btVector3 angLowerLimit,angUpperLimit, linLowerLimit,linUpperlimit;
+				angLowerLimit.deSerializeDouble(dofData->m_angularLowerLimit);
+				angUpperLimit.deSerializeDouble(dofData->m_angularUpperLimit);
+				linLowerLimit.deSerializeDouble(dofData->m_linearLowerLimit);
+				linUpperlimit.deSerializeDouble(dofData->m_linearUpperLimit);
+					
+				angLowerLimit.setW(0.f);
+				dof->setAngularLowerLimit(angLowerLimit);
+				dof->setAngularUpperLimit(angUpperLimit);
+				dof->setLinearLowerLimit(linLowerLimit);
+				dof->setLinearUpperLimit(linUpperlimit);
+
+				int i;
+				if (fileVersion>280)
+				{
+					//6-dof: 3 linear followed by 3 angular
+					for (i=0;i<3;i++)
+					{
+						dof->setStiffness(i,dofData->m_linearSpringStiffness.m_floats[i],dofData->m_linearSpringStiffnessLimited[i]);
+						dof->setEquilibriumPoint(i,dofData->m_linearEquilibriumPoint.m_floats[i]);
+						dof->enableSpring(i,dofData->m_linearEnableSpring[i]!=0);
+						dof->setDamping(i,dofData->m_linearSpringDamping.m_floats[i],dofData->m_linearSpringDampingLimited[i]);
+					}
+					for (i=0;i<3;i++)
+					{
+						dof->setStiffness(i+3,dofData->m_angularSpringStiffness.m_floats[i],dofData->m_angularSpringStiffnessLimited[i]);
+						dof->setEquilibriumPoint(i+3,dofData->m_angularEquilibriumPoint.m_floats[i]);
+						dof->enableSpring(i+3,dofData->m_angularEnableSpring[i]!=0);
+						dof->setDamping(i+3,dofData->m_angularSpringDamping.m_floats[i],dofData->m_angularSpringDampingLimited[i]);
+					}
+
+				}
+			}
+
+			constraint = dof;
+			break;
+			
+			}
+			case FIXED_CONSTRAINT_TYPE:
+			{
+				
+				btGeneric6DofSpring2Constraint* dof = 0;
+				if (rbA && rbB)
+				{
+					btTransform rbAFrame,rbBFrame;
+					//compute a shared world frame, and compute frameInA, frameInB relative to this
+					btTransform sharedFrame;
+					sharedFrame.setIdentity();
+					btVector3 centerPos = btScalar(0.5)*(rbA->getWorldTransform().getOrigin()+
+														 rbB->getWorldTransform().getOrigin());
+					sharedFrame.setOrigin(centerPos);
+					rbAFrame = rbA->getWorldTransform().inverse()*sharedFrame;
+					rbBFrame = rbB->getWorldTransform().inverse()*sharedFrame;
+					
+					
+					dof = createGeneric6DofSpring2Constraint(*rbA,*rbB,rbAFrame,rbBFrame, RO_XYZ);
+					dof->setLinearUpperLimit(btVector3(0,0,0));
+					dof->setLinearLowerLimit(btVector3(0,0,0));
+					dof->setAngularUpperLimit(btVector3(0,0,0));
+					dof->setAngularLowerLimit(btVector3(0,0,0));
+					
+				} else
+				{
+					printf("Error in btWorldImporter::createGeneric6DofSpring2Constraint: requires rbA && rbB\n");
+				}
+				
+				constraint = dof;
+				break;
+			}
+				
 		default:
 			{
 				printf("unknown constraint type\n");
@@ -1605,9 +1795,13 @@ btCollisionShape* btWorldImporter::createConvexTriangleMeshShape(btStridingMeshI
 }
 btGImpactMeshShape* btWorldImporter::createGimpactShape(btStridingMeshInterface* trimesh)
 {
+#ifdef USE_GIMPACT
 	btGImpactMeshShape* shape = new btGImpactMeshShape(trimesh);
 	m_allocatedCollisionShapes.push_back(shape);
 	return shape;
+#else
+	return 0;
+#endif
 	
 }
 btConvexHullShape* btWorldImporter::createConvexHullShape()
@@ -1703,6 +1897,15 @@ btGeneric6DofConstraint* btWorldImporter::createGeneric6DofConstraint(btRigidBod
 	m_allocatedConstraints.push_back(dof);
 	return dof;
 }
+
+btGeneric6DofSpring2Constraint* btWorldImporter::createGeneric6DofSpring2Constraint(btRigidBody& rbA, btRigidBody& rbB, const btTransform& frameInA, const btTransform& frameInB, int rotateOrder)
+{
+	btGeneric6DofSpring2Constraint* dof = new btGeneric6DofSpring2Constraint(rbA,rbB,frameInA,frameInB, (RotateOrder)rotateOrder);
+	m_allocatedConstraints.push_back(dof);
+	return dof;
+}
+
+
 
 btGeneric6DofSpringConstraint* btWorldImporter::createGeneric6DofSpringConstraint(btRigidBody& rbA, btRigidBody& rbB, const btTransform& frameInA, const btTransform& frameInB ,bool useLinearReferenceFrameA)
 {
