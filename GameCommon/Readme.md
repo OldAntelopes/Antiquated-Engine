@@ -14,13 +14,12 @@ List of GameCommon framework components
 - **Console** : For text input and output
 - **EntitySystem** : Component-based entity system. Uses factory macros to register new entity types. 
 - **GenericDB** : Generic layer to standardise DB access. I never did much with DBs :)
-- **HTTP** : Nice n simple HTTP request handling with callbacks.
+- **HTTP** : Nice n simple HTTP request handling with callbacks. Just a thin curl wrapper really.
 - **Landscape** : A massive old heightmap landscape renderer, uses shaders to generate textures and stuff like that
-- **Network** : Lots of reasonably complex, quite specific and almost certainly completely useless low-level network things, like stuff for handling peer-to-peer connections and logging in to specific services that only exist in Universal land.
 - **ParticleSystem** : Generic particle system classes for rendering and ya know, particles
 - **Physics** : Uses bullet physics, can be linked to the entity system to provide basic physics behaviours
 - **Platform** : Abstracts a standard framework for app initialisation, interactions and updates
-- **RenderUtil** : Some handy interfaces for doing standard graphicy things like drawing lines in the 3d world, rendering a model to a textures etc.
+- **RenderUtil** : Some handy interfaces for doing standard graphicy things like drawing lines in the 3d world, rendering a model to a texture etc.
 - **Resources** : No idea
 - **UI** : Where the Pub/Interface library provides the basic 2d drawing functions, UI wraps these up for standard UI components like buttons, dropdowns etc
 - **Util** : Various basic regularly used utility functions, including cJSON.

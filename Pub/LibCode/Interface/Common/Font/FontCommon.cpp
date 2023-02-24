@@ -1419,6 +1419,81 @@ int		nHeight = 0;
 
 }
 
+int		InterfaceTextBox( int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, BOOL bLeftAlign )
+{
+char*	pcEndOfLine = (char*)szString;
+int		nLineSep = 13;
+int		nBaseY = nY;
+int		nStringWidth;
+
+	nLineSep = (int)( GetFontVHeight( 'A', font ) * GetFontTextureHeight(font)) + 1;
+
+	if ( mnCurrentFontFlags & FONT_FLAG_SMALL )
+	{
+		nLineSep = (int)( nLineSep * 0.75f );
+	}
+	else if ( mnCurrentFontFlags & FONT_FLAG_TINY )
+	{
+		nLineSep = (int)( nLineSep * 0.25f );
+	}
+	else if ( mnCurrentFontFlags & FONT_FLAG_GIANT )
+	{
+		nLineSep = (int)( nLineSep * 2.0f );
+	}
+	else if ( mnCurrentFontFlags & FONT_FLAG_ENORMOUS )
+	{
+		nLineSep = (int)( nLineSep * 5.0f );
+	}
+	else if ( mnCurrentFontFlags & FONT_FLAG_MASSIVE )
+	{
+		nLineSep = (int)( nLineSep * 3.1f );
+	}
+	else if ( mnCurrentFontFlags & FONT_FLAG_LARGE )
+	{
+		nLineSep = (int)( nLineSep * 1.25f );
+	}
+
+
+	nStringWidth = GetStringWidth( szString, font );
+
+	// If whole text fits on a single line
+	if ( nStringWidth < nMaxWidth )
+	{
+		if ( bLeftAlign )
+		{
+			InterfaceText( nLayer, nX, nY, szString, ulCol, font );
+		}
+		else
+		{
+			InterfaceTextCenter( nLayer, nX, nX + nMaxWidth, nY, szString, ulCol, font );
+		}
+		nY += nLineSep;
+	}
+	else
+	{
+		pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+		nY += nLineSep;
+		while ( pcEndOfLine != NULL )
+		{
+			nStringWidth = GetStringWidth( pcEndOfLine, font );
+
+			// If whole text fits on a single line
+			if ( ( bLeftAlign == FALSE ) &&
+				 ( nStringWidth < nMaxWidth ) )
+			{
+				InterfaceTextCenter( nLayer, nX, nX + nMaxWidth, nY, pcEndOfLine, ulCol, font );		
+				pcEndOfLine = NULL;
+			}
+			else
+			{
+				pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+			}
+			nY += nLineSep;
+		}
+	}
+	return( nY - nBaseY );
+}	
+
 
 int	InterfaceTextGetWidth( const char* pcString, int nFont )
 {

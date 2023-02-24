@@ -172,6 +172,7 @@ extern void FreeFont( BOOL bFreeEverything );
 
 extern void InitialiseFontBuffers( void );
 
+extern int GetFontTextureHeight( int nFont );
 
 extern int					mnCurrentFontFlags;
 extern TEXT_BUFFER			maxTextBuffer[];
