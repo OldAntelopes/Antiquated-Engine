@@ -69,6 +69,7 @@ public:
 	void	MoveSelected( VECT* pxMove );
 	void	ApplyMaterialToSelectedFaces( int attribID );
 	void	SubdivideSelectedFaces( void );
+	void	FixInsideOutSelectedFaces( void );
 	void	GetSelectedMappingList( MAPPING_LIST* );
 	void	ApplyMappingListUVs( MAPPING_LIST*, int );
 	void	DeleteSelectedFaces( void );

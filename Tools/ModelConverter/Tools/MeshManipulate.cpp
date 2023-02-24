@@ -193,6 +193,66 @@ int		nFacesInMesh;
 }
 
 
+void ModelConvFixInsideOutModelSelected( int nHandle )
+{
+MODEL_RENDER_DATA*	pxModelData = maxModelRenderData;
+CUSTOMVERTEX*	pxVertices;
+ushort*	puwIndices;
+ushort	uwIndex;
+int		nVertLoop;
+int		nVertsInMesh;
+int		nFaceLoop;
+int		nFacesInMesh;
+
+	if ( nHandle != NOTFOUND )
+	{
+		pxModelData += nHandle;
+		
+		if ( pxModelData->pxBaseMesh != NULL )
+		{
+			nVertsInMesh = pxModelData->pxBaseMesh->GetNumVertices();
+			nFacesInMesh = pxModelData->pxBaseMesh->GetNumFaces();
+			pxModelData->pxBaseMesh->LockVertexBuffer( NULL, (byte**)( &pxVertices ) );
+
+			for ( nVertLoop = 0; nVertLoop < nVertsInMesh; nVertLoop++ )
+			{
+				pxVertices->normal.x *= -1.0f;
+				pxVertices->normal.y *= -1.0f;
+				pxVertices->normal.z *= -1.0f;
+				pxVertices++;
+			}
+			pxModelData->pxBaseMesh->UnlockVertexBuffer();
+
+			pxModelData->pxBaseMesh->LockIndexBuffer( NULL, (byte**)( &puwIndices ) );
+			if ( pxModelData->pxBaseMesh->Is32BitIndexBuffer() )
+			{
+			int*	punIndices;
+			int		nIndex;
+				punIndices = (int*)( puwIndices );
+				for ( nFaceLoop = 0; nFaceLoop < nFacesInMesh; nFaceLoop++ )
+				{
+					nIndex = punIndices[1];
+					punIndices[1] = punIndices[2];
+					punIndices[2] = nIndex;
+					punIndices += 3;
+				}
+			}
+			else
+			{
+				for ( nFaceLoop = 0; nFaceLoop < nFacesInMesh; nFaceLoop++ )
+				{
+					uwIndex = puwIndices[1];
+					puwIndices[1] = puwIndices[2];
+					puwIndices[2] = uwIndex;
+					puwIndices += 3;
+				}
+			}
+			pxModelData->pxBaseMesh->UnlockIndexBuffer();
+		}
+	}
+}
+
+
 
 
 void	ModelConvConvertYUpToZUp( int nHandle )

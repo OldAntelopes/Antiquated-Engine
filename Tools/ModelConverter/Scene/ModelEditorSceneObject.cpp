@@ -695,6 +695,10 @@ int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 		{
 			bCtrlHeld = TRUE;
 		}
+		else if ( SysCheckKeyState( KEY_ALT ) )
+		{
+			bAltHeld = TRUE;
+		}
 
 		if ( ( !bShiftHeld ) &&
 			 ( !bCtrlHeld ) )
@@ -769,6 +773,7 @@ int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 		}
 	}
 }
+
 
 
 void	CSceneObject::DeleteSelectedFaces( void )
@@ -848,6 +853,91 @@ CUSTOMVERTEX*	pxNewVertices = NULL;
 
 	pxModelData->xStats.nNumIndices = nNewNumFaces * 3;
 	ResetFaceList();
+}
+
+void	CSceneObject::FixInsideOutSelectedFaces( void )
+{
+BYTE*	pbSelections = mpbFaceSelections;
+int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
+int		nNumVerts = ModelGetStats( mnModelHandle )->nNumVertices;
+ushort*		puwIndices;
+ushort		uwIndex;
+MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[mnModelHandle];
+CUSTOMVERTEX*	pxVertices = NULL;
+BYTE*	pbAffectedVertices = (BYTE*)malloc( nNumVerts );
+
+	memset( pbAffectedVertices, 0, nNumVerts );
+
+	pxModelData->pxBaseMesh->LockIndexBuffer( NULL, (byte**)( &puwIndices ) );
+
+	if ( puwIndices != NULL )
+	{
+	int nFaceLoop;
+
+		if ( pxModelData->pxBaseMesh->Is32BitIndexBuffer() )
+		{
+		int*	punIndices;
+		int		nIndex;
+			
+			punIndices = (int*)( puwIndices );
+			for ( nFaceLoop = 0; nFaceLoop < nNumFaces; nFaceLoop++ )
+			{
+				if ( pbSelections[nFaceLoop] == 1 )
+				{
+					// Swap indices
+					nIndex = punIndices[1];
+					punIndices[1] = punIndices[2];
+					punIndices[2] = nIndex;
+
+					// Flag the verts referenced as needing to have their normals flipped
+					pbAffectedVertices[punIndices[0]] = 1;
+					pbAffectedVertices[punIndices[1]] = 1;
+					pbAffectedVertices[punIndices[2]] = 1;
+				}
+				punIndices += 3;
+			}
+		}
+		else
+		{
+			for ( nFaceLoop = 0; nFaceLoop < nNumFaces; nFaceLoop++ )
+			{
+				// If face is selected
+				if ( pbSelections[nFaceLoop] == 1 )
+				{
+					// Swap indices
+					uwIndex = puwIndices[1];
+					puwIndices[1] = puwIndices[2];
+					puwIndices[2] = uwIndex;
+
+					// Flag the verts referenced as needing to have their normals flipped
+					pbAffectedVertices[puwIndices[0]] = 1;
+					pbAffectedVertices[puwIndices[1]] = 1;
+					pbAffectedVertices[puwIndices[2]] = 1;
+				}
+				puwIndices += 3;
+			}
+		}
+			
+		pxModelData->pxBaseMesh->UnlockIndexBuffer();
+
+		int		nLoop;
+
+		pxModelData->pxBaseMesh->LockVertexBuffer( NULL, (byte**)( &pxVertices ) );
+		for ( nLoop = 0; nLoop < nNumVerts; nLoop++ )
+		{
+			if ( pbAffectedVertices[nLoop] == 1 )
+			{
+				pxVertices->normal.x *= -1.0f;
+				pxVertices->normal.y *= -1.0f;
+				pxVertices->normal.z *= -1.0f;
+			}
+			pxVertices++;
+
+		}
+		pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	}
+
+	free( pbAffectedVertices );
 }
 
 

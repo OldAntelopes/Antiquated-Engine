@@ -4998,7 +4998,15 @@ int	nVal;
 				ModelConverterDisplayFrame( TRUE );
 				break;
 			case ID_TOOLS_TURNINSIDEOUT:
-				ModelConvFixInsideOutModel( m_MainSceneObject.GetModelHandle() );
+
+				if ( m_MainSceneObject.GetNumFacesSelected() > 0 )
+				{
+					m_MainSceneObject.FixInsideOutSelectedFaces();
+				}
+				else
+				{
+					ModelConvFixInsideOutModel( m_MainSceneObject.GetModelHandle() );
+				}
 				ModelConverterDisplayFrame( TRUE );
 				break;
 			case IDM_FLIP_FACES:
