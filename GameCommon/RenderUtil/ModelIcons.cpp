@@ -204,6 +204,8 @@ ModelIcon*		pLast = NULL;
 				pLast->mpNext = pModelIcons->mpNext;
 			}
 			pModelIcons->Release();
+
+			if ( mspNextToUpdate == pModelIcons ) mspNextToUpdate = NULL;
 			delete pModelIcons;
 			return;
 		}
@@ -225,6 +227,8 @@ ModelIcon*		pNext;
 		delete pModelIcons;
 		pModelIcons = pNext;
 	}
+	mspModelIconsList = NULL;
+	mspNextToUpdate = NULL;
 }
 
 void		ModelIconsShutdown( void )

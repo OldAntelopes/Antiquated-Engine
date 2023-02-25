@@ -341,7 +341,7 @@ ulong	ulResult;
 }
 
 
-int	 RandInt( int nMin, int nMax )		// returns a random int between min and max inclusive
+int	 RandInt( int nMin, int nMax )		// returns a random int between min and max-1
 {
 
 	if ( nMax <= nMin )
@@ -351,7 +351,7 @@ int	 RandInt( int nMin, int nMax )		// returns a random int between min and max 
 	else
 	{
 	int	val;
-		val = (rand() % ((nMax-nMin)+1)) + nMin;
+		val = (rand() % (nMax-nMin)) + nMin;
 		return( val );
 	}
 }

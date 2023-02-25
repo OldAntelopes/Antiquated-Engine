@@ -943,8 +943,9 @@ INTERFACE_API float	InterfaceGetFPS( void )
 	return( mfInterfaceFPS );
 }
 
-
-
+#define		NUM_FRAME_TIMES		16
+ulong maulInterfaceLastFrameTimes[NUM_FRAME_TIMES] = { 0 };
+int		mnInterfaceNextFrameTimeStore = 0;
 
 /***************************************************************************
  * Function    : InterfacePresent
@@ -979,7 +980,17 @@ HRESULT	hr;
 
 		if ( ulFrameTime > 0 )
 		{
-			mfInterfaceFPS = 1000000.0f / (float)( ulFrameTime );		// convert from ms per frame to frames per second
+		int		nLoop;
+		ulong	ulAverageFrameTime = 0;
+
+			maulInterfaceLastFrameTimes[mnInterfaceNextFrameTimeStore] = ulFrameTime;
+			mnInterfaceNextFrameTimeStore = (mnInterfaceNextFrameTimeStore+1) % NUM_FRAME_TIMES;
+			for ( nLoop = 0; nLoop < NUM_FRAME_TIMES; nLoop++ )
+			{
+				ulAverageFrameTime += maulInterfaceLastFrameTimes[nLoop];
+			}
+			ulAverageFrameTime /= NUM_FRAME_TIMES;
+			mfInterfaceFPS = 1000000.0f / (float)( ulAverageFrameTime );		// convert from ms per frame to frames per second
 		}
 		mullInterfaceLastPresentTick = ullThisTick;
 	}

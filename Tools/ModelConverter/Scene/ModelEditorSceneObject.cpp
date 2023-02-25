@@ -695,10 +695,6 @@ int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 		{
 			bCtrlHeld = TRUE;
 		}
-		else if ( SysCheckKeyState( KEY_ALT ) )
-		{
-			bAltHeld = TRUE;
-		}
 
 		if ( ( !bShiftHeld ) &&
 			 ( !bCtrlHeld ) )
