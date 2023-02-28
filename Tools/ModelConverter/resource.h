@@ -137,8 +137,10 @@
 #define IDC_RADIO1                      1035
 #define IDC_EDIT25                      1035
 #define IDC_NO_SHADOWS2                 1035
+#define IDC_RESET_CAM_TO_MODEL          1035
 #define IDC_RADIO2                      1036
 #define IDC_EDIT26                      1036
+#define IDC_RESET_CAM_TO_SCENE          1036
 #define IDC_X_TEXT                      1037
 #define IDC_RADIO3                      1037
 #define IDC_EDIT27                      1037
@@ -393,7 +395,7 @@
 #define ID_SCALE_SCALEUPOLDTUMODEL      40159
 #define ID_SCENETOOLS_ADDPRIMITIVE_WALLCIRCLE 40160
 #define ID_IMPORTUVS                    40161
-#define ID_SCALE_SCALETO15GRID			40162
+#define ID_SCALE_SCALETO15GRID          40162
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

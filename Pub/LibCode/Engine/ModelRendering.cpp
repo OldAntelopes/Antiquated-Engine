@@ -2130,16 +2130,6 @@ int			nLODToUse = 0;
 	// 0xFF means any material settings are ignored
 	if ( (ulRenderFlags & RENDER_FLAGS_NO_STATE_CHANGE) == 0 )
 	{
-#ifndef TOOL
-		if ( ( (ulRenderFlags & RENDER_FLAGS_FORCE_SHADOWCAST) == RENDER_FLAGS_FORCE_SHADOWCAST ) ||
-			 ( pxModelData->bShadowCastMode != 0 ) )
-		{
-//			ModelRenderCastShadow( nModelHandle, pxPos, pxRot );
-#ifdef TUD9
-			ShadowVolumeRenderModel( nModelHandle, pxPos, pxRot, 0, 0 );
-#endif
-		}
-#endif
 		// Set material render states
 		ModelRenderSetMaterialRenderStates( pxModelData );
 	}

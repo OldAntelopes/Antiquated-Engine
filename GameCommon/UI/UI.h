@@ -17,6 +17,9 @@ enum
 
 typedef	void(*UIButtonHandler)( int nButtonID, ulong ulParam );
 
+typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
+
+
 //-------------------------------------- UIButton
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
@@ -49,6 +52,8 @@ extern void		UIDropdownRender( int nHandle, int ScreenX, int ScreenY, int Screen
 extern int		UIDropdownGetSelection( int nHandle, char* szElementNameOut, ulong* pulElementParamOut );
 extern ulong	UIDropdownGetSelectedParam( int nHandle );
 extern int		UIDropdownGetNumElements( int nHandle );
+extern void		UIDropdownSetValueChangeCallback( int nHandle, fnValueChangeCallback callbackFunc, void* pUserParam );
+
 extern void		UIDropdownReset( int nHandle );
 extern void		UIDropdownDestroy( int nHandle );
 

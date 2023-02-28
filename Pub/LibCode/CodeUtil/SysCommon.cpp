@@ -329,6 +329,53 @@ ulong	ulOut;
 	return( ulOut );
 }
 
+float	FClamp( float fVal, float fMin, float fMax )
+{
+	if ( fVal < fMin )
+	{
+		fVal = fMin;
+	}
+	else if ( fVal > fMax )
+	{
+		fVal = fMax;
+	}
+	return( fVal );
+}
+
+unsigned int		GetColValue( COLOUR xCol )
+{
+ushort		uwRed;
+ushort		uwGreen;
+ushort		uwBlue;
+ushort		uwAlpha;
+ulong		ulCol;
+
+	xCol.r = FClamp( xCol.r, 0.0f, 1.0f );
+	xCol.g = FClamp( xCol.g, 0.0f, 1.0f );
+	xCol.b = FClamp( xCol.b, 0.0f, 1.0f );
+	xCol.a = FClamp( xCol.a, 0.0f, 1.0f );
+
+	uwRed = ((ushort)( xCol.r * 255.0f )) ;
+	uwGreen = ((ushort)( xCol.g * 255.0f )) ;
+	uwBlue = ((ushort)( xCol.b * 255.0f )) ;
+	uwAlpha = ((ushort)( xCol.a * 255.0f )) ;
+
+	ulCol = (uwAlpha << 24) | (uwRed << 16) | (uwGreen << 8) | uwBlue;
+	return( ulCol );	
+}
+
+COLOUR			GetColFloats( unsigned int ulCol )
+{
+COLOUR	xCol;
+
+	xCol.r = ((ulCol >> 16) & 0xFF) / 255.0f;
+	xCol.g = ((ulCol >> 8) & 0xFF) / 255.0f;
+	xCol.b = (ulCol & 0xFF) / 255.0f;
+	xCol.a = ((ulCol >> 24) & 0xFF) / 255.0f;
+
+	return( xCol );
+}
+
 unsigned int	GetColWithModifiedAlpha( unsigned int ulCol, float fAlpha )
 {
 ulong	ulAlpha = ulCol >> 24;

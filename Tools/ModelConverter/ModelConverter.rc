@@ -9,8 +9,6 @@
 //
 #include "windows.h"
 
-#define IDC_STATIC		-1
-
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -353,7 +351,7 @@ STYLE DS_SETFOREGROUND | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER |
 EXSTYLE WS_EX_CLIENTEDGE
 CAPTION "ATM Model Converter v2.12"
 MENU IDR_MENU1
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
+FONT 8, "MS Shell Dlg"
 BEGIN
     LISTBOX         IDC_OUTPUT_LIST,95,288,322,50,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
@@ -404,13 +402,13 @@ BEGIN
     PUSHBUTTON      "Select Connected",IDC_SELECT_CONNECTED,7,226,74,12
     CONTROL         "",IDC_MAIN_PROGRESS,"msctls_progress32",WS_BORDER,7,336,
                     76,9
-    LTEXT           "Lock:",IDC_LOCKTEXT,423,293,19,9
+    LTEXT           "Lock:",IDC_LOCKTEXT,423,327,19,9
     CONTROL         "X",IDC_LOCKX,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | 
-                    WS_TABSTOP,449,289,19,13
+                    WS_TABSTOP,449,323,19,13
     CONTROL         "Y",IDC_LOCKY,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | 
-                    WS_TABSTOP,471,289,19,13
+                    WS_TABSTOP,471,323,19,13
     CONTROL         "Z",IDC_LOCKZ,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | 
-                    WS_TABSTOP,495,289,19,13
+                    WS_TABSTOP,495,323,19,13
     PUSHBUTTON      "Slice Faces",IDC_SLICE_FACES,7,170,74,12
     PUSHBUTTON      "Axis Snap",IDC_AXIS_SNAP,7,184,74,12
     PUSHBUTTON      "Reset Plane",IDC_RESET_PLANE,7,198,74,12
@@ -422,6 +420,9 @@ BEGIN
                     BS_NOTIFY
     RADIOBUTTON     "Scale Verts",IDC_SCALE_VERTS,7,212,75,11,BS_PUSHLIKE | 
                     BS_NOTIFY
+    PUSHBUTTON      "Reset Cam: Model",IDC_RESET_CAM_TO_MODEL,446,287,68,11,
+                    WS_DISABLED
+    PUSHBUTTON      "Reset Cam: Scene",IDC_RESET_CAM_TO_SCENE,446,303,68,11
 END
 
 IDD_ROTATE_DIALOG DIALOG DISCARDABLE  0, 0, 186, 93
@@ -1229,8 +1230,8 @@ BEGIN
         BEGIN
             MENUITEM "Scale dialog",                ID_SCALE_SCALEDIALOG
             MENUITEM "Scale up old TU model",       ID_SCALE_SCALEUPOLDTUMODEL
-            MENUITEM "Scale to 15m grid",          ID_SCALE_SCALETO15GRID
 
+            MENUITEM "Scale to 15m grid",           ID_SCALE_SCALETO15GRID
         END
         MENUITEM SEPARATOR
         MENUITEM "S&tick To Floor",             ID_TOOLS_STICKTOFLOOR

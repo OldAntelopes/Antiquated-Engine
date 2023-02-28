@@ -84,6 +84,15 @@ typedef enum
 
 } FETCHFILE_RETURN_VAL;
 
+
+typedef struct
+{
+	float	r;
+	float	g;
+	float	b;
+	float	a;
+} COLOUR;
+
 typedef	void(*fnFetchFileCallback)( FETCHFILE_RETURN_VAL, long lParam, const char* szLocalFilename );
 
 
@@ -94,11 +103,14 @@ extern void		ArchiveRelease( int nArchiveHandle );
 extern void		ArchiveExtract( int nArchiveHandle, const char* szDestinationPath );
 
 extern unsigned int		GetColWithModifiedAlpha( unsigned int ulCol, float fAlpha );
+extern unsigned int		GetColValue( COLOUR xCol );
+extern COLOUR			GetColFloats( unsigned int ulCol );
 extern unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, float fCol1BlendStrength );
 #define	frand()		FRand()
 
-extern float FRand( float, float );
-extern int	 RandInt( int, int );
+extern float	FClamp( float fVal, float fMin, float fMax );
+extern float	FRand( float, float );
+extern int		RandInt( int, int );
 
 
 
