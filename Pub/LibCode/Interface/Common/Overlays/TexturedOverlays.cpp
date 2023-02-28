@@ -48,7 +48,7 @@ typedef struct
 	union {	float	fU3;	float fRot; };
 	float	fV1;
 	float	fV2;
-	float	fV3;
+	union { float	fV3;	ulong ulCol2; };
 
 	void*	pNext;
 
@@ -434,7 +434,7 @@ FLATVERTEX*		pVertices;
 	pVertices->x = (float)( pxRectDef->nX ) + 0.25f;
 	pVertices->y = (float)( pxRectDef->nY + pxRectDef->nHeight ) + 0.25f;
 	pVertices->z = 1.0f;
-	pVertices->color = pxRectDef->ulCol;
+	pVertices->color = pxRectDef->ulCol2;
 	pVertices->tu = pxRectDef->fU1;
 #ifdef USING_OPENGL
 	pVertices->tv = 1.0f - pxRectDef->fV2;
@@ -461,7 +461,7 @@ FLATVERTEX*		pVertices;
 	pVertices->x = (float)( pxRectDef->nX + pxRectDef->nWidth ) + 0.25f;
 	pVertices->y = (float)( pxRectDef->nY + pxRectDef->nHeight ) + 0.25f;
 	pVertices->z = 1.0f;
-	pVertices->color = pxRectDef->ulCol;
+	pVertices->color = pxRectDef->ulCol2;
 	pVertices->tu = pxRectDef->fU2;
 #ifdef USING_OPENGL
 	pVertices->tv = 1.0f - pxRectDef->fV2;
@@ -474,7 +474,7 @@ FLATVERTEX*		pVertices;
 	pVertices->x = (float)( pxRectDef->nX ) + 0.25f;
 	pVertices->y = (float)( pxRectDef->nY + pxRectDef->nHeight ) + 0.25f;
 	pVertices->z = 1.0f;
-	pVertices->color = pxRectDef->ulCol;
+	pVertices->color = pxRectDef->ulCol2;
 	pVertices->tu = pxRectDef->fU1;
 #ifdef USING_OPENGL
 	pVertices->tv = 1.0f - pxRectDef->fV2;
@@ -779,6 +779,37 @@ TEXTURED_RECT_DEF* pxRectDef;
 		pxRectDef->nWidth = nWidth;
 		pxRectDef->nHeight = nHeight;
 		pxRectDef->ulCol = ulCol;
+		pxRectDef->ulCol2 = ulCol;
+		pxRectDef->fU1 = fU;
+		pxRectDef->fV1 = fV;
+		pxRectDef->fU2 = fUWidth;
+		pxRectDef->fV2 = fUHeight;
+
+#ifndef USING_OPENGL
+		pxRectDef->nX += mnInterfaceDrawX;
+		pxRectDef->nY += mnInterfaceDrawY;
+		pxRectDef->nX2 += mnInterfaceDrawX;
+		pxRectDef->nY2 += mnInterfaceDrawY;
+#endif
+	}
+}
+
+INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, ulong ulCol2, float fU, float fV, float fUWidth, float fUHeight )
+{
+TEXTURED_RECT_DEF* pxRectDef;
+
+	if ( nOverlayNum < 0 ) return;
+
+	pxRectDef = TexOverlayGetNextRect( nOverlayNum );
+	if ( pxRectDef != NULL )
+	{
+		pxRectDef->nType = TEX_OVLY_RECT;
+		pxRectDef->nX = nX;
+		pxRectDef->nY = nY;
+		pxRectDef->nWidth = nWidth;
+		pxRectDef->nHeight = nHeight;
+		pxRectDef->ulCol = ulCol;
+		pxRectDef->ulCol2 = ulCol2;
 		pxRectDef->fU1 = fU;
 		pxRectDef->fV1 = fV;
 		pxRectDef->fU2 = fUWidth;
@@ -1143,6 +1174,34 @@ int		nHandle;
 	}
 
 	return( nHandle );
+}
+
+void	InterfaceExportTexture( int nTextureHandle, const char* szFilename, int nMode )
+{
+#ifdef TUD11
+	PANIC_IF( TRUE, "DX11 EngineExportTexture TBI" );
+#else
+LPGRAPHICSTEXTURE	pTexture = maxInternalTextures[ nTextureHandle ].pTexture;
+HRESULT		ret;
+
+	switch( nMode )
+	{
+	case 3:
+		ret = D3DXSaveTextureToFile( (LPCSTR)szFilename,D3DXIFF_PNG,pTexture,NULL );
+		break;
+	case 2:
+		ret = D3DXSaveTextureToFile( (LPCSTR)szFilename,D3DXIFF_JPG,pTexture,NULL );
+		break;
+	case 1:
+		ret = D3DXSaveTextureToFile( (LPCSTR)szFilename,D3DXIFF_DDS,pTexture,NULL );
+		break;
+	case 0:
+	default:
+		ret = D3DXSaveTextureToFile( (LPCSTR)szFilename, D3DXIFF_BMP, pTexture, NULL );
+		break;
+	}
+#endif
+
 }
 
 

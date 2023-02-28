@@ -140,6 +140,7 @@ extern INTERFACE_API int	InterfaceGetTextureSize( int nTextureHandle, int* pnW, 
 extern INTERFACE_API BYTE*	InterfaceLockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags );
 extern INTERFACE_API void	InterfaceTextureGetColourAtPoint( int nTextureHandle, byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha );
 extern INTERFACE_API void	InterfaceUnlockTexture( int nTextureHandle );
+extern INTERFACE_API void	InterfaceExportTexture( int nTextureHandle, const char* szOutputFilename, int nMode );
 extern INTERFACE_API void	InterfaceReleaseTexture( int nTextureHandle );
 
 #define SAFE_RELEASE_TEXTURE(p)      { if(p != NOTFOUND) { InterfaceReleaseTexture(p); p=NOTFOUND; } }
@@ -169,6 +170,7 @@ extern INTERFACE_API void	InterfaceOverlayRenderType( int nOverlayNum, INTF_REND
 extern INTERFACE_API void	InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, ulong ulCol, float fRotation, float fScale );
 extern INTERFACE_API void	InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, float fU, float fV, float fU2, float fV2 );
 extern INTERFACE_API void	InterfaceTexturedTri( int nOverlayNum, int* pnScreenCoords, float* pfTextureCoords, ulong ulCol );
+extern INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, ulong ulCol2, float fU, float fV, float fU2, float fV2 );
 
 typedef int			IMAGEHANDLE;
 
