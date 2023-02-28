@@ -11,6 +11,7 @@
 
 CURL*					mpxCurl;
 
+
 //#define ENABLE_CURL_LOG	
 
 int		HTTPDataReceive( const void* pMem, size_t size, size_t num, void* pData )
@@ -50,6 +51,7 @@ int progress_callback(void *clientp,   curl_off_t dltotal,   curl_off_t dlnow,  
 	return( 0 );
 }
 
+#ifdef DEVLOGGING
 static
 int my_trace(CURL *handle, curl_infotype type, char *data, size_t size,   void *userp)
 {
@@ -88,6 +90,7 @@ int my_trace(CURL *handle, curl_infotype type, char *data, size_t size,   void *
 //  dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
   return 0;
 }
+#endif
 
 int HTTPPerformFetch( char *acFullURL, HTTPDownloadDetails* pxDetails )
 {
@@ -119,11 +122,14 @@ bool		bRetry = false;
 		return( -1 );
 	}
 
+#ifdef DEVLOGGING
 	if ( DevLoggingIsLogEnabled( DEVLOG_CURLVERBOSE ) )
 	{
 		curl_easy_setopt(pxCurl, CURLOPT_DEBUGFUNCTION, my_trace);
 		curl_easy_setopt(pxCurl, CURLOPT_VERBOSE, 1);
 	}
+#endif
+
 	curl_easy_setopt( pxCurl, CURLOPT_ERRORBUFFER, &acErrorMsg );
 //	curl_easy_setopt( pxCurl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
 #ifdef ENABLE_CURL_LOG	
