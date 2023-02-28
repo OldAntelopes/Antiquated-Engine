@@ -20,6 +20,7 @@ enum eModelIconFlags
 extern void		ModelIconsInit( void );
 
 extern ModelIconHandle		ModelIconCreate( const char* szModel, const char* szTexture, eModelIconFlags flags, int nLoadFromArchive );
+extern ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture, eModelIconFlags flags, int nLoadFromArchive );
 
 extern void		ModelIconsUpdate( void );
 

@@ -22,6 +22,7 @@ public:
 	int			mhRenderTargetTexture;
 	int			mFlags;
 
+	BOOL		mbOwnsHandles;
 	ModelIcon*	mpNext;
 };
 
@@ -58,10 +59,13 @@ VECT		xVect = { 0.25f, 0.25f, -0.75f };
  
 void		ModelIcon::Release()
 {
-	EngineReleaseTexture( &mhTexture );
+	if ( mbOwnsHandles == TRUE )
+	{
+		EngineReleaseTexture( &mhTexture );
+		ModelFree( mhModelHandle );
+		mhModelHandle = NOTFOUND;
+	}
 	EngineReleaseTexture( &mhRenderTargetTexture );
-	ModelFree( mhModelHandle );
-	mhModelHandle = NOTFOUND;
 }
 
 void		ModelIcon::UpdateIconTexture()
@@ -74,12 +78,16 @@ float	fDelta;
 VECT	xPos = { 0.0f, 0.0f, 0.0f };
 VECT	xRot = { 0.0f, 0.0f, 0.0f };
 float	fCamDist;
+MODEL_STATS*		pxModelStats;
+
+	if ( mhModelHandle == NOTFOUND ) return;
 
 	EngineDefaultState();
 	
 	SetLighting();
 	VectNormalize( &xCamDir );
-	fCamDist = ModelGetStats(mhModelHandle)->fBoundSphereRadius * 2.0f;
+	pxModelStats = ModelGetStats(mhModelHandle);
+	fCamDist = pxModelStats->fBoundSphereRadius * 1.3f;
 	VectScale( &xCamPos, &xCamPos, fCamDist );
 	ulTick = SysGetTick();
 
@@ -91,19 +99,19 @@ float	fCamDist;
 
 	EngineSetRenderTargetTexture( mhRenderTargetTexture, 0x00000000, TRUE );
 
-	EngineCameraSetPos( xCamPos.x, xCamPos.y, xCamPos.z );
+	EngineCameraSetPos( xCamPos.x + pxModelStats->xBoundSphereCentre.x, xCamPos.y + pxModelStats->xBoundSphereCentre.y, xCamPos.z + pxModelStats->xBoundSphereCentre.z );
 	EngineCameraSetDirection( xCamDir.x, xCamDir.y, xCamDir.z );
 	EngineCameraSetUpVect( xCamUp.x, xCamUp.y, xCamUp.z );
 	EngineCameraUpdate();
 
 	EngineCameraSetViewAspectOverride( 1.0f );
-	EngineCameraSetProjection( A45, 0.1f, 50.0f );
+	EngineCameraSetProjection( A45, 0.1f, 1000.0f );
 
 //	EngineSetMaterial( ENGINEMATERIAL* 
 	EngineSetTexture( 0, mhTexture );
 	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+	// TODO - We shouldnt need RENDER_FLAGS_NO_STATE_CHANGE here (but the trees on neander are an example why we might right now..)
 	ModelRender( mhModelHandle, &xPos, &xRot, RENDER_FLAGS_NO_STATE_CHANGE );
-	
 	EngineCameraSetViewAspectOverride( 0.0f );
 	EngineRestoreRenderTarget();
 
@@ -120,38 +128,76 @@ void		ModelIconsInit( void )
 
 ModelIconHandle		ModelIconCreate(  const char* szModel, const char* szTexture,  eModelIconFlags flags, int nLoadFromArchive )
 {
-int		nNewHandle = msnModelIconsNextHandle++;
-ModelIcon*		pNewModelIcon;
+int		nModelHandle;
+int		nTextureHandle;
 
-	pNewModelIcon = new ModelIcon;
-	pNewModelIcon->mhModelIcon = nNewHandle;
-	pNewModelIcon->mpNext = mspModelIconsList;
-	mspModelIconsList = pNewModelIcon;
-
-	pNewModelIcon->mFlags = flags;
-	pNewModelIcon->mfRotationAngle = FRand( 0.0f, A360 );
-	pNewModelIcon->mfRotationSpeed = 1.0f;
 	if ( nLoadFromArchive != NOTFOUND )
 	{
-		pNewModelIcon->mhModelHandle = ModelLoadFromArchive( szModel, 0, 1.0f, nLoadFromArchive );
+		nModelHandle = ModelLoadFromArchive( szModel, 0, 1.0f, nLoadFromArchive );
 	}
 	else
 	{
-		pNewModelIcon->mhModelHandle = ModelLoad( szModel, 0, 1.0f );
+		nModelHandle = ModelLoad( szModel, 0, 1.0f );
 	}
 	
-	if ( nLoadFromArchive != NOTFOUND )
+	if ( nModelHandle != NOTFOUND )
 	{
-		pNewModelIcon->mhTexture = EngineLoadTextureFromArchive( szTexture, 0, nLoadFromArchive, NULL );
-	}
-	else
-	{
-		pNewModelIcon->mhTexture = EngineLoadTexture( szTexture, 0, NULL );
-	}
-	pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
-	pNewModelIcon->mulLastUpdateTick = SysGetTick();
+	int		nNewHandle = msnModelIconsNextHandle++;
+	ModelIcon*		pNewModelIcon;
 
-	return( nNewHandle );
+		if ( nLoadFromArchive != NOTFOUND )
+		{
+			nTextureHandle = EngineLoadTextureFromArchive( szTexture, 0, nLoadFromArchive, NULL );
+		}
+		else
+		{
+			nTextureHandle = EngineLoadTexture( szTexture, 0, NULL );
+		}
+
+		pNewModelIcon = new ModelIcon;
+		pNewModelIcon->mhModelIcon = nNewHandle;
+		pNewModelIcon->mpNext = mspModelIconsList;
+		mspModelIconsList = pNewModelIcon;
+		pNewModelIcon->mhModelHandle = nModelHandle;
+		pNewModelIcon->mhTexture = nTextureHandle;
+
+		pNewModelIcon->mFlags = flags;
+		pNewModelIcon->mfRotationAngle = FRand( 0.0f, A360 );
+		pNewModelIcon->mfRotationSpeed = 1.0f;
+		pNewModelIcon->mbOwnsHandles = TRUE;
+		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
+		pNewModelIcon->mulLastUpdateTick = SysGetTick();
+
+		return( nNewHandle );
+	}
+	return( NOTFOUND );
+}
+
+
+ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIconFlags flags, int nLoadFromArchive )
+{
+	if ( hModel != NOTFOUND )
+	{
+	int		nNewHandle = msnModelIconsNextHandle++;
+	ModelIcon*		pNewModelIcon;
+
+		pNewModelIcon = new ModelIcon;
+		pNewModelIcon->mhModelIcon = nNewHandle;
+		pNewModelIcon->mpNext = mspModelIconsList;
+		mspModelIconsList = pNewModelIcon;
+
+		pNewModelIcon->mFlags = flags;
+		pNewModelIcon->mfRotationAngle = FRand( 0.0f, A360 );
+		pNewModelIcon->mfRotationSpeed = 1.0f;
+		pNewModelIcon->mhModelHandle = hModel;
+		pNewModelIcon->mhTexture = hTexture;
+		pNewModelIcon->mbOwnsHandles = FALSE;
+		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
+		pNewModelIcon->mulLastUpdateTick = SysGetTick();
+
+		return( nNewHandle );
+	}
+	return( NOTFOUND );
 }
 
 void		ModelIconsUpdate( void )
