@@ -220,7 +220,7 @@ D3DXMATRIX		matWorld;
 	MODEL_RENDER_DATA* pxModelData = &maxModelRenderData[ m_hModelHandle ];
 	if ( pxModelData->pxBaseMesh != NULL )
 	{
-		if ( pxModelData->bModelType == MODEL_TYPE_KEYFRAME_ANIMATION )
+		if ( pxModelData->bModelType == ASSETTYPE_KEYFRAME_ANIMATION )
 		{
 			ModelRenderKeyframeAnimationGenerateBaseMesh( pxModelData, mulLastRenderingTick );
 		}

@@ -1184,7 +1184,7 @@ ENGINEMATRIX	matRestore;
 
 	switch( pxModelData->bModelType )
 	{
-	case MODEL_TYPE_KEYFRAME_ANIMATION:
+	case ASSETTYPE_KEYFRAME_ANIMATION:
 		// Very ropey timing stuff on the animation here - just temp!!!
 		if ( pxModelData->xAnimationState.ulLastFrameTick == 0 )
 		{

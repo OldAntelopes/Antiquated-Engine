@@ -138,10 +138,11 @@ extern INTERFACE_API int	InterfaceGetTexture( const char* szFilename, int nFlags
 extern INTERFACE_API int	InterfaceGetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags );
 extern INTERFACE_API int	InterfaceGetTextureSize( int nTextureHandle, int* pnW, int* pnH );
 extern INTERFACE_API BYTE*	InterfaceLockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags );
-extern INTERFACE_API void	InterfaceTextureGetColourAtPoint( int nTextureHandle, byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha );
 extern INTERFACE_API void	InterfaceUnlockTexture( int nTextureHandle );
 extern INTERFACE_API void	InterfaceExportTexture( int nTextureHandle, const char* szOutputFilename, int nMode );
 extern INTERFACE_API void	InterfaceReleaseTexture( int nTextureHandle );
+
+extern INTERFACE_API void	InterfaceTextureGetColourAtPoint( byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha );
 
 #define SAFE_RELEASE_TEXTURE(p)      { if(p != NOTFOUND) { InterfaceReleaseTexture(p); p=NOTFOUND; } }
 

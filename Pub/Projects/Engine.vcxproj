@@ -758,29 +758,6 @@
     <ClCompile Include="..\LibCode\Engine\ModelRendering.cpp" />
     <ClCompile Include="..\LibCode\Engine\SkinnedModel.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.vsh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Basic.vsh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurFull.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurH.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurV.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Fog.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.vsh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundBasic.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundSimplified.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Highpass.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.vsh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\LandscapeGen.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Lighting.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.vsh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Shadows.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.psh" />
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.vsh" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

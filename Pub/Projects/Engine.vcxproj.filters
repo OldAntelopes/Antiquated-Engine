@@ -43,9 +43,6 @@
     <Filter Include="FileFormats">
       <UniqueIdentifier>{1579756b-243d-47eb-8f42-a4ce29f3531a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{fa4141a9-9fbd-4319-9a52-cf6399bdd435}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SceneMap">
       <UniqueIdentifier>{2d76ecfb-e66a-49c1-9141-8eac7539b42c}</UniqueIdentifier>
     </Filter>
@@ -748,70 +745,5 @@
     <CustomBuild Include="..\LibCode\Engine\OpenGL\ModelRenderingGL.h">
       <Filter>OpenGL</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurH.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurV.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Landscape.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\WaterRender.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ATMMaterial.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Ground.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Highpass.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Basic.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Lighting.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Shadows.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\LandscapeGen.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\ShadowMapPass1.vsh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\Fog.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundBasic.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\GroundSimplified.psh">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Universal\Exe\Clients\Data\Shaders\BlurFull.psh">
-      <Filter>Shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

@@ -1238,7 +1238,7 @@ BYTE*	pbImageData = NULL;
 	return( pbImageData );
 }
 
-INTERFACE_API void	InterfaceTextureGetColourAtPoint( int nTextureHandle, byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha )
+INTERFACE_API void	InterfaceTextureGetColourAtPoint( byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha )
 {
 byte*		pbRow = pbLockedTextureData + (y * nPitch);
 int		nR = 0;

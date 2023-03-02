@@ -91,7 +91,7 @@ void	InterfaceUnlockTexture( int nTextureHandle )
 	// TODO
 }
 
-void	InterfaceTextureGetColourAtPoint( int nTextureHandle, byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha )
+void	InterfaceTextureGetColourAtPoint( byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha )
 {
 	// todo
 }

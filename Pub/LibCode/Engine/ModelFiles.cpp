@@ -3944,7 +3944,7 @@ MODEL_RENDER_DATA*		pxModelData;
 
 		EngineCreateMesh( nNumFaces, nNumVerts, &pxModelData->pxBaseMesh, nFlags );
 
-		pxModelData->bModelType = MODEL_TYPE_STATIC_MESH;
+		pxModelData->bModelType = ASSETTYPE_STATIC_MESH;
 		pxModelData->xGlobalProperties.bOpacity = 100;
 		pxModelData->xStats.nNumIndices = nNumFaces * 3;
 		pxModelData->xStats.nNumMaterials = 0;
