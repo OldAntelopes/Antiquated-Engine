@@ -82,6 +82,7 @@ extern void		PixelShaderSetPointLights( LPD3DXCONSTANTTABLE pShaderPSConstantTab
 extern void		PixelShaderSetFog( LPD3DXCONSTANTTABLE pShaderPSConstantTable );
 
 extern int		EngineGetNumVertexBuffersAllocated( void );
+extern void		EngineVertexBufferTrackingListAllocated( char* );
 extern int		EngineTextureManagerGetNumRenderTargets( void );
 
 extern void		EngineMathsInitSinTable( void );

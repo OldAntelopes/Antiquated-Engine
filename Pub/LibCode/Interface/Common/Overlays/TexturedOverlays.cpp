@@ -73,6 +73,7 @@ typedef struct
 	INTF_RENDER_TYPES		nRenderType;
 	LPGRAPHICSTEXTURE		pTexture;
 	TEXTURED_RECT_DEF*		pxRectsInOverlay;
+	int						hEngineTexture;
 
 } OVERLAY_DATA;
 
@@ -661,6 +662,13 @@ FLATVERTEX*	pVertices;
 				RenderTexOverlays();
 		
 				maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
+				if ( maxOverlayData[ nLoop ].hEngineTexture > 0 )
+				{
+					// Reduce the ref count on the engine texture if we were using it
+					EngineReleaseTexture( &maxOverlayData[ nLoop ].hEngineTexture );
+					maxOverlayData[ nLoop ].hEngineTexture = NOTFOUND;
+				}
+
 			}
 		}
 	}
@@ -701,11 +709,12 @@ int	nRet;
 	}
 	maxOverlayData[ nRet ].nRenderType = RENDER_TYPE_NORMAL;
 	maxOverlayData[ nRet ].nLayerNum = nLayer;
+	maxOverlayData[ nRet ].hEngineTexture = NOTFOUND;
 	return( nRet );
 }
 
 
-int	TexturedOverlayCreateDirect( int nLayer, void* pTexture )
+int	TexturedOverlayCreateDirect( int nLayer, void* pTexture, int hEngineTexture )
 {
 int	nRet;
 
@@ -721,6 +730,7 @@ int	nRet;
 	maxOverlayData[ nRet ].pTexture = (LPGRAPHICSTEXTURE)pTexture;
 	maxOverlayData[ nRet ].nRenderType = RENDER_TYPE_NORMAL;
 	maxOverlayData[ nRet ].nLayerNum = nLayer;
+	maxOverlayData[ nRet ].hEngineTexture = hEngineTexture;
 	return( nRet );
 
 }
@@ -976,6 +986,7 @@ int		nLoop;
 	for ( nLoop = 0; nLoop < MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
 	{
 		maxOverlayData[nLoop].pTexture = NULL;
+		maxOverlayData[nLoop].hEngineTexture = NOTFOUND;
 	}
 	InitTextRectLists();
 

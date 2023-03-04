@@ -13,7 +13,7 @@ public:
 	BOOL		IsInitialised( void ) { if ( mnNumVertexBuffers == 0 ) return( FALSE ); return( TRUE ); }
 	BOOL		IsLocked( void ) { if ( mpulColStream == NULL ) return( FALSE ); return( TRUE ); }
 
-	void		Init( int nNumBuffers, int nBufferSize )
+	void		Init( int nNumBuffers, int nBufferSize, const char* szTrackingName )
 	{
 		if ( mnNumVertexBuffers == 0 )
 		{
@@ -23,7 +23,7 @@ public:
 			
 			for( nLoop = 0; nLoop < nNumBuffers; nLoop++ )
 			{
-				mpnVertexBuffers[nLoop] = EngineCreateVertexBuffer( nBufferSize, 0 );
+				mpnVertexBuffers[nLoop] = EngineCreateVertexBuffer( nBufferSize, 0, szTrackingName );
 			}
 			mnCurrentVertexBuffer = 0;
 			mnCurrentPos = 0;

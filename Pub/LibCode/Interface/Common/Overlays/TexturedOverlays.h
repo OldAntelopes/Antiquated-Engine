@@ -19,7 +19,7 @@ extern void	InterfaceTexturedOverlaysSetLimit( int nState );
 
 extern int	TexturedOverlayCreate( int nLayer, TEXTURE_HANDLE hTexture );
 
-extern int	TexturedOverlayCreateDirect( int nLayer, void* pTexture );
+extern int	TexturedOverlayCreateDirect( int nLayer, void* pTexture, int hEngineTexture );
 
 
 #ifdef __cplusplus

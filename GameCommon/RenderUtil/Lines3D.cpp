@@ -145,7 +145,7 @@ void Lines3DInitialise( int nMaxVertices )
 	if ( mhLineVertexBuffer == NOTFOUND )
 	{
 		mnMaxLineVertices = nMaxVertices;
-		mhLineVertexBuffer = EngineCreateVertexBuffer( mnMaxLineVertices, 0 );
+		mhLineVertexBuffer = EngineCreateVertexBuffer( mnMaxLineVertices, 0, "Lines3d" );
 	    // Create the vertex buffer.
 	    if( mhLineVertexBuffer == NOTFOUND )
 	    {

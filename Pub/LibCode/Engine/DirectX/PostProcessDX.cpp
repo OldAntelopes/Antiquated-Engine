@@ -103,7 +103,7 @@ int			nLoop;
 	pxVertexBuffer->tv = 1.0f;
 	pxVertexBuffer++;
 
-	nVertexBufferHandle = EngineCreateVertexBuffer( 6, 0 );
+	nVertexBufferHandle = EngineCreateVertexBuffer( 6, 0, "Postprocess Rect" );
 	EngineVertexBufferLock( nVertexBufferHandle, TRUE );
 
 	for ( nLoop = 0; nLoop < 6; nLoop++ )

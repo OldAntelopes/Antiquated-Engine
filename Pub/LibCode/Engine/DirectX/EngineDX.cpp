@@ -42,14 +42,19 @@ public:
 		nBufferSize = 0;
 		m_nHandle = -1;
 		mpxNext = NULL;
+		mszTrackingName = NULL;
 	}
 
+	~EngineVertBuffContainer()
+	{
+		SAFE_FREE( mszTrackingName );
+	}
 
 	IGRAPHICSVERTEXBUFFER*		pxVertexBuffer;
 	CUSTOMVERTEX*				pxLockedBuffer;
 	int							nBufferPos;
 	int							nBufferSize;
-	
+	char*						mszTrackingName;
 	int							m_nHandle;
 	EngineVertBuffContainer*	mpxNext;
 };
@@ -264,7 +269,7 @@ void			EngineIndexBufferFree( INDEX_BUFFER_HANDLE hIndexBuffer )
 
 
 //---------------------------------------------------------------------------------
-VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags )
+VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags, const char* szTrackingName )
 {
 EngineVertBuffContainer*		pVertBuffContainer = new EngineVertBuffContainer;
 
@@ -275,6 +280,8 @@ EngineVertBuffContainer*		pVertBuffContainer = new EngineVertBuffContainer;
 	ulong	ulUsageFlags = 0;//D3DUSAGE_WRITEONLY;
 
 		pVertBuffContainer->m_nHandle = newHandle;
+		pVertBuffContainer->mszTrackingName = (char*)( malloc( strlen( szTrackingName ) + 1 ));
+		strcpy( pVertBuffContainer->mszTrackingName, szTrackingName );
 		pVertBuffContainer->mpxNext = m_spEngineVertBuffList;
 		m_spEngineVertBuffList = pVertBuffContainer;
 
@@ -739,6 +746,21 @@ int		EngineGetNumVertexBuffersAllocated( void )
 {
 	return(	msnNumberOfVertexBuffersCreated );
 }
+
+void		EngineVertexBufferTrackingListAllocated( char* acErrorOut )
+{
+EngineVertBuffContainer*	pVertBuffContainer = m_spEngineVertBuffList;
+char	acString[256];
+
+	while ( pVertBuffContainer )
+	{
+		sprintf( acString, "-- %s\r\n", pVertBuffContainer->mszTrackingName );	
+		strcat( acErrorOut, acString );
+		pVertBuffContainer = pVertBuffContainer->mpxNext;
+	}
+
+}
+
 
 
 void		EngineVertexBufferFree( VERTEX_BUFFER_HANDLE nHandle )

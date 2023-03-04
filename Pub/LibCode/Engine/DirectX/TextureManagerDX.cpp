@@ -262,7 +262,10 @@ void		EngineUnlockTexture( TEXTURE_HANDLE handle )
 #ifdef TUD11
 		PANIC_IF(TRUE, "DX11 EngineUnlockTexture TBI" );
 #else
-		pTexture->UnlockRect( 0 );
+		if ( pTexture )
+		{
+			pTexture->UnlockRect( 0 );
+		}
 #endif
 	}
 }
@@ -545,7 +548,8 @@ int				EngineTextureCreateInterfaceOverlay( int nLayer, TEXTURE_HANDLE hTexture 
 	{
 		if ( maTextureReferences[ hTexture ].nState == TEXTURE_STATE_LOADED )
 		{
-			return( TexturedOverlayCreateDirect( nLayer, maTextureReferences[ hTexture ].pTexture ) );
+			maTextureReferences[hTexture].nUsed++;
+			return( TexturedOverlayCreateDirect( nLayer, maTextureReferences[ hTexture ].pTexture, hTexture ) );
 		}
 		else
 		{
@@ -935,6 +939,7 @@ void	EngineSetTexture( int nTex, TEXTURE_HANDLE nTexHandle )
 		if ( nTex > 0 )
 		{
 			mpEngineDevice->SetTextureStageState( nTex, D3DTSS_COLOROP,   D3DTOP_DISABLE );
+			mpEngineDevice->SetTextureStageState( nTex, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 		}
 	}
 #endif
@@ -994,8 +999,7 @@ int		nFileSize = 0;
 
 	EngineLoadTextureGetParams( pTextureReference->nLoadFlags, &mnLoadThreadBufferFilter, &mnLoadThreadBufferMipFilter, &mnLoadThreadBufferMipLevels );
 
-	if ( ( pTextureReference->nMode == NO_MIPMAPPING ) ||
-		 ( pTextureReference->nMode == NO_CHROMAKEY_NO_MIPMAPPING ) )
+	if ( (pTextureReference->nMode & NO_MIPMAPPING) != 0 ) 
 	{
 		mnLoadThreadBufferMipLevels = 1;
 #ifdef TUD9
@@ -1166,16 +1170,53 @@ int	nRet = 0;
 		else
 		{
 		ulong		ulChromaKeyCol = 0xFF0000FF;
+		IGRAPHICSFORMAT	d3dtextureFormat = EngineDXGetGraphicsFormat( mnLoadThreadBufferFormat );
 
-			if ( pTextureReference->nMode == NO_CHROMAKEY_NO_MIPMAPPING )
+			if ( pTextureReference->nMode & NO_CHROMAKEY )
 			{
 				ulChromaKeyCol = 0;
 			}
+			if ( pTextureReference->nMode & FORCE_A8R8G8B8)
+			{
+				d3dtextureFormat = D3DFMT_A8R8G8B8;
+			}
 
 			nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, mpbLoadThreadBuffer, mnLoadThreadBufferSize,
-													0,0,mnLoadThreadBufferMipLevels,0, EngineDXGetGraphicsFormat( mnLoadThreadBufferFormat ), D3DPOOL_MANAGED,mnLoadThreadBufferFilter, mnLoadThreadBufferMipFilter,
+													0,0,mnLoadThreadBufferMipLevels,0, d3dtextureFormat, D3DPOOL_MANAGED,mnLoadThreadBufferFilter, mnLoadThreadBufferMipFilter,
 													ulChromaKeyCol, NULL, NULL,
 													&pxTexture );
+
+			if ( pTextureReference->nMode & REMOVE_ALPHA )
+			{
+			int			nPitch;
+			ulong*		pulColours;
+			BYTE*		pbRow;
+			int			nImageW;
+			int			nImageH;
+			int			nLoopY;
+			int			nLoopX;
+			D3DSURFACE_DESC		xSurface;
+			D3DLOCKED_RECT	xLockedRectDest;
+
+				pxTexture->GetLevelDesc( 0, &xSurface );
+				nImageW = xSurface.Width;
+				nImageH = xSurface.Height;
+				pxTexture->LockRect( 0, &xLockedRectDest, NULL, 0 );//&xDestRect, 0 );
+				nPitch = xLockedRectDest.Pitch;
+				pbRow = (BYTE*)xLockedRectDest.pBits;
+
+				for ( nLoopY = 0; nLoopY < nImageH; nLoopY++ )
+				{
+					pulColours = (ulong*)pbRow;
+					for ( nLoopX = 0; nLoopX < nImageW; nLoopX++ )
+					{
+						*pulColours = ((*pulColours) & 0x00FFFFFF);
+						pulColours++;
+					}
+					pbRow += nPitch;
+				}
+				pxTexture->UnlockRect(0);
+			}
 
 			if ( msnTextureReductionMode == 1 )
 			{

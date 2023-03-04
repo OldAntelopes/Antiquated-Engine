@@ -19,8 +19,11 @@ enum eSpriteGroupRenderFlags
 typedef int		SPRITE_GROUP;
 
 extern void Sprites3DInitialise( void );
-
 extern void Sprites3DShutdown( void );
+
+extern void Sprites3DInitialiseGraphicsDeviceResources( void );
+extern void Sprites3DReleaseGraphicsDeviceResources( void );
+
 
 extern SPRITE_GROUP	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
 

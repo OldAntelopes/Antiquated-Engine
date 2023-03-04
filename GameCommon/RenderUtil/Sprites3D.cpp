@@ -313,11 +313,21 @@ Sprite*		pNext;
 
 
 //-----------------------------------------------------------------------------
+void Sprites3DInitialiseGraphicsDeviceResources( void )
+{
+	mxSprites3dBuffers.Init( NUM_SPRITE3D_VERTEX_BUFFERS, SPRITE3D_VERTEX_BUFFER_SIZE, "Sprites3d" );
+}
+
+
+void Sprites3DReleaseGraphicsDeviceResources( void )
+{
+	mxSprites3dBuffers.Shutdown();
+}
+
 
 void Sprites3DInitialise( void )
 {
-	mxSprites3dBuffers.Init( NUM_SPRITE3D_VERTEX_BUFFERS, SPRITE3D_VERTEX_BUFFER_SIZE );
-
+	Sprites3DInitialiseGraphicsDeviceResources();
 }
 
 
@@ -334,7 +344,7 @@ SpriteGroup*	pNext;
 	}
 	mspSpriteGroups = NULL;
 
-	mxSprites3dBuffers.Shutdown();
+	Sprites3DReleaseGraphicsDeviceResources();
 
 }
 

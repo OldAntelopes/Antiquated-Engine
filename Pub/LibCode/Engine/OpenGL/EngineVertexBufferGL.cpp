@@ -40,7 +40,7 @@ EngineVertexBufferGL::~EngineVertexBufferGL( void )
 
 
 //====================================
-VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags )
+VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags, const char* szTrackingName )
 {
 	// TODO
 	return( NOTFOUND );

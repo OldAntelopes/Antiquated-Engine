@@ -80,10 +80,12 @@ typedef enum
 enum		// Second param of EngineLoadTexture
 {
 	NORMAL = 0,
-	NO_DDS_CACHE,
-	NO_MIPMAPPING,
-	POINT_FILTER,
-	NO_CHROMAKEY_NO_MIPMAPPING,
+	NO_DDS_CACHE = 0x1,
+	NO_MIPMAPPING = 0x2,
+	POINT_FILTER = 0x4,
+	NO_CHROMAKEY = 0x8,
+	REMOVE_ALPHA = 0x10,
+	FORCE_A8R8G8B8 = 0x20,
 };
 //------------------------------------------------------------------
 
@@ -357,7 +359,7 @@ typedef enum
 } ENGINEPRIMITIVE_TYPE;
 
 
-extern VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags );
+extern VERTEX_BUFFER_HANDLE		EngineCreateVertexBuffer( int nMaxVertices, int nFlags, const char* szTrackingName );
 extern BOOL		EngineVertexBufferRender( VERTEX_BUFFER_HANDLE, ENGINEPRIMITIVE_TYPE nPrimType );
 extern void		EngineVertexBufferReset( VERTEX_BUFFER_HANDLE );
 extern void		EngineVertexBufferFree( VERTEX_BUFFER_HANDLE );

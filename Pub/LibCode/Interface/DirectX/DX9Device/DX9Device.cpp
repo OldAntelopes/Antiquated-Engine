@@ -659,7 +659,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 
 			if( FAILED( hr ) )
 			{
-			char	acErrorMsg[512];
+			char	acErrorMsg[1024];
 			char	acString[256];
 
 				switch ( hr )
@@ -683,8 +683,13 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 
 				sprintf( acString, "%d vertex buffers listed\r\n", EngineGetNumVertexBuffersAllocated() );
 				strcat( acErrorMsg, acString );
+				if ( EngineGetNumVertexBuffersAllocated() > 0 )
+				{
+					EngineVertexBufferTrackingListAllocated( acErrorMsg );
+				}
 				sprintf( acString, "%d render targets\r\n", EngineTextureManagerGetNumRenderTargets() );
 				strcat( acErrorMsg, acString );
+
 				
 				PANIC_IF( TRUE, acErrorMsg );
 
