@@ -329,6 +329,19 @@ ulong	ulOut;
 	return( ulOut );
 }
 
+int		ClampInt( int nVal, int nMin, int nMax )
+{
+	if ( nVal < nMin )
+	{
+		nVal = nMin;
+	}
+	else if ( nVal > nMax )
+	{
+		nVal = nMax;
+	}
+	return( nVal );
+}
+
 float	FClamp( float fVal, float fMin, float fMax )
 {
 	if ( fVal < fMin )

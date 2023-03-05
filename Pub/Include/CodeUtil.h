@@ -111,6 +111,7 @@ extern unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, fl
 extern float	FClamp( float fVal, float fMin, float fMax );
 extern float	FRand( float, float );
 extern int		RandInt( int, int );
+extern int		ClampInt( int nVal, int nMin, int nMax );
 
 
 
