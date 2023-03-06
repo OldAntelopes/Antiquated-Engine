@@ -403,7 +403,7 @@ extern INTERFACE_API int GetStringWidth( const char* pcString, int nFont );
 extern INTERFACE_API int GetStringHeight( const char* pcString, int nFont );
 extern INTERFACE_API void InterfaceEnableTextureFiltering( BOOL bFlag );
 
-// These are values for the game vid-options dialog.
+// These are values for the game vid-options dialog. Also can be accessed through InterfaceGetOptions / InterfaceSetOptions
 enum
 {
 	TEXTURE_FILTERING = 0,

@@ -479,8 +479,14 @@ D3DDISPLAYMODE d3ddm;
 	pD3Dpp->EnableAutoDepthStencil = TRUE;
 	pD3Dpp->AutoDepthStencilFormat = D3DFMT_D24S8;
 	pD3Dpp->hDeviceWindow          = mhwndInterfaceMain;
-	pD3Dpp->PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-//	pD3Dpp->PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	if ( InterfaceGetOption(VSYNC) == 1 )
+	{
+		pD3Dpp->PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+	}
+	else
+	{
+		pD3Dpp->PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	}
 	pD3Dpp->Flags = D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 
 	// If we're creating from scratch (not refreshing existing device)
