@@ -798,6 +798,52 @@ INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* 
 
 }
 
+INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+{
+char		acString[4096];
+va_list		marker;
+ulong*		pArgs;
+
+	pArgs = (ulong*)( &text ) + 1;
+
+    va_start( marker, text );     
+	vsprintf( acString, text, marker );
+
+	InterfaceText( nLayer, nX, nY, acString, ulCol, font );
+}
+
+
+INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+{
+char		acString[4096];
+va_list		marker;
+ulong*		pArgs;
+
+	pArgs = (ulong*)( &text ) + 1;
+
+    va_start( marker, text );     
+	vsprintf( acString, text, marker );
+
+	InterfaceTextRight( nLayer, nX, nY, acString, ulCol, font );
+
+}
+
+INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+{
+char		acString[4096];
+va_list		marker;
+ulong*		pArgs;
+
+	pArgs = (ulong*)( &text ) + 1;
+
+    va_start( marker, text );     
+	vsprintf( acString, text, marker );
+
+	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
+
+	InterfaceTextCentre( nLayer, nX, nY, acString, ulCol, font );
+}
+
 
 
 INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font, float fSize )

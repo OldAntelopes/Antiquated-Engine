@@ -112,6 +112,11 @@ extern INTERFACE_API int	InterfaceTextRectGetUsedWidth( const char* szString, in
 extern INTERFACE_API int	InterfaceTextGetWidth( const char* pcString, int nFont );
 extern INTERFACE_API int	InterfaceTextGetHeight( const char* pcString, int nFont );
 
+// Alternative versions that let you format string too
+extern INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, ulong ulCol, int font, const char* szString, ... );
+extern INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, ulong ulCol, int font, const char* szString, ... );
+extern INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX1, int nY, ulong ulCol, int font, const char* szString, ... );
+
 enum
 {
 	FONT_FLAG_UNDERLINED = 0x1,
