@@ -25,6 +25,7 @@ extern ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture, eM
 extern void		ModelIconsUpdate( void );
 
 extern int		ModelIconGetIconTexture( ModelIconHandle );		// Note that what is returned is an EngineTexture not an interface one
+extern void		ModelIconSetViewDistModifier( ModelIconHandle handle, float fDist );	
 
 extern void		ModelIconsRelease( ModelIconHandle );
 

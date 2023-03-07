@@ -8,6 +8,15 @@
 class ModelIcon
 {
 public:
+	ModelIcon()
+	{
+		mhModelIcon = NOTFOUND;
+		mfRotationAngle = 0.0f;
+		mulLastUpdateTick = 0;
+		mfCamViewDist = 2.0f;
+		mbOwnsHandles = false;
+		mFlags = 0;
+	}
 
 	void		UpdateIconTexture();
 	void		SetLighting();
@@ -21,6 +30,7 @@ public:
 	int			mhTexture;
 	int			mhRenderTargetTexture;
 	int			mFlags;
+	float		mfCamViewDist;
 
 	BOOL		mbOwnsHandles;
 	ModelIcon*	mpNext;
@@ -87,8 +97,8 @@ MODEL_STATS*		pxModelStats;
 	SetLighting();
 	VectNormalize( &xCamDir );
 	pxModelStats = ModelGetStats(mhModelHandle);
-	fCamDist = pxModelStats->fBoundSphereRadius * 1.3f;
-	VectScale( &xCamPos, &xCamPos, fCamDist );
+	fCamDist = pxModelStats->fBoundSphereRadius * mfCamViewDist;
+	VectScale( &xCamPos, &xCamPos,fCamDist );
 	ulTick = SysGetTick();
 
 	fDelta = (float)(ulTick - mulLastUpdateTick) * 0.001f;
@@ -213,6 +223,20 @@ void		ModelIconsUpdate( void )
 		mspNextToUpdate = mspNextToUpdate->mpNext;
 	}
 
+}
+
+void		ModelIconSetViewDistModifier( ModelIconHandle handle, float fDist )
+{
+ModelIcon*		pModelIcons = mspModelIconsList;
+	
+	while( pModelIcons )
+	{
+		if ( pModelIcons->mhModelIcon == handle )
+		{
+			pModelIcons->mfCamViewDist = fDist;			
+		}
+		pModelIcons = pModelIcons->mpNext;
+	}
 }
 
 int		ModelIconGetIconTexture( ModelIconHandle handle )
