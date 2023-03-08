@@ -54,7 +54,6 @@ void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATE
 		 ( pxSpecular->fRed != mxModelMaterialShaderSpecular.fRed ) ||
 		 ( pxSpecular->fGreen != mxModelMaterialShaderSpecular.fGreen ) ||
 		 ( pxSpecular->fBlue != mxModelMaterialShaderSpecular.fBlue ) ||
-		 ( pxSpecular->fAlpha != mxModelMaterialShaderSpecular.fAlpha ) ||
 		 ( pxEmissive->fRed != mxModelMaterialShaderEmissive.fRed ) ||
 		 ( pxEmissive->fGreen != mxModelMaterialShaderEmissive.fGreen ) ||
 		 ( pxEmissive->fBlue != mxModelMaterialShaderEmissive.fBlue ) ||
