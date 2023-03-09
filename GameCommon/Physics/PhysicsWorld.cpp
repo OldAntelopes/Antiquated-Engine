@@ -192,8 +192,9 @@ void		PhysicsWorldEnableDebugRender( BOOL bFlag )
 			if ( mpDynamicsWorld )
 			{
 				mpDynamicsWorld->setDebugDrawer( &msPhysicsInterfaceDebugDraw );
-				mpDynamicsWorld->getDebugDrawer()->setDebugMode( btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_ProfileTimings | btIDebugDraw::DBG_DrawNormals | btIDebugDraw::DBG_DrawFeaturesText | btIDebugDraw::DBG_DrawContactPoints | btIDebugDraw::DBG_DrawText  );
-//				mpDynamicsWorld->getDebugDrawer()->setDebugMode( btIDebugDraw::DBG_DrawWireframe );
+//				mpDynamicsWorld->getDebugDrawer()->setDebugMode( btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_ProfileTimings | btIDebugDraw::DBG_DrawNormals | btIDebugDraw::DBG_DrawFeaturesText | btIDebugDraw::DBG_DrawContactPoints | btIDebugDraw::DBG_DrawText  );
+//				mpDynamicsWorld->getDebugDrawer()->setDebugMode(  );
+				mpDynamicsWorld->getDebugDrawer()->setDebugMode( btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_FastWireframe );
 			}
 			msbPhysicsDebugHasInitialised = TRUE;
 		}
@@ -264,7 +265,7 @@ void		PhysicsWorldUpdate( float fDelta )
 {
 	if ( mpDynamicsWorld )
 	{
-		mpDynamicsWorld->stepSimulation( fDelta, 30);
+		mpDynamicsWorld->stepSimulation( fDelta, 10);
 	}
 
 }

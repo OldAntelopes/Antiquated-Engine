@@ -241,8 +241,8 @@ float		fSpeed = mpPhysicsVehicle->GetCurrentSpeedMPH();
 
 	EngineMatrixFromQuaternion( &xMat, &xQuat );
 	VectTransform( &xUp, &xUp, &xMat );
-	VectScale( &xUp, &xUp, -0.25f );			// WRONG !!!!
-	VectAdd( &xPos, &xPos, &xUp );
+//	VectScale( &xUp, &xUp, -0.6f );			// WRONG !!!!
+//	VectAdd( &xPos, &xPos, &xUp );
 	GetEntity()->SetPos( &xPos );
 
 	for ( nLoop = 0; nLoop < 4; nLoop++ )

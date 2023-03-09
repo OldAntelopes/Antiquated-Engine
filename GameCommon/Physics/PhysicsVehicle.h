@@ -15,11 +15,12 @@ public:
 		mfMass = 1800.0f;
 		mfEnginePowerRating = 1.0f;
 		mfSuspensionStiffness = 40.0f;
-		mfWheelsDampingRelaxation = 2.3f;
-		mfWheelsDampingCompression = 1.6f;
+		mfSuspensionDampingFactor = 0.2f;
+		mfSuspensionMaxTravel = 200.0f;
 		mfFrictionSlip = 8.0f;
 		mfRollInfluence = 0.3f;
 		mfSuspensionRestLength = 0.4f;
+		mfCentreOfMassOffsetZ = 0.0f;
 	}
 
 	BOOL	IsDifferent( const PhysicsVehicleSetup* pOtherSetup)
@@ -27,10 +28,11 @@ public:
 		if ( ( pOtherSetup->mfMass != mfMass ) ||
 			( pOtherSetup->mfEnginePowerRating != mfEnginePowerRating ) ||
 			( pOtherSetup->mfSuspensionStiffness != mfSuspensionStiffness ) ||
-			( pOtherSetup->mfWheelsDampingRelaxation != mfWheelsDampingRelaxation ) ||
-			( pOtherSetup->mfWheelsDampingCompression != mfWheelsDampingCompression ) ||
+			( pOtherSetup->mfSuspensionDampingFactor != mfSuspensionDampingFactor ) ||
+			( pOtherSetup->mfSuspensionMaxTravel != mfSuspensionMaxTravel ) ||
 			( pOtherSetup->mfFrictionSlip != mfFrictionSlip ) ||
 			( pOtherSetup->mfRollInfluence != mfRollInfluence ) ||
+			( pOtherSetup->mfCentreOfMassOffsetZ != mfCentreOfMassOffsetZ ) ||
 			( pOtherSetup->mfSuspensionRestLength != mfSuspensionRestLength ))
 		{
 			return( TRUE );
@@ -41,21 +43,23 @@ public:
 	void	SetMass( float fMass );
 	void	SetEnginePower( float fPowerRating );
 	void	SetSuspensionStiffness( float fSuspensionStiffness );
-	void	SetDampingRelaxation( float fWheelsDampingRelaxation );
-	void	SetDampingCompression( float fWheelsDampingCompression );
+	void	SetSuspensionDampingFactor( float fSuspensionDamping );
+	void	SetSuspensionMaxTravel( float mfSuspensionMaxTravel );
 	void	SetFrictionSlip( float fFrictionSlip );
 	void	SetRollInfluence( float mfRollInfluence );
 	void	SetSuspensionRestLength( float fSuspensionRestLength );
+	void	SetCentreOfMassOffset( float fCentreOfMassOffsetZ );
 protected:
 	
 	float	mfMass;
 	float	mfEnginePowerRating;
 	float	mfSuspensionStiffness;
-	float	mfWheelsDampingRelaxation;
-	float	mfWheelsDampingCompression;
+	float	mfSuspensionDampingFactor;
+	float	mfSuspensionMaxTravel;
 	float	mfFrictionSlip;
 	float	mfRollInfluence;
 	float	mfSuspensionRestLength;
+	float	mfCentreOfMassOffsetZ;
 
 };
 
@@ -100,6 +104,7 @@ public:
 	void		OverrideOrientation( const ENGINEQUATERNION* pQuat );
 
 	void		RenderDebug( void );
+	void		RenderDebugLines( void );
 
 private:
 
@@ -107,7 +112,7 @@ private:
 	void		UpdateEngine( float fDelta );
 	void		SetAllWheelSettings( const PhysicsVehicleSetup* pSetup );
 
-	btRigidBody*	localCreateRigidBody(btScalar mass, const btTransform& startTransform, btCollisionShape* shape, eVehicleCollisionType collisionType);
+	btRigidBody*	localCreateRigidBody(btScalar mass, const btTransform& startTransform, btCollisionShape* shape, eVehicleCollisionType collisionType, float fCOMOffset);
 
 	btRaycastVehicle*				m_pRaycastVehicle;
 //	btDefaultVehicleRaycaster*		m_pVehicleRaycaster;

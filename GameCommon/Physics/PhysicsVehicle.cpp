@@ -3,6 +3,8 @@
 #include "Engine.h"
 #include "Interface.h"
 
+#include "../RenderUtil/Lines3D.h"
+
 #include "PhysicsInternal.h"
 #include "PhysicsWorld.h"
 #include "PhysicsVehicle.h"
@@ -28,15 +30,22 @@ void	PhysicsVehicleSetup::SetSuspensionStiffness( float fSuspensionStiffness )
 	mfSuspensionStiffness = fSuspensionStiffness;
 }
 
-void	PhysicsVehicleSetup::SetDampingRelaxation( float fWheelsDampingRelaxation )
+void	PhysicsVehicleSetup::SetCentreOfMassOffset( float fCentreOfMassOffsetZ )
 {
-	mfWheelsDampingRelaxation = fWheelsDampingRelaxation;
+	mfCentreOfMassOffsetZ = fCentreOfMassOffsetZ;
 }
 
-void	PhysicsVehicleSetup::SetDampingCompression( float fWheelsDampingCompression )
+
+void	PhysicsVehicleSetup::SetSuspensionDampingFactor( float fSuspensionDamping )
 {
-	mfWheelsDampingCompression = fWheelsDampingCompression;
+	mfSuspensionDampingFactor = fSuspensionDamping;
 }
+
+void	PhysicsVehicleSetup::SetSuspensionMaxTravel( float fSuspensionMaxTravel )
+{
+	mfSuspensionMaxTravel = fSuspensionMaxTravel;
+}
+
 
 void	PhysicsVehicleSetup::SetFrictionSlip( float fFrictionSlip )
 {
@@ -101,6 +110,7 @@ void* PhysicsVehicleRaycaster::castRay(const btVector3& from,const btVector3& to
 		rayCallback.m_collisionFilterGroup = mCollisionFilterGroup;
 	}
 
+
 	mpDynamicsWorld->rayTest(from, to, rayCallback);
 
 	if (rayCallback.hasHit())
@@ -156,7 +166,24 @@ PhysicsVehicle::~PhysicsVehicle()
 	}
 }
 
-btRigidBody* PhysicsVehicle::localCreateRigidBody(btScalar mass, const btTransform& startTransform, btCollisionShape* shape, eVehicleCollisionType collisionType)
+void		PhysicsVehicle::RenderDebug( void )
+{
+int		nX = 100;
+int		nY = 100;
+int		nLoop;
+
+	for( nLoop = 0; nLoop < 4; nLoop++ )
+	{
+		InterfaceTxt( 1, nX, nY, 0, 0, "Wheel %d", nLoop+1 );
+		nY += 20;
+		InterfaceTxt( 1, nX, nY, 0, 0, "Susp Rel Vel: %f", m_pRaycastVehicle->getWheelInfo(0).m_suspensionRelativeVelocity );
+		nY += 20;
+	}
+}
+
+
+
+btRigidBody* PhysicsVehicle::localCreateRigidBody(btScalar mass, const btTransform& startTransform, btCollisionShape* shape, eVehicleCollisionType collisionType, float fCentreOfMassOffsetZ )
 {
 	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
@@ -166,10 +193,14 @@ btRigidBody* PhysicsVehicle::localCreateRigidBody(btScalar mass, const btTransfo
 	btVector3 localInertia(0,0,0);
 	if (isDynamic)
 		shape->calculateLocalInertia(mass,localInertia);
+	 
+	btTransform		centreOfMassOffset;
+	centreOfMassOffset.setIdentity();
+	centreOfMassOffset.setOrigin(btVector3(0.0f, 0.0f, 0.0f - fCentreOfMassOffsetZ ));
 
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform, centreOfMassOffset);
 
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass,myMotionState,shape,localInertia);
 
@@ -198,25 +229,6 @@ btRigidBody* PhysicsVehicle::localCreateRigidBody(btScalar mass, const btTransfo
 }
 
 
-void		PhysicsVehicle::RenderDebug( void )
-{
-int		nX = 100;
-int		nY = 100;
-char	acString[256];
-int		nLoop;
-
-	for( nLoop = 0; nLoop < 4; nLoop++ )
-	{
-		sprintf( acString, "Wheel %d", nLoop+1 );
-		InterfaceText( 1, nX, nY, acString, 0xd0d0d0d0, 0 );
-		nY += 20;
-		sprintf( acString, "Susp Rel Vel: %f", m_pRaycastVehicle->getWheelInfo(0).m_suspensionRelativeVelocity );
-		InterfaceText( 1, nX, nY, acString, 0xd0d0d0d0, 0 );
-		nY += 20;
-	}
-}
-
-
 void		PhysicsVehicle::CreateVehicle( const VECT* pxPos, eVehicleCollisionType collisionType, const PhysicsVehicleSetup* pSetup )
 {
 float		fSuspensionRestLength = 0.0f;
@@ -224,12 +236,12 @@ btTransform tr;
 PhysicsVehicleSetup		xDefaultSetup;
 float		wheelFriction = 1000;//BT_LARGE_FLOAT;
 //float		fChassisHeightOffGround = 0.2f;
-float		wheelWidth = 0.2f;
-float		fChassisHalfWidth = 1.0f;
-float		fChassisHalfLength = 2.2f;
-float		fChassisHalfHeight = 1.2f;
-float		fFrontWheelRadius = 0.55f;
-float		fRearWheelRadius = 0.85f;
+float		wheelWidth = 0.2f;					// this will need to come from the game
+float		fChassisHalfWidth = 1.0f;			// This will need to come from the game
+float		fChassisHalfLength = 2.1f;			// This will need to come from the game
+float		fChassisHalfHeight = 1.2f;			// This will need to come from the game
+float		fFrontWheelRadius = 0.55f;			// This will need to come from the game
+float		fRearWheelRadius = 0.85f;			// This will need to come from the game
 float		fChassisCOMAdjustHeight = fRearWheelRadius + (fChassisHalfHeight - 0.4f);
 float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// + 0.2f;
 
@@ -255,24 +267,15 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 	btTransform localTrans;
 	localTrans.setIdentity();
 	//localTrans effectively shifts the center of mass with respect to the chassis
+	fChassisCOMAdjustHeight += 0.2f;
 	localTrans.setOrigin(btVector3(0,0,fChassisCOMAdjustHeight));
 
 	compound->addChildShape(localTrans,chassisShape);
 
-/*
-	{
-		btCollisionShape* suppShape = new btBoxShape(btVector3(0.5f,0.1f,0.5f));
-		btTransform suppLocalTrans;
-		suppLocalTrans.setIdentity();
-		//localTrans effectively shifts the center of mass with respect to the chassis
-		suppLocalTrans.setOrigin(btVector3(0,1.0,2.5));
-		compound->addChildShape(suppLocalTrans, suppShape);
-	}
-*/
+	tr.setOrigin(btVector3(pxPos->x, pxPos->y, pxPos->z + 3.0f ));
 
-	tr.setOrigin(btVector3(pxPos->x, pxPos->y, pxPos->z + 5.5f ));
+	m_pCarChassisRigidBody = localCreateRigidBody(pSetup->mfMass,tr,compound, collisionType, mPhysicsVehicleSetup.mfCentreOfMassOffsetZ );//chassisShape);
 
-	m_pCarChassisRigidBody = localCreateRigidBody(pSetup->mfMass,tr,compound, collisionType);//chassisShape);
 	//m_pCarChassisRigidBody->setDamping(0.2,0.2);
 	m_pFrontWheelShape = new btCylinderShapeX(btVector3(wheelWidth,fFrontWheelRadius,fFrontWheelRadius));
 	m_pRearWheelShape = new btCylinderShapeX(btVector3(wheelWidth,fRearWheelRadius,fRearWheelRadius));
@@ -309,21 +312,22 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 		//choose coordinate system
 		m_pRaycastVehicle->setCoordinateSystem( 0, 2, 1 );
 
+		float fContactPointOffsetZ = fSuspensionRestLength;// * 0.5f;
 		// Front Right ( +X, -Y )
-		btVector3 connectionPointCS0(fChassisHalfWidth-(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f), fFrontWheelRadius + fSuspensionRestLength);
+		btVector3 connectionPointCS0(fChassisHalfWidth-(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f), fFrontWheelRadius + fContactPointOffsetZ);
 		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
 
 		// Front Left ( -X, -Y )
-		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f),fFrontWheelRadius + fSuspensionRestLength);
+		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f),fFrontWheelRadius + fContactPointOffsetZ);
 		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
 
 		isFrontWheel = false;
 		// Rear Left ( -X, +Y )
-		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.3f*wheelWidth),(0.0f - fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fSuspensionRestLength);
+		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.3f*wheelWidth),(0.0f - fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
 		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
 
 		// Rear Right ( +X, +Y )
-		connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fSuspensionRestLength);
+		connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
 		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
 	
 		SetAllWheelSettings( pSetup );
@@ -340,14 +344,16 @@ void		PhysicsVehicle::SetAllWheelSettings( const PhysicsVehicleSetup* pSetup )
 		// The stiffness constant for the suspension.  10.0 - Offroad buggy, 50.0 - Sports car, 200.0 - F1 Car
 		wheel.m_suspensionStiffness = mPhysicsVehicleSetup.mfSuspensionStiffness;
 
-		wheel.m_maxSuspensionTravelCm = 500.0f;//fSuspensionRestLength * 0.95f * 100.0f;//500.0f;//fChassisCOMAdjustHeight * 0.9f * 100.0f;
-		/// The damping coefficient for when the suspension is expanding.  See the comments for m_wheelsDampingCompression for how to set k.
-          /// m_wheelsDampingRelaxation should be slightly larger than m_wheelsDampingCompression, eg k = 0.2 to 0.5
-		wheel.m_wheelsDampingRelaxation = mPhysicsVehicleSetup.mfWheelsDampingRelaxation;
-		  /// The damping coefficient for when the suspension is compressed. Set to k * 2.0 * btSqrt(m_suspensionStiffness) so k is proportional to critical damping.
+		wheel.m_maxSuspensionTravelCm = mPhysicsVehicleSetup.mfSuspensionMaxTravel;
+
+		/// The damping coefficient for when the suspension is compressed. Set to k * 2.0 * btSqrt(m_suspensionStiffness) so k is proportional to critical damping.
           /// k = 0.0 undamped & bouncy, k = 1.0 critical damping
           /// k = 0.1 to 0.3 are good values
-		wheel.m_wheelsDampingCompression = mPhysicsVehicleSetup.mfWheelsDampingCompression;
+		wheel.m_wheelsDampingCompression = mPhysicsVehicleSetup.mfSuspensionDampingFactor * 2.0f * btSqrt( wheel.m_suspensionStiffness );
+
+		/// The damping coefficient for when the suspension is expanding.  See the comments for m_wheelsDampingCompression for how to set k.
+          /// m_wheelsDampingRelaxation should be slightly larger than m_wheelsDampingCompression, eg k = 0.2 to 0.5
+		wheel.m_wheelsDampingRelaxation = (mPhysicsVehicleSetup.mfSuspensionDampingFactor*1.5f) * 2.0f * btSqrt( wheel.m_suspensionStiffness );
 		  
 		/// The coefficient of friction between the tyre and the ground.
           /// Should be about 0.8 for realistic cars, but can increased for better handling.
