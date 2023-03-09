@@ -21,6 +21,22 @@ public:
 		mfRollInfluence = 0.3f;
 		mfSuspensionRestLength = 0.4f;
 	}
+
+	BOOL	IsDifferent( const PhysicsVehicleSetup* pOtherSetup)
+	{
+		if ( ( pOtherSetup->mfMass != mfMass ) ||
+			( pOtherSetup->mfEnginePowerRating != mfEnginePowerRating ) ||
+			( pOtherSetup->mfSuspensionStiffness != mfSuspensionStiffness ) ||
+			( pOtherSetup->mfWheelsDampingRelaxation != mfWheelsDampingRelaxation ) ||
+			( pOtherSetup->mfWheelsDampingCompression != mfWheelsDampingCompression ) ||
+			( pOtherSetup->mfFrictionSlip != mfFrictionSlip ) ||
+			( pOtherSetup->mfRollInfluence != mfRollInfluence ) ||
+			( pOtherSetup->mfSuspensionRestLength != mfSuspensionRestLength ))
+		{
+			return( TRUE );
+		}
+		return( FALSE );	
+	}
 	
 	void	SetMass( float fMass );
 	void	SetEnginePower( float fPowerRating );
@@ -59,6 +75,7 @@ public:
 	~PhysicsVehicle();
 
 	void		Initialise( const VECT* pxPos, eVehicleCollisionType collisionType, const PhysicsVehicleSetup* pSetup );
+	void		ModifySettings( const PhysicsVehicleSetup* pSetup );
 
 	PhysicsVehicleSetup* GetCurrentSetup( void );
 	void		ApplyCurrentSetup( void );
@@ -88,6 +105,7 @@ private:
 
 	void		CreateVehicle( const VECT* pxPos, eVehicleCollisionType collisionType, const PhysicsVehicleSetup* pSetup );
 	void		UpdateEngine( float fDelta );
+	void		SetAllWheelSettings( const PhysicsVehicleSetup* pSetup );
 
 	btRigidBody*	localCreateRigidBody(btScalar mass, const btTransform& startTransform, btCollisionShape* shape, eVehicleCollisionType collisionType);
 

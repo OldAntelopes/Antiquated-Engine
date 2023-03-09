@@ -19,6 +19,7 @@ public:
 	virtual void		OnEntityInitialised( void );
 
 	void				InitialisePhysicsVehicle( const PhysicsVehicleSetup* pSetup );
+	void				ModifySettings( const PhysicsVehicleSetup* pSetup );
 
 	void				GetLinearVelocity( VECT* pxOut );
 

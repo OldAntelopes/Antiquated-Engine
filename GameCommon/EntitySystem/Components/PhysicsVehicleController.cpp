@@ -37,6 +37,13 @@ PhysicsVehicleControllerComponent::~PhysicsVehicleControllerComponent()
 }
 
 
+void	PhysicsVehicleControllerComponent::ModifySettings( const PhysicsVehicleSetup* pSetup )
+{
+	mpPhysicsVehicle->ModifySettings( pSetup );
+}
+
+
+
 void	PhysicsVehicleControllerComponent::InitialisePhysicsVehicle( const PhysicsVehicleSetup* pSetup )
 {
 	if ( mpPhysicsVehicle )
@@ -54,7 +61,6 @@ void	PhysicsVehicleControllerComponent::InitialisePhysicsVehicle( const PhysicsV
 	{
 		mpPhysicsVehicle->Initialise( GetEntity()->GetPos(), VEHICLECOLLISIONTYPE_REMOTEVEHICLE, pSetup );
 	}
-
 }
 
 

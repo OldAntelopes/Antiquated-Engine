@@ -326,32 +326,56 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 		connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fSuspensionRestLength);
 		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
 	
-		for (int i=0;i<m_pRaycastVehicle->getNumWheels();i++)
-		{
-			btWheelInfo& wheel = m_pRaycastVehicle->getWheelInfo(i);
-			// From https://docs.google.com/document/d/18edpOwtGgCwNyvakS78jxMajCuezotCU_0iezcwiFQc/edit ...
-			// The stiffness constant for the suspension.  10.0 - Offroad buggy, 50.0 - Sports car, 200.0 - F1 Car
-			wheel.m_suspensionStiffness = mPhysicsVehicleSetup.mfSuspensionStiffness;
-
-			wheel.m_maxSuspensionTravelCm = 500.0f;//fSuspensionRestLength * 0.95f * 100.0f;//500.0f;//fChassisCOMAdjustHeight * 0.9f * 100.0f;
-			/// The damping coefficient for when the suspension is expanding.  See the comments for m_wheelsDampingCompression for how to set k.
-              /// m_wheelsDampingRelaxation should be slightly larger than m_wheelsDampingCompression, eg k = 0.2 to 0.5
-			wheel.m_wheelsDampingRelaxation = mPhysicsVehicleSetup.mfWheelsDampingRelaxation;
-			  /// The damping coefficient for when the suspension is compressed. Set to k * 2.0 * btSqrt(m_suspensionStiffness) so k is proportional to critical damping.
-              /// k = 0.0 undamped & bouncy, k = 1.0 critical damping
-              /// k = 0.1 to 0.3 are good values
-			wheel.m_wheelsDampingCompression = mPhysicsVehicleSetup.mfWheelsDampingCompression;
-			  
-			/// The coefficient of friction between the tyre and the ground.
-              /// Should be about 0.8 for realistic cars, but can increased for better handling.
-              /// Set large (10000.0) for kart racers
-			wheel.m_frictionSlip = mPhysicsVehicleSetup.mfFrictionSlip;
-			wheel.m_rollInfluence = mPhysicsVehicleSetup.mfRollInfluence;
-		}
+		SetAllWheelSettings( pSetup );
 	}
 
+}
 
+void		PhysicsVehicle::SetAllWheelSettings( const PhysicsVehicleSetup* pSetup )
+{
+	for (int i=0;i<m_pRaycastVehicle->getNumWheels();i++)
+	{
+		btWheelInfo& wheel = m_pRaycastVehicle->getWheelInfo(i);
+		// From https://docs.google.com/document/d/18edpOwtGgCwNyvakS78jxMajCuezotCU_0iezcwiFQc/edit ...
+		// The stiffness constant for the suspension.  10.0 - Offroad buggy, 50.0 - Sports car, 200.0 - F1 Car
+		wheel.m_suspensionStiffness = mPhysicsVehicleSetup.mfSuspensionStiffness;
 
+		wheel.m_maxSuspensionTravelCm = 500.0f;//fSuspensionRestLength * 0.95f * 100.0f;//500.0f;//fChassisCOMAdjustHeight * 0.9f * 100.0f;
+		/// The damping coefficient for when the suspension is expanding.  See the comments for m_wheelsDampingCompression for how to set k.
+          /// m_wheelsDampingRelaxation should be slightly larger than m_wheelsDampingCompression, eg k = 0.2 to 0.5
+		wheel.m_wheelsDampingRelaxation = mPhysicsVehicleSetup.mfWheelsDampingRelaxation;
+		  /// The damping coefficient for when the suspension is compressed. Set to k * 2.0 * btSqrt(m_suspensionStiffness) so k is proportional to critical damping.
+          /// k = 0.0 undamped & bouncy, k = 1.0 critical damping
+          /// k = 0.1 to 0.3 are good values
+		wheel.m_wheelsDampingCompression = mPhysicsVehicleSetup.mfWheelsDampingCompression;
+		  
+		/// The coefficient of friction between the tyre and the ground.
+          /// Should be about 0.8 for realistic cars, but can increased for better handling.
+          /// Set large (10000.0) for kart racers
+		wheel.m_frictionSlip = mPhysicsVehicleSetup.mfFrictionSlip;
+		wheel.m_rollInfluence = mPhysicsVehicleSetup.mfRollInfluence;
+	}
+
+}
+
+void		PhysicsVehicle::ModifySettings( const PhysicsVehicleSetup* pSetup )
+{
+btVector3		inertia( 0.0f, 0.0f, 0.0f );
+
+	if ( mPhysicsVehicleSetup.IsDifferent( pSetup ) )
+	{
+
+		// mfEnginePowerRating is used in the UpdateEngine call every frame
+		mPhysicsVehicleSetup = *pSetup;
+
+		// SetAllWheelSettings updates mfWheelsDampingCompression, mfWheelsDampingRelaxation, mfFrictionSlip, mfRollInfluence, mfSuspensionStiffness
+		SetAllWheelSettings( pSetup );
+		// Update rigid body mass 
+		inertia = m_pCarChassisRigidBody->getLocalInertia();
+		m_pCarChassisRigidBody->setMassProps( pSetup->mfMass, inertia );
+
+		//		Note - mfSuspensionRestLength  cant be updated without re-adding the wheels (i.e. recreating the vehicle anew) 
+	}
 }
 
 void		PhysicsVehicle::Initialise( const VECT* pxPos, eVehicleCollisionType collisionType, const PhysicsVehicleSetup* pSetup )
