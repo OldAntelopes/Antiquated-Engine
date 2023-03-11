@@ -1,4 +1,5 @@
 
+#include <math.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -295,6 +296,10 @@ int		mnNextModelData = 0;
 ulong	mulLastRenderingTick = 0;
 BOOL	mbRenderingIsShadowPass = FALSE;
 BOOL	mbRenderingShadowMapActive = FALSE;
+float	msfFireVFXAngle1 = 0.4f;
+float	msfFireVFXAngle2 = 1.7f;
+float	msfFlickerBrightness = 0.8f;
+ulong	mulNextFlickerBrightnessChange = 100;
 
 MODEL_RENDER_DATA		maxModelRenderData[ MAX_MODELS_LOADED ];
 
@@ -1543,6 +1548,23 @@ MODEL_RENDER_DATA*		pxModelData;
 	}
 }
 
+float	EngineGetWobbleVal( float min, float max, float fSpeed1, float fSpeed2, float fRandFactor1, float fRandFactor2, float fRandFactor3 )
+{
+float	fVal1 = sinf( msfFireVFXAngle1 * fSpeed1 ) * fRandFactor1;
+float	fVal2 = cosf( msfFireVFXAngle2 * fSpeed2 ) * fRandFactor2;
+float	fVal3 = cosf( msfFireVFXAngle1 * fSpeed2 ) * fRandFactor3;
+float	fVal4 = sinf( msfFireVFXAngle2 * fSpeed1 ) * fRandFactor1;
+float	fVal5 = sinf( msfFireVFXAngle1 * (fSpeed1+fSpeed2) ) * fRandFactor2;
+float	fSum = (fRandFactor1*2.0f) + (fRandFactor2*2.0f) + fRandFactor3;
+float	fVal = fVal1 + fVal2 + fVal3 + fVal4 + fVal5;
+
+	fVal += fSum;
+	fVal /= fSum;
+	fVal *= (max-min);
+	fVal += min;
+	return( fVal );
+}
+
 
 void	ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos )
 {
@@ -1576,7 +1598,7 @@ ulong	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 		{
 		MVECT	xPos;
 		float	fR, fG, fB;
-		float	fBrightness = 0.8f;//FRand( 0.08f, 0.15f );
+		float	fBrightness = msfFlickerBrightness;
 
 			if ( ulTimeGap == 0 )
 			{
@@ -1876,7 +1898,25 @@ void		ModelRenderingFree( void )
 
 void		ModelRenderingUpdate( ulong ulTickIncrease )
 {
+float	fFrameDelta = (ulTickIncrease) * 0.001f;
+
 	mulLastRenderingTick += ulTickIncrease;
+
+	if ( ulTickIncrease > mulNextFlickerBrightnessChange )
+	{
+		mulNextFlickerBrightnessChange = 100;
+		msfFlickerBrightness = FRand( 0.5f, 0.9f );
+	}
+	else
+	{
+		mulNextFlickerBrightnessChange -= ulTickIncrease;
+	}
+
+	msfFireVFXAngle1 += fFrameDelta * 1.5f;
+	if ( msfFireVFXAngle1 > A360 ) msfFireVFXAngle1 -= A360;
+	msfFireVFXAngle2 += fFrameDelta * 2.7f;
+	if ( msfFireVFXAngle2 > A360 ) msfFireVFXAngle2 -= A360;
+
 }
 
 
