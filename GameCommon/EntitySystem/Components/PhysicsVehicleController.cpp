@@ -27,6 +27,7 @@ PhysicsVehicleControllerComponent::PhysicsVehicleControllerComponent()
 	mbIsReverse = FALSE;
 	mfWheelSpin = 0.0F;
 	mpPhysicsVehicle = NULL;
+	mfSteeringSpeed = 0.1f;
 
 }
 
@@ -39,6 +40,7 @@ PhysicsVehicleControllerComponent::~PhysicsVehicleControllerComponent()
 
 void	PhysicsVehicleControllerComponent::ModifySettings( const PhysicsVehicleSetup* pSetup )
 {
+	mfSteeringSpeed = pSetup->mfSteeringSpeed;
 	mpPhysicsVehicle->ModifySettings( pSetup );
 }
 
@@ -46,6 +48,7 @@ void	PhysicsVehicleControllerComponent::ModifySettings( const PhysicsVehicleSetu
 
 void	PhysicsVehicleControllerComponent::InitialisePhysicsVehicle( const PhysicsVehicleSetup* pSetup )
 {
+	mfSteeringSpeed = pSetup->mfSteeringSpeed;
 	if ( mpPhysicsVehicle )
 	{
 		delete mpPhysicsVehicle;
@@ -75,7 +78,7 @@ void	PhysicsVehicleControllerComponent::RenderDebug( void )
 
 void	PhysicsVehicleControllerComponent::ApplySteering( float fDelta )
 {
-float	fTurnSpeed = 0.3f;			// Should lower as we get faster?
+float	fTurnSpeed = mfSteeringSpeed;			// Should lower as we get faster?		// SHould come from the game
 
 	if ( GetControlState( CONTROL_STEER_LEFT ) > 0.0f )
 	{
@@ -235,14 +238,7 @@ float		fSpeed = mpPhysicsVehicle->GetCurrentSpeedMPH();
 	mpPhysicsVehicle->GetPosition( &xPos );
 	mpPhysicsVehicle->GetOrientation( &xQuat );
 
-//	xPos.z -= 0.29f;		// TODO - PhysicsVehicle position is base of the chassis rigid body, remove half height from vehicle pos
-
 	GetEntity()->SetOrientation( &xQuat );
-
-	EngineMatrixFromQuaternion( &xMat, &xQuat );
-	VectTransform( &xUp, &xUp, &xMat );
-//	VectScale( &xUp, &xUp, -0.6f );			// WRONG !!!!
-//	VectAdd( &xPos, &xPos, &xUp );
 	GetEntity()->SetPos( &xPos );
 
 	for ( nLoop = 0; nLoop < 4; nLoop++ )

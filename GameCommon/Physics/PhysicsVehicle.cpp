@@ -62,6 +62,11 @@ void	PhysicsVehicleSetup::SetSuspensionRestLength( float fSuspensionRestLength )
 	mfSuspensionRestLength = fSuspensionRestLength;
 }
 
+void	PhysicsVehicleSetup::SetSteeringSpeed( float fSteeringSpeed )
+{
+	mfSteeringSpeed = fSteeringSpeed;
+}
+
 //----------------------------------------------------------------------------
 
 class PhysicsVehicleRaycaster : public btVehicleRaycaster
@@ -109,8 +114,7 @@ void* PhysicsVehicleRaycaster::castRay(const btVector3& from,const btVector3& to
 		rayCallback.m_collisionFilterMask = mCollisionFilterMask;
 		rayCallback.m_collisionFilterGroup = mCollisionFilterGroup;
 	}
-
-
+	
 	mpDynamicsWorld->rayTest(from, to, rayCallback);
 
 	if (rayCallback.hasHit())
@@ -242,7 +246,7 @@ float		fChassisHalfLength = 2.1f;			// This will need to come from the game
 float		fChassisHalfHeight = 1.2f;			// This will need to come from the game
 float		fFrontWheelRadius = 0.55f;			// This will need to come from the game
 float		fRearWheelRadius = 0.85f;			// This will need to come from the game
-float		fChassisCOMAdjustHeight = fRearWheelRadius + (fChassisHalfHeight - 0.4f);
+float		fChassisCOMAdjustHeight = fRearWheelRadius + (fChassisHalfHeight - 0.2f);
 float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// + 0.2f;
 
 	// if wheelconnectionheight - (fWheelRadius+suspensionrestlength) > fComadjustHeight - fChassisHalfHeight
@@ -266,8 +270,7 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 
 	btTransform localTrans;
 	localTrans.setIdentity();
-	//localTrans effectively shifts the center of mass with respect to the chassis
-	fChassisCOMAdjustHeight += 0.2f;
+
 	localTrans.setOrigin(btVector3(0,0,fChassisCOMAdjustHeight));
 
 	compound->addChildShape(localTrans,chassisShape);
@@ -280,58 +283,39 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 	m_pFrontWheelShape = new btCylinderShapeX(btVector3(wheelWidth,fFrontWheelRadius,fFrontWheelRadius));
 	m_pRearWheelShape = new btCylinderShapeX(btVector3(wheelWidth,fRearWheelRadius,fRearWheelRadius));
 
-//	m_guiHelper->createCollisionShapeGraphicsObject(m_pWheelShape);
-
-//	int wheelGraphicsIndex = m_pWheelShape->getUserIndex();
-
-	const float position[4]={0,10,10,0};
-	const float quaternion[4]={0,0,0,1};
-	const float color[4]={0,1,0,1};
-	const float scaling[4] = {1,1,1,1};
-
-	for (int i=0;i<4;i++)
-	{
-//		m_wheelInstances[i] = m_guiHelper->registerGraphicsInstance(wheelGraphicsIndex, position, quaternion, color, scaling);
-	}
-
-	
-	/// create vehicle
-	{
+	m_pVehicleRaycaster = new PhysicsVehicleRaycaster(mpDynamicsWorld, collisionType);
+	m_pRaycastVehicle = new btRaycastVehicle(m_tuning, m_pCarChassisRigidBody, (btVehicleRaycaster*)m_pVehicleRaycaster);
 		
-		m_pVehicleRaycaster = new PhysicsVehicleRaycaster(mpDynamicsWorld, collisionType);
-		m_pRaycastVehicle = new btRaycastVehicle(m_tuning, m_pCarChassisRigidBody, (btVehicleRaycaster*)m_pVehicleRaycaster);
-		
-		///never deactivate the vehicle
-		m_pCarChassisRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	// never deactivate the vehicle
+	m_pCarChassisRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
-		mpDynamicsWorld->addVehicle(m_pRaycastVehicle);
+	mpDynamicsWorld->addVehicle(m_pRaycastVehicle);
 
-//		float connectionHeight = 0.28f;
-		bool isFrontWheel=true;
+//	float connectionHeight = 0.28f;
+	bool isFrontWheel=true;
 
-		//choose coordinate system
-		m_pRaycastVehicle->setCoordinateSystem( 0, 2, 1 );
+	//choose coordinate system
+	m_pRaycastVehicle->setCoordinateSystem( 0, 2, 1 );
 
-		float fContactPointOffsetZ = fSuspensionRestLength;// * 0.5f;
-		// Front Right ( +X, -Y )
-		btVector3 connectionPointCS0(fChassisHalfWidth-(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f), fFrontWheelRadius + fContactPointOffsetZ);
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
+	float fContactPointOffsetZ = fSuspensionRestLength;// * 0.5f;
+	// Front Right ( +X, -Y )
+	btVector3 connectionPointCS0(fChassisHalfWidth-(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f), fFrontWheelRadius + fContactPointOffsetZ);
+	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
 
-		// Front Left ( -X, -Y )
-		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f),fFrontWheelRadius + fContactPointOffsetZ);
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
+	// Front Left ( -X, -Y )
+	connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f),fFrontWheelRadius + fContactPointOffsetZ);
+	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
 
-		isFrontWheel = false;
-		// Rear Left ( -X, +Y )
-		connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.3f*wheelWidth),(0.0f - fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
+	isFrontWheel = false;
+	// Rear Left ( -X, +Y )
+	connectionPointCS0 = btVector3((0.0f - fChassisHalfWidth)+(0.3f*wheelWidth),(0.0f - fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
+	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
 
-		// Rear Right ( +X, +Y )
-		connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
+	// Rear Right ( +X, +Y )
+	connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
+	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
 	
-		SetAllWheelSettings( pSetup );
-	}
+	SetAllWheelSettings( pSetup );
 
 }
 
@@ -609,90 +593,3 @@ int wheelIndex = 2;
 
 
 
-/*
-
-	btCollisionShape* chassisShape = new btBoxShape(btVector3(1.f,0.5f,2.f));
-	m_apCollisionShapes.push_back(chassisShape);
-
-	btCompoundShape* compound = new btCompoundShape();
-	m_apCollisionShapes.push_back(compound);
-	btTransform localTrans;
-	localTrans.setIdentity();
-	//localTrans effectively shifts the center of mass with respect to the chassis
-	localTrans.setOrigin(btVector3(0,1,0));
-
-	compound->addChildShape(localTrans,chassisShape);
-
-	{
-		btCollisionShape* suppShape = new btBoxShape(btVector3(0.5f,0.1f,0.5f));
-		btTransform suppLocalTrans;
-		suppLocalTrans.setIdentity();
-		//localTrans effectively shifts the center of mass with respect to the chassis
-		suppLocalTrans.setOrigin(btVector3(0,1.0,2.5));
-		compound->addChildShape(suppLocalTrans, suppShape);
-	}
-
-	tr.setOrigin(btVector3(0,0.f,0));
-
-	m_pCarChassisRigidBody = localCreateRigidBody(800,tr,compound);//chassisShape);
-	//m_pCarChassisRigidBody->setDamping(0.2,0.2);
-	
-	m_pWheelShape = new btCylinderShapeX(btVector3(wheelWidth,wheelRadius,wheelRadius));
-
-	m_guiHelper->createCollisionShapeGraphicsObject(m_pWheelShape);
-	int wheelGraphicsIndex = m_pWheelShape->getUserIndex();
-
-	const float position[4]={0,10,10,0};
-	const float quaternion[4]={0,0,0,1};
-	const float color[4]={0,1,0,1};
-	const float scaling[4] = {1,1,1,1};
-
-	for (int i=0;i<4;i++)
-	{
-		m_wheelInstances[i] = m_guiHelper->registerGraphicsInstance(wheelGraphicsIndex, position, quaternion, color, scaling);
-	}
-
-	
-	/// create vehicle
-	{
-		
-		m_pVehicleRaycaster = new btDefaultVehicleRaycaster(mpDynamicsWorld);
-		m_pRaycastVehicle = new btRaycastVehicle(m_tuning,m_pCarChassisRigidBody,m_pVehicleRaycaster);
-		
-		///never deactivate the vehicle
-		m_pCarChassisRigidBody->setActivationState(DISABLE_DEACTIVATION);
-
-		mpDynamicsWorld->addVehicle(m_pRaycastVehicle);
-
-		float connectionHeight = 1.2f;
-
-	
-		bool isFrontWheel=true;
-
-		//choose coordinate system
-		m_pRaycastVehicle->setCoordinateSystem(rightIndex,upIndex,forwardIndex);
-
-		btVector3 connectionPointCS0(CUBE_HALF_EXTENTS-(0.3*wheelWidth),connectionHeight,2*CUBE_HALF_EXTENTS-wheelRadius);
-
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
-		connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),connectionHeight,2*CUBE_HALF_EXTENTS-wheelRadius);
-
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
-		connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),connectionHeight,-2*CUBE_HALF_EXTENTS+wheelRadius);
-		isFrontWheel = false;
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
-		connectionPointCS0 = btVector3(CUBE_HALF_EXTENTS-(0.3*wheelWidth),connectionHeight,-2*CUBE_HALF_EXTENTS+wheelRadius);
-		m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
-		
-		for (int i=0;i<m_pRaycastVehicle->getNumWheels();i++)
-		{
-			btWheelInfo& wheel = m_pRaycastVehicle->getWheelInfo(i);
-			wheel.m_suspensionStiffness = suspensionStiffness;
-			wheel.m_wheelsDampingRelaxation = suspensionDamping;
-			wheel.m_wheelsDampingCompression = suspensionCompression;
-			wheel.m_frictionSlip = wheelFriction;
-			wheel.m_rollInfluence = rollInfluence;
-		}
-	}
-
-*/

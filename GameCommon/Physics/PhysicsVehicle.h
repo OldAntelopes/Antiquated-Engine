@@ -9,6 +9,7 @@ class PhysicsVehicleRaycaster;
 class PhysicsVehicleSetup
 {
 	friend class PhysicsVehicle;
+	friend class PhysicsVehicleControllerComponent;
 public:
 	PhysicsVehicleSetup()
 	{
@@ -21,6 +22,7 @@ public:
 		mfRollInfluence = 0.3f;
 		mfSuspensionRestLength = 0.4f;
 		mfCentreOfMassOffsetZ = 0.0f;
+		mfSteeringSpeed = 0.2f;
 	}
 
 	BOOL	IsDifferent( const PhysicsVehicleSetup* pOtherSetup)
@@ -32,6 +34,7 @@ public:
 			( pOtherSetup->mfSuspensionMaxTravel != mfSuspensionMaxTravel ) ||
 			( pOtherSetup->mfFrictionSlip != mfFrictionSlip ) ||
 			( pOtherSetup->mfRollInfluence != mfRollInfluence ) ||
+			( pOtherSetup->mfSteeringSpeed != mfSteeringSpeed ) ||
 			( pOtherSetup->mfCentreOfMassOffsetZ != mfCentreOfMassOffsetZ ) ||
 			( pOtherSetup->mfSuspensionRestLength != mfSuspensionRestLength ))
 		{
@@ -49,6 +52,7 @@ public:
 	void	SetRollInfluence( float mfRollInfluence );
 	void	SetSuspensionRestLength( float fSuspensionRestLength );
 	void	SetCentreOfMassOffset( float fCentreOfMassOffsetZ );
+	void	SetSteeringSpeed( float fSteeringSpeed );
 protected:
 	
 	float	mfMass;
@@ -60,7 +64,7 @@ protected:
 	float	mfRollInfluence;
 	float	mfSuspensionRestLength;
 	float	mfCentreOfMassOffsetZ;
-
+	float	mfSteeringSpeed;
 };
 
 

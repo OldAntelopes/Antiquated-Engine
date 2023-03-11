@@ -35,6 +35,7 @@ private:
 	void	ApplySteering( float fDelta );
 
 	float		mfSteeringAngle;
+	float		mfSteeringSpeed;
 	float		mfWheelSpin;
 	BOOL		mbIsReverse;
 	BOOL		mbCanReverse;
