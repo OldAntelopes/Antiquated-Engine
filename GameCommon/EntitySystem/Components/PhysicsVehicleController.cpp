@@ -147,7 +147,7 @@ ENGINEQUATERNION	xQuat;
 float		fAccelerateState;
 float		fBrakeState;
 VECT	xUp = { 0.0f, 0.0f, 1.0f };
-ENGINEMATRIX	xMat;
+//ENGINEMATRIX	xMat;
 int		nLoop;
 float		fSpeed = mpPhysicsVehicle->GetCurrentSpeedMPH();
 
