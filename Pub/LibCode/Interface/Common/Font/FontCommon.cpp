@@ -727,6 +727,66 @@ int		nPreBackstepPos;
 	return( (char*)szString + nLoop );
 }
 
+char* InterfaceTextLimitWidthCentred( int nLayer, int nX, int nY, const char* szString, int ulCol, int nFont, int nMaxWidth )
+{
+char	acBuff[512];
+int		nLoop = 0;
+int		nBackstepcount = 0;
+int		nPreBackstepPos;
+
+	ZeroMemory(acBuff, 512 );
+	acBuff[0] = szString[0];
+	while ( ( acBuff[nLoop] != 0 ) &&
+			( GetStringWidth( acBuff, nFont ) < nMaxWidth ) )
+	{
+		nLoop++;
+		if ( nLoop == 250 )
+		{
+			break;
+		}
+		acBuff[nLoop] = szString[nLoop];
+	}
+	// If we got to the end of the string and it all fit, its fine to draw normally
+	if ( acBuff[nLoop] == 0 )
+	{
+		if ( ulCol != 0 )
+		{
+			InterfaceText( nLayer, nX, nY, szString, ulCol, nFont );
+		}
+		return( NULL );
+	}
+	nPreBackstepPos = nLoop;
+	while ( ( nLoop > 0 ) &&
+			( nBackstepcount < 20 ) &&
+			( acBuff[nLoop] != ' ' ) )
+	{
+		nLoop--;
+		nBackstepcount++;
+	}
+	if ( acBuff[nLoop] != ' ' )
+	{
+		nLoop = nPreBackstepPos;
+	}
+	if ( nLoop == 0 )
+	{
+		/// Nothing will fit.. abort!!
+		if ( ulCol != 0 )
+		{
+			InterfaceTextCentre( nLayer, nX, nY, acBuff, ulCol, nFont );
+		}
+		nLoop = strlen( szString );
+	}
+	else
+	{
+		// Otherwise, we need to chop the string..
+		acBuff[nLoop] = 0;
+		if ( ulCol != 0 )
+		{
+			InterfaceTextCentre( nLayer, nX, nY, acBuff, ulCol, nFont );
+		}
+	}
+	return( (char*)szString + nLoop );
+}
 
 
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont )
@@ -1517,7 +1577,14 @@ int		nStringWidth;
 	}
 	else
 	{
-		pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+		if ( bLeftAlign )
+		{
+			pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+		}
+		else
+		{
+			pcEndOfLine = InterfaceTextLimitWidthCentred( nLayer, nX + (nMaxWidth/2), nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+		}
 		nY += nLineSep;
 		while ( pcEndOfLine != NULL )
 		{
