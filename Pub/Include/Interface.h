@@ -221,6 +221,10 @@ extern INTERFACE_API float	GetViewRotationFromVector( const MVECT* pxVect );
 extern INTERFACE_API int InterfaceGetWidth( void );
 extern INTERFACE_API int InterfaceGetHeight( void );
 
+extern INTERFACE_API int InterfaceGetCentreX( void );		// Just doing my bit for the olde english spelling 
+extern INTERFACE_API int InterfaceGetCentreY( void );
+
+
 extern INTERFACE_API BOOL InterfaceIsFullscreen ( void );
 extern INTERFACE_API BOOL InterfaceIsSmall ( void );
 extern INTERFACE_API BOOL InterfaceDoesNeedChanging ( void );

@@ -93,6 +93,7 @@ MODEL_STATS*		pxModelStats;
 	if ( mhModelHandle == NOTFOUND ) return;
 
 	EngineDefaultState();
+	EngineCameraStoreCurrent();
 	
 	SetLighting();
 	VectNormalize( &xCamDir );
@@ -124,6 +125,7 @@ MODEL_STATS*		pxModelStats;
 	ModelRender( mhModelHandle, &xPos, &xRot, RENDER_FLAGS_NO_STATE_CHANGE );
 	EngineCameraSetViewAspectOverride( 0.0f );
 	EngineRestoreRenderTarget();
+	EngineCameraRestore();
 
 
 }

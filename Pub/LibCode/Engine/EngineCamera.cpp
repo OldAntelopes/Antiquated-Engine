@@ -22,6 +22,12 @@ VECT				mxEngineCamPos = { 0.0f, 0.0f, 0.0f };
 VECT				mxEngineCamVect = { 0.0f, 1.0f, 0.0f };
 VECT				mxEngineCamUpVect = { 0.0f,0.0f,1.0f };
 
+VECT				mxEngineCamStorePos = { 0.0f, 0.0f, 0.0f };
+VECT				mxEngineCamStoreVect = { 0.0f, 1.0f, 0.0f };
+VECT				mxEngineCamStoreUpVect = { 0.0f,0.0f,1.0f };
+float	mfEngineCamStoreFOV;
+float	mfEngineCamStoreNearClip;
+float	mfEngineCamStoreFarClip;
 
 VECT*	EngineCameraGetUpVect( void )
 {
@@ -75,6 +81,24 @@ void	EngineCameraSetPos( float fX, float fY, float fZ )
 	mxEngineCamPos.x = fX;
 	mxEngineCamPos.y = fY;
 	mxEngineCamPos.z = fZ;
+}
+
+
+void		EngineCameraStoreCurrent( )
+{
+	mxEngineCamStorePos = mxEngineCamPos;
+	mxEngineCamStoreUpVect = mxEngineCamUpVect;
+	mxEngineCamStoreVect = mxEngineCamVect;
+	EngineCameraGetCurrentProjectionSettings( &mfEngineCamStoreFOV, &mfEngineCamStoreNearClip, &mfEngineCamStoreFarClip );
+}
+
+void		EngineCameraRestore( )
+{
+	mxEngineCamPos = mxEngineCamStorePos;
+	mxEngineCamUpVect = mxEngineCamStoreUpVect;
+	mxEngineCamVect = mxEngineCamStoreVect;
+	EngineCameraSetProjection( mfEngineCamStoreFOV, mfEngineCamStoreNearClip, mfEngineCamStoreFarClip );
+	EngineCameraUpdate();
 }
 
 void		EngineCameraGetMatrix( ENGINEMATRIX* pMat )

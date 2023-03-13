@@ -241,10 +241,14 @@ extern void		EngineCameraSetOthorgonalView( int width, int height );
 extern void		EngineCameraSetUpVect( float fX, float fY, float fZ );
 extern VECT*	EngineCameraGetUpVect( void );
 
+extern void		EngineCameraStoreCurrent( );
+extern void		EngineCameraRestore( );
+
 extern void		EngineCameraUpdate( void );
 
 extern void		EngineCameraSetMatrix( ENGINEMATRIX* pMat );
 extern void		EngineCameraGetMatrix( ENGINEMATRIX* pMat );
+
 
 extern void		EngineSetWorldMatrix( const ENGINEMATRIX* pMat );
 extern void		EngineSetViewMatrix( const ENGINEMATRIX* pMat );

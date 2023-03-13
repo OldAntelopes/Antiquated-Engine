@@ -98,6 +98,26 @@ INTERFACE_API int InterfaceGetWidth( void )
 	}
 	return( mnRenderSurfaceWidth );
 }
+
+INTERFACE_API int InterfaceGetCentreX( void )
+{
+	if ( mnInterfaceDrawWidth != 0 )
+	{
+		return( mnInterfaceDrawWidth / 2 );
+	}
+	return( mnRenderSurfaceWidth / 2 );
+}
+
+INTERFACE_API int InterfaceGetCentreY( void )
+{
+	if ( mnInterfaceDrawHeight != 0 )
+	{
+		return( mnInterfaceDrawHeight / 2 );
+	}
+	return( mnRenderSurfaceHeight / 2 );
+}
+
+
 /***************************************************************************
  * Function    : InterfaceGetHeight
  ***************************************************************************/
