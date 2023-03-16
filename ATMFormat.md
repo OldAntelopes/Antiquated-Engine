@@ -15,41 +15,41 @@ ATM_FILE_HEADER
 0x2   	[2 bytes] = File Version Num  	(Current version is 2)
 0x4 	[1 byte] = Size of this header	(Version 2 atm = 12, but could be larger if a later version)
 0x5 	[1 byte] = Size of the Chunk Header 	(Version 2 atm = 12, but could be larger if a later version)
-0x6		[1 byte] = Compression flag		(1 indicates the rest of the file is zlib compressed)
-0x7		[1 byte] = Pad. Ignored.
-0x8		[4 bytes] = Uncompressed size. (Size of the compressed data after it is uncompressed)
+0x6	[1 byte] = Compression flag		(1 indicates the rest of the file is zlib compressed)
+0x7	[1 byte] = Pad. Ignored.
+0x8	[4 bytes] = Uncompressed size. (Size of the compressed data after it is uncompressed)
 
 If the ATM is compressed, all data after the ATM_FILE_HEADER will be zlib compressed and will need uncompressing before
 being parsed. Once done, immediately following the ATM_FILE_HEADER will be the first chunk header..
 
 
 ATM_CHUNK_HEADER
-0x0		[1 byte] = Chunk code.  Defines the type of this chunk. (See individual chunk definitions later)
-0x1		[1 byte] = Chunk Data Num.  	
+0x0	[1 byte] = Chunk code.  Defines the type of this chunk. (See individual chunk definitions later)
+0x1	[1 byte] = Chunk Data Num.  	
 			Some chunks can appear multiple times within the ATM, this indicates which chunk number this is
 0x2 	[2 byte] = ChunkID
-0x4		[4 bytes] = Num Elements in Chunk
+0x4	[4 bytes] = Num Elements in Chunk
 			Some chunks contain many elements (e.g. a vertices chunk may contain 1000s of vertices.)
-0x8		[4 bytes] = Size of each element
+0x8	[4 bytes] = Size of each element
 
 -------------------------------
 Chunk Codes
 
-0x1		Basic Animation Description
-0x2		Vertices
-0x3		Normals
-0x4		Colours
-0x5		UVs
-0x6		Face Indices
+0x1	Basic Animation Description
+0x2	Vertices
+0x3	Normals
+0x4	Colours
+0x5	UVs
+0x6	Face Indices
 0x7 	(Not currently used)
-0x8		(Not currently used)
+0x8	(Not currently used)
 0x9 	Vertex Keyframe Data
-0xA		Normal Keyframe Data
+0xA	Normal Keyframe Data
 0xB 	Low-resolution UVs
-0xC		Low-resolution vertices
-0xD		(Not currently used)
-0xE		Low-resolution vertex keyframes
-0xF		Low-resolution normal keyframes
+0xC	Low-resolution vertices
+0xD	(Not currently used)
+0xE	Low-resolution vertex keyframes
+0xF	Low-resolution normal keyframes
 0x10	Animated UVs
 0x11	Shared low-resolution normals
 0x12	Keyframe Data
@@ -185,11 +185,11 @@ i.e. The larger the model is, the less accurate the low resolution vertices are.
 
 Chunk starts with a custom header :
 
-0x0		[2 bytes]		Size of this header
-0x2		[2 bytes]		Unused
-0x4		[4 bytes]		Number of vertices
-0x8		[4 bytes]		Min Position X
-0xC		[4 bytes]		Min Position Y
+0x0	[2 bytes]		Size of this header
+0x2	[2 bytes]		Unused
+0x4	[4 bytes]		Number of vertices
+0x8	[4 bytes]		Min Position X
+0xC	[4 bytes]		Min Position Y
 0x10	[4 bytes]		Min Position Z
 0x14	[4 bytes]		Max Position X
 0x18	[4 bytes]		Max Position Y
@@ -197,9 +197,9 @@ Chunk starts with a custom header :
 
 This header is followed by 3x short vertex positions
 
-0x0		[2 bytes]		Low-res position X
-0x2		[2 bytes]		Low-res position Y
-0x4		[2 bytes]		Low-res position Z
+0x0	[2 bytes]		Low-res position X
+0x2	[2 bytes]		Low-res position Y
+0x4	[2 bytes]		Low-res position Z
 
 x number of vertices in the model
 
@@ -210,11 +210,11 @@ Keyframe stream of low resolution vertices. Packing works in same way as describ
 
 Chunk starts with a custom header :
 
-0x0		[2 bytes]		Size of this header
-0x2		[2 bytes]		Number of keyframes
-0x4		[4 bytes]		Number of vertices
-0x8		[4 bytes]		Min Position X
-0xC		[4 bytes]		Min Position Y
+0x0	[2 bytes]		Size of this header
+0x2	[2 bytes]		Number of keyframes
+0x4	[4 bytes]		Number of vertices
+0x8	[4 bytes]		Min Position X
+0xC	[4 bytes]		Min Position Y
 0x10	[4 bytes]		Min Position Z
 0x14	[4 bytes]		Max Position X
 0x18	[4 bytes]		Max Position Y
@@ -301,11 +301,11 @@ Usually (but not necessarily) this will be the first chunk in the ATM file, and 
 parse this chunk first to get an understanding of the structure of the ATM.
 
 0x0 	[1 byte]		Model Type
-0x1		[1 byte]		Number of materials
-0x2		[2 bytes]		Currently unused
-0x4		[4 bytes]		Number of vertices
-0x8		[4 bytes]		'Unique Model ID'
-0xC		[4 bytes]		Number of faces
+0x1	[1 byte]		Number of materials
+0x2	[2 bytes]		Currently unused
+0x4	[4 bytes]		Number of vertices
+0x8	[4 bytes]		'Unique Model ID'
+0xC	[4 bytes]		Number of faces
 0x10 	[2 bytes]		Content flags
 0x12	[2 bytes]		Currently unused
 0x14	[4 bytes]		Number of normals
