@@ -2,6 +2,7 @@
 #include "StandardDef.h"
 #include "Engine.h"
 #include "Rendering.h"
+#include "Interface.h"
 
 #include "ModelIcons.h"
 
@@ -16,6 +17,8 @@ public:
 		mfCamViewDist = 2.0f;
 		mbOwnsHandles = false;
 		mFlags = 0;
+		mszDebugName = NULL;
+		mbIsSpinning = TRUE;
 	}
 
 	void		UpdateIconTexture();
@@ -26,11 +29,13 @@ public:
 	float		mfRotationAngle;
 	float		mfRotationSpeed;
 	ulong		mulLastUpdateTick;
+	BOOL		mbIsSpinning;
 	int			mhModelHandle;
 	int			mhTexture;
 	int			mhRenderTargetTexture;
 	int			mFlags;
 	float		mfCamViewDist;
+	char*		mszDebugName;
 
 	BOOL		mbOwnsHandles;
 	ModelIcon*	mpNext;
@@ -76,6 +81,7 @@ void		ModelIcon::Release()
 		mhModelHandle = NOTFOUND;
 	}
 	EngineReleaseTexture( &mhRenderTargetTexture );
+	SAFE_FREE( mszDebugName );
 }
 
 void		ModelIcon::UpdateIconTexture()
@@ -97,9 +103,10 @@ MODEL_STATS*		pxModelStats;
 	
 	SetLighting();
 	VectNormalize( &xCamDir );
+	VectNormalize( &xCamPos );
 	pxModelStats = ModelGetStats(mhModelHandle);
-	fCamDist = pxModelStats->fBoundSphereRadius * mfCamViewDist;
-	VectScale( &xCamPos, &xCamPos,fCamDist );
+	fCamDist = pxModelStats->fBoundSphereRadius * mfCamViewDist * 1.7f;
+	VectScale( &xCamPos, &xCamPos, fCamDist );
 	ulTick = SysGetTick();
 
 	fDelta = (float)(ulTick - mulLastUpdateTick) * 0.001f;
@@ -138,7 +145,7 @@ void		ModelIconsInit( void )
 
 }
 
-ModelIconHandle		ModelIconCreate(  const char* szModel, const char* szTexture,  eModelIconFlags flags, int nLoadFromArchive )
+ModelIconHandle		ModelIconCreate(  const char* szModel, const char* szTexture,  eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName )
 {
 int		nModelHandle;
 int		nTextureHandle;
@@ -177,6 +184,8 @@ int		nTextureHandle;
 		pNewModelIcon->mfRotationAngle = FRand( 0.0f, A360 );
 		pNewModelIcon->mfRotationSpeed = 1.0f;
 		pNewModelIcon->mbOwnsHandles = TRUE;
+		pNewModelIcon->mszDebugName = (char*)( malloc( strlen( szDebugName) + 1 ));
+		strcpy( pNewModelIcon->mszDebugName, szDebugName );
 		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
 		pNewModelIcon->mulLastUpdateTick = SysGetTick();
 
@@ -186,7 +195,7 @@ int		nTextureHandle;
 }
 
 
-ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIconFlags flags, int nLoadFromArchive )
+ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName )
 {
 	if ( hModel != NOTFOUND )
 	{
@@ -204,6 +213,8 @@ ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIc
 		pNewModelIcon->mhModelHandle = hModel;
 		pNewModelIcon->mhTexture = hTexture;
 		pNewModelIcon->mbOwnsHandles = FALSE;
+		pNewModelIcon->mszDebugName = (char*)( malloc( strlen( szDebugName) + 1 ));
+		strcpy( pNewModelIcon->mszDebugName, szDebugName );
 		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
 		pNewModelIcon->mulLastUpdateTick = SysGetTick();
 
@@ -219,12 +230,41 @@ void		ModelIconsUpdate( void )
 		mspNextToUpdate = mspModelIconsList;
 	}
 
-	if ( mspNextToUpdate )
+	while ( mspNextToUpdate )
 	{
-		mspNextToUpdate->UpdateIconTexture();
+		if ( mspNextToUpdate->mbIsSpinning )
+		{
+			mspNextToUpdate->UpdateIconTexture();
+			// Only update 1 at a time
+			return;
+		}
 		mspNextToUpdate = mspNextToUpdate->mpNext;
 	}
 
+}
+
+void		ModelIconDraw( ModelIconHandle handle, int layer, int X, int Y, int W, int H, float fAlpha )
+{
+int		hEngineTexture = ModelIconGetIconTexture( handle );
+int		nOverlay = EngineTextureCreateInterfaceOverlay( layer, hEngineTexture );
+ulong ulCol = GetColWithModifiedAlpha( 0xFFFFFFFF, fAlpha );
+
+	InterfaceTexturedRect( nOverlay, X, Y, W, H, ulCol, 0.0f, 0.0f, 1.0f, 1.0f );
+}
+
+// Stop/start it spinning
+void		ModelIconPauseUpdates( ModelIconHandle handle, BOOL bFlag )
+{
+ModelIcon*		pModelIcons = mspModelIconsList;
+	
+	while( pModelIcons )
+	{
+		if ( pModelIcons->mhModelIcon == handle )
+		{
+			pModelIcons->mbIsSpinning = bFlag;			
+		}
+		pModelIcons = pModelIcons->mpNext;
+	}
 }
 
 void		ModelIconSetViewDistModifier( ModelIconHandle handle, float fDist )
@@ -258,7 +298,7 @@ ModelIcon*		pModelIcons = mspModelIconsList;
 }
 
 
-void		ModelIconsRelease( ModelIconHandle handle )
+void		ModelIconRelease( ModelIconHandle handle )
 {
 ModelIcon*		pModelIcons = mspModelIconsList;
 ModelIcon*		pLast = NULL;

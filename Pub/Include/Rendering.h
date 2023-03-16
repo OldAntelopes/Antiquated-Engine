@@ -156,11 +156,13 @@ typedef struct
 
 	BYTE	bNumLODs;
 	BYTE	bLODUsed;
-	BYTE	bPad1;
-	BYTE	bPad2;
+	BYTE	bHasWheels;
+	BYTE	bHasHorizTurret;
 	int		nNumCollisionMaps;
 
-	char	acCreatorInfo[80];
+	char	acCreatorInfo[76];
+	short	wPad1;
+	short	wPad2;
 
 } MODEL_STATS;
 

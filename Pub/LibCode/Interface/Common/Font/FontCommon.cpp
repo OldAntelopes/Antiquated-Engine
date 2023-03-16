@@ -868,6 +868,7 @@ ulong*		pArgs;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );
+	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
 
 	InterfaceText( nLayer, nX, nY, acString, ulCol, font );
 }
@@ -883,6 +884,7 @@ ulong*		pArgs;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );
+	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
 
 	InterfaceTextRight( nLayer, nX, nY, acString, ulCol, font );
 

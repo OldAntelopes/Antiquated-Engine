@@ -3702,6 +3702,7 @@ int		nChunkSize;
 				case 1:
 				default:
 					pxParentModelData->xHorizTurretData.nModelHandle = nHandle;
+					pxParentModelData->xStats.bHasHorizTurret = TRUE;
 					break;
 				case 2:
 			 		pxParentModelData->xVertTurretData.nModelHandle = nHandle;
@@ -3741,6 +3742,16 @@ int		nChunkSize;
 		{
 			SystemFree( pbDecompressionBuffer );
 		}
+
+		// Wrap up a few stats
+		if ( ( pxParentModelData->xWheel1AttachData.nModelHandle != NOTFOUND ) &&
+			 ( pxParentModelData->xWheel3AttachData.nModelHandle != NOTFOUND ) )
+		{
+			pxParentModelData->xStats.bHasWheels = TRUE;
+		}
+
+		// TODO - Count number of animations?
+
 #ifdef ATM_LOADER_VERBOSE_DEBUG
 		SysDebugPrint("modeload complete\n" );
 #endif

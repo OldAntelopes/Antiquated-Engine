@@ -15,19 +15,31 @@ enum eModelIconFlags
 };
 
 
+// Create a modelIcon either from filenames or handles
+extern ModelIconHandle		ModelIconCreate( const char* szModel, const char* szTexture, eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName );
+extern ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture, eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName );
 
-
-extern void		ModelIconsInit( void );
-
-extern ModelIconHandle		ModelIconCreate( const char* szModel, const char* szTexture, eModelIconFlags flags, int nLoadFromArchive );
-extern ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture, eModelIconFlags flags, int nLoadFromArchive );
-
-extern void		ModelIconsUpdate( void );
-
-extern int		ModelIconGetIconTexture( ModelIconHandle );		// Note that what is returned is an EngineTexture not an interface one
+// Change the camera distance of the icon view
 extern void		ModelIconSetViewDistModifier( ModelIconHandle handle, float fDist );	
 
-extern void		ModelIconsRelease( ModelIconHandle );
+// You can either use the model icon by getting the texture and doing things with it
+extern int		ModelIconGetIconTexture( ModelIconHandle handle );		// Note that what is returned is an EngineTexture not an interface one
+
+// Or just draw it.. (Creates an interface overlay, renders a textured rect )
+extern void		ModelIconDraw( ModelIconHandle handle, int layer, int X, int Y, int W, int H, float fAlpha );
+
+// Stop it spinning
+extern void		ModelIconPauseUpdates( ModelIconHandle handle, BOOL bFlag );
+
+// Clean up
+extern void		ModelIconRelease( ModelIconHandle handle );
+
+
+//----------------------------------------------------------
+// System stuff
+
+extern void		ModelIconsInit( void );
+extern void		ModelIconsUpdate( void );
 
 extern void		ModelIconsFreeAll( void );
 
