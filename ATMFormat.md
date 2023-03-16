@@ -4,7 +4,7 @@ ATM Binary Format
 
 The ATM format is a binary data format for model and related data designed for use in The Game.
 All ATM files start with a standard header (ATM_FILE_HEADER) followed by a variable number of 'chunks'
-Each chunk beings with a chunk header (ATM_CHUNK_HEADER) followed by binary data relevant to that chunk.
+Each chunk begins with a chunk header (ATM_CHUNK_HEADER) followed by binary data relevant to that chunk.
 
 ATM files can contain other ATMs inside themselves. Subsequent ATMs are separated by a chunk with a 0xFF chunk code.
 (e.g. A vehicle ATM may have an ATM for its chassis, followed an ATM for a wheel. The chassis ATM can reference the wheel atm and the renderer will know to attach the wheel at a certain point).
