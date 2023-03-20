@@ -351,7 +351,7 @@ STYLE DS_SETFOREGROUND | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER |
 EXSTYLE WS_EX_CLIENTEDGE
 CAPTION "ATM Model Converter v2.12"
 MENU IDR_MENU1
-FONT 8, "MS Shell Dlg"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LISTBOX         IDC_OUTPUT_LIST,95,288,322,50,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
@@ -1084,6 +1084,7 @@ BEGIN
             MENUITEM "SLERP",                       ID_ANIMATIONS_BLENDING_SLERP
             , GRAYED
         END
+        MENUITEM "Remove All Animations",       ID_REMOVEALLANIMATIONS
         MENUITEM SEPARATOR
         MENUITEM "Set Generic Weapon Attach point", 
                                                 ID_SPECIAL_SETGUNFIREATTACHVERTEX

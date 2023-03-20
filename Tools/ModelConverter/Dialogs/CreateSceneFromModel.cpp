@@ -192,7 +192,7 @@ char				acString[256];
 			if ( nNewModelHandle != NOTFOUND )
 			{
 				pxNewModelData = &maxModelRenderData[ nNewModelHandle ];
-				pxNewModelData->bModelType = MODEL_TYPE_STATIC_MESH;
+				pxNewModelData->bModelType = ASSETTYPE_STATIC_MESH;
 				pxNewModelData->xGlobalProperties.bOpacity = 100;
 				pxNewModelData->pxBaseMesh = pNewMesh;
 //TODO					pxNewModelData->xStats.fBoundSphereRadius

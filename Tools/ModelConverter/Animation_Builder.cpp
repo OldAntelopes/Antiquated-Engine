@@ -130,6 +130,22 @@ char*	maszAnimationUses[MAX_ANIMATION_USES] =
 	"Pose 4- Action4",
 	"Pose 4- BlendOut",
 
+	"Random Idle 1",
+	"Random Idle 2",
+	"Random Idle 3",
+	"Random Idle 4",
+	"Random Idle 5",
+	"Random Idle 6",
+	"Random Idle 7",
+	"Random Idle 8",
+	"Random Idle 9",
+	"Random Idle 10",
+	"Random Idle 11",
+	"Random Idle 12",
+	"Random Idle 13",
+	"Random Idle 14",
+	"Random Idle 15",
+	"Random Idle 16",
 };
 
 
@@ -229,7 +245,7 @@ int		nLoop;
 	pxNewModelData = &maxModelRenderData[ nNewHandle ];
 
 	pxNewModelData->xStats = pxModelData->xStats;
-	pxNewModelData->bModelType = MODEL_TYPE_STATIC_MESH;
+	pxNewModelData->bModelType = ASSETTYPE_STATIC_MESH;
 	if ( pxModelData->xStats.acFilename[0] != '[' )
 	{
 		sprintf( pxNewModelData->xStats.acFilename, "[Key %d] %s", nKeyframe, pxModelData->xStats.acFilename );
@@ -456,7 +472,7 @@ ushort*		puwIndices;
 	// Rebuild the base mesh, so that it also has the correct number of vertices
 	AnimationBuilderReBuildBaseMesh( pxModelData );
 
-	pxModelData->bModelType = MODEL_TYPE_KEYFRAME_ANIMATION;
+	pxModelData->bModelType = ASSETTYPE_KEYFRAME_ANIMATION;
 	mnModelsInAnimation = 0;
 
 	return( nHandle );
@@ -499,7 +515,7 @@ int		nHandle = NOTFOUND;
 	ofnOpen.lStructSize       = sizeof(OPENFILENAME);
     ofnOpen.hwndOwner         = mhwndAnimationBuilderDialog;
     ofnOpen.hInstance         = 0;
-    ofnOpen.lpstrFilter       = (LPSTR)"All Supported Formats\0*.x;*.atm\0All Files (*.*)\0*.*\0";
+    ofnOpen.lpstrFilter       = (LPSTR)"All Supported Formats\0*.x;*.atm;*.fbx;*.3ds\0All Files (*.*)\0*.*\0";
     ofnOpen.lpstrCustomFilter = NULL;
     ofnOpen.nMaxCustFilter    = 0;
     ofnOpen.nFilterIndex      = 1;
@@ -584,6 +600,8 @@ void AnimationBuilderRemoveKeyframe( void )
 int		nLoop;
 //MODEL_RENDER_DATA*		pxModelData;
 
+	if ( mnSelectedKeyFrameNum == NOTFOUND ) return;
+
 	ModelFree( 	manKeyframeModelHandles[ mnSelectedKeyFrameNum ] );
 	for ( nLoop = mnSelectedKeyFrameNum; nLoop < (mnModelsInAnimation-1); nLoop++ )
 	{
@@ -605,7 +623,7 @@ int			nLoop;
 
 	pxModelData = maxModelRenderData + nHandle;
 
-	if ( pxModelData->bModelType == MODEL_TYPE_KEYFRAME_ANIMATION )
+	if ( pxModelData->bModelType == ASSETTYPE_KEYFRAME_ANIMATION )
 	{
 		for ( nLoop = 0; nLoop < pxModelData->xStats.nNumVertKeyframes; nLoop++ )
 		{
@@ -676,7 +694,7 @@ int		nHandle = NOTFOUND;
 	ofnOpen.lStructSize       = sizeof(OPENFILENAME);
     ofnOpen.hwndOwner         = mhwndAnimationBuilderDialog;
     ofnOpen.hInstance         = 0;
-    ofnOpen.lpstrFilter       = (LPSTR)"All Supported Formats\0*.x;*.atm\0All Files (*.*)\0*.*\0";
+    ofnOpen.lpstrFilter       = (LPSTR)"All Supported Formats\0*.x;*.atm;*.fbx;*.3ds\0All Files (*.*)\0*.*\0";
     ofnOpen.lpstrCustomFilter = NULL;
     ofnOpen.nMaxCustFilter    = 0;
     ofnOpen.nFilterIndex      = 1;

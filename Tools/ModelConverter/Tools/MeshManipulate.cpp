@@ -115,7 +115,6 @@ DWORD*			pxNewAttributes;
 	pxModelData->pxBaseMesh = pxNewMesh;
 	pxModelData->xStats.nNumVertices = nNumIndices;
 
-
 	if ( pxModelData->xMedLODAttachData.nModelHandle != NOTFOUND )
 	{
 		ModelConvSeparateVerts( pxModelData->xMedLODAttachData.nModelHandle );

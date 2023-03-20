@@ -14,6 +14,7 @@ enum
 extern void		VertexManipulateMouseDownStore( CSceneObject* pSceneObject );
 
 extern void		VertexManipulateMouseMoveUpdate( CSceneObject* pSceneObject, float fScreenDeltaX, float fScreenDeltaY );
+extern void		VertexManipulateScaleMouseUpdate( CSceneObject* pSceneObject, float fScreenDeltaX, float fScreenDeltaY );
 
 extern void		VertexManipulateSetControlMode( int mode );
 

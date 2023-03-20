@@ -45,7 +45,7 @@ void		PlaneCutterInitGraphics( void )
 	ENGINEBUFFERVERTEX	xVertex;
 	int					nLoop;
 
-		mhPlaneCutterVertexBuffer = EngineCreateVertexBuffer( 8, 0 ); 
+		mhPlaneCutterVertexBuffer = EngineCreateVertexBuffer( 8, 0, "Plane Cutter" ); 
 
 		EngineVertexBufferLock( mhPlaneCutterVertexBuffer, TRUE );
 

@@ -76,7 +76,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.30"
+#define	MODELCONV_VERSIONSTRING		"2.31"
 
 int		mnCurrentWheelMode = 0;
 int		mnTemporaryDisplayModelHandle = NOTFOUND;
@@ -132,7 +132,7 @@ float	mfOriginalCamDist = 1.0f;
 VECT		mxBaseCamFocus  = { 0.0f, 0.0f, 0.05f };
 VECT		mxCamFocus  = { 0.0f, 0.0f, 0.05f };
 VECT		mxCamPos  = { 0.0f, 1.0f, 0.0f };
-VECT		mxCamView = { 0.0f, -1.0f, 0.0f };
+VECT		mxCamDir = { 0.0f, -1.0f, 0.0f };
 
 VECT	mxOriginalCamView;
 float	mfOriginalViewAngleVert;
@@ -159,6 +159,8 @@ MVECT				mxBaseCamPos;
 char	macModelConvRootFolder[256];
 char	macModelConvLastSaveFolder[256];
 char	macModelConvLastLoadFolder[256];
+
+BOOL	mbThisWindowIsFocused = FALSE;
 
 
 //------------------------------------------------------------
@@ -593,6 +595,7 @@ ENGINE_LIGHT	xLight;
  
 
 
+
 void	ModelConvResetCamera( void )
 {
 	mxBaseCamFocus.x = mxBaseCamFocus.y = mxBaseCamFocus.z = 0.0f;
@@ -600,7 +603,7 @@ void	ModelConvResetCamera( void )
 	mxCamFocus.z = 0.05f;
 	mxBaseCamFocus.z = 0.05f;
 	mxCamPos.x = mxCamPos.y = mxCamPos.z = 0.0f;
-	mxCamView.x = mxCamView.y = mxCamView.z = 0.0f;
+	mxCamDir.x = mxCamDir.y = mxCamDir.z = 0.0f;
 
 	mfOriginalViewAngleVert = 0.0f;
 	mfViewAngleVert = 0.0f;
@@ -610,6 +613,33 @@ void	ModelConvResetCamera( void )
 	mfCamDist = 10.0f / mfScaleUnit;
 	mfOriginalCamDist = mfCamDist;
 }
+
+void	ModelConvResetCameraToModel( void )
+{
+	if ( m_MainSceneObject.GetModelHandle() != NOTFOUND )
+	{
+	MODEL_STATS*	pxModelStats = ModelGetStats( m_MainSceneObject.GetModelHandle() );
+
+		mxBaseCamFocus = pxModelStats->xBoundBoxCentre;
+		mxCamFocus = pxModelStats->xBoundBoxCentre;
+		mxCamPos.x = mxCamPos.y = mxCamPos.z = 0.0f;
+		mxCamDir.x = mxCamDir.y = mxCamDir.z = 0.0f;
+
+		mfOriginalViewAngleVert = 0.0f;
+		mfViewAngleVert = 0.0f;
+		mfOriginalViewAngleHoriz = 0.0f;
+		mfViewAngleHoriz = 0.0f;
+
+		mfCamDist = (pxModelStats->fBoundSphereRadius * 2.2f) / mfScaleUnit;
+		mfOriginalCamDist = mfCamDist;
+	}
+	else
+	{
+		ModelConvResetCamera();
+	}
+
+}
+
 
 int ModelConvLoadModel( char* acFilename, ulong ulFlags, float fScale )
 {
@@ -981,66 +1011,66 @@ VECT	xCamUp;
 		fNearClipPlane = 0.01f;
 		fFarClipPlane = 10000.0f;
 	}
-	mxCamView.x = 0.0f;
-	mxCamView.y = -1.0f;
-	mxCamView.z = 0.0f;
+	mxCamDir.x = 0.0f;
+	mxCamDir.y = -1.0f;
+	mxCamDir.z = 0.0f;
 	xCamUp.x = 0.0f;
 	xCamUp.y = 0.0f;
 	xCamUp.z = 1.0f;
 	switch( mnViewPage )
 	{
 	case 0:		// 3d view
-		VectRotateAboutX( &mxCamView, mfViewAngleVert );
-		VectRotateAboutZ( &mxCamView, mfViewAngleHoriz );
+		VectRotateAboutX( &mxCamDir, mfViewAngleVert );
+		VectRotateAboutZ( &mxCamDir, mfViewAngleHoriz );
 		VectRotateAboutX( &xCamUp, mfViewAngleVert );
 		VectRotateAboutZ( &xCamUp, mfViewAngleHoriz );
 		break;
 	case 1:		// Left
-		mxCamView.x = 1.0f;
-		mxCamView.y = 0.0f;
-		mxCamView.z = 0.0f;
+		mxCamDir.x = 1.0f;
+		mxCamDir.y = 0.0f;
+		mxCamDir.z = 0.0f;
 		break;
 	case 2:		// Front
-		mxCamView.x = 0.0f;
-		mxCamView.y = -1.0f;
-		mxCamView.z = 0.0f;
+		mxCamDir.x = 0.0f;
+		mxCamDir.y = -1.0f;
+		mxCamDir.z = 0.0f;
 		break;
 	case 3:		// Right
-		mxCamView.x = -1.0f;
-		mxCamView.y = 0.0f;
-		mxCamView.z = 0.0f;
+		mxCamDir.x = -1.0f;
+		mxCamDir.y = 0.0f;
+		mxCamDir.z = 0.0f;
 		break;
 	case 4:		// Back
-		mxCamView.x = 0.0f;
-		mxCamView.y = 1.0f;
-		mxCamView.z = 0.0f;
+		mxCamDir.x = 0.0f;
+		mxCamDir.y = 1.0f;
+		mxCamDir.z = 0.0f;
 		break;
 	case 5:		// top
-		mxCamView.x = 0.0f;
-		mxCamView.y = 0.0f;
-		mxCamView.z = -1.0f;
+		mxCamDir.x = 0.0f;
+		mxCamDir.y = 0.0f;
+		mxCamDir.z = -1.0f;
 		xCamUp.x = 0.0f;
 		xCamUp.y = -1.0f;
 		xCamUp.z = 0.0f;
 		break;
 	case 6:		// bottom
-		mxCamView.x = 0.0f;
-		mxCamView.y = 0.0f;
-		mxCamView.z = 1.0f;
+		mxCamDir.x = 0.0f;
+		mxCamDir.y = 0.0f;
+		mxCamDir.z = 1.0f;
 		xCamUp.x = 0.0f;
 		xCamUp.y = -1.0f;
 		xCamUp.z = 0.0f;
 		break;
 	}
    
-	mxCamPos.x = mxCamFocus.x + ( (mxCamView.x * mfCamDist ) * -1.0f );
-	mxCamPos.y = mxCamFocus.y + ( (mxCamView.y * mfCamDist ) * -1.0f );
-	mxCamPos.z = mxCamFocus.z + ( (mxCamView.z * mfCamDist ) * -1.0f );
+	mxCamPos.x = mxCamFocus.x + ( (mxCamDir.x * mfCamDist ) * -1.0f );
+	mxCamPos.y = mxCamFocus.y + ( (mxCamDir.y * mfCamDist ) * -1.0f );
+	mxCamPos.z = mxCamFocus.z + ( (mxCamDir.z * mfCamDist ) * -1.0f );
 
 	CameraSetPosIgnoreShake( mxCamPos.x, mxCamPos.y, mxCamPos.z );
 	EngineCameraSetPos( mxCamPos.x, mxCamPos.y, mxCamPos.z );
 	EngineCameraSetUpVect( xCamUp.x,xCamUp.y, xCamUp.z );
-	EngineCameraSetDirection( mxCamView.x, mxCamView.y, mxCamView.z );
+	EngineCameraSetDirection( mxCamDir.x, mxCamDir.y, mxCamDir.z );
 
 	EngineCameraUpdate();
 /*
@@ -1305,69 +1335,72 @@ int		nScreenX, nScreenY;
 
 void		ModelConverterKeyControlsUpdate( ulong ulTick )
 {
-float		fDelta = ((float)ulTick) / 1000.0f;
-float		fMoveAmount = 1.0f;
-VECT		xCamDir = *EngineCameraGetDirection();
-VECT		xCamUp = *EngineCameraGetUpVect();
-VECT		xCamRight;
-VECT		xMove;
-float		fMinDist;
-
-	VectNormalize( &xCamDir );
-	VectNormalize( &xCamUp );
-	VectCross( &xCamRight, &xCamUp, &xCamDir );
-
-	if ( SysCheckKeyState( KEY_SHIFT ) == TRUE )
+	if ( mbThisWindowIsFocused )
 	{
-		fMoveAmount = 3.0f;
-	}
-	fMinDist = 3.0f + (fDelta * fMoveAmount);
+	float		fDelta = ((float)ulTick) / 1000.0f;
+	float		fMoveAmount = 1.0f;
+	VECT		xCamDir = *EngineCameraGetDirection();
+	VECT		xCamUp = *EngineCameraGetUpVect();
+	VECT		xCamRight;
+	VECT		xMove;
+	float		fMinDist;
+
+		VectNormalize( &xCamDir );
+		VectNormalize( &xCamUp );
+		VectCross( &xCamRight, &xCamUp, &xCamDir );
+
+		if ( SysCheckKeyState( KEY_SHIFT ) == TRUE )
+		{
+			fMoveAmount = 3.0f;
+		}
+		fMinDist = 3.0f + (fDelta * fMoveAmount);
 	
-	if ( SysCheckKeyState( KEY_WASD_UP ) == TRUE )
-	{
-		if ( mfCamDist > fMinDist )
+		if ( SysCheckKeyState( KEY_WASD_UP ) == TRUE )
 		{
-			mfCamDist -= fDelta * fMoveAmount;
+			if ( mfCamDist > fMinDist )
+			{
+				mfCamDist -= fDelta * fMoveAmount;
+			}
+			else
+			{
+				VectScale( &xMove, &xCamDir, fDelta * fMoveAmount );
+				VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+			}
 		}
-		else
+		else if ( SysCheckKeyState( KEY_WASD_DOWN ) == TRUE )
 		{
-			VectScale( &xMove, &xCamDir, fDelta * fMoveAmount );
+			if ( mfCamDist < 15.0f )
+			{
+				mfCamDist += fDelta * fMoveAmount;
+			}
+			else
+			{
+				VectScale( &xMove, &xCamDir, fDelta * fMoveAmount * -1.0f );
+				VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+			}
+		}
+
+		if ( SysCheckKeyState( KEY_WASD_LEFT ) == TRUE )
+		{
+			VectScale( &xMove, &xCamRight, fDelta * fMoveAmount * -1.0f );
 			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
 		}
-	}
-	else if ( SysCheckKeyState( KEY_WASD_DOWN ) == TRUE )
-	{
-		if ( mfCamDist < 15.0f )
+		else if ( SysCheckKeyState( KEY_WASD_RIGHT ) == TRUE )
 		{
-			mfCamDist += fDelta * fMoveAmount;
-		}
-		else
-		{
-			VectScale( &xMove, &xCamDir, fDelta * fMoveAmount * -1.0f );
+			VectScale( &xMove, &xCamRight, fDelta * fMoveAmount );
 			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
 		}
-	}
 
-	if ( SysCheckKeyState( KEY_WASD_LEFT ) == TRUE )
-	{
-		VectScale( &xMove, &xCamRight, fDelta * fMoveAmount * -1.0f );
-		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
-	}
-	else if ( SysCheckKeyState( KEY_WASD_RIGHT ) == TRUE )
-	{
-		VectScale( &xMove, &xCamRight, fDelta * fMoveAmount );
-		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
-	}
-
-	if ( SysCheckKeyState( KEY_WASD_ACTION1 ) == TRUE )
-	{
-		VectScale( &xMove, &xCamUp, fDelta * fMoveAmount );
-		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
-	}
-	else if ( SysCheckKeyState( KEY_WASD_ACTION2 ) == TRUE )
-	{
-		VectScale( &xMove, &xCamUp, fDelta * fMoveAmount * -1.0f );
-		VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+		if ( SysCheckKeyState( KEY_WASD_ACTION1 ) == TRUE )
+		{
+			VectScale( &xMove, &xCamUp, fDelta * fMoveAmount );
+			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+		}
+		else if ( SysCheckKeyState( KEY_WASD_ACTION2 ) == TRUE )
+		{
+			VectScale( &xMove, &xCamUp, fDelta * fMoveAmount * -1.0f );
+			VectAdd( &mxCamFocus, &mxCamFocus, &xMove );
+		}
 	}
 }
 
@@ -1780,9 +1813,11 @@ float	fMoveSpeed = 0.03f;
 	case CONTROL_VERTEXPICKER:
 		mbModelConvShowSelectionRect = TRUE;
 		break;
+	case CONTROL_VERTEXSCALE:
+		VertexManipulateScaleMouseUpdate( &m_MainSceneObject, fScreenXDelta, fScreenYDelta );
+		break;
 	case CONTROL_VERTEXMOVE:
 	case CONTROL_VERTEXROTATE:
-	case CONTROL_VERTEXSCALE:
 		VertexManipulateMouseMoveUpdate( &m_MainSceneObject, fScreenXDelta, fScreenYDelta );
 		break;
 	case CONTROL_POLYSLICE:
@@ -2298,6 +2333,16 @@ POINTS points;
 
 	switch (message)
 	{
+	case WM_ACTIVATEAPP:
+		if ( wParam == FALSE )
+		{
+			mbThisWindowIsFocused = FALSE;
+		}
+		else
+		{
+			mbThisWindowIsFocused = TRUE;
+		}
+		break;
 	case WM_INITDIALOG:
 		return TRUE;
 	case WM_PAINT:
@@ -2459,7 +2504,7 @@ POINTS points;
 			nDelta = (int)( wShortParam );
 			fOffset = (float)( nDelta * 4 );
 			// todo - step should shrink as we get closer to model
-			fOffset *= 0.1f / mfScaleUnit;
+			fOffset *= 0.02f / mfScaleUnit;
 			if ( SysCheckKeyState( KEY_SHIFT ) == TRUE )
 			{
 				fOffset *= 10.0f;
@@ -3849,7 +3894,7 @@ MODEL_RENDER_DATA*	pxNewModelData;
 		if ( nNewModelHandle != NOTFOUND )
 		{
 			pxNewModelData = &maxModelRenderData[ nNewModelHandle ];
-			pxNewModelData->bModelType = MODEL_TYPE_STATIC_MESH;
+			pxNewModelData->bModelType = ASSETTYPE_STATIC_MESH;
 			pxNewModelData->xGlobalProperties.bOpacity = 100;
 			pxNewModelData->pxBaseMesh = pxNewMesh;
 	//TODO			pxNewModelData->xStats.fBoundSphereRadius
@@ -4409,22 +4454,32 @@ int		nToolbarY = nHeight - nToolbarOffsetY;
 
 void	ModelConvResizeWindow( int nWidth, int nHeight )
 {
+int		nLineY = nHeight - 87;
+
 	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_OUTPUT_LIST ), NULL, 135, nHeight - 87, nWidth - 300, 80, SWP_SHOWWINDOW | SWP_NOZORDER );
 	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_TAB1 ), NULL, 0, 0, nWidth-135, nHeight-126, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOMOVE);
 //	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_EDIT1 ), NULL, 135, nHeight - 28, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
 //	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_RIGHT_TEXTBOX ), NULL, nWidth-100, nHeight - 87, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
 	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_MAIN_PROGRESS ), NULL, 10, nHeight - 20, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
-	
-	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKTEXT ), NULL, nWidth - 140, nHeight - 87, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
-	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKX ), NULL, nWidth - 100, nHeight - 87, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
-	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKY ), NULL, nWidth - 70, nHeight - 87, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
-	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKZ ), NULL, nWidth - 40, nHeight - 87, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
-	
-	SetWindowPos( mhwndGraphicWindow, NULL, 0, 0, nWidth-146, nHeight-160, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOMOVE);
 
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_RESET_CAM_TO_MODEL ), NULL, nWidth - 140, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	EnableWindow( GetDlgItem( mhwndMainDialog, IDC_RESET_CAM_TO_MODEL ), TRUE );
+	nLineY += 20;
+
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_RESET_CAM_TO_SCENE ), NULL, nWidth - 140, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	EnableWindow( GetDlgItem( mhwndMainDialog, IDC_RESET_CAM_TO_SCENE ), TRUE );
+	nLineY += 22;
+
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKTEXT ), NULL, nWidth - 140, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKX ), NULL, nWidth - 100, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKY ), NULL, nWidth - 70, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_LOCKZ ), NULL, nWidth - 40, nLineY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+
+	SetWindowPos( mhwndGraphicWindow, NULL, 0, 0, nWidth-146, nHeight-160, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOMOVE);
 	InterfaceSetWindowSize( FALSE, nWidth-146, nHeight-155, TRUE );
 
 	ModelConvRepositionLowerToolbar( nWidth, nHeight );
+	UpdateWindow( mhwndMainDialog);
 }
  
 
@@ -4693,6 +4748,43 @@ void	ModelConvSelectAllWithSameMaterial( int nHandle )
 
 }
 
+void	ModelConvRemoveAllAnimations()
+{
+int			nModelHandle = m_MainSceneObject.GetModelHandle();
+MODEL_RENDER_DATA* pxModelData = maxModelRenderData + nModelHandle;
+int			nLoop;
+CUSTOMVERTEX* pxVertices;
+
+	if ( pxModelData->pxVertexKeyframes != NULL )
+	{
+		SystemFree( pxModelData->pxVertexKeyframes );
+		pxModelData->pxVertexKeyframes = NULL;
+	}
+	if ( pxModelData->pxNormalKeyframes != NULL )
+	{
+		SystemFree( pxModelData->pxNormalKeyframes );
+		pxModelData->pxNormalKeyframes = NULL;
+	}
+	pxModelData->xStats.nNumVertKeyframes = 0;
+
+	for( nLoop = 0; nLoop < MAX_KEYFRAMES_IN_MODEL; nLoop++ )
+	{
+		pxModelData->axKeyframeData[nLoop].bAnimationUse = 0;
+		pxModelData->axKeyframeData[nLoop].uwKeyframeTime = 0;
+		pxModelData->axKeyframeData[nLoop].bAnimationTriggerCode = 0;
+
+	}
+
+	if ( pxModelData->pxBaseVertices )
+	{
+		pxModelData->pxBaseMesh->LockVertexBuffer( 0, (byte**)( &pxVertices ) );
+		for ( nLoop = 0; nLoop < pxModelData->xStats.nNumVertices; nLoop++ )
+		{
+			pxVertices[nLoop].position = pxModelData->pxBaseVertices[nLoop];
+		}
+		pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	}
+}
 
 
 /***************************************************************************
@@ -4709,6 +4801,17 @@ int	nVal;
 
 	switch (message)
 	{
+	case WM_ACTIVATEAPP:
+		if ( wParam == FALSE )
+		{
+			mbThisWindowIsFocused = FALSE;
+		}
+		else
+		{
+			mbThisWindowIsFocused = TRUE;
+		}
+		break;
+
 	case WM_TIMER:
 		if ( mboViewIsAnimation == TRUE )
 		{
@@ -4871,6 +4974,9 @@ int	nVal;
 				    ShowWindow( hMaterialDlg, SW_SHOW );
 					UpdateWindow( hMaterialDlg );
 				}
+				break;
+			case ID_REMOVEALLANIMATIONS:
+				ModelConvRemoveAllAnimations();
 				break;
 			case ID_ANIMATIONS_BUILDANIMATIONS:
 				DialogBox(ghInstance, (LPCTSTR)IDD_ANIMATION_BUILDER, hDlg, (DLGPROC)AnimationBuilderDlgProc );
@@ -5210,6 +5316,16 @@ int	nVal;
 				mnLightingMode = 0;
 				ModelConverterAddStandardLighting();
 				break;
+			case IDC_RESET_CAM_TO_SCENE:
+				ModelConvResetCamera();
+				ModelConverterSetupCamera();
+				ModelConverterDisplayFrame( FALSE );
+				break;
+			case IDC_RESET_CAM_TO_MODEL:
+				ModelConvResetCameraToModel();
+				ModelConverterSetupCamera();
+				ModelConverterDisplayFrame( FALSE );
+				break;
 			case IDC_LOCKX:
 				ModelConvToggleLock( 0 );
 				break;
@@ -5497,4 +5613,43 @@ char*	pcRunner;
 	DialogBox(hInstance, (LPCTSTR)IDD_MODEL_CONVERTER_MAIN, NULL, (DLGPROC)ModelConverterMainDlgProc );
 
 	return 0;
+}
+
+
+int DevLog( int eLogType, const char *format, ... )
+{
+	if ( 1 )
+	{
+	char		acString[512];
+	char		acMessage[512];
+	va_list		marker;
+	ulong*		pArgs;
+	int			nLen;
+	BOOL		bEndsWithNewLine = FALSE;
+
+		pArgs = (ulong*)( &format ) + 1;
+
+		va_start( marker, format );     
+		vsprintf( acMessage, format, marker );
+
+		nLen = strlen(acMessage);
+		if ( nLen > 0)
+		{
+		ulong		ulTick = SysGetTick();
+
+			if ( acMessage[nLen-1] == '\n')
+			{
+				bEndsWithNewLine = TRUE;
+			}
+			sprintf( acString, "[DEV-%d] %03d.%03d ", eLogType, (ulTick / 1000)%1000, ulTick % 1000 );
+			strcat( acString, acMessage );
+			OutputDebugString( acString );
+			if ( bEndsWithNewLine == FALSE )
+			{
+				OutputDebugString( "\r\n" );
+			}
+			return( 1 );
+		}
+	}
+	return( 0 );
 }

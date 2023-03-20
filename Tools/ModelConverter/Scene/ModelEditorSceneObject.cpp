@@ -144,7 +144,7 @@ void	CSceneObject::InitDX()
 
 //			if ( (nNumFaces * 3) < (65000 )
 //			{
-				mhFaceBuffer = EngineCreateVertexBuffer( nNumFaces*3, 0 );
+				mhFaceBuffer = EngineCreateVertexBuffer( nNumFaces*3, TRIANGLE_LIST, "CSceneObject FaceBuffer" );
 				UpdateFaceMeshList();
 //			}
 		}
@@ -158,7 +158,7 @@ int		nNumFaces = ModelGetStats(mnModelHandle)->nNumIndices/3;
 	EngineVertexBufferFree( mhFaceBuffer );
 //	if ( (nNumFaces * 3) < 65000 )
 	//{
-		mhFaceBuffer = EngineCreateVertexBuffer( nNumFaces*3, TRIANGLE_LIST );
+		mhFaceBuffer = EngineCreateVertexBuffer( nNumFaces*3, TRIANGLE_LIST, "CScene Object FaceBuffer" );
 		UpdateFaceMeshList();
 //	}
 }
@@ -1195,6 +1195,11 @@ char	acString[256];
 					 ( !bShiftHeld ) )
 				{
 					*pbSelections = 0;
+				}
+
+				if ( *pbSelections == 1 )
+				{
+					mnNumVerticesSelected++;
 				}
 			}
 

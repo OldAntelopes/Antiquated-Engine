@@ -45,6 +45,7 @@ extern VECT		ModelConvGetScreenMoveVector( float fScreenXDelta, float fScreenYDe
 
 extern void		ModelConvGetLastLoadFolder( char* szLoadFolder );
 
+extern int DevLog( int eLogType, const char *format, ... );
 
 #ifdef __cplusplus
 }

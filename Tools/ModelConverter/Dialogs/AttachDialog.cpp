@@ -272,6 +272,25 @@ MODEL_RENDER_DATA*	pxModelData;
 				break;
 			}
 			break;
+		case EN_CHANGE:
+			switch( LOWORD(wParam) )
+			{
+			case IDC_EDIT1:
+				{
+				char	acString[256];
+				int		nVal;
+
+					GetDlgItemText( hDlg, LOWORD(wParam), acString, 256);
+					nVal = strtol( acString, NULL, 10 );
+					if ( ModelConvGetCurrentModel() != NOTFOUND )
+					{
+						pxModelData = maxModelRenderData + ModelConvGetCurrentModel();
+						pxModelData->xEffectAttachData.nAttachVertex = nVal;
+					}
+				}
+				break;
+			}
+			break;
 		}
 		break;
 	case WM_CLOSE:
@@ -287,6 +306,54 @@ MODEL_RENDER_DATA*	pxModelData;
 	return( FALSE );
 }
 
+
+void	SetCurrentAttachPointVertexNum( int nValue )
+{
+MODEL_RENDER_DATA*	pxModelData;
+
+	if ( ModelConvGetCurrentModel() != NOTFOUND )
+	{
+//		char	acString[256];
+			
+		pxModelData = maxModelRenderData + ModelConvGetCurrentModel();
+		switch( mnTurretAttachEditNum )
+		{	
+		case 0:
+		default:
+			pxModelData->xHorizTurretData.nAttachVertex = nValue;
+//				sprintf( acString, "horiz turret set to vertex %d", pxModelData->xHorizTurretData.nAttachVertex );
+//				SendDlgItemMessage( mhwndMainDialog, IDC_LIST1, LB_ADDSTRING, 0, (LPARAM)( acString ) );
+			break;
+		case 1:
+			pxModelData->xVertTurretData.nAttachVertex = nValue;
+			break;
+		case 2:
+			pxModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex = nValue;
+			break;
+		case 3:
+			pxModelData->xWheel1AttachData.nAttachVertex = nValue;
+			break;
+		case 4:
+			pxModelData->xWheel2AttachData.nAttachVertex = nValue;
+			break;
+		case 5:
+			pxModelData->xWheel3AttachData.nAttachVertex = nValue;
+			break;
+		case 6:
+			pxModelData->xWheel4AttachData.nAttachVertex = nValue;
+			break;
+		case 7:
+			pxModelData->xEffectAttachData.nAttachVertex = nValue;
+			if ( pxModelData->xEffectAttachData.nAttachVertex != 0 )
+			{
+				pxModelData->bHasEffect = 1;
+			}
+			break;
+		}
+	}
+
+}
+
 /***************************************************************************
  * Function    : TurretAttachPointDlg
  * Params      :
@@ -297,7 +364,6 @@ LRESULT CALLBACK TurretAttachPointDlg(HWND hDlg, UINT message, WPARAM wParam, LP
 {
 short wNotifyCode;
 NMUPDOWN*	lpnmud;
-MODEL_RENDER_DATA*	pxModelData;
 
 	switch (message)
 	{
@@ -319,46 +385,8 @@ MODEL_RENDER_DATA*	pxModelData;
 		return TRUE;
 	case WM_NOTIFY:
 		lpnmud = (LPNMUPDOWN)(lParam);
-		if ( ModelConvGetCurrentModel() != NOTFOUND )
-		{
-//		char	acString[256];
 
-			pxModelData = maxModelRenderData + ModelConvGetCurrentModel();
-			switch( mnTurretAttachEditNum )
-			{	
-			case 0:
-			default:
-				pxModelData->xHorizTurretData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-//				sprintf( acString, "horiz turret set to vertex %d", pxModelData->xHorizTurretData.nAttachVertex );
-//				SendDlgItemMessage( mhwndMainDialog, IDC_LIST1, LB_ADDSTRING, 0, (LPARAM)( acString ) );
-				break;
-			case 1:
-				pxModelData->xVertTurretData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 2:
-				pxModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 3:
-				pxModelData->xWheel1AttachData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 4:
-				pxModelData->xWheel2AttachData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 5:
-				pxModelData->xWheel3AttachData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 6:
-				pxModelData->xWheel4AttachData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				break;
-			case 7:
-				pxModelData->xEffectAttachData.nAttachVertex = lpnmud->iPos + lpnmud->iDelta;
-				if ( pxModelData->xEffectAttachData.nAttachVertex != 0 )
-				{
-					pxModelData->bHasEffect = 1;
-				}
-				break;
-			}
-		}
+		SetCurrentAttachPointVertexNum( lpnmud->iPos + lpnmud->iDelta );
 		break;
 	case WM_COMMAND:
 		wNotifyCode = HIWORD(wParam); 
@@ -372,6 +400,20 @@ MODEL_RENDER_DATA*	pxModelData;
 				break;
 			case IDCANCEL:
 				EndDialog(hDlg, 0);
+				break;
+			}
+		case EN_CHANGE:
+			switch( LOWORD(wParam) )
+			{
+			case IDC_EDIT1:
+				{
+				char	acString[256];
+				int		nVal;
+
+					GetDlgItemText( hDlg, LOWORD(wParam), acString, 256);
+					nVal = strtol( acString, NULL, 10 );
+					SetCurrentAttachPointVertexNum( nVal );
+				}
 				break;
 			}
 			break;
