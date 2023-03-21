@@ -423,7 +423,7 @@ D3DXMATRIX	matLightViewProj;
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gDiffuseIntensity");
 			if ( handle )
 			{
-			float		fDiffuseIntensity = 0.9f;
+			float		fDiffuseIntensity = 1.0f;
 				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, fDiffuseIntensity );
 			}
 		}
