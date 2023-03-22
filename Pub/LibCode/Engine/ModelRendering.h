@@ -210,6 +210,8 @@ typedef struct
 
 	float		fAnimSpeedMod;
 
+	fnCustomMeshRenderer	pfnCustomMeshRenderer;
+
 } MODEL_RENDER_DATA;
 
 //--------------------------------------------------------------------

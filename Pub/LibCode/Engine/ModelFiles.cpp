@@ -3762,8 +3762,25 @@ int		nChunkSize;
 
 
 
+//----------------------------------------------
+// ModelCreateCustomRenderer
+//  A convenience function.. Game can create a model handle with a 'custom renderer'.. Nothing is loaded but the model handle can then be stored and
+// used in the normal ways, same as a proper model.. when its rendered the custom function is called instead
+//----------------------------------------------
+int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, ulong ulCreateParam )
+{
+MODEL_RENDER_DATA*		pxModelData;
+int		nHandle;
 
-
+	nHandle = ModelRenderGetNextHandle();
+	
+	if ( nHandle != NOTFOUND )
+	{
+		pxModelData = &maxModelRenderData[ nHandle ];
+		pxModelData->pfnCustomMeshRenderer = fnCustomRenderer;
+	}
+	return( nHandle );	
+}
 
 /***************************************************************************
  * Function    : ModelLoadFromMem
@@ -3997,6 +4014,8 @@ byte*	pbFileInMem;
 	}
 	return( NOTFOUND );
 }
+
+
 
 /***************************************************************************
  * Function    : ModelLoadFromArchive

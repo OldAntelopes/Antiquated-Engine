@@ -54,14 +54,20 @@ enum eRenderFlags    // For ulRenderFlags parameter in ModelRender
 
 };
 
+typedef	void		(*fnCustomMeshRenderer)( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
+
+
 
 // Main load, render and free calls
 extern int		ModelLoad( const char* szFilename, ulong ulLoadFlags, float fScale ); // Returns a ModelHandle or NOTFOUND if unsuccessful
 extern int		ModelLoadFromArchive( const char* szFilename, ulong ulLoadFlags, float fScale, int nArchiveHandle ); // Returns a ModelHandle or NOTFOUND if unsuccessful
+extern int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, ulong ulCreateParam );
+
 extern int		ModelRender( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
 extern int		ModelRenderSeparateWheel( int nModelHandle, int nWheelNum, const ENGINEMATRIX* pxWorldMat, ulong ulRenderFlags );
 extern int		ModelRenderQuat( int nModelHandle, const VECT* pxPos, const ENGINEQUATERNION* pxQuat, ulong ulRenderFlags );
 extern int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, ulong ulRenderFlags, VECT* pxScale );
+
 extern void		ModelFree( int nModelHandle );
 extern int		ModelClone( int nModelHandle );
 extern void		ModelScale( int nModelHandle, float fX, float fY, float fZ );
