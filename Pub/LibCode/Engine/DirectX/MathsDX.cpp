@@ -249,7 +249,7 @@ DirectX::XMVECTOR		xResult;
 #endif
 }
 
-void		VectRotateAboutAxis( VECT* pOut, VECT* pSrc, VECT* pxAxis, float fAngle )
+void		VectRotateAboutAxis( VECT* pOut, const VECT* pSrc, const VECT* pxAxis, float fAngle )
 {
 #ifdef TUD11
 DirectX::XMMATRIX	xmMatrix;

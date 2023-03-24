@@ -29,7 +29,7 @@ int					mnFontVertexIndex = 0;
 int					mnCurrentFontFlags = 0;
 float	mfGiantFontScale = 2.0f;
 
-int		manFontColours[] =
+ulong		manFontColours[] =
 {
 	0xE0F0F0F0,			/* UNUSED */
 	0xE0F0F0F0,			/* COL_SYS_SPECIAL */

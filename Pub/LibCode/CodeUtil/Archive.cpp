@@ -830,7 +830,7 @@ int			nFilenameLen;
 		{
 			memset( pTOCEntry, 0, pHeaderStruct->bTOCEntryHeaderSize );
 			strcpy( pcFilenameRunner, pFileList->GetFilename() );
-			pTOCEntry->bFilenameLen = strlen( pcFilenameRunner ) + 1;
+			pTOCEntry->bFilenameLen = (BYTE)( strlen( pcFilenameRunner ) + 1 );
 
 			pTOCEntry->bTOCEntryFlags = 0; 
 			pTOCEntry->ulFileOffset = nCurrentFileOffset; 

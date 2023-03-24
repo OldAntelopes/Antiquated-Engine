@@ -98,7 +98,7 @@ extern void		VectReflect( VECT* pxOut, const VECT* pxInVect, const VECT* pxPlane
 extern void		VectRotateAboutX( VECT*, float );
 extern void		VectRotateAboutY( VECT*, float );
 extern void		VectRotateAboutZ( VECT*, float );
-extern void		VectRotateAboutAxis( VECT* pOut, VECT* pSrc, VECT* pxAxis, float fAngle );
+extern void		VectRotateAboutAxis( VECT* pOut, const VECT* pSrc, const VECT* pxAxis, float fAngle );
 
 extern float	VectGetRotZAngleBetweenVects( const VECT* pxVect1, const VECT* pxVect2 );
 
