@@ -104,10 +104,8 @@ typedef unsigned char DWORD_PTR [INADDRSZ]; /* a pointer on a 4 bytes integer */
 #define far
 #else /* _WINDOWS_ defined */
 
-#ifdef MARMALADE
-#include <s3eSocket.h>
-#else
-#  include <winsock.h>
+#ifdef WIN32
+#include <winsock.h>
 #endif
 
 #  ifndef API4U

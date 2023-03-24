@@ -91,15 +91,7 @@
 /* Declarations Windows                                               */
 /* ****************************************************************** */
 /* #include LIBCO_VERS_H */
-
-#ifdef  _WINDOWS
-#define PORT_FOR_WINDOWS
-#elif defined( WIN32 )
-#define PORT_FOR_WINDOWS
-#endif
-
-
-#ifdef PORT_FOR_WINDOWS
+#ifdef  WIN32
 #define  NEED_PROTO
 #define WRITE_CR            0
 #define Write(fd,buf,len)  _lwrite(fd,buf,len)
@@ -122,14 +114,14 @@
 /* ----------------------------------- */
 /* 16 bits declarations                */
 /* ----------------------------------- */
-#ifndef _WIN32
+#ifndef WIN32
 #  define Unlink(fic)        _unlink(fic)
 #  define MAKEWORD(a, b)      ((WORD)(((BYTE)(a)) | ((WORD)((BYTE)(b))) << 8))
 #endif  /* Windows 3.1 */
 /* ----------------------------------- */
 /* 32 bits redeclarations              */
 /* ----------------------------------- */
-#ifdef _WIN32
+#ifdef WIN32
 #  define Unlink(fic)         DeleteFile(fic)
 #  define _export
 #  define GetCurrentTask()    GetCurrentThread()          

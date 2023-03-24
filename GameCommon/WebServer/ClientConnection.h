@@ -70,7 +70,7 @@ class ClientConnection
 {
 public:
 
-	ClientConnection::ClientConnection()
+	ClientConnection()
 	{
 		m_hTcpSocket = 0;
 		m_ullUserID = 0;

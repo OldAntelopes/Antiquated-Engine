@@ -1,6 +1,8 @@
 #ifndef WEBSERVER_REQUEST_PARAMS_H
 #define WEBSERVER_REQUEST_PARAMS_H
 
+
+
 class RequestParam
 {
 public:
@@ -57,7 +59,7 @@ public:
 
 		while( pList )
 		{
-			if ( stricmp( pList->mszKey, szKey ) == 0 )
+			if (tinstricmp( pList->mszKey, szKey ) == 0 )
 			{
 				return( pList->mszValue );
 			}

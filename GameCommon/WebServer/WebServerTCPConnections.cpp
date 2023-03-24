@@ -2,14 +2,14 @@
 #include <UnivSocket.h>
 #include <StandardDef.h>
 
-#include "TCP4u/TCP4u.h"
+#include "../tcp4u/tcp4u.h"
 
 #include "WebServerConnectionManager.h"
 #include "WebServerTCPConnections.h"
 
 
 SOCKET		m_WebServerListenSocket;
-HANDLE		m_hWebServerConnectionListenThread;
+unsigned int		m_hWebServerConnectionListenThread;
 volatile BOOL		m_bWebServerNetworkThreadShutdown = FALSE;
 volatile BOOL		m_bWebServerNewTCPConnectionsPending = FALSE;
 
@@ -17,7 +17,7 @@ volatile BOOL		m_bWebServerNewTCPConnectionsPending = FALSE;
 SOCKET		m_WebServerPendingNewConnection = 0;		// TODO - will need more of these..
 
 
-long WINAPI WebServerTCPListenThread(long lParam)
+long	WebServerTCPListenThread(long lParam)
 { 
 SOCKET		xNewConnection;
 int		ret;
@@ -83,7 +83,7 @@ void	TCPConnections::ShutdownTCP( void )
 	TcpAbort();
 
 	m_bWebServerNetworkThreadShutdown = TRUE;
-	Sleep(10);
+	SysSleep(10);
 
 	TcpClose ( &m_WebServerListenSocket ); 
 	Tcp4uCleanup();
@@ -92,7 +92,6 @@ void	TCPConnections::ShutdownTCP( void )
 void	TCPConnections::InitialiseTCPListener( ushort uwPort )
 {
 int		ret;
-ulong	iID;
 
 	Tcp4uInit();
 
@@ -100,7 +99,7 @@ ulong	iID;
 	if ( ret == TCP4U_SUCCESS )
 	{
 		printf("BasicWebServer TCP listen socket open on %d\n", uwPort );
-		m_hWebServerConnectionListenThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)WebServerTCPListenThread,(LPVOID)(NULL),0,&iID);
+		m_hWebServerConnectionListenThread = SysCreateThread( WebServerTCPListenThread, NULL, 0, 0 );
 	}
 	else
 	{
@@ -182,11 +181,15 @@ int		error;
 		return( pcOutRunner - recvBuff );
 	}
 
+#ifdef WIN32
 	error = WSAGetLastError();
 	if ( error == WSAEWOULDBLOCK )
 	{
 		return( 0 );
 	}
+#else
+	// TODO - LINUX alt?
+#endif
 	return( TCPSOCKET_ERROR_DISCONNECT );
 }
 

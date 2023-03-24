@@ -1,30 +1,31 @@
 #ifndef _UNIVERSAL_SOCKET_H
 #define _UNIVERSAL_SOCKET_H
 
-#ifdef I3D_PLATFORM_S3E
-#undef MARMALADE
-#define MARMALADE
-#endif
-
 #ifdef WIN32
 
 #include <winsock.h>
 
 #else
 
-#ifdef MARMALADE
-#include <s3eSocket.h>
-#else
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/param.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 
+#ifndef TYPE_SOCKET_DEF
+typedef   unsigned int SOCKET;
+# define TYPE_SOCKET_DEF
+#endif /* def type SOCKET */
 
-#define SOCKET_ERROR (-1)
+#define SOCKET_ERROR	(-1)
 
 #endif
+
+#ifdef WIN32
+#define		UnivSocketLastError		WSAGetLastError()
+#else
+#define		UnivSocketLastError		errno
 #endif
 
 

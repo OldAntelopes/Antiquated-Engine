@@ -1,17 +1,24 @@
 
-#include <stdio.h>
+#ifdef WIN32
 #include "stdwininclude.h"
+#endif
+
 #include "UnivSocket.h"
 #include "StandardDef.h"
 
-#include "WebServerTCPConnections.h"
-#include "BasicWebServerInternal.h"
-#include "RequestParams.h"
 #include "ClientConnection.h"
+
+#include "BasicWebServer.h"
+#include "BasicWebServerInternal.h"
 #include "WebServerConnectionManager.h"
 
 
-#define SERVER_STRING	"Server: Mit Webserver/0.0.1\r\n"
+#include "WebServerTCPConnections.h"
+#include "RequestParams.h"
+
+
+
+const char* SERVER_STRING =	"Server: Mit Webserver/0.0.1\r\n";
 
 //#define DEBUG_TCP_RECEIVE
 
@@ -156,7 +163,9 @@ int		ret;
 			{
 				// Over 1000 is probably someone trying to 'attack' the server.. 
 				// Ignore and close the conn...
+#if 0 
 				SysDebugPrint( "WARN: Oversized request, ignored from %s", inet_ntoa( *((struct in_addr*)(&ulFromIP)) ) );
+#endif
 				// return FALSE to signal disconnect
 				return( FALSE );
 			}
@@ -178,7 +187,7 @@ int		ret;
 				DebugTCPReceive( szRecvBuffer );
 				DecodeHeaderLine( szRecvBuffer, acHeaderName, acHeaderValue );
 
-				if ( stricmp( acHeaderName, "Content-length" ) == 0 )
+				if ( tinstricmp( acHeaderName, "Content-length" ) == 0 )
 				{
 					mnContentLength = strtol( acHeaderValue, NULL, 10 );
 				}
@@ -227,6 +236,7 @@ int		ret;
 		}
 		else if ( ret < 0 )
 		{
+#ifdef WIN32
 			// WSAEWOULDBLOCK just means we have no data yet.. anything else is a proper error
 			if ( WSAGetLastError() != WSAEWOULDBLOCK )
 			{
@@ -234,6 +244,9 @@ int		ret;
 				Reset();
 				return( FALSE );
 			}
+#else
+
+#endif
 		}
 		else if ( ret == 0 )
 		{
@@ -509,7 +522,7 @@ int				nPathLen;
 //	sprintf( szString, "Request: %s", szPath );
 //	DisplayAddText( szString );
 
-	if ( strcmp( szMethod, "GET" ) == 0 )
+	if ( tinstricmp( szMethod, "GET" ) == 0 )
 	{
 	BasicWebServerRequestHandler		fnGETHandler = BasicWebServerGetGETHandler();
 	int		nHandled = 0;
@@ -552,7 +565,11 @@ void	ClientConnection::CloseConnection( void )
 {
 	mRequestParamsList.Clear();
 
+#ifdef WIN32
 	closesocket(m_hTcpSocket);
+#else
+	shutdown(m_hTcpSocket, SHUT_RDWR);
+#endif
 	m_hTcpSocket = 0;
 }
 

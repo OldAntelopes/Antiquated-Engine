@@ -55,7 +55,7 @@ int API4U Tcp4uInit (void)
 int     Rc=0;
    Tcp4uLog (LOG4U_PROC, "Tcp4uInit");
    Skt4uInit ();
-#  ifdef _WINDOWS
+#  ifdef WIN32
    {
    /* enregistrement aupres de Winsock.Dll */
     WSADATA WSAData;
@@ -93,7 +93,7 @@ return 1; /* definition Windows */
 /* ------------------------------------------------------------------ */
 /* Aliases : Tcp4uxInit/Tcp4uxCleanup ;  Tcp4wInit/Tcp4wCleanup       */
 /* ------------------------------------------------------------------ */
-#ifdef _WINDOWS
+#ifdef WIN32
   int API4U Tcp4wInit (void)      { return Tcp4uInit ();    }
   int API4U Tcp4wCleanup (void)   { return Tcp4uCleanup (); }
 #endif

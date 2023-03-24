@@ -5,7 +5,7 @@
 #include "BasicWebServer.h"
 #include "WebServerTCPConnections.h"
 #include "WebServerConnectionManager.h"
-#include "../Util/cJson.h"
+#include "../Util/cJSON.h"
 
 DefaultRequestBuffer*		mspBufferedRequests = NULL;
 
@@ -119,7 +119,7 @@ RegisteredRequestHandlerList*		pDefaultExtensionlessHandler = NULL;
 		}
 
 		// TODO - Check for wildcards here (e.g. mszRegisteredRequestName could be index.* and handle index.html, index.htm, index etc)
-		if ( stricmp( pRequestHandlers->mszRegisteredRequestName, pszRequest ) == 0 )
+		if ( tinstricmp( pRequestHandlers->mszRegisteredRequestName, pszRequest ) == 0 )
 		{
 			return( pRequestHandlers->mpRequestHandlerSingleton->HandleRequest( pDefaultRequestBuffer ) );
 		}
