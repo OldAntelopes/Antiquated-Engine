@@ -5,7 +5,6 @@ extern float gFogEnd;
 
 float4 FogApply( float4 color, float3 camPosWS, float3 pixelPosWS )
 {
-	
 	if ( gFogEnd > 0 )
 	{
 		float DistFog = distance(camPosWS, pixelPosWS);

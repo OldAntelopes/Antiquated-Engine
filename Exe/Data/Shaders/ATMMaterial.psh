@@ -4,12 +4,8 @@
 extern float4	gAmbientColor;
 extern float4	gMaterialDiffuse;
 extern float4	gMaterialAmbient;
-extern float4	gMaterialSpecular;
-extern float4	gMaterialEmissive;
 
 extern float4	gDiffuseColor;
- 
-extern float4	gSpecularColor;
 
 extern float3	gLightDirection;
 extern float3	xCamPos;
@@ -25,6 +21,10 @@ extern float	gDiffuseIntensity;
 
 extern float	gShadowMapSize;
 extern float	gShadowEpsilon;
+
+extern float4	gMaterialSpecular;
+extern float4	gxMaterialEmissive;
+extern float4	gSpecularColor;
 
 //------------------------------------------------------
 
@@ -110,7 +110,8 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
  
      float diffuse = saturate(dot(lightDirection,normal));
 	float4	specularColor = float4( 0.0, 0.0, 0.0, 0.0 );
-	
+	float	specularPower = 4.0f;
+
 	if ( gMaterialSpecularPower > 1.0 )
 	{
 		if ( gMaterialSpecular.w > 0 )
@@ -124,15 +125,14 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
 	//			specular = specular * (tex2D(specularMapSampler, TexCoord));
 			}
 
-			specularColor = saturate(gSpecularColor * specular * gMaterialSpecular);
+			specularColor = 0.0f;//saturate(gSpecularColor * specular * gMaterialSpecular);
 		}
    }
 
 	fPrimaryDiffuseShadowingStrength = gDiffuseIntensity * fPrimaryDiffuseShadowingStrength;
-
 	ambientBounce *= 0.125;
 			
-	float4	diffuseMain = saturate(fPrimaryDiffuseShadowingStrength * gDiffuseColor * gMaterialDiffuse * diffuse);
+	float4	diffuseMain = saturate(diffuse * fPrimaryDiffuseShadowingStrength * gDiffuseColor * gMaterialDiffuse);
 	float4	 colorPoint = float4( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	if ( gLightingEnabled == false )
@@ -144,22 +144,18 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
 		colorPoint = GetCombinedLightingDiffuse( PositionWS, normal, View, 0 );
 		diffuseMain = saturate( diffuseMain + (colorPoint * gMaterialDiffuse) );
 
-//		specularMain += GetPointLightSpecular( 0, PositionWS, normal, xCamPos ); 
+//		specularMain += GetPointLightSpecular( 0, PositionWS, normal, xCamPos, float3 specularCol, float specularPower ); 
 	}
 
 	float4		fAmbientMain = (gAmbientColor * gMaterialAmbient);
 	float4		fAmbientBounce = (gAmbientColor * gMaterialAmbient * ambientBounce);
 
-	Out.Color = texColor * saturate( fAmbientMain + fAmbientBounce + gMaterialEmissive + diffuseMain );
-
+	float4		lighting = float4( saturate( fAmbientMain.xyz + fAmbientBounce.xyz + diffuseMain.xyz ), 1.0f );
+	lighting.w = 1.0f;
+	Out.Color = saturate( (texColor * lighting) );//+ gxMaterialEmissive ) ;
 	Out.Color = saturate( Out.Color + specularColor );
-	Out.Color.w = texColor.w * saturate(gMaterialDiffuse.w + specularColor.w);
-
 	// --------------- Fog ----------------------
-//	Out.Color.x = 1.0f;
-	
 	Out.Color = FogApply( Out.Color, xCamPos, PositionWS );
-
     return Out;  
 }
 

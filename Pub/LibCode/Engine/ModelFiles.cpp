@@ -3956,6 +3956,12 @@ CUSTOMVERTEX*	pxVertices = NULL;
 			RenderingComputeBoundingBox( pxVertices, pxModelData->xStats.nNumVertices,&pxModelData->xStats.xBoundMin, &pxModelData->xStats.xBoundMax );
 			RenderingComputeBoundingSphere( pxVertices, pxModelData->xStats.nNumVertices,&pxModelData->xStats.xBoundSphereCentre, &pxModelData->xStats.fBoundSphereRadius );
 			pxModelData->pxBaseMesh->UnlockVertexBuffer();
+			pxModelData->xStats.xBoundBoxExtents.x = (pxModelData->xStats.xBoundMax.x - pxModelData->xStats.xBoundMin.x)*0.5f;
+			pxModelData->xStats.xBoundBoxExtents.y = (pxModelData->xStats.xBoundMax.y - pxModelData->xStats.xBoundMin.y)*0.5f;
+			pxModelData->xStats.xBoundBoxExtents.z = (pxModelData->xStats.xBoundMax.z - pxModelData->xStats.xBoundMin.z)*0.5f;
+			pxModelData->xStats.xBoundBoxCentre.x = (pxModelData->xStats.xBoundBoxExtents.x) + pxModelData->xStats.xBoundMin.x;
+			pxModelData->xStats.xBoundBoxCentre.y = (pxModelData->xStats.xBoundBoxExtents.y) + pxModelData->xStats.xBoundMin.y;
+			pxModelData->xStats.xBoundBoxCentre.z = (pxModelData->xStats.xBoundBoxExtents.z) + pxModelData->xStats.xBoundMin.z;
 		}					
 	}
 }

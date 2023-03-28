@@ -40,6 +40,8 @@ float	mfShadowEpsilon = 0.00005f;
 
 BOOL		mbModelMaterialsHasLoadedShaders = FALSE;
 
+D3DXVECTOR4		mxEmssiveVecValue( 0.0f, 0.0f, 0.0f, 0.0f );
+
 //----------------------------------------------------------------------------------------------------
 
 void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATERIAL_COLOUR* pxAmbient, MATERIAL_COLOUR* pxSpecular, MATERIAL_COLOUR* pxEmissive, float fSpecularPower )
@@ -92,10 +94,13 @@ void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATE
 				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderAmbient, 4 );
 			}
 
-			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialEmissive");
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gxMaterialEmissive");
 			if ( handle )
 			{
-				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderEmissive, 4 );
+			D3DXVECTOR4		xVec( (float*)&mxModelMaterialShaderEmissive );
+				
+				mxEmssiveVecValue = xVec;
+				mpNormalMapRenderPSConstantTable->SetVector( mpEngineDevice, handle, &mxEmssiveVecValue );
 			}
 
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialSpecularPower");

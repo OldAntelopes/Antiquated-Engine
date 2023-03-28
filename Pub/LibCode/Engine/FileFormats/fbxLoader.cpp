@@ -193,14 +193,14 @@ FbxMatrix		fbxMatrix;
 
 	vert = fbxMatrix.MultNormalize( vert );
 	
-	pxVertex->position.x = (float)vert.mData[0] * fFBXImportScale;
+	pxVertex->position.x = (float)(0.0f - vert.mData[0]) * fFBXImportScale;			// Coz we're in a mirrored universe or something
 	pxVertex->position.y = (float)vert.mData[1] * fFBXImportScale;
 	pxVertex->position.z = (float)vert.mData[2] * fFBXImportScale;
 
 	pFBXMesh->GetPolygonVertexNormal( nFaceNum, nPolyVertexNum, fbxVec4Normal);
-	fbxVec4Normal = fbxMatrix.MultNormalize( fbxVec4Normal );
+//	fbxVec4Normal = fbxMatrix.MultNormalize( fbxVec4Normal );
 
-	pxVertex->normal.x = (float)(fbxVec4Normal.mData[0]);
+	pxVertex->normal.x = (float)(0.0f - fbxVec4Normal.mData[0]);		// i dunno we're probably left-handed or sumthin
 	pxVertex->normal.y = (float)(fbxVec4Normal.mData[1]);
 	pxVertex->normal.z = (float)(fbxVec4Normal.mData[2]);
 
@@ -283,14 +283,14 @@ BOOL	bParseUVs = FALSE;
 				if ( pxModelData->pxBaseMesh->Is32BitIndexBuffer() == TRUE )
 				{
 					punIndices[nIndexNum] = msnFBXLoadNextVertexNum;
-					punIndices[nIndexNum+1] = msnFBXLoadNextVertexNum + 1;
-					punIndices[nIndexNum+2] = msnFBXLoadNextVertexNum + 2;
+					punIndices[nIndexNum+1] = msnFBXLoadNextVertexNum + 2;
+					punIndices[nIndexNum+2] = msnFBXLoadNextVertexNum + 1;
 				}
 				else
 				{
 					puwIndices[nIndexNum] = (ushort)( msnFBXLoadNextVertexNum );
-					puwIndices[nIndexNum+1] = (ushort)( msnFBXLoadNextVertexNum + 1 );
-					puwIndices[nIndexNum+2] = (ushort)( msnFBXLoadNextVertexNum + 2 );
+					puwIndices[nIndexNum+1] = (ushort)( msnFBXLoadNextVertexNum + 2 );
+					puwIndices[nIndexNum+2] = (ushort)( msnFBXLoadNextVertexNum + 1 );
 				}
 				nIndexNum += 3;
 

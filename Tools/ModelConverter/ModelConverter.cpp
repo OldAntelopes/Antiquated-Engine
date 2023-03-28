@@ -78,6 +78,7 @@ CSceneObject	m_MainSceneObject;
 
 #define	MODELCONV_VERSIONSTRING		"2.31"
 
+BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
 int		mnTemporaryDisplayModelHandle = NOTFOUND;
 int		mnHorizTurretModelHandle = NOTFOUND;
@@ -620,6 +621,7 @@ void	ModelConvResetCameraToModel( void )
 	{
 	MODEL_STATS*	pxModelStats = ModelGetStats( m_MainSceneObject.GetModelHandle() );
 
+		ModelRecalcBounds( m_MainSceneObject.GetModelHandle() );
 		mxBaseCamFocus = pxModelStats->xBoundBoxCentre;
 		mxCamFocus = pxModelStats->xBoundBoxCentre;
 		mxCamPos.x = mxCamPos.y = mxCamPos.z = 0.0f;
@@ -1335,7 +1337,8 @@ int		nScreenX, nScreenY;
 
 void		ModelConverterKeyControlsUpdate( ulong ulTick )
 {
-	if ( mbThisWindowIsFocused )
+	if ( ( mbThisWindowIsFocused ) &&
+		 ( mbDisableWASD == FALSE ) ) 
 	{
 	float		fDelta = ((float)ulTick) / 1000.0f;
 	float		fMoveAmount = 1.0f;
@@ -2212,6 +2215,14 @@ char	acString[256];
 		}
 	}
 }
+
+
+void		ModelConvSetLastUsedLoadPath( const char* szFile )
+{
+	GetPathFromFilename( szFile, macModelConvLastLoadFolder );
+	ModelConvSaveUsedDirectories();
+}
+
 
 /***************************************************************************
  * Function    : ModelConverterOpenDialog
@@ -4122,6 +4133,78 @@ char		acCurrentDir[256];
 	}
 }
 
+void	ModelConvExportThumbnail( void )
+{
+char		acExportFilename[256];
+char		acCurrentDir[256];
+
+	acExportFilename[0] = 0;
+	ModelConvGetLastLoadFolder( acCurrentDir );
+
+	mbDisableWASD = TRUE;
+	if ( SysGetSaveFilenameDialog( "PNG File(*.png)\0*.png\0", "Export Thumbnail", acCurrentDir, 0, acExportFilename ) == TRUE )
+	{
+	int		hThumbnailTarget = EngineCreateRenderTargetTexture( 600, 424, 3 );
+	int		nHandleToDraw;
+	MODEL_RENDER_DATA*	pxModelData;
+	VECT	xPos;
+
+		SysAddFileExtensionIfNeeded( acExportFilename, "png" );
+		EngineSetRenderTargetTexture( hThumbnailTarget, 0x00000000, TRUE );
+
+		ModelConverterSetupCamera();
+		ModelConverterRenderShadowMapDepthPass();
+		ModelConverterSetupCamera();
+
+		nHandleToDraw = m_MainSceneObject.GetModelHandle();
+		
+		if ( nHandleToDraw  != NOTFOUND )
+		{	
+		int		nVal;
+
+			pxModelData = &maxModelRenderData[ nHandleToDraw ];
+
+			EngineSetTexture( 0, m_MainSceneObject.GetTextureHandle() );
+			g_pd3dDevice->SetFVF( D3DFVF_CUSTOMVERTEX );
+			EngineEnableBlend( TRUE );
+			EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
+			EngineEnableAlphaTest( TRUE );
+			EngineEnableZWrite( TRUE );
+			EngineEnableZTest( TRUE );
+			EngineEnableFog( FALSE );
+			EngineEnableCulling( 1 );
+			EngineEnableLighting( TRUE );
+			EngineEnableSpecular(TRUE);
+			EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+
+			xPos.x = 0.0f;
+			xPos.y = 0.0f;
+			xPos.z = 0.0f;
+			if ( EngineSceneShadowMapIsActive() )
+			{
+				EngineSceneShadowsStartRender( TRUE, FALSE, FALSE );
+			}
+			else
+			{
+				EngineSetShadowMultitexture( FALSE );
+			}
+			mnPolysRendered = m_MainSceneObject.Render(CSceneObject::NORMAL);
+
+			if ( EngineSceneShadowMapIsActive() )
+			{
+				EngineSceneShadowsEndRender();
+			}
+		}
+
+		EngineRestoreRenderTarget();
+		EngineExportTexture( hThumbnailTarget, acExportFilename, 3 );
+		EngineReleaseTexture( &hThumbnailTarget );
+	}
+	mbDisableWASD = FALSE;
+
+}
+
+
 TEXTURE_HANDLE		ModelConvGetOverrideTexture( void )
 {
 	return( m_MainSceneObject.GetTextureHandle() );
@@ -5281,6 +5364,10 @@ int	nVal;
 				}
 				ModelConverterDisplayFrame( FALSE );
 				break;
+			case ID_EXPORT_THUMBNAIL:
+				ModelConvExportThumbnail();
+				break;
+
 			case IDM_DRAW_GRID_LINES:
 				if ( (GetMenuState( GetMenu(mhwndMainDialog), IDM_DRAW_GRID_LINES, 0 ) & MF_CHECKED) != 0 )
 				{

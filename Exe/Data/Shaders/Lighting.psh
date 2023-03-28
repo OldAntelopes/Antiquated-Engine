@@ -71,11 +71,10 @@ float4 GetSpotLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3
 
 
 //---------------------------------------------------------- Point lights : 0.1
-float4 GetPointLightSpecular( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos )
+float4 GetPointLightSpecular( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos, float specularPower )
 {
   float3		LightPosition = gPointLightPositions[lightNum];
-  float3		LightSpecularColor = { 0.2,0.2,0.2 };
-  float			SpecularPower = 2.0; 
+  float3		LightSpecularColor = gPointLightColours[lightNum];
   float			LightDistanceSquared = 400.0;
 
   // Get light direction for this fragment
@@ -85,8 +84,8 @@ float4 GetPointLightSpecular( int lightNum, float3 WorldPos, float3 Normal, floa
 
   // Using Blinn half angle modification for perofrmance over correctness
   float3 h = normalize(normalize(CameraPos - WorldPos) - lightDir);
-  float specLighting = pow(saturate(dot(h, Normal)), SpecularPower);
-  specLighting *= saturate(LightDistanceSquared / (fDist * 10.0));
+  float specLighting = pow(saturate(dot(h, Normal)), specularPower);
+  specLighting *= saturate(LightDistanceSquared / (fDist * 0.5));		// Fixed range..
 
   return float4( ( LightSpecularColor * specLighting), 1.0 ); // Use light specular vector as intensity multiplier
 }
@@ -159,24 +158,27 @@ float4		GetCombinedPointLightDiffuse( float3 WorldPos, float3 Normal, float3 Cam
 	float		fDistSqr;
 	float3		LightPosition;
 	  float			LightRangeSquared;
-
 	for( loop = 0; loop < gNumPointLights; loop++ )
 	{
 	  	LightRangeSquared = gPointLightRanges[loop];
 		LightPosition = gPointLightPositions[loop];
-		fDistSqr = dot(LightPosition - WorldPos, LightPosition - WorldPos);
+		float3	lightToPoint = LightPosition - WorldPos;
+		fDistSqr = dot(lightToPoint, lightToPoint);
 		float3		lightCol = gPointLightColours[loop];
 		float	fBrightnessRangeMod = (lightCol.x + lightCol.y + lightCol.z) / 3;
 		float	fRangeMod = 12.0f;
 
-		if ( fBrightnessRangeMod > 1.0f )
+		if ( fBrightnessRangeMod > 0.0f )
 		{
-			fRangeMod *= fBrightnessRangeMod;
-		}
+			if ( fBrightnessRangeMod > 1.0f )
+			{
+				fRangeMod *= fBrightnessRangeMod;
+			}
 
-		if ( fDistSqr < LightRangeSquared * fRangeMod )
-		{
-			colorPoint += GetPointLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape); 
+			if ( fDistSqr < LightRangeSquared * fRangeMod )
+			{
+				colorPoint += GetPointLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape); 
+			}
 		}
 	}
 	return( colorPoint );
@@ -186,9 +188,8 @@ float4		GetCombinedPointLightDiffuse( float3 WorldPos, float3 Normal, float3 Cam
 float4		GetCombinedLightingDiffuse( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape )
 {
 	float4	diffuseCombined = GetCombinedPointLightDiffuse( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape );
-
 	diffuseCombined += GetCombinedSpotLightDiffuse( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape );
-	
+
 	return( diffuseCombined );
 }
 

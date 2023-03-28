@@ -1207,7 +1207,6 @@ BEGIN
         BEGIN
             MENUITEM "None",                        ID_SHADOWS_NONE, CHECKED
             MENUITEM "Shadow Map",                  ID_SHADOWS_SHADOW_MAP
-            MENUITEM "Shadow Volume",               ID_SHADOWS_SHADOW_VOLUME
         END
         MENUITEM SEPARATOR
         POPUP "Menu Options"
@@ -1220,6 +1219,8 @@ BEGIN
 
             END
         END
+        MENUITEM SEPARATOR
+        MENUITEM "Export Thumbnail",            ID_EXPORT_THUMBNAIL
     END
     POPUP "&Tools"
     BEGIN

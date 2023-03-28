@@ -248,7 +248,7 @@ int		nLoop;
 	pxNewModelData->bModelType = ASSETTYPE_STATIC_MESH;
 	if ( pxModelData->xStats.acFilename[0] != '[' )
 	{
-		sprintf( pxNewModelData->xStats.acFilename, "[Key %d] %s", nKeyframe, pxModelData->xStats.acFilename );
+		sprintf( pxNewModelData->xStats.acFilename, "[Key %d] Packed Data", nKeyframe );//, pxModelData->xStats.acFilename );
 	}
 	else
 	{
@@ -529,6 +529,7 @@ int		nHandle = NOTFOUND;
 
 	if ( GetOpenFileName( &ofnOpen ) > 0 )
 	{
+		ModelConvSetLastUsedLoadPath( acFileName );
 		nHandle = ModelLoad( acFileName, 0, 1.0f );
 	}
 
@@ -708,6 +709,7 @@ int		nHandle = NOTFOUND;
 
 	if ( GetOpenFileName( &ofnOpen ) > 0 )
 	{
+		ModelConvSetLastUsedLoadPath( acFileName );
 		sprintf( pcString, acFileName );
 		return( TRUE );
 	}

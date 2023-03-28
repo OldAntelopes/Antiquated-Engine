@@ -622,6 +622,19 @@ int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 	return( 1 );
 }
 
+
+void	SysAddFileExtensionIfNeeded( char* szFilename, const char* szExtension )
+{
+int		nNameLen = strlen( szFilename );
+char	acExtensionRequired[64];
+
+	sprintf( acExtensionRequired, ".%s", szExtension );
+	if ( stricmp( szFilename + (nNameLen-4), acExtensionRequired) != 0 )
+	{
+		strcat( szFilename, acExtensionRequired ); 
+	}
+}
+
 //-------------------------------------------------------
 // Function : SysGetSaveFilenameDialog				Windows Implementation
 //   This function is used to allow the user to select a filename to save to from the folders on their puter.

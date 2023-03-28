@@ -397,6 +397,7 @@
 #define ID_IMPORTUVS                    40161
 #define ID_SCALE_SCALETO15GRID          40162
 #define ID_REMOVEALLANIMATIONS          40163
+#define ID_EXPORT_THUMBNAIL             40164
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -404,7 +405,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         40164
+#define _APS_NEXT_COMMAND_VALUE         40165
 #define _APS_NEXT_CONTROL_VALUE         1110
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
