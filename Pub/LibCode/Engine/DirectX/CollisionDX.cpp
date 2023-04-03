@@ -56,6 +56,7 @@ VECT	xRayEnd;
 	D3DXPlaneFromPoints( &xPlane, (D3DXVECTOR3*)pxPlanePos1, (D3DXVECTOR3*)pxPlanePos2,(D3DXVECTOR3*)pxPlanePos3 );
 	if ( D3DXPlaneIntersectLine( (D3DXVECTOR3*)&mxCollResultPos, &xPlane, (D3DXVECTOR3*)pxRayStart, (D3DXVECTOR3*)&xRayEnd ) != NULL )
 	{
+		// TODO - use the hitpoint
 		return( TRUE );
 	}
 #endif

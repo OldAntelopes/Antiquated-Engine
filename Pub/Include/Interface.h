@@ -319,8 +319,10 @@ enum
 int		InterfaceGetDeviceCaps( int Type );
 
 typedef void(*InterfaceDrawCallback)( void );
+typedef int(*InterfaceControllerIconCallback)( int mode, int nActionNum, int nSize );
 
 extern void	InterfaceSetDrawCallback( InterfaceDrawCallback fnOnDrawCallback );
+extern void	InterfaceSetControllerIconFunction( InterfaceControllerIconCallback fnControllerIconCallback );
 
 //-----------------------------------------------------------------------------------------------------------------------------------
 

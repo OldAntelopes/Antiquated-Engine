@@ -1415,7 +1415,7 @@ int		nAdvance = 0;
 int GetStringWidth( const char* pcString, int nFont )
 {
 int		nX;
-char	cChar;
+BYTE	cChar;
 int		nCount;
 int		nFontScreenWidth = 0;
 int		nAdvance = 0;
@@ -1427,8 +1427,9 @@ int		nAdvance = 0;
 		     ( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
 	{
 		cChar = *(pcString);
-		if ( cChar == '\t' )
+		switch ( cChar )
 		{
+		case '\t':
 			if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
 			{
 				nX += ( 4*10 );
@@ -1437,9 +1438,13 @@ int		nAdvance = 0;
 			{
 				nX += (4*12);
 			}
-		}
-		else
-		{
+			break;
+		case 250:
+			nX += (GetStringHeight( "A", nFont ) + 4 );
+			pcString++;
+			nCount++;
+			break;
+		default:
 			// If valid tag
 			if ( ( cChar == '<' ) &&
 				 ( pcString[1] != 0 ) &&
@@ -1476,6 +1481,7 @@ int		nAdvance = 0;
 				FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
 				nX += (nAdvance + 1);
 			}
+			break;
 		}
 
 		pcString++;
@@ -1620,6 +1626,13 @@ int	InterfaceTextGetHeight( const char* pcString, int nFont )
 	return( GetStringHeight( pcString, nFont ) );
 }
 
+InterfaceControllerIconCallback		mfnControllerIconCallback = NULL;
+
+
+void	InterfaceSetControllerIconFunction( InterfaceControllerIconCallback fnControllerIconCallback )
+{
+	mfnControllerIconCallback = fnControllerIconCallback;
+}
 
 /***************************************************************************
  * Function    : FontDrawText
@@ -1634,6 +1647,7 @@ int		nY;
 int		nWidth, nHeight;
 int		nSize;
 int		nCount;
+BYTE	cChar;
 
 	switch( nAlign )
 	{
@@ -1673,7 +1687,37 @@ int		nCount;
 	while ( ( *(pcString) != 0 ) &&
 		    ( nCount < 300 ) )
 	{
-		nX += FontDrawChar( *( (BYTE*)( pcString )), nX, nY, ulCol, nFont, nFlag, fTextScale );
+		cChar = *( (BYTE*)( pcString ));
+		if ( cChar == 250 )
+		{
+			if ( mfnControllerIconCallback )
+			{
+			int		nIconTexture;
+			int		nHeight = GetStringHeight( "A", nFont ) + 4;
+			int		nSize = 0;
+				pcString++;
+				nCount++;
+
+				if ( nHeight > 32 )
+				{
+					nSize = 1;
+				}
+				int		nControllerActionNum = *( (BYTE*)( pcString ));
+				nIconTexture = mfnControllerIconCallback( NOTFOUND, nControllerActionNum, nSize );
+
+				if ( nIconTexture != NOTFOUND )
+				{
+				int		nOverlay = InterfaceCreateNewTexturedOverlay( 2, nIconTexture );
+
+					InterfaceTexturedRect( nOverlay, nX, nY - 2, nHeight, nHeight, 0xE0FFFFFF, 0.0f, 0.0f, 1.0f, 1.0f );
+					nX += nHeight;
+				}
+			}
+		}
+		else
+		{
+			nX += FontDrawChar( cChar, nX, nY, ulCol, nFont, nFlag, fTextScale );
+		}
 		pcString++;
 		nCount++;
 	}
