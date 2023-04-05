@@ -838,8 +838,8 @@ __int64		u64CurrentTick;
 			
 		QueryPerformanceFrequency( (LARGE_INTEGER*)&u64ticksPerSecond );
 
-		u64CurrentTick = (u64CurrentTick * 1000000) / u64ticksPerSecond;
-		return( (ulong)( u64CurrentTick / 1000 ) );
+		u64CurrentTick = (u64CurrentTick * 1000) / u64ticksPerSecond;
+		return( (ulong)( u64CurrentTick ) );
 	}
 
 	return( GetTickCount() );
