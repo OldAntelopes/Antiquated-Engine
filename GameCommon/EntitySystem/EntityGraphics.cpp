@@ -77,12 +77,12 @@ EntityGraphic::~EntityGraphic()
 
 void		EntityGraphic::Init( const char* szModelName, const char* szTextureName, int nInstanceNum )
 {
-	mszModelName = (char*)( malloc( strlen( szModelName ) + 1 ) );
+	mszModelName = (char*)( SystemMalloc( strlen( szModelName ) + 1 ) );
 	strcpy( mszModelName, szModelName );
 
 	if ( szTextureName )
 	{
-		mszTextureName = (char*)( malloc( strlen( szTextureName ) + 1 ) );
+		mszTextureName = (char*)( SystemMalloc( strlen( szTextureName ) + 1 ) );
 		strcpy( mszTextureName, szTextureName );
 	}
 	mnInstanceNum = nInstanceNum;

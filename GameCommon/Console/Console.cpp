@@ -197,7 +197,7 @@ BOOL	RegisteredConsoleCommandList::Register( const char* szCommandName, ConsoleC
 {
 RegisteredConsoleCommandList*		pNewCommand = new RegisteredConsoleCommandList;
 
-	pNewCommand->mszCommandName = (char*)( malloc( strlen( szCommandName ) + 1 ) );
+	pNewCommand->mszCommandName = (char*)( SystemMalloc( strlen( szCommandName ) + 1 ) );
 	strcpy( pNewCommand->mszCommandName, szCommandName );
 	pNewCommand->mfnCommandFunction = fnFunction;
 
