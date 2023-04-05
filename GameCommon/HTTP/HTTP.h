@@ -6,6 +6,7 @@ extern "C"
 {
 #endif
 
+typedef void		(*HTTPLoggingFunction)( const char* szTextOut );
 typedef	void		(*HTTPResponseHandler)( int nResponseCode, unsigned char* szResponseBody, int nResponseLen, void* vpParam );
 
 
@@ -16,13 +17,15 @@ extern int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPRes
 
 //-----------------------------------------------
 
-void		HTTPInitialise( void );
+extern void		HTTPInitialise( void );
+extern void		HTTPSetVerboseLoggingFunction( HTTPLoggingFunction fnLogOutputFunction );
 
 //-  HTTPUpdate ---------- Must be called regularly to receive callbacks
-void		HTTPUpdate( float fDelta );
+extern void		HTTPUpdate( float fDelta );
 
 
-void		HTTPShutdown( void );
+
+extern void		HTTPShutdown( void );
 
 
 //--------------------------------------------------
