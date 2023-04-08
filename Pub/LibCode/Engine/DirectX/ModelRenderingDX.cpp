@@ -119,7 +119,7 @@ int		nHorizTurretAttachVertex = -1;
 				}
 			}
 
-			xRot.y = pxModelData->xVertTurretData.xCurrentRotations.y;
+			xRot.x = pxModelData->xVertTurretData.xCurrentRotations.x;
 			if ( pxRot )
 			{
 				xRot.z = pxModelData->xHorizTurretData.xCurrentRotations.z;// - pxRot->z;

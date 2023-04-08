@@ -1238,7 +1238,8 @@ MODEL_RENDER_DATA*		pxModelData;
 	if ( nModelHandle == NOTFOUND ) return;
 	pxModelData = &maxModelRenderData[ nModelHandle ];
 
-	pxModelData->xVertTurretData.xCurrentRotations.y = TwoPi-fVertRot;
+	pxModelData->xVertTurretData.xCurrentRotations.x = fVertRot;
+//	pxModelData->xVertTurretData.xCurrentRotations.y = 0.0f;
 	if ( pxModelData->xMedLODAttachData.nModelHandle != NOTFOUND )
 	{
 		ModelSetVertTurretRotation( pxModelData->xMedLODAttachData.nModelHandle, fVertRot );
