@@ -357,6 +357,12 @@ MODEL_STATS*		ModelGetStats( int nModelHandle )
 	return( &maxModelRenderData[ nModelHandle ].xStats );
 }
 
+const char*		ModelAnimationGetName( int nAnimID )
+{
+	nAnimID %= MAX_ANIMATION_USES;
+	return( maszAnimationNames[nAnimID] );
+}
+
 int		ModelAnimationGetIDFromName( const char* szAnimName )
 {
 int		loop;

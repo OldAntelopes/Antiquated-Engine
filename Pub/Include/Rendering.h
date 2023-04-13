@@ -351,7 +351,8 @@ extern BOOL		ModelAnimationIsPresent( int nModelHandle, int nAnim );
 extern BOOL		ModelIsAnimated( int nModelHandle );
 extern BOOL		ModelShadowsEnabled( int nModelHandle );
 
-extern int		ModelAnimationGetIDFromName( const char* szAnimName );
+extern int			ModelAnimationGetIDFromName( const char* szAnimName );
+extern const char*	ModelAnimationGetName( int nAnimID );
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
