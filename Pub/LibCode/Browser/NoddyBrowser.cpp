@@ -85,24 +85,26 @@ BOOL	NoddyBrowser::LeftMouseUp( int X, int Y )
 
 BOOL	NoddyBrowser::OnMouseWheelMove( float fOffset )
 {
-	if ( ( gwMouseX >= m_PageBounds.nMinX ) &&
-		 ( gwMouseX <= m_PageBounds.nMaxX ) &&
-		 ( gwMouseY >= m_PageBounds.nMinY ) &&
-		 ( gwMouseY <= m_PageBounds.nMaxY ) )
+	if ( m_pcLoadedPage )
 	{
-		if ( fOffset > 0.0f )
+		if ( ( gwMouseX >= m_PageBounds.nMinX ) &&
+			 ( gwMouseX <= m_PageBounds.nMaxX ) &&
+			 ( gwMouseY >= m_PageBounds.nMinY ) &&
+			 ( gwMouseY <= m_PageBounds.nMaxY ) )
 		{
-			m_PageScrollY -= 18;
-			if ( m_PageScrollY < 0 ) m_PageScrollY = 0;
+			if ( fOffset > 0.0f )
+			{
+				m_PageScrollY -= 18;
+				if ( m_PageScrollY < 0 ) m_PageScrollY = 0;
+			}
+			else
+			{
+				m_PageScrollY += 18;
+				if ( m_PageScrollY > m_nScrollMaxY ) m_PageScrollY = m_nScrollMaxY;
+			}	
+			return( TRUE );
 		}
-		else
-		{
-			m_PageScrollY += 18;
-			if ( m_PageScrollY > m_nScrollMaxY ) m_PageScrollY = m_nScrollMaxY;
-		}	
-		return( TRUE );
 	}
-
 	return( FALSE );
 }
 
