@@ -89,9 +89,11 @@
 #define IDC_EDIT11                      1016
 #define IDC_SLIDER1                     1017
 #define IDC_CHECK7                      1017
+#define IDC_HORIZTURRET_ROT             1017
 #define IDC_CURRENT_SCALE               1018
 #define IDC_BUTTON6                     1018
 #define IDC_EDIT29                      1018
+#define IDC_VERTTURRET_ROT              1018
 #define IDC_SPIN1                       1019
 #define IDC_EDIT12                      1019
 #define IDC_CURRENT_Y_SCALE             1019
@@ -225,8 +227,10 @@
 #define IDC_DIFFUSE_EMBED               1092
 #define IDC_LEFT_TEXTBOX                1092
 #define IDC_RIGHT_TEXTBOX               1093
+#define IDC_VIEWLODTEXT2                1093
 #define IDC_SELECT_CONNECTED            1094
 #define IDC_PROGRESS2                   1095
+#define IDC_VIEWLODTEXT3                1095
 #define IDC_MAIN_PROGRESS               1096
 #define IDC_LOCKX                       1097
 #define IDC_LOCKY                       1098
@@ -246,6 +250,13 @@
 #define IDC_BATCH_FOLDER                1107
 #define IDC_PROGRESS_TEXT               1108
 #define IDC_INNER_RADIUS                1109
+#define IDC_ATTACHLABELZ                1110
+#define IDC_ATTACHLABELY                1111
+#define IDC_ATTACHLABELX                1112
+#define IDC_OFFSETX                     1113
+#define IDC_OFFSETY                     1114
+#define IDC_OFFSETZ                     1115
+#define IDC_OFFSETCHECK                 1116
 #define IDM_FILE_EXIT                   40001
 #define ID_FILE_IMPORT                  40002
 #define ID_FILE_SAVEAS                  40004
@@ -406,7 +417,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40165
-#define _APS_NEXT_CONTROL_VALUE         1110
+#define _APS_NEXT_CONTROL_VALUE         1117
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

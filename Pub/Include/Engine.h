@@ -326,7 +326,8 @@ extern BOOL		EngineModelOBBCollision( int nModelHandle, const VECT* pxModelPos, 
 
 extern BOOL		EngineCollisionOBBIsOverlapping( VECT* pxPos, VECT* pxExtents, float fZRot, VECT* pxPos2, VECT* pxExtents2, float fZRot2 );
 extern BOOL		EngineCollisionModelSphereSweepTest( int nMovingModel, VECT* pxPos1, VECT* pxPos2, int nStaticModel, VECT* pxStaticPos, VECT* pxRot, int nFlags );
-extern BOOL		EngineCollisionBoxBoundProbe( VECT* pxBoxMin, VECT* pxBoxMax, VECT* pxRayStart, VECT* pxRayDir ); 
+extern BOOL		EngineCollisionBoxBoundProbe( const VECT* pxBoxMin, const VECT* pxBoxMax, const VECT* pxRayStart, const VECT* pxRayDir ); 
+extern BOOL		EngineCollisionRayBoundBox( const VECT* pxBoxMin, const VECT* pxBoxMax, const VECT* pxRayStart, const VECT* pxRayLength ); 
 extern BOOL		EngineCollisionBoxSphere( VECT* pxSpherePos, float fSphereRadius, VECT* pxBoundMin, VECT* pxBoundMax );
 extern BOOL		EngineCollisionSphereSweepTest( float fMovingSphereRadius, VECT* pxPos1, VECT* pxPos2, int nStaticModel, VECT* pxStaticPos, VECT* pxRot, int nFlags );
 extern BOOL		EngineCollisionLineSphere( const VECT* pxLinePos1, const VECT* pxLinePos2, const VECT* pxSpherePos, float fRadius, int nFlags );

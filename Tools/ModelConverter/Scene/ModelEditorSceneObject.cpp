@@ -43,6 +43,7 @@ CSceneObject::CSceneObject()
 	mnNumFacesSelected = 0;
 	mnNumVerticesSelected = 0;
 	mbSelectedFaceHighlight = true;
+	mbRenderWireframe = false;
 
 }
 
@@ -467,7 +468,95 @@ BYTE*	pbSelections = mpbVertexSelections;
 
 void	CSceneObject::SelectVertexAtScreenPoint( int X, int Y )
 {
-	// TODO
+BYTE*	pbSelections = mpbVertexSelections;
+int		nNumVertices = ModelGetStats( mnModelHandle )->nNumVertices;
+int		nStride;
+VECT*	pxVertices = ModelGetVertexList( mnModelHandle, &nStride );
+VECT	xRayStart;
+VECT	xRayDir;
+VECT	xRayEnd;
+VECT	xHit;
+VECT	xHitNormal;
+int		nFaceHit = 0;
+BOOL	bShiftHeld = FALSE;
+BOOL	bCtrlHeld = FALSE;
+char	acString[256];
+int		nLoop;
+float	fDist;
+float	fClosestDist = 999999.0f;
+int		nClosestVert = NOTFOUND;
+
+	if ( SysCheckKeyState( KEY_SHIFT ) )
+	{
+		bShiftHeld = TRUE;
+	}
+	else if ( SysCheckKeyState( KEY_CTRL ) )
+	{
+		bCtrlHeld = TRUE;
+	}
+
+	if ( ( !bShiftHeld ) &&
+		 ( !bCtrlHeld ) )
+	{
+		for ( nLoop = 0; nLoop < nNumVertices; nLoop++ )
+		{
+			pbSelections[nLoop] = 0;
+			mnNumVerticesSelected = 0;
+		}
+	}
+
+	mpViewInterface->GetRayForScreenCoord( X, Y, &xRayStart, &xRayDir );
+	xRayEnd = xRayDir;
+	VectNormalize( &xRayEnd );
+	VectScale( &xRayEnd, &xRayEnd, 100000.0f );
+	VectAdd( &xRayEnd, &xRayEnd, &xRayStart );
+	if ( ModelRayTest( mnModelHandle, &mxPos, &mxRot, &xRayStart, &xRayEnd, &xHit, &xHitNormal, &nFaceHit, 0 ) == TRUE )
+	{
+		pxVertices = ModelGetVertexList( mnModelHandle, &nStride );
+
+		for ( nLoop = 0; nLoop < nNumVertices; nLoop++ )
+		{
+			fDist = VectDist( pxVertices, &xHit );
+			if ( fDist < fClosestDist )
+			{
+				fClosestDist = fDist;
+				nClosestVert = nLoop;
+			}		
+			pxVertices = (VECT*)( (byte*)(pxVertices) + nStride );
+		}
+
+		ModelUnlockVertexBuffer( mnModelHandle );
+		if ( nClosestVert != NOTFOUND )
+		{
+			if ( bCtrlHeld )
+			{
+				if ( pbSelections[nClosestVert] == 1 )
+				{
+					mnNumVerticesSelected--;
+					pbSelections[nClosestVert] = 0;
+				}
+			}
+			else if ( pbSelections[nClosestVert] == 0 )
+			{
+				mnNumVerticesSelected++;
+				pbSelections[nClosestVert] = 1;
+			}
+		}
+	}
+
+	if ( mnNumVerticesSelected == 1 )
+	{
+	int		nSelectedVertexNum = GetSingleSelectedVertex();
+
+ 		sprintf( acString, "1 vertex selected\n (Vertex number %d)\n", nSelectedVertexNum );
+	}
+	else
+	{
+		sprintf( acString, "%d vertices selected\n", mnNumVerticesSelected );
+	}
+	ModelUnlockVertexBuffer( mnModelHandle );
+	ModelConvTextBoxSet( acString );
+
 }
 
 
@@ -1218,7 +1307,7 @@ char	acString[256];
 	{
 		sprintf( acString, "%d vertices selected\n", mnNumVerticesSelected );
 	}
-
+	ModelUnlockVertexBuffer( mnModelHandle );
 	ModelConvTextBoxSet( acString );
 }
 
@@ -1392,7 +1481,22 @@ int		nPolys = 0;
 
 	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
 	EngineSetTexture(0,mhTexture);
-	nPolys = ModelRender( mnModelHandle, &mxPos, &mxRot, 0 );
+
+	if ( mbRenderWireframe )
+	{
+		EngineEnableWireframe(1);
+		EngineEnableCulling(0);
+		EngineEnableZWrite( FALSE );
+		nPolys = ModelRender( mnModelHandle, &mxPos, &mxRot, RENDER_FLAGS_NO_STATE_CHANGE );
+		EngineEnableWireframe(0);
+		EngineEnableCulling(1);
+		EngineEnableZWrite( TRUE );
+	}
+	else
+	{
+		nPolys = ModelRender( mnModelHandle, &mxPos, &mxRot, 0 );
+	}
+
  
 	if ( ModelShadowsEnabled( mnModelHandle ) )
 	{

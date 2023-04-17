@@ -245,6 +245,8 @@ int		nHorizTurretAttachVertex = -1;
 		if ( nHorizTurretAttachVertex != -1 )
 		{
 		MODEL_RENDER_DATA*		pxHorizTurretModelData;
+		VECT					xOffsetTransformed;
+
 			pxHorizTurretModelData = &maxModelRenderData[ pxModelData->xHorizTurretData.nModelHandle ];
 			if ( pxHorizTurretModelData->pxBaseMesh )
 			{
@@ -274,7 +276,30 @@ int		nHorizTurretAttachVertex = -1;
 				pxVert = pxVertices + nHorizTurretAttachVertex;
 				xAttachPoint = pxVert->position;	
 				VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+				VectTransform( &xOffsetTransformed, &pxModelData->xHorizTurretData.xAttachOffset, &matWorld );
+				VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
 				pxModelData->pxBaseMesh->UnlockVertexBuffer();		
+
+				// If the horizontal turret is also attached, we'll need to apply that transform to the position too
+				if ( pxModelData->xHorizTurretData.nAttachVertex != 0 )
+				{
+				VECT	xHorizAttachTransformed;
+				VECT	xOffsetTransformed;
+
+					matWorld = matOriginalWorld;
+					matWorld._41 = 0.0f;
+					matWorld._42 = 0.0f;
+					matWorld._43 = 0.0f;
+	
+					pxModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
+					pxVert = pxVertices + pxModelData->xHorizTurretData.nAttachVertex;
+					VectTransform( &xHorizAttachTransformed, &pxVert->position, &matWorld );
+					VectTransform( &xOffsetTransformed, &pxModelData->xHorizTurretData.xAttachOffset, &matWorld );
+					VectAdd( &xHorizAttachTransformed, &xHorizAttachTransformed, &xOffsetTransformed );
+					pxModelData->pxBaseMesh->UnlockVertexBuffer();		
+
+					VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xHorizAttachTransformed );
+				}
 #else
 				pxHorizTurretModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
 				pxVert = pxVertices + nHorizTurretAttachVertex;
@@ -446,9 +471,14 @@ int		nHorizTurretAttachVertex = -1;
 			// calculate the transformed point of the vertex and store it in the root model
 			if ( pxSubModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex != 0 )
 			{
+			VECT	xOffsetTransformed;
+
 				pxSubModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
 				pxVert = pxVertices + pxSubModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex;
 				VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+				VectTransform( &xOffsetTransformed, &pxSubModelData->xAttachData.xGenericWeaponFireAttach.xAttachOffset, &matWorld );
+				VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
+
 				pxSubModelData->pxBaseMesh->UnlockVertexBuffer();
 				pxModelData->xAttachData.xGenericWeaponFireAttach.xTransformedPos.x = xAttachPointTransformed.x;
 				pxModelData->xAttachData.xGenericWeaponFireAttach.xTransformedPos.y = xAttachPointTransformed.y;
@@ -630,9 +660,14 @@ int			nRet;
 
 		if ( nAttachVertex != 0 )
 		{
+		VECT	xOffsetTransformed;
+
 			pxModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
 			pxVert = pxVertices + nAttachVertex;
 			VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+			VectTransform( &xOffsetTransformed, &pxModelData->xHorizTurretData.xAttachOffset, &matWorld );
+			VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
+
 			pxModelData->pxBaseMesh->UnlockVertexBuffer();
 		}
 		else
@@ -679,9 +714,13 @@ int			nRet;
 			// calculate the transformed point of the vertex and store it in the root model
 			if ( pxSubModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex != 0 )
 			{
+			VECT	xOffsetTransformed;
+
 				pxSubModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
 				pxVert = pxVertices + pxSubModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex;
 				VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+				VectTransform( &xOffsetTransformed, &pxSubModelData->xAttachData.xGenericWeaponFireAttach.xAttachOffset, &matWorld );
+				VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
 				pxSubModelData->pxBaseMesh->UnlockVertexBuffer();
 				pxModelData->xAttachData.xGenericWeaponFireAttach.xTransformedPos.x = xAttachPointTransformed.x;
 				pxModelData->xAttachData.xGenericWeaponFireAttach.xTransformedPos.y = xAttachPointTransformed.y;

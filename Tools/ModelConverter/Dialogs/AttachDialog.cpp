@@ -215,6 +215,26 @@ MODEL_RENDER_DATA*	pxModelData;
 	
 }
 
+int		GetValueForNotatedString( const char* szStringValue )
+{
+char	acString[256];
+const char*		pcRunner = szStringValue;
+char*	pcOutRunner = acString;
+int		nVal;
+
+	while( *pcRunner != 0 )
+	{
+		if ( *pcRunner != ',' )
+		{
+			*pcOutRunner = *pcRunner;
+			pcOutRunner++;
+		}
+		pcRunner++;
+	}
+	nVal = strtol( acString, NULL, 10 );
+	return( nVal );
+}
+
 LRESULT CALLBACK EffectAttachPointDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 short wNotifyCode;
@@ -281,10 +301,11 @@ MODEL_RENDER_DATA*	pxModelData;
 				int		nVal;
 
 					GetDlgItemText( hDlg, LOWORD(wParam), acString, 256);
-					nVal = strtol( acString, NULL, 10 );
+					nVal = GetValueForNotatedString( acString );
 					if ( ModelConvGetCurrentModel() != NOTFOUND )
 					{
 						pxModelData = maxModelRenderData + ModelConvGetCurrentModel();
+						if ( nVal >= pxModelData->xStats.nNumVertices ) nVal = pxModelData->xStats.nNumVertices - 1;
 						pxModelData->xEffectAttachData.nAttachVertex = nVal;
 					}
 				}
@@ -411,7 +432,15 @@ NMUPDOWN*	lpnmud;
 				int		nVal;
 
 					GetDlgItemText( hDlg, LOWORD(wParam), acString, 256);
-					nVal = strtol( acString, NULL, 10 );
+					nVal = GetValueForNotatedString( acString );
+					if ( ModelConvGetCurrentModel() != NOTFOUND )
+					{
+					MODEL_RENDER_DATA*		pxModelData = maxModelRenderData + ModelConvGetCurrentModel();
+						if ( nVal >= pxModelData->xStats.nNumVertices )
+						{
+							nVal = pxModelData->xStats.nNumVertices - 1;
+						}
+					}
 					SetCurrentAttachPointVertexNum( nVal );
 				}
 				break;

@@ -90,7 +90,7 @@ DirectX::BoundingBox		xBoundBox;
 }
 
 
-BOOL		EngineCollisionBoxBoundProbe( VECT* pxBoxMin, VECT* pxBoxMax, VECT* pxRayStart, VECT* pxRayDir )
+BOOL		EngineCollisionBoxBoundProbe( const VECT* pxBoxMin, const VECT* pxBoxMax, const VECT* pxRayStart, const VECT* pxRayDir )
 {
 #ifdef TUD11
 DirectX::BoundingBox		xBoundBox;
@@ -108,9 +108,28 @@ float	fHitDist;
 	}
 	return( FALSE );
 #else
-	return( D3DXBoxBoundProbe( (D3DXVECTOR3*)pxBoxMin, (D3DXVECTOR3*)pxBoxMax, (D3DXVECTOR3*)pxRayStart, (D3DXVECTOR3*)pxRayDir ) );
+	return( D3DXBoxBoundProbe( (const D3DXVECTOR3*)pxBoxMin, (const D3DXVECTOR3*)pxBoxMax, (const D3DXVECTOR3*)pxRayStart, (const D3DXVECTOR3*)pxRayDir ) );
 #endif
 }
+
+BOOL		EngineCollisionRayBoundBox( const VECT* pxBoxMin, const VECT* pxBoxMax, const VECT* pxRayStart, const VECT* pxRayDir )
+{
+	if ( EngineCollisionBoxBoundProbe( pxBoxMin, pxBoxMax, pxRayStart, pxRayDir ) == TRUE )
+	{
+	VECT	xRayEnd;
+	VECT		xReverseRayDir;
+
+		VectAdd( &xRayEnd, pxRayStart, pxRayDir );
+		VectScale( &xReverseRayDir, pxRayDir, -1.0f );
+		// Check from the other direction too (coz the box bound probe effectively uses an infinite length ray)
+		if ( EngineCollisionBoxBoundProbe( pxBoxMin, pxBoxMax, &xRayEnd, &xReverseRayDir ) == TRUE )
+		{
+			return( TRUE );
+		}
+	}
+	return( FALSE );
+}
+
 
 BOOL		EngineCollisionRayIntersectTri( const VECT* pTri1, const VECT* pTri2, const VECT* pTri3, const VECT* pRayStart, const VECT* pRayDir, float* pfU, float* pfV, float* pfDist )
 {

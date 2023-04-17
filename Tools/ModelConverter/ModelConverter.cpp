@@ -76,7 +76,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.31"
+#define	MODELCONV_VERSIONSTRING		"2.32"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -1625,7 +1625,7 @@ float	fDelta;
 	PlaneCutterRender();
 	RenderEffectsRender();
 	Sprites3DFlush( FALSE );
-	RenderPoints( 3.0f, FALSE, FALSE );
+	RenderPoints( 4.0f, FALSE, FALSE );
 	RenderLines( FALSE,FALSE, FALSE, TRUE );
 
 	if ( mbModelConvShowSelectionRect )
@@ -2059,7 +2059,7 @@ char	acString[256];
 			pxModelData = &maxModelRenderData[ m_MainSceneObject.GetModelHandle() ];
 			if ( pxModelData->xHorizTurretData.nModelHandle == NOTFOUND )
 			{
-				pxModelData->xHorizTurretData.nAttachVertex = 0;
+//				pxModelData->xHorizTurretData.nAttachVertex = 0;
 				pxModelData->xHorizTurretData.xAttachOffset.x = 0.0f;
 				pxModelData->xHorizTurretData.xAttachOffset.y = 0.0f;
 				pxModelData->xHorizTurretData.xAttachOffset.z = 0.0f;
@@ -2503,6 +2503,10 @@ POINTS points;
 			ModelConvResetCamera();
 			ModelConverterSetupCamera();
 			ModelConverterDisplayFrame( FALSE );
+			break;
+		case 'T':
+		case 't':
+			m_MainSceneObject.ToggleWireframe();
 			break;
 		}
 		break;
@@ -4531,6 +4535,11 @@ int		nToolbarY = nHeight - nToolbarOffsetY;
 	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_ANIM_PLAY ), NULL, 505, nToolbarY + 2, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
 
 	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), NULL, nWidth - 142, nToolbarY + 2, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_VIEWLODTEXT2 ), NULL, 555, nToolbarY + 2, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_HORIZTURRET_ROT ), NULL, 600, nToolbarY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_VIEWLODTEXT3 ), NULL, 700, nToolbarY + 2, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
+	SetWindowPos( GetDlgItem( mhwndMainDialog, IDC_VERTTURRET_ROT ), NULL, 745, nToolbarY, 0, 0, SWP_SHOWWINDOW | SWP_NOZORDER |SWP_NOSIZE);
 	
 }
 
@@ -4894,7 +4903,25 @@ int	nVal;
 			mbThisWindowIsFocused = TRUE;
 		}
 		break;
+	case WM_HSCROLL:
+		if ( LOWORD( wParam )== SB_THUMBTRACK )
+		{
+		char	acValue[256];
 
+			if ( lParam == (LPARAM)GetDlgItem( mhwndMainDialog, IDC_HORIZTURRET_ROT ) )
+			{
+			float	fAngle = ((HIWORD(wParam))*A90)/100;
+
+				ModelSetHorizTurretRotation( m_MainSceneObject.GetModelHandle(), fAngle );
+			}
+			else if ( lParam == (LPARAM)GetDlgItem( mhwndMainDialog, IDC_VERTTURRET_ROT ) )
+			{
+			float	fAngle = ((HIWORD(wParam))*A90)/100;
+
+				ModelSetVertTurretRotation( m_MainSceneObject.GetModelHandle(), fAngle );
+			}
+		}
+		break;
 	case WM_TIMER:
 		if ( mboViewIsAnimation == TRUE )
 		{

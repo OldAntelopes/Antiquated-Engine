@@ -56,7 +56,7 @@ void PointRenderAdd( MVECT* pxPoint1, ulong ulCol )
 		mspPointBufferLockedVertices = NULL;
 		msbPointBufferLocked = FALSE;
 
-		RenderPoints( 3.0f, FALSE, FALSE );
+		RenderPoints( 4.0f, FALSE, FALSE );
 
 		mnNextPointVert = 0;
 	}

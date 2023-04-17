@@ -35,6 +35,7 @@ public:
 		NORMAL_WITH_VERTEX_POINTS,
 		NORMAL_SHOWNORMALS,
 		NORMAL_WIREFRAME_FACES_WITH_SHOWNORMALS,
+		NORMAL_WIREFRAME_ONLY,
 	};
 
 	CSceneObject();
@@ -91,6 +92,8 @@ public:
 
 	void	OnModelChanged( BOOL bNewVerts );
 
+	void	ToggleWireframe() { mbRenderWireframe = !mbRenderWireframe; }
+
 	BYTE*	GetVertexSelections( void ) { return( mpbVertexSelections ); }
 private:
 
@@ -111,6 +114,7 @@ private:
 	int		mnNumFacesSelected;
 	int		mnNumVerticesSelected;
 	bool	mbSelectedFaceHighlight;
+	bool	mbRenderWireframe;
 
 	VECT	mxPos;
 	VECT	mxRot;
