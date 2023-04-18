@@ -875,6 +875,48 @@ BOOL	SysDeleteFile( const char* szFilename )
 	return( DeleteFile( szFilename ) );
 }
 
+/***************************************************************************
+ * Function    : SysGetAllFilesInFolder
+ * Params      :
+ * Returns     :
+ * Description : 
+ ***************************************************************************/
+void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback callback )
+{
+WIN32_FIND_DATA FileData; 
+char	acString[256];
+char	acString2[256];
+HANDLE hSearch; 
+BOOL fFinished = FALSE; 
+
+	sprintf( acString, "%s/*.*", szSrcFolder );	  
+	hSearch = FindFirstFile(acString, &FileData); 
+
+	if (hSearch != INVALID_HANDLE_VALUE) 
+	{ 
+		while ( !fFinished )
+		{ 
+			if( ( !lstrcmp(FileData.cFileName, ".")  ) ||
+				( !lstrcmp(FileData.cFileName, "..") ) )
+			{
+				// Jus skip these
+			}
+			else
+			{
+				sprintf( acString, "%s\\%s", szSrcFolder,  FileData.cFileName );
+				callback( acString );
+			}
+	 
+		    if (!FindNextFile(hSearch, &FileData)) 
+		    {
+	            fFinished = TRUE; 
+		    }
+		} 
+		// Close the search handle.  
+		FindClose(hSearch);
+	}
+}
+
 
 /***************************************************************************
  * Function    : SysCopyFolderContents

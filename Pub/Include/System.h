@@ -121,6 +121,7 @@ extern int		SysGetKeyCodeForVirtKey( int nVirtKeyCode );
 
 //----------------------------
 // Directory/File stuff
+typedef	void(*fnDirListingCallback)( const char* szFilename );
 
 extern const char*	SysGetWritableDataFolderPath( const char* szGameName );
 extern BOOL			SysCreateWritableDataFolderPath( const char* szGameName );
@@ -137,6 +138,8 @@ extern BOOL		SysSetCurrentDir( const char* szDir );
 extern BOOL		SysDoesDirExist( const char* szDir );
 extern void		SysRecurseCopyFolders( const char* szFolder, const char* szCopyRoot );
 extern void		SysCopyFolderContents( const char* szSrcFolder, const char* szDestFolder );
+extern void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback callback );
+
 extern int		SysGetFileSize( FILE* );
 extern FILE*	SysFileOpen( const char* szFilename, const char* szOpenMode );
 extern int		SysFileRead( unsigned char*, int, int, FILE* );
@@ -146,7 +149,6 @@ extern void		SysFileClose( FILE* );
 extern void		SysFileCloseAll( void );
 
 extern int		SysFileGetNumOpenHandles( void );
-
 
 extern int		SysSaveDataLoad( byte* pbData, int nSize );
 extern int		SysSaveDataSave( byte* pbData, int nSize );
