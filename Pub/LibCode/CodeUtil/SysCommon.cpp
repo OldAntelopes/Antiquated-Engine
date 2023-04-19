@@ -298,6 +298,7 @@ char	acFullPath[256];
 	
 }
 
+// Blend between two colours... When fCol1BlendStrength = 1.0f  its fully col1, when its 0.0g its fully colour 2
 unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, float fCol1BlendStrength )
 {
 float	fR1, fG1, fB1, fA1;

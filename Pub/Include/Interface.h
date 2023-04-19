@@ -89,7 +89,7 @@ extern INTERFACE_API void	InterfacePresent( void );
 extern INTERFACE_API void	InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol );
 extern INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol );
 extern INTERFACE_API void	InterfaceShadedBox( int nLayer, int nX, int nY, int nWidth, int nHeight, int nStyle );
-extern INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol1, ulong ulCol2,ulong ulCol3, ulong ulCol4 );
+extern INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulColTL, ulong ulColTR,ulong ulColBL, ulong ulColBR );
 extern INTERFACE_API void	InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 );
 extern INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 );
 extern INTERFACE_API void	InterfaceOverlaysAdditive( BOOL );

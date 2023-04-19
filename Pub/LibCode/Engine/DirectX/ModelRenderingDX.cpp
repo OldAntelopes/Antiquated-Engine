@@ -476,6 +476,9 @@ int		nHorizTurretAttachVertex = -1;
 				pxSubModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
 				pxVert = pxVertices + pxSubModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex;
 				VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+				matWorld._41 = 0.0f;
+				matWorld._42 = 0.0f;
+				matWorld._43 = 0.0f;
 				VectTransform( &xOffsetTransformed, &pxSubModelData->xAttachData.xGenericWeaponFireAttach.xAttachOffset, &matWorld );
 				VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
 

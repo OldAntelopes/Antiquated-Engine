@@ -885,7 +885,6 @@ void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback call
 {
 WIN32_FIND_DATA FileData; 
 char	acString[256];
-char	acString2[256];
 HANDLE hSearch; 
 BOOL fFinished = FALSE; 
 
