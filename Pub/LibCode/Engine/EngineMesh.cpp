@@ -21,7 +21,7 @@
 
 #include "StandardDef.h"
 #include "Interface.h"
-
+#include "Rendering.h"
 #include "EngineMesh.h"
 
 
@@ -119,10 +119,6 @@ void	EngineMesh::Create( int nNumFaces, int nNumVertices, int nFlags )
 BaseMeshGL*		pDXBaseMesh = new BaseMeshGL;
 	mpBaseMesh = (BaseMesh*)( pDXBaseMesh );
 #else	
-#ifdef IW_SDK
-BaseMeshMarmalade*		pMarmaladeBaseMesh = new BaseMeshMarmalade;
-	mpBaseMesh = (BaseMesh*)( pMarmaladeBaseMesh );
-#else		//DX
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineMesh::Create TBI" );
 #else
@@ -130,9 +126,58 @@ BaseMeshDX9*		pDXBaseMesh = new BaseMeshDX9;
 	mpBaseMesh = (BaseMesh*)( pDXBaseMesh );
 #endif
 #endif
-#endif
 
 	mpBaseMesh->Create( nNumFaces, nNumVertices, nFlags );
+}
+
+EngineMesh*		EngineMesh::CreateCopy()
+{
+BaseMesh*		pNewBaseMesh;
+EngineMesh*		pNewEngineMesh;
+
+#ifdef USING_OPENGL
+	PANIC_IF( TRUE, "OpenGL EngineMesh::CreateCopy TBI" );
+#else	
+#ifdef TUD11
+	PANIC_IF( TRUE, "DX11 EngineMesh::CreateCopy TBI" );
+#else
+	BaseMeshDX9*		pNewDXBaseMesh = new BaseMeshDX9;
+	pNewBaseMesh = (BaseMesh*)( pNewDXBaseMesh );
+#endif
+#endif
+	pNewBaseMesh->Create( mpBaseMesh->GetNumFaces(), mpBaseMesh->GetNumVertices(), 0 );
+	// Copy indices
+	ushort*		puwOutIndices;
+	ushort*		puwSrcIndices;
+	int			nVertLoop;
+
+	pNewBaseMesh->LockIndexBuffer( kLock_Normal, (BYTE**)&puwOutIndices );
+	mpBaseMesh->LockIndexBuffer( kLock_ReadOnly, (BYTE**)&puwSrcIndices );
+	for ( nVertLoop = 0; nVertLoop < mpBaseMesh->GetNumFaces() * 3; nVertLoop++ )
+	{
+		*(puwOutIndices++) = *(puwSrcIndices++);
+	}
+	mpBaseMesh->UnlockIndexBuffer();
+	pNewBaseMesh->UnlockIndexBuffer();
+
+	CUSTOMVERTEX*		pxOutVertices;
+	CUSTOMVERTEX*		pxSrcVertices;
+
+	pNewBaseMesh->LockVertexBuffer( kLock_Normal, (BYTE**)&pxOutVertices );
+	mpBaseMesh->LockVertexBuffer( kLock_ReadOnly, (BYTE**)&pxSrcVertices );
+	for ( nVertLoop = 0; nVertLoop < mpBaseMesh->GetNumVertices(); nVertLoop++ )
+	{
+		*(pxOutVertices++) = *(pxSrcVertices++);
+	}
+	mpBaseMesh->UnlockVertexBuffer();
+	pNewBaseMesh->UnlockVertexBuffer();
+
+	// TODO - Copy materials and etc
+
+
+	pNewEngineMesh = new EngineMesh;
+	pNewEngineMesh->mpBaseMesh = pNewBaseMesh;
+	return( pNewEngineMesh );
 }
 
 
@@ -142,16 +187,11 @@ void	EngineMesh::CreateFromPlatformMeshImpl( void* pDXPlatformMesh )
 BaseMeshGL*		pDXBaseMesh = new BaseMeshGL;
 	mpBaseMesh = (BaseMesh*)( pDXBaseMesh );
 #else		//--------- #ifdef DIRECTX
-#ifdef IW_SDK
-BaseMeshMarmalade*		pMarmaladeBaseMesh = new BaseMeshMarmalade;
-	mpBaseMesh = (BaseMesh*)( pMarmaladeBaseMesh );
-#else		//dx9
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineMesh::Create TBI" );
 #else
 BaseMeshDX9*		pDXBaseMesh = new BaseMeshDX9;
 	mpBaseMesh = (BaseMesh*)( pDXBaseMesh );
-#endif
 #endif
 #endif
 

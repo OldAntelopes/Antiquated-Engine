@@ -913,11 +913,30 @@ int		nVertsTotal;
 	}
 }
 
+int		ModelCopy( int nModelHandle )
+{
+int		nNewHandle;
+MODEL_RENDER_DATA*		pxModelData;
+MODEL_RENDER_DATA*		pxNewModelData;
+
+	if ( nModelHandle == NOTFOUND ) return( NOTFOUND );
+	nNewHandle = ModelRenderGetNextHandle();
+
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	pxNewModelData = &maxModelRenderData[ nNewHandle ];
+
+	pxNewModelData->bModelType = pxModelData->bModelType;
+	pxNewModelData->bWheelDisplayMode = pxModelData->bWheelDisplayMode;
+	pxNewModelData->xStats = pxModelData->xStats;
+	pxNewModelData->pxBaseMesh = pxModelData->pxBaseMesh->CreateCopy();
+
+	return( nNewHandle );
+}
 
 /***************************************************************************
  * Function    : ModelClone
  * Params      :
- * Description : 
+ * Description : Model clones have a separate model handle but share the same vertex and other data
  ***************************************************************************/
 int		ModelClone( int nModelHandle )
 {

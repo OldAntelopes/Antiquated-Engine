@@ -58,6 +58,7 @@ MultiVertexBuffers		mxSprites3dBuffers;
 VECT		maxCamFacingSpriteOffsets[6];
 VECT		maxFlatSpriteOffsets[6];
 VECT		maxXAxisSpriteOffsets[6];
+VECT		maxYAxisSpriteOffsets[6];
 
 
 void	Sprite::RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
@@ -88,6 +89,15 @@ VECT*		pxRotateAxis = EngineCameraGetDirection();
 		xRotAxis.z = 0.0f;
 		pxRotateAxis = &xRotAxis;
 	}
+	else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+	{
+		pxSpriteOffsets = maxYAxisSpriteOffsets;
+		xRotAxis.x = 1.0f;
+		xRotAxis.y = 0.0f;
+		xRotAxis.z = 0.0f;
+		pxRotateAxis = &xRotAxis;
+	}
+	
 
 	fUBase = (mnFrameNum % nNumPerRow) * fGridScale;
 	fVBase = (mnFrameNum / nNumPerRow) * fGridScale;
@@ -189,6 +199,10 @@ VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
 	else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
 	{
 		pxSpriteOffsets = maxXAxisSpriteOffsets;
+	}
+	else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+	{
+		pxSpriteOffsets = maxYAxisSpriteOffsets;
 	}
 
 	fUBase = (mnFrameNum % nNumPerRow) * fGridScale;
@@ -476,6 +490,36 @@ SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 
 }
 
+void	Sprites3DCreateOffsetGroup( VECT* pxCamRight, VECT* pxCamDown, VECT* pxOffsetGroup )
+{
+	pxOffsetGroup[0].x = (pxCamRight->x * -0.5f) + (pxCamDown->x * -0.5f);
+	pxOffsetGroup[0].y = (pxCamRight->y * -0.5f) + (pxCamDown->y * -0.5f);
+	pxOffsetGroup[0].z = (pxCamRight->z * -0.5f) + (pxCamDown->z * -0.5f);
+
+	pxOffsetGroup[1].x = (pxCamRight->x * 0.5f) + (pxCamDown->x * -0.5f);
+	pxOffsetGroup[1].y = (pxCamRight->y * 0.5f) + (pxCamDown->y * -0.5f);
+	pxOffsetGroup[1].z = (pxCamRight->z * 0.5f) + (pxCamDown->z * -0.5f);
+
+	pxOffsetGroup[2].x = (pxCamRight->x * -0.5f) + (pxCamDown->x * 0.5f);
+	pxOffsetGroup[2].y = (pxCamRight->y * -0.5f) + (pxCamDown->y * 0.5f);
+	pxOffsetGroup[2].z = (pxCamRight->z * -0.5f) + (pxCamDown->z * 0.5f);
+
+	pxOffsetGroup[3].x = (pxCamRight->x * 0.5f) + (pxCamDown->x * -0.5f);
+	pxOffsetGroup[3].y = (pxCamRight->y * 0.5f) + (pxCamDown->y * -0.5f);
+	pxOffsetGroup[3].z = (pxCamRight->z * 0.5f) + (pxCamDown->z * -0.5f);
+
+	pxOffsetGroup[4].x = (pxCamRight->x * 0.5f) + (pxCamDown->x * 0.5f);
+	pxOffsetGroup[4].y = (pxCamRight->y * 0.5f) + (pxCamDown->y * 0.5f);
+	pxOffsetGroup[4].z = (pxCamRight->z * 0.5f) + (pxCamDown->z * 0.5f);
+
+	pxOffsetGroup[5].x = (pxCamRight->x * -0.5f) + (pxCamDown->x * 0.5f);
+	pxOffsetGroup[5].y = (pxCamRight->y * -0.5f) + (pxCamDown->y * 0.5f);
+	pxOffsetGroup[5].z = (pxCamRight->z * -0.5f) + (pxCamDown->z * 0.5f);
+
+
+
+}
+
 
 void	Sprites3DCreateCamFacingOffsets( void )
 {
@@ -489,30 +533,7 @@ VECT	xCamDir;
 	VectCross( &xCamRight, &xCamDir, &xCamDown );
 	VectScale( &xCamDown, &xCamDown, -1.0f );
 	
-	maxCamFacingSpriteOffsets[0].x = (xCamRight.x * -0.5f) + (xCamDown.x * -0.5f);
-	maxCamFacingSpriteOffsets[0].y = (xCamRight.y * -0.5f) + (xCamDown.y * -0.5f);
-	maxCamFacingSpriteOffsets[0].z = (xCamRight.z * -0.5f) + (xCamDown.z * -0.5f);
-
-	maxCamFacingSpriteOffsets[1].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxCamFacingSpriteOffsets[1].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxCamFacingSpriteOffsets[1].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
-
-	maxCamFacingSpriteOffsets[2].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxCamFacingSpriteOffsets[2].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxCamFacingSpriteOffsets[2].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
-
-	maxCamFacingSpriteOffsets[3].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxCamFacingSpriteOffsets[3].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxCamFacingSpriteOffsets[3].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
-
-	maxCamFacingSpriteOffsets[4].x = (xCamRight.x * 0.5f) + (xCamDown.x * 0.5f);
-	maxCamFacingSpriteOffsets[4].y = (xCamRight.y * 0.5f) + (xCamDown.y * 0.5f);
-	maxCamFacingSpriteOffsets[4].z = (xCamRight.z * 0.5f) + (xCamDown.z * 0.5f);
-
-	maxCamFacingSpriteOffsets[5].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxCamFacingSpriteOffsets[5].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxCamFacingSpriteOffsets[5].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
-
+	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxCamFacingSpriteOffsets );
 
 	xCamDown.x = 0.0f;
 	xCamDown.y = 1.0f;
@@ -521,61 +542,25 @@ VECT	xCamDir;
 	xCamRight.y = 0.0f;
 	xCamRight.z = 0.0f;
 	
-	maxFlatSpriteOffsets[0].x = (xCamRight.x * -0.5f) + (xCamDown.x * -0.5f);
-	maxFlatSpriteOffsets[0].y = (xCamRight.y * -0.5f) + (xCamDown.y * -0.5f);
-	maxFlatSpriteOffsets[0].z = (xCamRight.z * -0.5f) + (xCamDown.z * -0.5f);
+	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxFlatSpriteOffsets );
 
-	maxFlatSpriteOffsets[1].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxFlatSpriteOffsets[1].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxFlatSpriteOffsets[1].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
-
-	maxFlatSpriteOffsets[2].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxFlatSpriteOffsets[2].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxFlatSpriteOffsets[2].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
-
-	maxFlatSpriteOffsets[3].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxFlatSpriteOffsets[3].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxFlatSpriteOffsets[3].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
-
-	maxFlatSpriteOffsets[4].x = (xCamRight.x * 0.5f) + (xCamDown.x * 0.5f);
-	maxFlatSpriteOffsets[4].y = (xCamRight.y * 0.5f) + (xCamDown.y * 0.5f);
-	maxFlatSpriteOffsets[4].z = (xCamRight.z * 0.5f) + (xCamDown.z * 0.5f);
-
-	maxFlatSpriteOffsets[5].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxFlatSpriteOffsets[5].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxFlatSpriteOffsets[5].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
-
-	
 	xCamDown.x = 0.0f;
 	xCamDown.y = 0.0f;
 	xCamDown.z = 1.0f;
 	xCamRight.x = 1.0f;
 	xCamRight.y = 0.0f;
 	xCamRight.z = 0.0f;
-	
-	maxXAxisSpriteOffsets[0].x = (xCamRight.x * -0.5f) + (xCamDown.x * -0.5f);
-	maxXAxisSpriteOffsets[0].y = (xCamRight.y * -0.5f) + (xCamDown.y * -0.5f);
-	maxXAxisSpriteOffsets[0].z = (xCamRight.z * -0.5f) + (xCamDown.z * -0.5f);
 
-	maxXAxisSpriteOffsets[1].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxXAxisSpriteOffsets[1].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxXAxisSpriteOffsets[1].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
+	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxXAxisSpriteOffsets );
 
-	maxXAxisSpriteOffsets[2].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxXAxisSpriteOffsets[2].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxXAxisSpriteOffsets[2].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
+	xCamDown.x = 0.0f;
+	xCamDown.y = 0.0f;
+	xCamDown.z = 1.0f;
+	xCamRight.x = 0.0f;
+	xCamRight.y = 1.0f;
+	xCamRight.z = 0.0f;
 
-	maxXAxisSpriteOffsets[3].x = (xCamRight.x * 0.5f) + (xCamDown.x * -0.5f);
-	maxXAxisSpriteOffsets[3].y = (xCamRight.y * 0.5f) + (xCamDown.y * -0.5f);
-	maxXAxisSpriteOffsets[3].z = (xCamRight.z * 0.5f) + (xCamDown.z * -0.5f);
-
-	maxXAxisSpriteOffsets[4].x = (xCamRight.x * 0.5f) + (xCamDown.x * 0.5f);
-	maxXAxisSpriteOffsets[4].y = (xCamRight.y * 0.5f) + (xCamDown.y * 0.5f);
-	maxXAxisSpriteOffsets[4].z = (xCamRight.z * 0.5f) + (xCamDown.z * 0.5f);
-
-	maxXAxisSpriteOffsets[5].x = (xCamRight.x * -0.5f) + (xCamDown.x * 0.5f);
-	maxXAxisSpriteOffsets[5].y = (xCamRight.y * -0.5f) + (xCamDown.y * 0.5f);
-	maxXAxisSpriteOffsets[5].z = (xCamRight.z * -0.5f) + (xCamDown.z * 0.5f);
+	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxYAxisSpriteOffsets );
 
 }
 

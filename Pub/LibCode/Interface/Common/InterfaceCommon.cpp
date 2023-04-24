@@ -13,6 +13,56 @@ int		mnDesiredWidth = 1024;
 int		mnDesiredHeight = 768;
 BOOL	mboInterfaceVRMode = FALSE;
 
+ulong		ColourPack( int R, int G, int B, int A )
+{
+ulong	ulCol;
+
+	ulCol = (R << 16) | (G << 8 ) | B | (A << 24);
+	return( ulCol );
+}
+
+void		ColourUnpack( ulong ulCol, int* pulRed, int* pulGreen, int* pulBlue, int* pulAlpha )
+{
+	*pulRed = ( ulCol >> 16 ) & 0xFF;
+	*pulGreen = ( ulCol >> 8 ) & 0xFF;
+	*pulBlue = ulCol & 0xFF;
+	*pulAlpha = ( ulCol >> 24 ) & 0xFF;
+
+}
+
+ulong		InterfaceColourLightenLinear( ulong ulCol, ulong ulLightenAmount )
+{
+int		nR, nG, nB, nA;
+ulong		ulOut;
+
+	ColourUnpack( ulCol, &nR, &nG, &nB, &nA );
+	nR += ulLightenAmount;
+	if ( nR > 255 ) nR = 255;
+	nG += ulLightenAmount;
+	if ( nG > 255 ) nG = 255;
+	nB += ulLightenAmount;
+	if ( nB > 255 ) nB = 255;
+
+	ulOut = ColourPack( nR, nG, nB, nA );
+	return( ulOut );
+}
+
+ulong		InterfaceColourDarkenLinear( ulong ulCol, ulong ulDarkenAmount )
+{
+int		nR, nG, nB, nA;
+ulong		ulOut;
+
+	ColourUnpack( ulCol, &nR, &nG, &nB, &nA );
+	nR -= ulDarkenAmount;
+	if ( nR < 0 ) nR = 0;
+	nG -= ulDarkenAmount;
+	if ( nG < 0 ) nG = 0;
+	nB -= ulDarkenAmount;
+	if ( nB < 0 ) nB = 0;
+
+	ulOut = ColourPack( nR, nG, nB, nA );
+	return( ulOut );
+}
 
 INTERFACE_API void	InterfaceSetVRMode( BOOL bVRModeActive )
 {

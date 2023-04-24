@@ -21,6 +21,7 @@ public:
 	~EngineMesh();
 
 	void	Create( int nNumFaces, int nNumVertices, int nFlags );
+	EngineMesh*		CreateCopy();
 	void	Release( void );
 
 	int		GetNumVertices( void );

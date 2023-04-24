@@ -249,6 +249,12 @@ extern INTERFACE_API void	InterfaceSetMaximumFrontBufferWidth( int nMaxWidth );
 extern INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle );
 extern INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture );
 
+
+extern ulong		InterfaceColourDarkenLinear( ulong ulCol, ulong ulDarkenAmount );
+extern ulong		InterfaceColourLightenLinear( ulong ulCol, ulong ulLightenAmount );
+
+
+
 /**********************************************************
  ***** Secondary font stuff                         *******
  *****											    *******

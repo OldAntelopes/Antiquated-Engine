@@ -235,6 +235,7 @@ void		ModelIconsUpdate( void )
 		if ( mspNextToUpdate->mbIsSpinning )
 		{
 			mspNextToUpdate->UpdateIconTexture();
+			mspNextToUpdate = mspNextToUpdate->mpNext;
 			// Only update 1 at a time
 			return;
 		}
@@ -261,7 +262,7 @@ ModelIcon*		pModelIcons = mspModelIconsList;
 	{
 		if ( pModelIcons->mhModelIcon == handle )
 		{
-			pModelIcons->mbIsSpinning = bFlag;			
+			pModelIcons->mbIsSpinning = !bFlag;			
 		}
 		pModelIcons = pModelIcons->mpNext;
 	}

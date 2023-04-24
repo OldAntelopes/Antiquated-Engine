@@ -1366,9 +1366,12 @@ MODEL_RENDER_DATA*		pxModelData;
 			EngineMatrixMultiply( &matWorld, &matRotY );
 			EngineMatrixMultiply( &matWorld, &matRotZ );
 		}
-		matWorld._41 = pxPos->x;
-		matWorld._42 = pxPos->y;
-		matWorld._43 = pxPos->z;
+		if ( pxPos )
+		{
+			matWorld._41 = pxPos->x;
+			matWorld._42 = pxPos->y;
+			matWorld._43 = pxPos->z;
+		}
 		EngineSetWorldMatrix( &matWorld );
 	}
 

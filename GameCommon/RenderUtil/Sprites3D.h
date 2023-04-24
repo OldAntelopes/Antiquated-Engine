@@ -14,6 +14,7 @@ enum eSpriteGroupRenderFlags
 	kSpriteRender_Rotated = 0x4,
 	kSpriteRender_Orientation_XAxis = 0x8,
 	kSpriteRender_ColourBlend = 0x10,
+	kSpriteRender_Orientation_YAxis = 0x20,
 };
 
 typedef int		SPRITE_GROUP;

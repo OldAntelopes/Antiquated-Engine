@@ -70,6 +70,7 @@ extern int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, ulong
 
 extern void		ModelFree( int nModelHandle );
 extern int		ModelClone( int nModelHandle );
+extern int		ModelCopy( int nModelHandle );
 extern void		ModelScale( int nModelHandle, float fX, float fY, float fZ );
 extern void		ModelRotate( int nModelHandle, float fX, float fY, float fZ, BOOL bAffectSubModels );
 extern void		ModelMoveVerts( int nModelHandle, float fX, float fY, float fZ );
