@@ -24,7 +24,7 @@ int		mnModelsInAnimation = 0;
 int		manKeyframeModelHandles[ MAX_KEYFRAME_MODELS ];
 int		mnSelectedKeyFrameNum = NOTFOUND;
 
-HWND	mhwndAnimationBuilderDialog;
+HWND	mhwndAnimationBuilderDialog = NULL;
 
 int		mnAnimationHandle = NOTFOUND;
 
@@ -538,61 +538,63 @@ int		nHandle = NOTFOUND;
 
 void AnimationBuilderUpdateList( void )
 {
-int				nLoop;
-LVITEM			xInsert;
-char			acString[256];
-//char*			szName;
-//ulong			ulIP;
-//ushort		uwPort;
-int				nListTop;
-
-	nListTop = SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_GETTOPINDEX, 0, (LPARAM)0 );
-
-	SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_DELETEALLITEMS, 0, 0 );
-
-	for( nLoop = 0; nLoop < mnModelsInAnimation; nLoop++ )
+	if ( mhwndAnimationBuilderDialog != NULL )
 	{
-		xInsert.mask = LVIF_TEXT | LVIF_STATE; 
-		xInsert.state = 0; 
-		xInsert.stateMask = 0; 
-		xInsert.iItem = nLoop;
-		xInsert.iSubItem = 0; 
-		sprintf( acString, "%d", nLoop );
-		xInsert.pszText = acString;
-		SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_INSERTITEM, 0, (LPARAM)&xInsert );
+	int				nLoop;
+	LVITEM			xInsert;
+	char			acString[256];
+	//char*			szName;
+	//ulong			ulIP;
+	//ushort		uwPort;
+	int				nListTop;
 
-		if ( maxBuilderKeyframeData[ nLoop ].bAnimationUse > 0 )
+		nListTop = SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_GETTOPINDEX, 0, (LPARAM)0 );
+
+		SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_DELETEALLITEMS, 0, 0 );
+
+		for( nLoop = 0; nLoop < mnModelsInAnimation; nLoop++ )
 		{
-			xInsert.iSubItem = 1; 
+			xInsert.mask = LVIF_TEXT | LVIF_STATE; 
+			xInsert.state = 0; 
+			xInsert.stateMask = 0; 
+			xInsert.iItem = nLoop;
+			xInsert.iSubItem = 0; 
+			sprintf( acString, "%d", nLoop );
+			xInsert.pszText = acString;
+			SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_INSERTITEM, 0, (LPARAM)&xInsert );
+
+			if ( maxBuilderKeyframeData[ nLoop ].bAnimationUse > 0 )
+			{
+				xInsert.iSubItem = 1; 
 			
-			sprintf( acString, "Start of %s", maszAnimationUses[ maxBuilderKeyframeData[ nLoop ].bAnimationUse ] );
+				sprintf( acString, "Start of %s", maszAnimationUses[ maxBuilderKeyframeData[ nLoop ].bAnimationUse ] );
+				xInsert.pszText = acString;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+
+			sprintf( acString, "%d", maxBuilderKeyframeData[ nLoop ].uwKeyframeTime );
+			xInsert.iSubItem = 2; 
 			xInsert.pszText = acString;
 			SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+
+			if ( maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode != 0 )
+			{
+				sprintf( acString, "Yes (%d)", maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode );
+				xInsert.iSubItem = 3; 
+				xInsert.pszText = acString;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+
+			if ( manKeyframeModelHandles[ nLoop ] != NOTFOUND )
+			{
+				xInsert.iSubItem = 4; 
+				xInsert.pszText = ModelGetStats( manKeyframeModelHandles[ nLoop ] )->acFilename;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
 		}
 
-		sprintf( acString, "%d", maxBuilderKeyframeData[ nLoop ].uwKeyframeTime );
-		xInsert.iSubItem = 2; 
-		xInsert.pszText = acString;
-		SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
-
-		if ( maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode != 0 )
-		{
-			sprintf( acString, "Yes (%d)", maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode );
-			xInsert.iSubItem = 3; 
-			xInsert.pszText = acString;
-			SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
-		}
-
-		if ( manKeyframeModelHandles[ nLoop ] != NOTFOUND )
-		{
-			xInsert.iSubItem = 4; 
-			xInsert.pszText = ModelGetStats( manKeyframeModelHandles[ nLoop ] )->acFilename;
-			SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
-		}
+		SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SCROLL, 0, (LPARAM)nListTop*14 );
 	}
-
-	SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SCROLL, 0, (LPARAM)nListTop*14 );
-
 }
 
 

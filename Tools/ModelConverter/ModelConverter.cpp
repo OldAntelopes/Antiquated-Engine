@@ -2458,6 +2458,28 @@ void		ModelConverterDropFile( const char* szFilename )
 
 }
 
+
+void		ModelConverterDropMultipleFiles( HDROP dropHandle, int nNumFiles )
+{
+int			nLoop;
+char	acFilename[512];
+int			nHandle;
+
+	for( nLoop = 0; nLoop < nNumFiles; nLoop++ )
+	{
+		DragQueryFile( dropHandle, nLoop, acFilename, 512 );
+
+		if ( ModelConverterFilenameIsASupportedModelFormat( acFilename ) == TRUE )
+		{	
+			nHandle = ModelLoad( acFilename, 0, 1.0f );
+			if ( nHandle != NOTFOUND )
+			{
+				AnimationBuilderAddNewKeyframe( nHandle );
+			}
+		}
+	}
+}
+
 /***************************************************************************
  * Function    : ModelConverterGraphicWindowDlgProc
  * Params      :
@@ -2474,9 +2496,17 @@ POINTS points;
 	case WM_DROPFILES:
 		{
 		char	acFilename[512];
-		
-			DragQueryFile( (HDROP)wParam, 0, acFilename, 512 );
-			ModelConverterDropFile( acFilename );
+		int		nNumFilesDropped = DragQueryFile( (HDROP)wParam, 0xFFFFFFFF, NULL, 0 );
+
+			if ( nNumFilesDropped == 1 )
+			{
+				DragQueryFile( (HDROP)wParam, 0, acFilename, 512 );
+				ModelConverterDropFile( acFilename );
+			}
+			else
+			{
+				ModelConverterDropMultipleFiles( (HDROP)wParam, nNumFilesDropped );
+			}
 		}
 		break;
 	case WM_ACTIVATEAPP:

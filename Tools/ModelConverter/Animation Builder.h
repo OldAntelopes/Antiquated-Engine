@@ -13,6 +13,7 @@ extern LRESULT CALLBACK AnimationBuilderDlgProc(HWND hDlg, UINT message, WPARAM 
 
 extern char*	maszAnimationUses[MAX_ANIMATION_USES];
 
+extern void	AnimationBuilderAddNewKeyframe( int nHandle );
 
 
 
