@@ -35,8 +35,8 @@ extern void		ModelConvSelectByMaterial( int attribID );
 extern void		ModelConvSetPickerMode( int mode );
 extern void		ModelConvSetLastUsedLoadPath( const char* szFile );
 
-extern void		ModelConvTextAdd( const char* szString );
-extern void		ModelConvTextBoxSet( const char* szString );
+extern void		ModelConvTextAdd( const char* szString, ... );
+extern void		ModelConvTextBoxSet( const char* szString, ... );
 
 extern void		ModelConverterDisplayFrame( BOOL bModelHasChanged );
 

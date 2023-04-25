@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <windows.h>
 #include <CommCtrl.h>
 #include <shlobj.h>
@@ -76,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.32"
+#define	MODELCONV_VERSIONSTRING		"2.33"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -267,14 +268,35 @@ public:
 
 ModelConvViewInterface		m_sModelConvViewInterface;
 
-void	ModelConvTextBoxSet( const char* szString )
+void	ModelConvTextBoxSet( const char* format, ... )
 {
-	SetDlgItemText( mhwndMainDialog, IDC_LEFT_TEXTBOX, szString );
+char		acMessage[2048];
+va_list		marker;
+ulong*		pArgs;
+BOOL		bEndsWithNewLine = FALSE;
+
+	pArgs = (ulong*)( &format ) + 1;
+
+	va_start( marker, format );     
+	vsprintf( acMessage, format, marker );
+
+	SetDlgItemText( mhwndMainDialog, IDC_LEFT_TEXTBOX, acMessage );
 }
 
-void	ModelConvTextAdd( const char* szString )
+void	ModelConvTextAdd( const char* format, ... )
 {
-	SendDlgItemMessage( mhwndMainDialog, IDC_OUTPUT_LIST, LB_ADDSTRING, 0, (LPARAM)( szString ) );
+char		acMessage[2048];
+va_list		marker;
+ulong*		pArgs;
+BOOL		bEndsWithNewLine = FALSE;
+
+	pArgs = (ulong*)( &format ) + 1;
+
+	va_start( marker, format );     
+	vsprintf( acMessage, format, marker );
+
+
+	SendDlgItemMessage( mhwndMainDialog, IDC_OUTPUT_LIST, LB_ADDSTRING, 0, (LPARAM)( acMessage ) );
 	SendDlgItemMessage( mhwndMainDialog, IDC_OUTPUT_LIST, LB_SETTOPINDEX, (WPARAM)(mnNumLinesTextAdded), 0 );
 	mnNumLinesTextAdded++;
 }
@@ -643,7 +665,7 @@ void	ModelConvResetCameraToModel( void )
 }
 
 
-int ModelConvLoadModel( char* acFilename, ulong ulFlags, float fScale )
+int ModelConvLoadModel( const char* acFilename, ulong ulFlags, float fScale )
 {
 int		nLock;
 int		nModelHandle;
@@ -656,17 +678,14 @@ char	acString[256];
 #ifdef	MODEL_CONV_NO_LOCK_PROTECTED 
 	case 1:
 	case 2:
-		sprintf( acString, "Model Locked - Loading anyway.." );
-		ModelConvTextAdd( acString );
+		ModelConvTextAdd( "Model Locked - Loading anyway.." );
 #else
 	case 1:
-		sprintf( acString, "Model Locked - This model can only be used on registered islands." );
-		ModelConvTextAdd( acString );
+		ModelConvTextAdd( "Model Locked - This model can only be used on registered islands." );
 		return(NOTFOUND);
 		break;
 	case 2: // The model is locked and can be used on a specific island only
-		sprintf( acString, "This model can only be accessed on the computer it was built for." );
-		ModelConvTextAdd( acString );
+		ModelConvTextAdd( "This model can only be accessed on the computer it was built for. );
 		return(NOTFOUND);
 		break;
 #endif
@@ -1981,10 +2000,9 @@ float		fCamDist = 1.0f;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void		ModelConvLoadStart( eSUBMODEL_LIST nSubModelNum, char* acFileName )
+void		ModelConvLoadStart( eSUBMODEL_LIST nSubModelNum, const char* acFileName )
 {
 int		nHandle;
-char	acString[256];
 
 	if ( nSubModelNum == kMAIN )
 	{
@@ -2007,19 +2025,16 @@ char	acString[256];
 		}
 		if ( nFileSize == ModelGetStats(nHandle)->nFileSize )
 		{
-			sprintf( acString, "Loaded model file %s (%dk)", acFileName,nFileSize/1024 );
+			ModelConvTextAdd( "Loaded model file %s (%dk)", acFileName,nFileSize/1024 );
 		}
 		else
 		{
-			sprintf( acString, "Loaded model file %s (%dk) (Uncompressed to %dk)", acFileName,nFileSize/1024, ModelGetStats(nHandle)->nFileSize/1024 );
+			ModelConvTextAdd( "Loaded model file %s (%dk) (Uncompressed to %dk)", acFileName,nFileSize/1024, ModelGetStats(nHandle)->nFileSize/1024 );
 		}
-		ModelConvTextAdd( acString );
 
 		pxModelStats = ModelGetStats( nHandle );
-		sprintf( acString, "   %d verts, %d faces, %d materials, %d embedded textures (+ %d sub-models : %d LOD levels, %d collision models)", pxModelStats->nNumVertices, pxModelStats->nNumIndices / 3, pxModelStats->nNumMaterials, pxModelStats->nNumEmbeddedTextures, pxModelStats->nNumSubmodels, pxModelStats->bNumLODs, pxModelStats->nNumCollisionMaps );
-//		sprintf( acString, "   Filesize data : %dkbytes geometry, %dkbytes animation, %d kbytes textures, %d kbytes model data" .. );
+		ModelConvTextAdd( "   %d verts, %d faces, %d materials, %d embedded textures (+ %d sub-models : %d LOD levels, %d collision models)", pxModelStats->nNumVertices, pxModelStats->nNumIndices / 3, pxModelStats->nNumMaterials, pxModelStats->nNumEmbeddedTextures, pxModelStats->nNumSubmodels, pxModelStats->bNumLODs, pxModelStats->nNumCollisionMaps );
 		
-		ModelConvTextAdd( acString );
 		if ( nSubModelNum == kMAIN )
 		{
 			ModelConvFocusCameraOnObject( nHandle );
@@ -2331,6 +2346,118 @@ float		fWindowScaleY = (float)( InterfaceGetHeight() ) / (float)( InterfaceGetWi
 }
 
 
+void ModelConvReloadTexture( void )
+{
+//int		nRet;
+int		nFileSize;
+FILE*	pFile;
+//D3DSURFACE_DESC		xSurfaceDesc;
+//char	acString[512];
+TEXTURE_HANDLE	hTexture;
+
+	SysSetCurrentDir( macModelConvRootFolder );
+	EngineReloadShaders();
+
+	m_MainSceneObject.ReleaseTexture();
+	
+	pFile = fopen( macLoadedTextureFilename, "rb" );
+	if ( pFile != NULL )
+	{
+		fseek( pFile, 0, SEEK_END );
+		nFileSize = ftell(pFile);
+		fclose( pFile );
+	
+		hTexture = EngineLoadTexture( macLoadedTextureFilename, 0, NULL );
+		m_MainSceneObject.SetTexture( hTexture );
+
+/* TODO - replace this funtionality since we've moved to EngineLoadTexture
+		if( FAILED( nRet ) )
+		{
+			InterfaceTextureLoadError( nRet,macLoadedTextureFilename );
+			EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), FALSE );
+		}
+		else
+		{
+			EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), TRUE );
+			mpxRenderTexture->GetLevelDesc( 0, &xSurfaceDesc );
+			ModelConvTextAdd( "Texture file %s reloaded. (%dx%d - %dk)", macLoadedTextureFilename, xSurfaceDesc.Width,xSurfaceDesc.Height, (nFileSize/1024) );
+		}		
+*/
+		ModelConverterDisplayFrame( FALSE );
+	}
+}
+
+BOOL		ModelConverterFilenameIsASupportedModelFormat( const char* szFilename )
+{
+	if ( szFilename )
+	{
+	const char*		szExtension = SysGetFileExtension( szFilename );
+
+		if ( ( stricmp( szExtension, "atm") == 0 ) ||
+			 ( stricmp( szExtension, "fbx") == 0 ) ||
+			 ( stricmp( szExtension, "3ds") == 0 ) ||
+			 ( stricmp( szExtension, "x") == 0 ) )
+		{
+			return( TRUE );
+		}
+	}
+	return( FALSE );
+}
+
+
+
+BOOL		ModelConverterFilenameIsASupportedTextureFormat( const char* szFilename )
+{
+	if ( szFilename )
+	{
+	const char*		szExtension = SysGetFileExtension( szFilename );
+
+		if ( ( stricmp( szExtension, "png") == 0 ) ||
+			 ( stricmp( szExtension, "bmp") == 0 ) ||
+			 ( stricmp( szExtension, "jpg") == 0 ) ||
+			 ( stricmp( szExtension, "tga") == 0 ) )
+		{
+			return( TRUE );
+		}
+	}
+	return( FALSE );
+}
+
+void		ModelConvLoadMainRenderTexture( const char* szFilename )
+{
+TEXTURE_HANDLE	hTexture;
+
+	m_MainSceneObject.ReleaseTexture();
+			
+	hTexture = EngineLoadTexture( szFilename, 0, NULL );
+	m_MainSceneObject.SetTexture( hTexture );
+
+	strcpy( macLoadedTextureFilename, szFilename );
+	EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), TRUE );
+
+		// TODO - Needs updating to work from EngineLoadTexture
+//			mpxRenderTexture->GetLevelDesc( 0, &xSurfaceDesc );
+//			sprintf( acString, "Texture file %s loaded. (%dx%d - %dk)", acFileName, xSurfaceDesc.Width,xSurfaceDesc.Height, (nFileSize/1024) );
+//			ModelConvTextAdd( acString );
+
+	ModelConvTextAdd( "Texture file %s loaded.", szFilename );
+
+}
+
+
+void		ModelConverterDropFile( const char* szFilename )
+{
+	if ( ModelConverterFilenameIsASupportedModelFormat( szFilename ) == TRUE )
+	{
+		ModelConvLoadStart( kMAIN, szFilename );		
+	}
+	else if ( ModelConverterFilenameIsASupportedTextureFormat( szFilename ) == TRUE )
+	{
+		ModelConvLoadMainRenderTexture( szFilename );
+	}
+
+}
+
 /***************************************************************************
  * Function    : ModelConverterGraphicWindowDlgProc
  * Params      :
@@ -2344,6 +2471,14 @@ POINTS points;
 
 	switch (message)
 	{
+	case WM_DROPFILES:
+		{
+		char	acFilename[512];
+		
+			DragQueryFile( (HDROP)wParam, 0, acFilename, 512 );
+			ModelConverterDropFile( acFilename );
+		}
+		break;
 	case WM_ACTIVATEAPP:
 		if ( wParam == FALSE )
 		{
@@ -2418,6 +2553,9 @@ POINTS points;
 	case WM_KEYDOWN:
 		switch ( (short)( wParam ) )
 		{
+		case VK_F5:
+			ModelConvReloadTexture();
+			break;
 		case VK_DELETE:
 			ModelConvDeleteFaces();
 			break;
@@ -3190,8 +3328,7 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 
 					if ( nLoadedModelHandle != NOTFOUND )
 					{
-						sprintf( acString, "Loaded .atm file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
-						ModelConvTextAdd( acString );
+						ModelConvTextAdd( "Loaded .atm file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
 						UpdateWindow( mhwndMainDialog );
 
 						ModelConvScaleModelFree( nLoadedModelHandle, 2500.0f, 2500.0f, 2500.0f );
@@ -3209,13 +3346,12 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 		
 							if ( nSize > 1024 )
 							{
-								sprintf( acString, "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
+								ModelConvTextAdd( "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
 							}
 							else
 							{
-								sprintf( acString, "Model file - %s exported. (%d bytes)", acString2, nSize );
+								ModelConvTextAdd( "Model file - %s exported. (%d bytes)", acString2, nSize );
 							}
-							ModelConvTextAdd( acString );
 							UpdateWindow( mhwndMainDialog );
 						}
 						ModelFree( nLoadedModelHandle );
@@ -3348,8 +3484,7 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 
 				if ( nLoadedModelHandle != NOTFOUND )
 				{
-					sprintf( acString, "Loaded .atm file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
-					ModelConvTextAdd( acString );
+					ModelConvTextAdd( "Loaded .atm file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
 					UpdateWindow( mhwndMainDialog );
 
 					ModelConvScaleModelFree( nLoadedModelHandle, 2500.0f, 2500.0f, 2500.0f );
@@ -3367,13 +3502,12 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 		
 						if ( nSize > 1024 )
 						{
-							sprintf( acString, "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
+							ModelConvTextAdd( "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
 						}
 						else
 						{
-							sprintf( acString, "Model file - %s exported. (%d bytes)", acString2, nSize );
+							ModelConvTextAdd( "Model file - %s exported. (%d bytes)", acString2, nSize );
 						}
-						ModelConvTextAdd( acString );
 						UpdateWindow( mhwndMainDialog );
 					}
 					ModelFree( nLoadedModelHandle );
@@ -3476,8 +3610,7 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 				nLoadedModelHandle = ModelConvLoadModel( acString2, 0, 0.0035f );
 				if ( nLoadedModelHandle != NOTFOUND )
 				{
-					sprintf( acString, "Loaded .x file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
-					ModelConvTextAdd( acString );
+					ModelConvTextAdd( "Loaded .x file - %s. (%dk)", acString2, ModelGetStats(nLoadedModelHandle)->nFileSize/1024 );
 					UpdateWindow( mhwndMainDialog );
 
 					switch( ulFlags )
@@ -3506,13 +3639,12 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 		
 						if ( nSize > 1024 )
 						{
-							sprintf( acString, "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
+							ModelConvTextAdd( "Model file - %s exported. (%dk)", acString2, (nSize/1024) );
 						}
 						else
 						{
-							sprintf( acString, "Model file - %s exported. (%d bytes)", acString2, nSize );
+							ModelConvTextAdd( "Model file - %s exported. (%d bytes)", acString2, nSize );
 						}
-						ModelConvTextAdd( acString );
 						UpdateWindow( mhwndMainDialog );
 					}
 					ModelFree( nLoadedModelHandle );
@@ -3977,14 +4109,13 @@ ulong	ulLockFlags = 0;
 		{
 			strcpy( maszCurrentModelFilename, acFilename );
 		}
-		sprintf( acString, "Model file - %s exported. (%dk)", acFilename, (nSize/1024) );
-		ModelConvTextAdd( acString );
+		ModelConvTextAdd( "Model file - %s exported. (%dk)", acFilename, (nSize/1024) );
 		sprintf( acString, "Model Converter %s - %s", MODELCONV_VERSIONSTRING, acFilename );
 		SendMessage( mhwndMainDialog, WM_SETTEXT, 0, (LPARAM)acString );
 	}
 	else
 	{
-		ModelConvTextAdd( acString );
+		ModelConvTextAdd( "Model file could not be opened" );
 	}
 
 }
@@ -4164,8 +4295,6 @@ char		acCurrentDir[256];
 		
 		if ( nHandleToDraw  != NOTFOUND )
 		{	
-		int		nVal;
-
 			pxModelData = &maxModelRenderData[ nHandleToDraw ];
 
 			EngineSetTexture( 0, m_MainSceneObject.GetTextureHandle() );
@@ -4214,53 +4343,14 @@ TEXTURE_HANDLE		ModelConvGetOverrideTexture( void )
 	return( m_MainSceneObject.GetTextureHandle() );
 }
 
-void ModelConvReloadTexture( void )
-{
-//int		nRet;
-int		nFileSize;
-FILE*	pFile;
-//D3DSURFACE_DESC		xSurfaceDesc;
-//char	acString[512];
-TEXTURE_HANDLE	hTexture;
-
-	SysSetCurrentDir( macModelConvRootFolder );
-	EngineReloadShaders();
-
-	m_MainSceneObject.ReleaseTexture();
-	
-	pFile = fopen( macLoadedTextureFilename, "rb" );
-	if ( pFile != NULL )
-	{
-		fseek( pFile, 0, SEEK_END );
-		nFileSize = ftell(pFile);
-		fclose( pFile );
-	
-		hTexture = EngineLoadTexture( macLoadedTextureFilename, 0, NULL );
-		m_MainSceneObject.SetTexture( hTexture );
-
-/* TODO - replace this funtionality since we've moved to EngineLoadTexture
-		if( FAILED( nRet ) )
-		{
-			InterfaceTextureLoadError( nRet,macLoadedTextureFilename );
-			EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), FALSE );
-		}
-		else
-		{
-			EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), TRUE );
-			mpxRenderTexture->GetLevelDesc( 0, &xSurfaceDesc );
-			sprintf( acString, "Texture file %s reloaded. (%dx%d - %dk)", macLoadedTextureFilename, xSurfaceDesc.Width,xSurfaceDesc.Height, (nFileSize/1024) );
-			ModelConvTextAdd( acString );
-		}		
-*/
-		ModelConverterDisplayFrame( FALSE );
-	}
-}
 
 void	ModelConvClearTexture( void )
 {
 	m_MainSceneObject.ReleaseTexture( );
 	ModifyMenu( GetMenu( mhwndMainDialog ), ID_RENDERING_CLEAROVERRIDETEXTURE, MF_GRAYED | MF_DISABLED, ID_RENDERING_CLEAROVERRIDETEXTURE, "Clear Override Texture" );		
 }
+
+
 
 void ModelConvSelectTexture( void )
 {
@@ -4272,7 +4362,6 @@ char		acCurrentDir[256];
 //D3DSURFACE_DESC		xSurfaceDesc;
 int		nFileSize;
 FILE*	pFile;
-TEXTURE_HANDLE	hTexture;
 
 //	sprintf( acFileName, macCurrentFilename );
 	sprintf( acFileName, "" );
@@ -4300,29 +4389,11 @@ TEXTURE_HANDLE	hTexture;
 		pFile = fopen( acFileName, "rb" );
 		if ( pFile != NULL )
 		{
-		char	acString[256];
-
 			fseek( pFile, 0, SEEK_END );
 			nFileSize = ftell(pFile);
 			fclose( pFile );
 
-			m_MainSceneObject.ReleaseTexture();
-			
-			hTexture = EngineLoadTexture( acFileName, 0, NULL );
-			m_MainSceneObject.SetTexture( hTexture );
-
-			strcpy( macLoadedTextureFilename, acFileName );
-
-			EnableWindow( GetDlgItem( mhwndMainDialog, IDC_REFRESH_TEXTURE ), TRUE );
-			sprintf( macLoadedTextureFilename, acFileName );
-
-			// TODO - Needs updating to work from EngineLoadTexture
-//			mpxRenderTexture->GetLevelDesc( 0, &xSurfaceDesc );
-//			sprintf( acString, "Texture file %s loaded. (%dx%d - %dk)", acFileName, xSurfaceDesc.Width,xSurfaceDesc.Height, (nFileSize/1024) );
-//			ModelConvTextAdd( acString );
-
-			sprintf( acString, "Texture file %s loaded.", acFileName );
-			ModelConvTextAdd( acString );
+			ModelConvLoadMainRenderTexture( acFileName );
 		}	
 	}
 	SetCurrentDirectory( acCurrentDir );
@@ -4446,7 +4517,7 @@ int		nLoop;
 	xWindowRect.top = 17;
 	AdjustWindowRect( &xWindowRect, dwWindowStyle, FALSE );
     // Create the application's window
-     mhwndGraphicWindow = CreateWindow( "ModelConv", "A Tractor Model Converter",
+     mhwndGraphicWindow = CreateWindowEx( WS_EX_ACCEPTFILES, "ModelConv", "A Tractor Model Converter",
                               dwWindowStyle, xWindowRect.left, xWindowRect.top,
 						      xWindowRect.right - xWindowRect.left, xWindowRect.bottom - xWindowRect.top,
                               mhwndMainDialog, NULL, ghInstance, NULL );
@@ -4757,7 +4828,6 @@ int		nVertCheckLoop;
 int		nFaceVertLoop;
 VECT	xCheckPos;
 BOOL	bFaceConnected = FALSE;
-char	acString[256];
 
 	pbFaceConnections = (BYTE*)malloc( nNumFaces * sizeof(BYTE) );
 	memset( pbFaceConnections, 0, nNumFaces * sizeof(BYTE) );
@@ -4830,8 +4900,7 @@ char	acString[256];
 	}
 
 	m_MainSceneObject.SetSelectedFaces( pbFaceConnections );
-	sprintf( acString, "%d connected faces selected", nNumConnectedFaces );
-	ModelConvTextAdd( acString );
+	ModelConvTextAdd( "%d connected faces selected", nNumConnectedFaces );
 }
 
 void	ModelConvSelectAllWithSameMaterial( int nHandle )
@@ -4893,6 +4962,14 @@ int	nVal;
 
 	switch (message)
 	{
+	case WM_DROPFILES:
+		{
+		char	acFilename[512];
+		
+			DragQueryFile( (HDROP)wParam, 0, acFilename, 512 );
+			ModelConverterDropFile( acFilename );
+		}
+		break;
 	case WM_ACTIVATEAPP:
 		if ( wParam == FALSE )
 		{
@@ -4906,8 +4983,6 @@ int	nVal;
 	case WM_HSCROLL:
 		if ( LOWORD( wParam )== SB_THUMBTRACK )
 		{
-		char	acValue[256];
-
 			if ( lParam == (LPARAM)GetDlgItem( mhwndMainDialog, IDC_HORIZTURRET_ROT ) )
 			{
 			float	fAngle = ((HIWORD(wParam))*A90)/100;
@@ -4970,7 +5045,7 @@ int	nVal;
 			ModelConverterDisplayFrame( FALSE );
 		}
 		return TRUE;
-	case WM_CHAR:
+	case WM_CHAR:					// None of these seem to be getting triggered atm? (Possibly coz the graphic subwindow  is stealing all the input?
 		switch ( (short)( wParam ) )
 		{
 		case 'M':
@@ -4986,6 +5061,14 @@ int	nVal;
 			ModelConvResetCamera();
 			ModelConverterSetupCamera();
 			ModelConverterDisplayFrame( FALSE );
+			break;
+		}
+		break;
+	case WM_KEYDOWN:			// None of these seem to be getting triggered atm?  (Possibly coz the graphic subwindow is stealing all the input?)
+		switch ( (short)( wParam ) )
+		{
+		case VK_F5:
+			ModelConvReloadTexture();
 			break;
 		}
 		break;

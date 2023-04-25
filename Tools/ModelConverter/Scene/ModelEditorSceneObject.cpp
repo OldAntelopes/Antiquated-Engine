@@ -480,7 +480,6 @@ VECT	xHitNormal;
 int		nFaceHit = 0;
 BOOL	bShiftHeld = FALSE;
 BOOL	bCtrlHeld = FALSE;
-char	acString[256];
 int		nLoop;
 float	fDist;
 float	fClosestDist = 999999.0f;
@@ -548,14 +547,13 @@ int		nClosestVert = NOTFOUND;
 	{
 	int		nSelectedVertexNum = GetSingleSelectedVertex();
 
- 		sprintf( acString, "1 vertex selected\n (Vertex number %d)\n", nSelectedVertexNum );
+ 		ModelConvTextBoxSet( "1 vertex selected\n (Vertex number %d)\n", nSelectedVertexNum );
 	}
 	else
 	{
-		sprintf( acString, "%d vertices selected\n", mnNumVerticesSelected );
+		ModelConvTextBoxSet( "%d vertices selected\n", mnNumVerticesSelected );
 	}
 	ModelUnlockVertexBuffer( mnModelHandle );
-	ModelConvTextBoxSet( acString );
 
 }
 
@@ -691,7 +689,6 @@ void	CSceneObject::InvertSelection( void )
 BYTE*	pbSelections = mpbFaceSelections;
 int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 int		nLoop;
-char	acString[256];
 
 	if ( mpbFaceSelections )
 	{
@@ -708,8 +705,7 @@ char	acString[256];
 			}
 		}
 		mnNumFacesSelected = nNumFaces - mnNumFacesSelected;
-		sprintf( acString, "%d faces selected\n", mnNumFacesSelected );
-		ModelConvTextBoxSet( acString );
+		ModelConvTextBoxSet( "%d faces selected\n", mnNumFacesSelected );
 	}
 }
 
@@ -720,7 +716,6 @@ int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[mnModelHandle];
 DWORD*		pxMeshAttributes = NULL;
 int		nLoop;
-char	acString[256];
 
 	if ( mpbFaceSelections )
 	{
@@ -754,8 +749,7 @@ char	acString[256];
 			}
 		}	
 
-		sprintf( acString, "%d faces selected\n", mnNumFacesSelected );
-		ModelConvTextBoxSet( acString );
+		ModelConvTextBoxSet( "%d faces selected\n", mnNumFacesSelected );
 	}
 }
 
@@ -847,9 +841,7 @@ int		nNumFaces = ModelGetStats( mnModelHandle )->nNumIndices/3;
 						}
 						else
 						{
-						char	acString[256];
-							sprintf( acString, "%d faces selected\n", mnNumFacesSelected );
-							ModelConvTextBoxSet( acString );
+							ModelConvTextBoxSet( "%d faces selected\n", mnNumFacesSelected );
 						}
 
 					}
@@ -1050,7 +1042,6 @@ int				nFaceNum;
 BOOL	bShiftHeld = FALSE;
 BOOL	bCtrlHeld = FALSE;
 BOOL	bIsFaceSelected = FALSE;
-char	acString[256];
 
 	if ( SysCheckKeyState( KEY_SHIFT ) )
 	{
@@ -1174,8 +1165,7 @@ char	acString[256];
 	}
 	pxModelData->pxBaseMesh->UnlockIndexBuffer();
 	pxModelData->pxBaseMesh->UnlockVertexBuffer();
-	sprintf( acString, "%d faces selected\n", mnNumFacesSelected );
-	ModelConvTextBoxSet( acString );
+	ModelConvTextBoxSet( "%d faces selected\n", mnNumFacesSelected );
 }
 
 int		CSceneObject::GetFirstSelectedVertex( void )
@@ -1231,7 +1221,6 @@ VECT	xWorldPos;
 BOOL	bShiftHeld = FALSE;
 BOOL	bCtrlHeld = FALSE;
 BOOL	bSelectFirstOnly = TRUE;
-char	acString[256];
 
 	if ( ( pxVertices ) &&
 		 ( pbSelections ) &&
@@ -1301,14 +1290,13 @@ char	acString[256];
 	{
 	int		nSelectedVertexNum = GetSingleSelectedVertex();
 
- 		sprintf( acString, "1 vertex selected\n (Vertex number %d)\n", nSelectedVertexNum );
+ 		ModelConvTextBoxSet( "1 vertex selected\n (Vertex number %d)\n", nSelectedVertexNum );
 	}
 	else
 	{
-		sprintf( acString, "%d vertices selected\n", mnNumVerticesSelected );
+		ModelConvTextBoxSet( "%d vertices selected\n", mnNumVerticesSelected );
 	}
 	ModelUnlockVertexBuffer( mnModelHandle );
-	ModelConvTextBoxSet( acString );
 }
 
 
