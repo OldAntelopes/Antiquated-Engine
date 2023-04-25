@@ -622,6 +622,28 @@ int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 	return( 1 );
 }
 
+const char*	SysGetFileExtension( const char* szFilename )
+{
+int		nNameLen = strlen( szFilename );
+int		nLimit = nNameLen - 8;
+const char*		pcRunner = szFilename + nNameLen - 1;
+	if ( nLimit < 0 ) nLimit = 0;
+
+	while( nNameLen > nLimit )
+	{
+		if ( *pcRunner == '.' )
+		{
+			pcRunner++;
+			return( pcRunner );
+		}
+		pcRunner--;
+		nNameLen--;
+	}
+
+	return( NULL );
+}
+
+
 
 void	SysAddFileExtensionIfNeeded( char* szFilename, const char* szExtension )
 {
