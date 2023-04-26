@@ -15,6 +15,7 @@ extern char*	maszAnimationUses[MAX_ANIMATION_USES];
 
 extern void	AnimationBuilderAddNewKeyframe( int nHandle );
 
+extern void	AnimationBuilderApplyNewKeyframes( void );
 
 
 #ifdef __cplusplus

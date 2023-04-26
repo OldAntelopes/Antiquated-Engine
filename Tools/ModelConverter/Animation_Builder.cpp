@@ -536,7 +536,9 @@ int		nHandle = NOTFOUND;
 	return( nHandle );
 }
 
-void AnimationBuilderUpdateList( void )
+
+
+void AnimationBuilderRebuildList( void )
 {
 	if ( mhwndAnimationBuilderDialog != NULL )
 	{
@@ -597,6 +599,60 @@ void AnimationBuilderUpdateList( void )
 	}
 }
 
+
+void AnimationBuilderUpdateList( void )
+{
+	if ( mhwndAnimationBuilderDialog != NULL )
+	{
+	int			nNumItemsInList = SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_GETITEMCOUNT, 0, 0 );
+	int				nLoop;
+	LVITEM			xInsert;
+	char			acString[256];
+	int				nListTop;
+
+		if ( nNumItemsInList != mnModelsInAnimation )
+		{
+			AnimationBuilderRebuildList();
+			return;
+		}
+
+		memset( &xInsert, 0, sizeof( xInsert ));
+		for( nLoop = 0; nLoop < mnModelsInAnimation; nLoop++ )
+		{
+			xInsert.iItem = nLoop;
+			xInsert.mask = LVIF_TEXT; 
+			if ( maxBuilderKeyframeData[ nLoop ].bAnimationUse > 0 )
+			{
+				xInsert.iSubItem = 1; 
+			
+				sprintf( acString, "Start of %s", maszAnimationUses[ maxBuilderKeyframeData[ nLoop ].bAnimationUse ] );
+				xInsert.pszText = acString;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+
+			sprintf( acString, "%d", maxBuilderKeyframeData[ nLoop ].uwKeyframeTime );
+			xInsert.iSubItem = 2; 
+			xInsert.pszText = acString;
+			SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+
+			if ( maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode != 0 )
+			{
+				sprintf( acString, "Yes (%d)", maxBuilderKeyframeData[ nLoop ].bAnimationTriggerCode );
+				xInsert.iSubItem = 3; 
+				xInsert.pszText = acString;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+
+			if ( manKeyframeModelHandles[ nLoop ] != NOTFOUND )
+			{
+				xInsert.iSubItem = 4; 
+				xInsert.pszText = ModelGetStats( manKeyframeModelHandles[ nLoop ] )->acFilename;
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+		}
+
+	}
+}
 
 void AnimationBuilderRemoveKeyframe( void )
 {
@@ -833,6 +889,24 @@ int		nHandle;
 }
 
 
+void	AnimationBuilderApplyNewKeyframes( void )
+{
+	if ( AnimationBuilderValidateKeyframes() == TRUE )
+	{
+	int		nHandleResult;
+
+		nHandleResult = AnimationBuilderBuildKeyframes();
+		if ( mnAnimationHandle != NOTFOUND )
+		{
+			ModelFree( mnAnimationHandle );
+		}
+		ModelConvSetCurrentModel( nHandleResult );
+		mnAnimationHandle = nHandleResult;
+		AnimationBuilderExistingKeyframes( mnAnimationHandle );
+		AnimationBuilderUpdateList();
+	}
+
+}
 
 /***************************************************************************
  * Function    : AnimationBuilderDlgProc
@@ -855,6 +929,7 @@ int		nSelected;
 		mnAnimationHandle = ModelConvGetCurrentModel();
 		if ( mnAnimationHandle != NOTFOUND )
 		{
+			mnModelsInAnimation = 0;
 			AnimationBuilderExistingKeyframes( mnAnimationHandle );
 		}
 		SetWindowPos( mhwndAnimationBuilderDialog, NULL, 100, 100, 0,0, SWP_NOSIZE | SWP_NOZORDER );
@@ -869,8 +944,18 @@ int		nSelected;
 			nSelected = SendDlgItemMessage( hDlg, IDC_LIST1, LVM_GETSELECTIONMARK, 0, 0 );
 			if ( nSelected != -1 )
 			{
+			int		nNumSelected;
+
 				mnSelectedKeyFrameNum = nSelected;
-				AnimationBuilderEditKeyframe();
+				nNumSelected = SendDlgItemMessage( hDlg, IDC_LIST1, LVM_GETSELECTEDCOUNT, 0, 0 );
+				if ( nNumSelected == 1 )
+				{
+					AnimationBuilderEditKeyframe();
+				}
+				else
+				{
+					// Flag that we've got multiple lines selected
+				}
 			}
 			break;
 		}
@@ -894,9 +979,35 @@ int		nSelected;
 		case EN_CHANGE:
 			{
 			char	acString[256];
+			int		nNumSelected;
+
 				GetDlgItemText( hDlg, IDC_KEYFRAME_TIME, acString, 256);
 				nVal = strtol( acString, NULL, 10 );
-				if ( nVal != maxBuilderKeyframeData[ mnSelectedKeyFrameNum ].uwKeyframeTime )
+
+				nNumSelected = SendDlgItemMessage( hDlg, IDC_LIST1, LVM_GETSELECTEDCOUNT, 0, 0 );
+
+				if ( nNumSelected > 1 )
+				{
+				LVITEM		xListItem;
+				int			nLoop;
+				int			nNumItems = SendDlgItemMessage( hDlg, IDC_LIST1, LVM_GETITEMCOUNT, 0, 0 );
+
+					memset( &xListItem, 0, sizeof( xListItem ) );
+					for( nLoop = 0; nLoop < nNumItems; nLoop++ )
+					{
+						xListItem.iItem = nLoop;
+						xListItem.mask = LVIF_STATE;
+						xListItem.stateMask = LVIS_SELECTED;
+						SendDlgItemMessage( hDlg, IDC_LIST1, LVM_GETITEM, 0, (LPARAM)&xListItem );
+					
+						if ( xListItem.state & LVIS_SELECTED )
+						{
+							maxBuilderKeyframeData[ nLoop ].uwKeyframeTime = (ushort)( nVal );						
+						}
+					}
+					AnimationBuilderUpdateList();
+				}
+				else if ( nVal != maxBuilderKeyframeData[ mnSelectedKeyFrameNum ].uwKeyframeTime )
 				{
 					maxBuilderKeyframeData[ mnSelectedKeyFrameNum ].uwKeyframeTime = (ushort)( nVal );
 					AnimationBuilderUpdateList();
@@ -954,24 +1065,7 @@ int		nSelected;
 				EndDialog(hDlg, 0);
 				break;
 			case IDOK:
-				if ( AnimationBuilderValidateKeyframes() == TRUE )
-				{
-				int		nHandleResult;
-
-					nHandleResult = AnimationBuilderBuildKeyframes();
-					if ( mnAnimationHandle != NOTFOUND )
-					{
-						ModelFree( mnAnimationHandle );
-					}
-					ModelConvSetCurrentModel( nHandleResult );
-					mnAnimationHandle = nHandleResult;
-					AnimationBuilderExistingKeyframes( mnAnimationHandle );
-					AnimationBuilderUpdateList();
-				}
-				else
-				{
-
-				}
+				AnimationBuilderApplyNewKeyframes();
 				break;
 			}
 			break;

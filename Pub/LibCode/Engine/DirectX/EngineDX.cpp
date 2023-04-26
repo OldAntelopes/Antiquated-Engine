@@ -1513,6 +1513,26 @@ void		EngineGetMaterial( ENGINEMATERIAL* pxMaterialOut )
 }
 
 
+void		EngineSetStandardMaterialWithAlpha( float fAlphaVal )
+{
+ENGINEMATERIAL xStandardMat;
+	
+	memset( &xStandardMat, 0, sizeof( xStandardMat ) );
+
+	// Set the RGBA for diffuse reflection.
+	xStandardMat.Diffuse.r = 1.0f;
+	xStandardMat.Diffuse.g = 1.0f;
+	xStandardMat.Diffuse.b = 1.0f;
+	xStandardMat.Diffuse.a = fAlphaVal;
+	
+	// Set the RGBA for ambient reflection.
+	xStandardMat.Ambient.r = 1.0f;
+	xStandardMat.Ambient.g = 1.0f;
+	xStandardMat.Ambient.b = 1.0f;
+	xStandardMat.Ambient.a = fAlphaVal;
+
+	EngineSetMaterial(&xStandardMat);
+}
 
 
 void		EngineSetStandardMaterialWithSpecular( float fPower, float fSpecularBrightness )
@@ -1551,6 +1571,8 @@ void EngineSetStandardMaterial( void )
 {
 ENGINEMATERIAL xStandardMat;
 	
+	memset( &xStandardMat, 0, sizeof( xStandardMat ) );
+
 	// Set the RGBA for diffuse reflection.
 	xStandardMat.Diffuse.r = 1.0f;
 	xStandardMat.Diffuse.g = 1.0f;
@@ -1562,19 +1584,6 @@ ENGINEMATERIAL xStandardMat;
 	xStandardMat.Ambient.g = 1.0f;
 	xStandardMat.Ambient.b = 1.0f;
 	xStandardMat.Ambient.a = 1.0f;
-	
-	// Set the color and sharpness of specular highlights.
-	xStandardMat.Specular.r = 0.0f;
-	xStandardMat.Specular.g = 0.0f;
-	xStandardMat.Specular.b = 0.0f;
-	xStandardMat.Specular.a = 0.0f;
-	xStandardMat.Power = 0.0f;
-	
-	// Set the RGBA for emissive color.
-	xStandardMat.Emissive.r = 0.0f;
-	xStandardMat.Emissive.g = 0.0f;
-	xStandardMat.Emissive.b = 0.0f;
-	xStandardMat.Emissive.a = 0.0f;
 
 	EngineSetMaterial(&xStandardMat);
 }

@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.33"
+#define	MODELCONV_VERSIONSTRING		"2.33a"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -2465,6 +2465,12 @@ int			nLoop;
 char	acFilename[512];
 int			nHandle;
 
+	if ( ModelConvGetCurrentModel() == NOTFOUND )
+	{
+		DragQueryFile( dropHandle, 0, acFilename, 512 );
+		ModelConvLoadStart( kMAIN, acFilename );		
+	}
+
 	for( nLoop = 0; nLoop < nNumFiles; nLoop++ )
 	{
 		DragQueryFile( dropHandle, nLoop, acFilename, 512 );
@@ -2478,6 +2484,7 @@ int			nHandle;
 			}
 		}
 	}
+	AnimationBuilderApplyNewKeyframes();
 }
 
 /***************************************************************************
