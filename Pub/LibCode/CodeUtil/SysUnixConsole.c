@@ -73,13 +73,13 @@ void SysAddFilledListLine( void* pxParentWindow, void* pListIdent, int nValsQtt,
 {
 }
 
-int		SysRenameFile( char* szSrc, char* szDest )
+int		SysRenameFile( const char* szSrc, const char* szDest )
 {
 	// TODO
 	rename( szSrc, szDest);
 	return( 1 );
 }
-int		SysCopyFile( char* szSrc, char* szDest, BOOL bFailIfExists )
+int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 {
 	// TODO
 	return( 1 );

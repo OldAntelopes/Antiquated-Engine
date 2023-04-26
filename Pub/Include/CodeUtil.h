@@ -64,7 +64,7 @@ extern void		SysMakeSubDirectories( const char* pcFilename, const char* pcRootPa
 // (i.e. they dont behave the same as stricmp etc so are not fully interchangeable)
 extern int		tinstricmp( const char*, const char* );
 extern int		tinstrcmp( const char*, const char* );
-
+extern unsigned long long		tinstrtou64( const char* szVal, char** delimiters, int nBase );
 
 // --------------------------- File resource interface
 

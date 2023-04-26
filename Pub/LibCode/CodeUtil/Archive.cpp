@@ -3,7 +3,7 @@
 
 #include <StandardDef.h>
 #include <stdio.h>
-#include <Interface.h>
+//#include <Interface.h>
 
 #include "Archive.h"
 
@@ -625,7 +625,7 @@ char		acFilename[256];
 	while( pFileList )
 	{
 		// If its a newly added file
-		if ( stricmp( pFileList->GetFilename(), acFilename ) == 0 )
+		if ( tinstricmp( pFileList->GetFilename(), acFilename ) == 0 )
 		{
 			return( pFileList );
 		}
@@ -1024,7 +1024,7 @@ ManagedArchive*		pArchiveList = mspManagedArchives;
 
 	while( pArchiveList )
 	{
-		if ( stricmp( pArchiveList->mszArchivePath, szArchiveLocalFilename ) == 0 )
+		if ( tinstricmp( pArchiveList->mszArchivePath, szArchiveLocalFilename ) == 0 )
 		{
 			return( pArchiveList );
 		}

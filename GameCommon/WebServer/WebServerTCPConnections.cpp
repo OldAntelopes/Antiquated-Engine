@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <UnivSocket.h>
-#include <StandardDef.h>
 
 #include "../tcp4u/tcp4u.h"
+
+#include <StandardDef.h>
+
 
 #include "WebServerConnectionManager.h"
 #include "WebServerTCPConnections.h"
@@ -57,10 +59,11 @@ void	TCPConnections::UpdateNewTCPConnections( void )
 {
 ClientConnection*		pNewConnection;
 char StationName[64];
-ulong	ulIPAddress = 0;
+DWORD	dwAddress;
+ulong ulIPAddress;
 
-	TcpGetRemoteID (m_WebServerPendingNewConnection, StationName, sizeof StationName, &ulIPAddress);
-
+	TcpGetRemoteID (m_WebServerPendingNewConnection, StationName, sizeof StationName, &dwAddress);
+	ulIPAddress = *((ulong*)&dwAddress);
 	pNewConnection = WebServerConnectionManager::Get().DecodeNewTCPConnection(ulIPAddress);
 
 	if ( pNewConnection )

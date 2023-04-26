@@ -436,6 +436,7 @@ extern void		EngineSetMaterial( ENGINEMATERIAL* );
 extern void		EngineGetMaterial( ENGINEMATERIAL* );
 extern void		EngineSetStandardMaterial( void );
 extern void		EngineSetStandardMaterialWithSpecular( float fPower, float fSpecularBrightness );
+extern void		EngineSetStandardMaterialWithAlpha( float fAlphaVal );
 
 //--------------------------------------------------------
 //---------- Mesh LOD Generation

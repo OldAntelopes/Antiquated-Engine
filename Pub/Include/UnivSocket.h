@@ -7,9 +7,11 @@
 
 #else
 
+#include <cerrno>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/param.h>
+#include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <unistd.h>
 

@@ -15,22 +15,24 @@ extern "C"
 #include <string.h>
 #include <stdio.h>
 
-#ifdef I3D_PLATFORM_S3E
-#define MARMALADE
-#endif
+
 
 		//------------Start of windows file includes
 // All the stuff here is stuff from windows.h and other windows header files that we need to compile
 // Its likely to be bad practice to copy these all, but it saves including all those windows header
 // files globally and helps link times enormously.
 #ifndef __WINE_WINDEF_H
+
 #ifndef WINVER
-#define WINVER 0x0400
+#ifndef UNIX		//--------------------- ndef UNIX
+#define WINVER 0x0500
+
 #ifndef NO_STRICT
 #ifndef STRICT
 #define STRICT 1
 #endif
 #endif /* NO_STRICT */
+
 // Win32 defines _WIN32 automatically,
 // but Macintosh doesn't, so if we are using
 // Win32 Functions, we must do it here
@@ -39,12 +41,14 @@ extern "C"
 #define _WIN32
 #endif
 #endif //_MAC
+
+#endif //--------------------- ndef UNIX
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-#ifndef WINVER
-#define WINVER 0x0500
-#endif /* WINVER */
+
+
 /*
  * BASETYPES is defined in ntdef.h if these types are already defined
  */
@@ -136,7 +140,10 @@ typedef char *PSZ;
 #ifndef CONST
 #define CONST               const
 #endif
-typedef unsigned long       DWORD;
+#ifndef DWORD_TYPE
+#define DWORD_TYPE
+typedef long unsigned int	      DWORD;
+#endif
 typedef int                 BOOL;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
@@ -181,7 +188,7 @@ typedef LONG LRESULT;
 typedef void *HANDLE;
 #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
 #else
-typedef PVOID HANDLE;
+typedef LPVOID HANDLE;
 #define DECLARE_HANDLE(name) typedef HANDLE name
 #endif
 typedef HANDLE *PHANDLE;
@@ -190,8 +197,9 @@ DECLARE_HANDLE            (HWND);
 DECLARE_HANDLE            (HHOOK);
 #ifdef WINABLE
 DECLARE_HANDLE            (HEVENT);
-#endif
-#endif
+#endif // WINABLE
+
+#endif			// ---------- #ifndef BASETYPES
 
 
 #define ZeroMemory(pb,cb)           memset((pb),0,(cb))
@@ -215,14 +223,15 @@ typedef struct tagRECT
     LONG    right;
     LONG    bottom;
 } RECT, *PRECT, NEAR *NPRECT, FAR *LPRECT;
-#endif
+#endif			// tagRECT
+
 #ifdef __cplusplus
 }
 #endif
 #endif //ifndef WINVER
-
 #endif //ifndef __WINE_WINDEF_H
 	//------------End of windows file includes
+
 #ifndef _WINSOCKAPI_
 #ifdef WIN32
 struct in_addr {
@@ -253,6 +262,8 @@ struct sockaddr_in {
 };
 #endif	// def WIN32
 #endif	// ndef _WINSOCKAPI_
+
+
 /**********************************************
  *********			Defines			***********
  **********************************************/
@@ -298,7 +309,11 @@ UNI_INLINE int		YFROMINDEX( int index ) { return( index >> gnHeightmapShift ); }
 
 extern int		gnLandscapeWorldHeightToHeightmapScale;
 
+#ifdef UNIX
+// Some windows funky naming
+#define	_stroi64		strtoll
 
+#endif
 /**********************************************
  *********			Structures		***********
  **********************************************/

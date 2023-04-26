@@ -139,7 +139,7 @@ return TCP4U_SUCCESS;
 /*              En cas de succes la variable pConnectSock est   */
 /*              renseignee.                                     */
 /* ------------------------------------------------------------ */
-int API4U TcpAccept (SOCKET far *pCSock, SOCKET ListenSock, UINT nTO, struct sockaddr_in* pAddress )
+int API4U TcpAccept (SOCKET *pCSock, SOCKET ListenSock, UINT nTO, struct sockaddr_in* pAddress )
 {
 struct timeval     TO;         /* Time Out structure    */
 fd_set             ReadMask;   /* select mask           */
@@ -408,7 +408,7 @@ struct servent far * lpServEnt;
 	int		nSize = sizeof( int );
 		
 		/** Set socket to non-blocking **/
-		nRet = ioctlsocket ( ListenSock, FIONBIO, &ulBlockingOff );
+		nRet = IoctlSocket ( ListenSock, FIONBIO, &ulBlockingOff );
 
 		// ZZZ if nRet ==
 		getsockopt( ListenSock, SOL_SOCKET, SO_RCVBUF, (char*)(&nVal), &nSize );
@@ -911,4 +911,4 @@ int             Idx;
 #undef XX_RETURN
 return TCP4U_OVERFLOW;
 } /* InternalTcpRecvUntilStr */
-                                                                                                                                           
+                                                                                                                                           

@@ -39,6 +39,7 @@ typedef struct _SYSTEMTIME {
 #endif
 
 fnUserPrintFunction		mfnSysUserPrintFunction = NULL;
+fnDebugPrintHandler		mpfnDebugPrintHandler = NULL;
 
 float mfSysFrameDelta = 0.01f;
 
@@ -83,7 +84,7 @@ int			nLen;
 
 int		SysStricmp( char* szOut, const char* szIn )
 {
-	return( stricmp( szOut, szIn ) );
+	return( tinstricmp( szOut, szIn ) );
 }
 
 /*
@@ -112,19 +113,23 @@ void				SysSetFrameDelta( float fDelta )
 	mfSysFrameDelta = fDelta;
 }
 
-#ifdef WIN32
 ulong	SysGetTimeLong(void )
 {
 ulong	ulCurrentTime = 0;
+#ifdef WIN32
 __time32_t	xtimet;
 //int		nRet;
 
 	_time32( &xtimet );
 	ulCurrentTime = *( (ulong*)(&xtimet) );
+#else
+time_t xTime;
 
+	time( &xTime );
+	ulCurrentTime = *( (ulong*)(&xTime) );
+#endif
 	return( ulCurrentTime );
 }
-#endif
 
 
 
@@ -496,4 +501,43 @@ int		SysFileSeek( FILE* pFile, int offset, int mode )
 	return( 1 );
 }
 
+
+//-----------------------------------------------------------------
+void		SysDebugPrint( const char* format,  ... )
+{
+#ifdef _DEBUG
+char            acString[512]; 
+va_list         marker; 
+
+    va_start( marker, format );    
+	vsprintf( acString, format, marker ); 
+	if ( mpfnDebugPrintHandler )
+	{
+		mpfnDebugPrintHandler( acString );
+	}
+	else
+	{
+	SYS_LOCALTIME	xTime;
+
+		SysGetLocalTime( &xTime );
+		printf( "[%d-%d]%02d:%02d:%02d [DBG] ", xTime.wDay, xTime.wMonth, xTime.wHour, xTime.wMinute, xTime.wSecond );
+		printf( acString );
+		printf( "\n" );
+	}
+#else
+	if ( mpfnDebugPrintHandler )
+	{
+	char            acString[512]; 
+	va_list         marker; 
+
+	    va_start( marker, format );    
+		vsprintf( acString, format, marker ); 
+		mpfnDebugPrintHandler( acString );
+	}
+#endif
+}
+void		SysRegisterDebugPrintHandler( fnDebugPrintHandler pDebugPrintHandler )
+{
+	mpfnDebugPrintHandler = pDebugPrintHandler;
+}
 

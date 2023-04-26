@@ -175,7 +175,10 @@ extern const char*	SysGetFileExtension( const char* szFilename );		// Returns a 
 
 extern BOOL	SysLaunchBrowserWindow( const char* szWeblink );
 
+extern const char*		SysNetworkGetIPAddressText( unsigned long ulIP );
+extern unsigned long	SysNetworkGetIPAddress( const char* szIPAddressString );
 
+extern void	SysGetLogDateTime( char* szOutBuffer );
 
 //-----------------------------------------------------------------------------
 

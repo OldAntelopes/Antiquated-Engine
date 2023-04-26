@@ -7,10 +7,13 @@
 
 #include <unistd.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 
 //#include <Compat.h>
 #include "System.h"
@@ -21,18 +24,70 @@
 //#include "Globals.h"
 #endif
 
-
-int             SysGetFileSize( void* pFile )
+void				SysExitThread( int nRetVal )
 {
-        if ( pFile != NULL )
-        {
-        int             nFileSize;
-                fseek( pFile, 0, SEEK_END );
-                nFileSize = ftell(pFile);
-                rewind( pFile );
-                return( nFileSize );
-        }
-        return( 0 );
+	pthread_exit(NULL);
+}
+
+
+void		SysPanicIf( int condition, const char* text, ... )
+{
+	if ( condition )
+	{
+	char		acString[1024];
+	va_list		marker;
+	ulong*		pArgs;
+	int			nLen;
+		pArgs = (ulong*)( &text ) + 1;
+
+		va_start( marker, text );     
+		vsprintf( acString, text, marker );
+
+		nLen = strlen( acString );
+		if ( nLen > 0)
+		{
+			printf( "**PANIC** " );
+			printf( acString );
+			printf( "\n");
+		}
+	}
+}
+
+
+unsigned int		SysCreateThread( fnThreadFunction pfnThreadFunction, void* pThreadPointerParam, ulong ulThreadParam, int nPriority )
+{
+int	ret;
+pthread_t	threadHandle;
+//pthread_attr_t		threadAttributes;
+
+//	pthread_attr_init( &threadAttributes );
+
+	// todo - Priority setting of threads in linux?
+//	if ( nPriority < 0 )
+//	{
+//		SetThreadPriority( hThread, THREAD_PRIORITY_BELOW_NORMAL );
+//	}
+
+	ret = pthread_create( &threadHandle, NULL, pfnThreadFunction, pThreadPointerParam);
+
+	return( (unsigned int)( threadHandle ) );
+}
+
+
+const char*		SysNetworkGetIPAddressText( ulong ulIP )
+{
+	return( inet_ntoa( *((struct in_addr*)(&ulIP))) );
+}
+
+ulong			SysNetworkGetIPAddress( const char* szIPAddressString )
+{
+	return( (ulong)(inet_addr( szIPAddressString )) );
+}
+
+
+void		SysSleep( int millisecs )
+{
+	usleep(millisecs * 1000);
 }
 
 void            SysGetLocalTime( SYS_LOCALTIME* pTime )
@@ -57,7 +112,7 @@ void SysGetCurrentDir( int nStrLen, char* szBuffer )
 	getcwd( szBuffer, nStrLen );
 }
 
-BOOL SysSetCurrentDir( char* szDir )
+BOOL SysSetCurrentDir( const char* szDir )
 {
 	return( (chdir( szDir ) != 0) ? FALSE : TRUE );
 }
@@ -75,23 +130,12 @@ struct timeval xCurrentTime ;
     return( (time(0)*1000000 + xCurrentTime.tv_usec) / 1000 ) ;
 }
 
-// -- Wrapper for malloc or whateva equivalent mem alloc function
-void*	SystemMalloc( int nMemsize )
-{
-	return( malloc( nMemsize ) );
-}
-
-// -- Wrapper for free or whateva equivalent mem alloc function
-void		SystemFree( void* pMem )
-{
-	free( pMem );
-}
 
 //-------------------------------------------------------
 // Function : SysMkDir				Unix Implementation
 //   
 //--------------------------------------------------------
-BOOL	SysMkDir( char* szDirname )
+BOOL	SysMkDir( const char* szDirname )
 {
 	return( mkdir( szDirname, S_IRWXU ) );
 }
@@ -100,7 +144,7 @@ BOOL	SysMkDir( char* szDirname )
 // Function : SysDeleteFile				Unix Implementation
 //   Deletes the specified file from the puter
 //--------------------------------------------------------
-BOOL	SysDeleteFile( char* szFilename )
+BOOL	SysDeleteFile( const char* szFilename )
 {
 	return( unlink( szFilename ) );
 }

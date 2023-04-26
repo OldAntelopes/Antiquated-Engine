@@ -4,7 +4,8 @@
 #include <time.h>
 #include <ctype.h>
 
-#include <CodeUtil.h>
+#include "StandardDef.h"
+
 
 char	macDateBuffer[64] = "";
 
@@ -221,6 +222,34 @@ int		nLen;
 	}
 } 
 
+void	SysGetLogDateTime( char* szOutBuffer )
+{
+const char*		aszMonthNames[ 12 ] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug","Sep","Oct", "Nov", "Dec" };
+#ifdef _WIN32
+__time32_t          td; 
+struct          tm *dcp; 
+
+	_time32(&td); 
+	dcp = _localtime32(&td); 
+	sprintf( szOutBuffer, "%d-%s-%d|%02d:%02d:%02d", dcp->tm_mday, aszMonthNames[dcp->tm_mon], dcp->tm_year+1900, dcp->tm_hour, dcp->tm_min, dcp->tm_sec);
+#else
+time_t now = time(NULL);
+struct tm* local_tm = localtime(&now);
+
+	sprintf( szOutBuffer, "%d-%s-%d|%02d:%02d:%02d", local_tm->tm_mday, aszMonthNames[local_tm->tm_mon], local_tm->tm_year+1900, local_tm->tm_hour, local_tm->tm_min, local_tm->tm_sec );
+
+#endif
+
+}
+
+u64		tinstrtou64( const char* szVal, char** delimiter, int nBase )
+{
+#ifdef _WIN32
+	return( _strtoi64( szVal, delimiter, nBase ) );
+#else
+	return( strtoll( szVal, delimiter, nBase ) );
+#endif
+}
 
 char* GetRealTimeDate( ulong ulTimeSeconds, BOOL bIncludeClockTime )
 {
@@ -253,4 +282,66 @@ struct tm *dcp;
 	}
 #endif
 	return( macDateBuffer );
+}
+
+//----------------------------------
+// tinstricmp
+//	returns  0 if the text matches
+//  -1 if not
+//  case insensitive
+//----------------------------------
+int		tinstricmp( const char* szText, const char* szFind )
+{
+int		nLoop = 0;
+char	cChar1;
+char	cChar2;
+
+	while ( szText[nLoop] != 0 )
+	{
+		cChar1 = szFind[nLoop];
+		cChar2 = szText[nLoop];
+		if ( cChar1 >= 'a' && cChar1 <= 'z' )
+		{	
+			cChar1 += ('A' - 'a');
+		}
+		if ( cChar2 >= 'a' && cChar2 <= 'z' )
+		{	
+			cChar2 += ('A' - 'a');
+		}
+		if ( cChar1 != cChar2 )
+		{
+			break;
+		}
+		nLoop++;
+	}
+	if ( ( szText[nLoop] == 0 ) &&
+		 ( szFind[nLoop] == 0 ) )
+	{
+		return( 0 );
+	}
+	return( -1 );
+}
+
+
+//----------------------------------
+// tinstrcmp
+//	returns  0 if the text matches
+//  -1 if not
+//	case sensitive
+//----------------------------------
+int		tinstrcmp( const char* szText, const char* szFind )
+{
+int		nLoop = 0;
+
+	while ( ( szText[nLoop] != 0 ) &&
+			( szFind[nLoop] == szText[nLoop] ) )
+	{
+		nLoop++;
+	}
+	if ( ( szText[nLoop] == 0 ) &&
+		 ( szFind[nLoop] == 0 ) )
+	{
+		return( 0 );
+	}
+	return( -1 );
 }

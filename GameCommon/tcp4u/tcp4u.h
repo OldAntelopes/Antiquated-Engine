@@ -61,8 +61,11 @@ extern "C" {            /* Assume C declarations for C++ */
 #ifndef INADDRSZ
 #  define INADDRSZ 4
 #endif
+#ifndef DWORD_TYPE
+#define DWORD_TYPE
 struct S_Tcp4uxDword { unsigned char a [INADDRSZ]; } ;
 typedef struct S_Tcp4uxDword  DWORD;
+#endif
 typedef unsigned char DWORD_PTR [INADDRSZ]; /* a pointer on a 4 bytes integer */
 #ifndef TYPE_HFILE_DEF
   typedef int HFILE;            /* file identifier   */
@@ -267,4 +270,4 @@ char* API4U Tcp4wErrorString (int Rc);
 #endif /* ifndef TCP4UX_API */
 #endif
 
-                                                                
+                                                                
