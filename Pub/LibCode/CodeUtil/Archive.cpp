@@ -289,7 +289,7 @@ typedef struct
 	char	bHeaderSize;
 	char	bTOCEntryHeaderSize;
 	char	bPad3;						// First 8 bytes should not change
-	ulong	ulNumFiles;
+	uint32	ulNumFiles;
 	ushort	uwEncryptionMode;
 	ushort	uwPad1;
 	
@@ -298,9 +298,9 @@ typedef struct
 
 typedef struct
 {
-	ulong	ulFileOffset;
-	ulong	ulFileSize;
-	ulong	ulCompressedFileSize;
+	uint32	ulFileOffset;
+	uint32	ulFileSize;
+	uint32	ulCompressedFileSize;
 	byte	bTOCEntryFlags;
 	byte	bFilenameLen;
 	byte	bPad2;
@@ -515,7 +515,7 @@ FILE*	pFile;
 		// Now Read the TOCS and generate the ArchiveFile entry for each.
 		if ( xHeaderStruct.bTOCEntryHeaderSize == sizeof( ARCHIVE_TOC_ENTRY_HEADER_V1 ) )
 		{
-		ulong		loop;
+		uint32		loop;
 		ARCHIVE_TOC_ENTRY_HEADER_V1		xTOCEntry;
 		char			pcFilenameBuffer[256];
 		ArchiveFile*	pLast = NULL;

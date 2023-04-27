@@ -15,7 +15,7 @@ extern void		EntityManagerDeleteAllEntities( void );
 extern void		EntityManagerShutdown( void );
 
 
-extern Entity*		EntityManagerGetEntity( ulong ulEntityUID );
+extern Entity*		EntityManagerGetEntity( uint32 ulEntityUID );
 
 extern Entity*		EntityManagerAddEntity( const char* szEntityTypeName, const VECT* pxPos, int nInitParam = 0 );
 

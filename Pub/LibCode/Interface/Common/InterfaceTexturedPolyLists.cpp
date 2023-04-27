@@ -52,7 +52,7 @@ TEXTURED_RECT_DEF*	pxRet = NULL;
 }
 
 
-INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, float fU, float fV, float fU2, float fV2 )
+INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fU2, float fV2 )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
@@ -81,7 +81,7 @@ TEXTURED_RECT_DEF* pxRectDef;
 	}
 }
 
-INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, ulong ulCol, float fRotAngle, float fScale )
+INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotAngle, float fScale )
 {
 int		nTexMod;
 
@@ -137,7 +137,7 @@ int		nTexMod;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, ulong ulCol )
+INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, uint32 ulCol )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 

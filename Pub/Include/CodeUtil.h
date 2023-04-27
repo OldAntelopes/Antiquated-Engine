@@ -9,7 +9,6 @@ extern "C"				// All interfaces use a C-linkage, coz in yr 2000 it was just the 
 #ifndef BASETYPES
 #ifndef MIT_TYPES
 typedef unsigned short			ushort;
-typedef unsigned long			ulong;
 typedef unsigned char			uchar;
 typedef unsigned int			uint;
 typedef unsigned long long		u64;
@@ -17,6 +16,11 @@ typedef int			            BOOL;
 #endif
 #endif
 	
+#ifndef UINT32_DEFINED
+typedef unsigned __int32		uint32;
+#define UINT32_DEFINED
+#endif
+
 /**********************************************
  *****   Universal CodeUtil Library      ******
  **********************************************
@@ -50,7 +54,7 @@ extern int		StripWhiteSpaceLeft( char* pcLine );
 extern int		StringExpandTabs( const char* pcLine, char* pcExpandedOut );
 extern void		StringToLower( const char* pcText, char* pcTextOut );
 
-extern char* GetRealTimeDate( unsigned long ulTimeSeconds, BOOL bIncludeClockTime );
+extern char*	GetRealTimeDate( uint32 ulTimeSeconds, BOOL bIncludeClockTime );
 
 //------------------------------------------------------------------
 
@@ -102,13 +106,14 @@ extern int		ArchiveMount( const char* szArchiveLocalFilename );
 extern void		ArchiveRelease( int nArchiveHandle );
 extern void		ArchiveExtract( int nArchiveHandle, const char* szDestinationPath );
 
-extern unsigned int		GetColWithModifiedAlpha( unsigned int ulCol, float fAlpha );
-extern unsigned int		GetColValue( COLOUR xCol );
-extern COLOUR			GetColFloats( unsigned int ulCol );
-extern unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, float fCol1BlendStrength );
+extern uint32		GetColWithModifiedAlpha( uint32 ulCol, float fAlpha );
+extern uint32		GetColValue( COLOUR xCol );
+extern COLOUR		GetColFloats( uint32 ulCol );
+extern uint32		GetBlendedCol( uint32 ulCol1, uint32 ulCol2, float fCol1BlendStrength );
 #define	frand()		FRand()
 
 extern float	FClamp( float fVal, float fMin, float fMax );
+extern float	FSlerp( float fValFrom, float fValTo, float fPhase );
 extern float	FRand( float, float );
 extern int		RandInt( int, int );
 extern int		ClampInt( int nVal, int nMin, int nMax );

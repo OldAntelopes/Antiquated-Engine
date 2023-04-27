@@ -159,7 +159,7 @@ VECT	xPos;
 ENGINEQUATERNION	xOrientation;
 VECT	xLinearVel;
 VECT	xAngularVel;
-ulong	ulReceivedTimestamp = SysGetTick();
+uint32	ulReceivedTimestamp = SysGetTick();
 ENGINEMATRIX	xMat;
 VECT			xUp = { 0.0f, 0.0f, 1.0f };
 

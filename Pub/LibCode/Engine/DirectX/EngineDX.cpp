@@ -277,7 +277,7 @@ EngineVertBuffContainer*		pVertBuffContainer = new EngineVertBuffContainer;
 		 ( mpEngineDevice ) )
 	{
 	int		newHandle = m_snNextVertBufferHandle++;
-	ulong	ulUsageFlags = 0;//D3DUSAGE_WRITEONLY;
+	uint32	ulUsageFlags = 0;//D3DUSAGE_WRITEONLY;
 
 		pVertBuffContainer->m_nHandle = newHandle;
 		pVertBuffContainer->mszTrackingName = (char*)( malloc( strlen( szTrackingName ) + 1 ));
@@ -320,10 +320,10 @@ EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( n
 	}
 }
 
-unsigned long*	EngineVertexBufferLockColourStream( VERTEX_BUFFER_HANDLE handle , int* pnStride )
+uint32*	EngineVertexBufferLockColourStream( VERTEX_BUFFER_HANDLE handle , int* pnStride )
 {
 EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( handle );
-ulong*		pulColBuff;
+uint32*		pulColBuff;
 
 	if ( pVertBuffContainer )
 	{
@@ -350,7 +350,7 @@ ulong*		pulColBuff;
 void		EngineVertexBufferUnlockColourStream( VERTEX_BUFFER_HANDLE handle )
 {
 EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( handle );
-//ulong*		pulColBuff;
+//uint32*		pulColBuff;
 
 	if ( pVertBuffContainer )
 	{
@@ -630,7 +630,7 @@ EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( n
 	return( FALSE );
 }
 
-BOOL	EngineVertexBufferCopyWithCol(  VERTEX_BUFFER_HANDLE hDestination,  VERTEX_BUFFER_HANDLE hSource, ulong ulCol )
+BOOL	EngineVertexBufferCopyWithCol(  VERTEX_BUFFER_HANDLE hDestination,  VERTEX_BUFFER_HANDLE hSource, uint32 ulCol )
 {
 EngineVertBuffContainer*		pDestContainer = EngineVertexBufferGetContainer( hDestination );
 EngineVertBuffContainer*		pSourceContainer = EngineVertexBufferGetContainer( hSource );
@@ -1692,18 +1692,18 @@ D3DXHANDLE handle;
 	
 }
 
-ulong		mulEngineFogCol = 0;
+uint32		mulEngineFogCol = 0;
 float		mfEngineFogStart = 0.0f;
 float		mfEngineFogEnd = 0.0f;
 
-void	EngineSetFogColour( unsigned int uARGB )
+void	EngineSetFogColour( uint32 uARGB )
 {
 	mulEngineFogCol = uARGB;
 	mpEngineDevice->SetRenderState( D3DRS_FOGCOLOR, uARGB );
 }
 
 
-void		EngineSetFog( ulong ulFogCol, float fFogStart, float fFogEnd )
+void		EngineSetFog( uint32 ulFogCol, float fFogStart, float fFogEnd )
 {
 	EngineSetFogColour( ulFogCol );
 
@@ -1720,7 +1720,7 @@ D3DXHANDLE handle;
 	if ( handle )
 	{
 	float	afFogColourRGBA[4];
-	ulong	ulFogCol = 	mulEngineFogCol;
+	uint32	ulFogCol = 	mulEngineFogCol;
 
 		afFogColourRGBA[0] = (float)( (ulFogCol >> 16) & 0xFF ) / 255.0f;
 		afFogColourRGBA[1] = (float)( (ulFogCol >> 8) & 0xFF ) / 255.0f;

@@ -179,7 +179,7 @@ BOOL		SysSetCurrentDir( const char* szDir )
 // Function : SysGetMicrosecondTick				Win32Console Implementation
 //   Returns the number of microseconds (1/1,000,000ths of a second, 1000 microseconds = 1ms)
 //--------------------------------------------------------
-ulong	SysGetMicrosecondTick( void )
+uint32	SysGetMicrosecondTick( void )
 {
 __int64		u64CurrentTick;
 	
@@ -190,7 +190,7 @@ __int64		u64CurrentTick;
 		QueryPerformanceFrequency( (LARGE_INTEGER*)&u64ticksPerSecond );
 
 		u64CurrentTick = (u64CurrentTick * 1000000) / u64ticksPerSecond;
-		return( (ulong)( u64CurrentTick ) );
+		return( (uint32)( u64CurrentTick ) );
 	}
 	return( 0 );
 	/*
@@ -205,7 +205,7 @@ LARGE_INTEGER		u64CurrentTick;
 		if ( u64ticksPerSecond > 0 )
 		{
 			u64CurrentTick = (u64CurrentTick * 1000000) / u64ticksPerSecond;
-			return( (ulong)( u64CurrentTick );
+			return( (uint32)( u64CurrentTick );
 		}
 	}
 	return( 0 );
@@ -217,7 +217,7 @@ LARGE_INTEGER		u64CurrentTick;
 //   Returns the number of milliseconds since the puter was turned on
 //		(Or when the application started.. doesnt matter which as long as it goes up regularly..)
 //--------------------------------------------------------
-ulong	SysGetTick( void )
+uint32	SysGetTick( void )
 {
 	return( GetTickCount() );
 
@@ -229,7 +229,7 @@ float	fClockTicks;
 	fClockTicks = (float)( clocktime ) / CLK_TCK;
 	// Convert seconds to ms
 	fClockTicks *= 1000.0f;
-	return( (ulong)(fClockTicks) + (1000*60) );	// the + (60*1000) is a lil bodge so the gulLastTick doesnt start
+	return( (uint32)(fClockTicks) + (1000*60) );	// the + (60*1000) is a lil bodge so the gulLastTick doesnt start
 												// at 0, which makes a few calculations about time go a bit whacky sometimes..
 												// (e.g. when doing if (EventTime < gulLastTick - 4000) )
 */

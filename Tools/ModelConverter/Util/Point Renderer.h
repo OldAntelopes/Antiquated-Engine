@@ -20,7 +20,7 @@ extern void FreePointRenderer( void );
 
 extern void RenderPoints( float, BOOL, BOOL );
 
-extern void PointRenderAdd( MVECT* pxPoint1, ulong ulCol );
+extern void PointRenderAdd( MVECT* pxPoint1, uint32 ulCol );
 
 
 

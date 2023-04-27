@@ -21,7 +21,7 @@ CUSTOMVERTEX*		mspPointBufferLockedVertices = NULL;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void PointRenderAdd( MVECT* pxPoint1, ulong ulCol )
+void PointRenderAdd( MVECT* pxPoint1, uint32 ulCol )
 {
 
 #ifndef STANDALONE

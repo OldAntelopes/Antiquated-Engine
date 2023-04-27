@@ -10,7 +10,7 @@
 
 typedef struct
 {
-	ulong	ulPathFileHeaderCode;
+	uint32	ulPathFileHeaderCode;
 	BYTE	bVersion;
 	BYTE	bSizeOfHeader;
 	BYTE	bPad1;
@@ -29,7 +29,7 @@ BYTE*	mspbPathData = NULL;
 astar_t*		mspAstar = NULL;
 direction_t*	mspLastDirections = NULL;
 
-BYTE	map_get( ulong x, ulong y)
+BYTE	map_get( uint32 x, uint32 y)
 {
 BYTE*	pbMapData = mspbPathData + ((y*mnPathMapSizeX) + x);
 
@@ -79,13 +79,13 @@ void	PathDataFree( void )
 
 void	PathDataFindValidPosition( int* pnPathMapX, int* pnPathMapY )
 {
-ulong	ulPathMapX = (ulong)( *pnPathMapX );
-ulong	ulPathMapY = (ulong)( *pnPathMapY );
+uint32	ulPathMapX = (uint32)( *pnPathMapX );
+uint32	ulPathMapY = (uint32)( *pnPathMapY );
 
 	if ( map_get( ulPathMapX, ulPathMapY ) == 255 )
 	{
-	ulong		ulLoopX;
-	ulong		ulLoopY;
+	uint32		ulLoopX;
+	uint32		ulLoopY;
 
 		for( ulLoopY = ulPathMapY - 1; ulLoopY <= ulPathMapY + 1; ulLoopY++ )
 		{
@@ -135,7 +135,7 @@ int		result;
 	   result = astar_run (mspAstar, nPathMapSourceX, nPathMapSourceY, nPathMapDestX, nPathMapDestY);
 	   if (astar_have_route (mspAstar)) 
 	   {
-	   ulong num_steps = astar_get_directions (mspAstar, &mspLastDirections);
+	   uint32 num_steps = astar_get_directions (mspAstar, &mspLastDirections);
 
 			*pnSourcePathMapX = nPathMapSourceX;
 			*pnSourcePathMapY = nPathMapSourceY;

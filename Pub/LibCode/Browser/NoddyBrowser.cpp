@@ -622,7 +622,7 @@ int		nTopOfBar;
 void	NoddyBrowser::DisplayPage( int X, int Y, int Width, int Height, int GlobalAlpha, int nFlags )
 {
 char*	pRunner = m_pcLoadedPage;
-ulong	ulPageCol = (ulong)( GlobalAlpha );
+uint32	ulPageCol = (uint32)( GlobalAlpha );
 int		nScrollbarWidth = 15;
 int		nScrollbarWidthUsed = 0;
 

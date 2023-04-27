@@ -34,7 +34,7 @@ public:
 
 	virtual void	DrawSubset( int );
 
-	virtual void	RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, ulong* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, ulong* pulHitCount );
+	virtual void	RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, uint32* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, uint32* pulHitCount );
 
 	virtual void	ReorderByMaterial( fnVertexRemapCallback, void*  );
 
@@ -45,8 +45,8 @@ private:
 	EngineVertexBufferGL*		m_pVertexBuffer;		// Will need multiple ones of these to do multiple materials
 	// todo - attribute buffer
 
-	ulong		m_ulNumVertices;
-	ulong		m_ulNumFaces;
+	uint32		m_ulNumVertices;
+	uint32		m_ulNumFaces;
 
 };
 

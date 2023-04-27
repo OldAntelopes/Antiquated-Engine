@@ -69,13 +69,13 @@ void		SeaRenderFlush( void )
 	if ( mnSeaRenderTilePos > 0 )
 	{
 	int			nLoop;
-	ulong*		pulColStream = NULL;
+	uint32*		pulColStream = NULL;
 	int			nColStride = 0;
 	VECT*		pxPosStream = NULL;
 	int			nPosStride = 0;
 	float*		pfUVStream = NULL;
 	int			nUVStride = 0;
-	ulong		ulCol = 0xC0507090;
+	uint32		ulCol = 0xC0507090;
 	float		fUBase = 0.0f;
 	float		fVBase = 0.0f;
 	float		fUWidth = 1.0f;
@@ -107,7 +107,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 2
@@ -119,7 +119,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 3
@@ -131,7 +131,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			//-------------------------
@@ -145,7 +145,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 2
@@ -157,7 +157,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 3
@@ -169,7 +169,7 @@ void		SeaRenderFlush( void )
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			pItems++;

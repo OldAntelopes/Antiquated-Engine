@@ -33,7 +33,7 @@ typedef struct
 	BYTE		bPacketElements;
 	BYTE		bPad1;
 	BYTE		bPad2;
-	ulong		ulTimestamp;
+	uint32		ulTimestamp;
 
 } REMOTE_UPDATE_HEADER;
 
@@ -92,7 +92,7 @@ typedef struct
 	ushort		uwControlFlags;
 	BYTE		bPacketElements;
 	BYTE		bPad1;
-	ulong		ulTimestamp;
+	uint32		ulTimestamp;
 
 	float		fQuat1;
 	float		fQuat2;
@@ -136,13 +136,13 @@ private:
 	PhysicsVehicle*		mpPhysicsPredictionVehicle;
 
 	VECT				mxLastReceivedPos;
-	ulong				mulLastReceivedPosTimestamp;
+	uint32				mulLastReceivedPosTimestamp;
 	ENGINEQUATERNION	mxLastReceivedOrientation;
-	ulong				mulLastReceivedOrientationTimestamp;
+	uint32				mulLastReceivedOrientationTimestamp;
 	VECT				mxLastReceivedLinearVel;
-	ulong				mulLastReceivedLinearVelTimestamp;
+	uint32				mulLastReceivedLinearVelTimestamp;
 	VECT				mxLastReceivedAngularVel;
-	ulong				mulLastReceivedAngularVelTimestamp;
+	uint32				mulLastReceivedAngularVelTimestamp;
 
 	float				mfPosBlendPhase;
 };

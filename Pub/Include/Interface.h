@@ -11,7 +11,7 @@ extern "C"				// All interfaces use a C-linkage
 #ifndef BASETYPES
 #ifndef MIT_TYPES
 typedef unsigned short			ushort;
-typedef unsigned long			ulong;
+typedef unsigned long			uint32;
 typedef unsigned char			uchar;
 typedef unsigned int			uint;
 #endif
@@ -69,7 +69,7 @@ extern BOOL					InterfaceIsOversized( void );
 /***************************************************
  ******  Interface - Main Update Functions  ********
  ***************************************************/
-extern INTERFACE_API int	InterfaceNewFrame( ulong ulClearCol );
+extern INTERFACE_API int	InterfaceNewFrame( uint32 ulClearCol );
 
 extern INTERFACE_API void	InterfaceBeginRender( void );
 extern INTERFACE_API void	InterfaceDraw( void );
@@ -86,23 +86,23 @@ extern INTERFACE_API void	InterfacePresent( void );
  ********************************************************************/
 
 // ------------  Rendering untextured stuff - rectangles, boxes, lines etc
-extern INTERFACE_API void	InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol );
-extern INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol );
+extern INTERFACE_API void	InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol );
+extern INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol );
 extern INTERFACE_API void	InterfaceShadedBox( int nLayer, int nX, int nY, int nWidth, int nHeight, int nStyle );
-extern INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulColTL, ulong ulColTR,ulong ulColBL, ulong ulColBR );
-extern INTERFACE_API void	InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 );
-extern INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 );
+extern INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulColTL, uint32 ulColTR,uint32 ulColBL, uint32 ulColBR );
+extern INTERFACE_API void	InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 );
+extern INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 );
 extern INTERFACE_API void	InterfaceOverlaysAdditive( BOOL );
 
 // ------------- Font drawing
-extern INTERFACE_API void	InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font );
-extern INTERFACE_API void	InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font );
-extern INTERFACE_API void	InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, ulong ulCol, int font );
-extern INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX1, int nY, const char* szString, ulong ulCol, int font );
+extern INTERFACE_API void	InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font );
+extern INTERFACE_API void	InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font );
+extern INTERFACE_API void	InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int font );
+extern INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX1, int nY, const char* szString, uint32 ulCol, int font );
 
-extern INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font, float fSize );
+extern INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font, float fSize );
 
-//extern INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font );
+//extern INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font );
 
 extern INTERFACE_API char*	InterfaceTextLimitWidth( int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth );
 extern INTERFACE_API int	InterfaceTextBox( int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, BOOL bLeftAlign );
@@ -113,9 +113,9 @@ extern INTERFACE_API int	InterfaceTextGetWidth( const char* pcString, int nFont 
 extern INTERFACE_API int	InterfaceTextGetHeight( const char* pcString, int nFont );
 
 // Alternative versions that let you format string too
-extern INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, ulong ulCol, int font, const char* szString, ... );
-extern INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, ulong ulCol, int font, const char* szString, ... );
-extern INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX1, int nY, ulong ulCol, int font, const char* szString, ... );
+extern INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* szString, ... );
+extern INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* szString, ... );
+extern INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX1, int nY, uint32 ulCol, int font, const char* szString, ... );
 
 enum
 {
@@ -173,10 +173,10 @@ typedef enum
 extern INTERFACE_API void	InterfaceOverlayRenderType( int nOverlayNum, INTF_RENDER_TYPES nRenderType );
 
 // ------------- Textured overlay drawing functions - to draw sprites, rectangles and triangles
-extern INTERFACE_API void	InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, ulong ulCol, float fRotation, float fScale );
-extern INTERFACE_API void	InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, float fU, float fV, float fU2, float fV2 );
-extern INTERFACE_API void	InterfaceTexturedTri( int nOverlayNum, int* pnScreenCoords, float* pfTextureCoords, ulong ulCol );
-extern INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, ulong ulCol2, float fU, float fV, float fU2, float fV2 );
+extern INTERFACE_API void	InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotation, float fScale );
+extern INTERFACE_API void	InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fU2, float fV2 );
+extern INTERFACE_API void	InterfaceTexturedTri( int nOverlayNum, int* pnScreenCoords, float* pfTextureCoords, uint32 ulCol );
+extern INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fU2, float fV2 );
 
 typedef int			IMAGEHANDLE;
 
@@ -209,7 +209,7 @@ extern INTERFACE_API int ChopTextWidth( char* pcString, int nWidth, int nFont );
  *********	  General Utility Functions       ***********
  **													   **
  ********************************************************/
-extern INTERFACE_API ulong InterfaceGetARGBForColour(ulong ulCol);
+extern INTERFACE_API uint32 InterfaceGetARGBForColour(uint32 ulCol);
 extern INTERFACE_API ushort		ReadZAtScreenCoord( int nX, int nY );
 extern INTERFACE_API ushort		GetZDepthFromWorldCoord( MVECT* pxWorldCoord );
 extern INTERFACE_API FLOAT	GetDifferenceBetweenAngles( FLOAT fAngle1, FLOAT fAngle2 );
@@ -250,8 +250,8 @@ extern INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle );
 extern INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture );
 
 
-extern ulong		InterfaceColourDarkenLinear( ulong ulCol, ulong ulDarkenAmount );
-extern ulong		InterfaceColourLightenLinear( ulong ulCol, ulong ulLightenAmount );
+extern uint32		InterfaceColourDarkenLinear( uint32 ulCol, uint32 ulDarkenAmount );
+extern uint32		InterfaceColourLightenLinear( uint32 ulCol, uint32 ulLightenAmount );
 
 
 
@@ -275,7 +275,7 @@ typedef struct
 
 extern INTERFACE_API BOOL	InterfaceFontLookupChar( int nFontNum, char cChar, FONT_UVCHAR* pOut );
 extern INTERFACE_API BOOL	InterfaceFontSetAsCurrentTexture( int nFontNum );
-extern INTERFACE_API BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, ulong ulFlags );
+extern INTERFACE_API BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags );
 extern INTERFACE_API BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffsetY, int nOccupyWidthReduction, int nOccupyHeightReduction );
 extern INTERFACE_API void	InterfaceFontFree( int nFontNum );
 
@@ -307,7 +307,7 @@ extern INTERFACE_API void	InterfaceSetGlobalParam( INTF_DRAW_PARAM nParam, int n
  **********************************************************/
 
 #ifdef __cplusplus
-extern void		CanvasText( int nLayer, float fX, float fY, const char* szText, ulong ulCol, int nFont = 0, float fMaxWidth = 0.0f, float fScale = 1.0f );
+extern void		CanvasText( int nLayer, float fX, float fY, const char* szText, uint32 ulCol, int nFont = 0, float fMaxWidth = 0.0f, float fScale = 1.0f );
 #endif
 
 /**********************************************************

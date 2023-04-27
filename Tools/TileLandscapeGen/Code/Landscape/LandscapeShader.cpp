@@ -224,7 +224,7 @@ BOOL		LandscapeShaderBeginRender( void )
 			if ( handle )
 			{
 			float	afFogColourRGBA[4];
-			ulong	ulFogCol = 	0;//LandscapeRenderGetFogColour();
+			uint32	ulFogCol = 	0;//LandscapeRenderGetFogColour();
 
 				afFogColourRGBA[0] = (float)( (ulFogCol >> 16) & 0xFF ) / 255.0f;
 				afFogColourRGBA[1] = (float)( (ulFogCol >> 8) & 0xFF ) / 255.0f;
@@ -429,7 +429,7 @@ float	fTexScale = fSourceTextureScale;
 float	fUV1Mod = 0.0417f;
 float	fUV2Mod = 1.1315f;//0.7351f;
 LPDIRECT3DDEVICE9		pd3dDevice = EngineGetDXDevice();
-ulong	ulUsageFlags = 0;
+uint32	ulUsageFlags = 0;
 IDirect3DVertexBuffer9*	pxVertexBuffer = NULL;
 LANDRENDERVERTEX*		pxLockedBuffer;
 VECT	xUp = { 0.0f, 0.0f, 1.0f };

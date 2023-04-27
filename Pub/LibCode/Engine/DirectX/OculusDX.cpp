@@ -372,7 +372,7 @@ WNDCLASSEX*	pGamesWC = (WNDCLASSEX*)( pGamesWCVoid );
 TEXTURE_HANDLE		mhOculusLeftViewRenderTarget = NOTFOUND;
 TEXTURE_HANDLE		mhOculusRightViewRenderTarget = NOTFOUND;
 
-void		OculusStartSceneLeftEye( ulong ulClearCol )
+void		OculusStartSceneLeftEye( uint32 ulClearCol )
 {
 	if ( mhOculusLeftViewRenderTarget == NOTFOUND )
 	{
@@ -388,7 +388,7 @@ void		OculusStartSceneLeftEye( ulong ulClearCol )
 	InterfaceSetDrawRegion( 0, 0, EngineTextureGetWidth(mhOculusLeftViewRenderTarget), EngineTextureGetHeight(mhOculusLeftViewRenderTarget) );
 }
 
-void		OculusStartSceneRightEye(  ulong ulClearCol )
+void		OculusStartSceneRightEye(  uint32 ulClearCol )
 {
 	EngineRestoreRenderTarget();
 
@@ -562,11 +562,11 @@ BOOL		OculusGetEulerAngles( float* pfYaw, float* pfPitch, float* pfRoll )
 	return( FALSE );
 }
 
-void		OculusStartSceneLeftEye( ulong ulClearCol )
+void		OculusStartSceneLeftEye( uint32 ulClearCol )
 {
 }
 
-void		OculusStartSceneRightEye(  ulong ulClearCol )
+void		OculusStartSceneRightEye(  uint32 ulClearCol )
 {
 
 }

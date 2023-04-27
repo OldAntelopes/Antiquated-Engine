@@ -32,7 +32,7 @@ private:
 	float			mfAngleMod2;
 
 	int				mnLayer;
-	ulong			mulCol;
+	uint32			mulCol;
 	float			mfSize;
 	float			mfRotation;
 	float			mfRotationVel;
@@ -147,7 +147,7 @@ void	SnowSprite::Render( int nLayer )
 	int		nPosX, nPosY;
 	int		nSize;
 	float	fGlobalAlphaMod = 0.8f;
-	ulong	ulCol = GetColWithModifiedAlpha( mulCol, fGlobalAlphaMod );
+	uint32	ulCol = GetColWithModifiedAlpha( mulCol, fGlobalAlphaMod );
 
 		nOverlay = msahSnowSpriteRenderOverlays[ mnRenderType ];
 

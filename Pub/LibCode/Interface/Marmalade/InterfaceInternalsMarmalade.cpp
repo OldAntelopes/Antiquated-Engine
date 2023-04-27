@@ -125,7 +125,7 @@ CIwGxFont*		mspFontArialBoldSmall = NULL;
 CIwGxFont*		mspFontArial10 = NULL;
 BOOL			mbOverlaysAdditive = FALSE;
 
-CIwColour		InterfaceGetIWColARGB( ulong ulCol )
+CIwColour		InterfaceGetIWColARGB( uint32 ulCol )
 {
 CIwColour	col;
 
@@ -173,7 +173,7 @@ void	InterfaceFreeBuffers( void )
 
 }
 
-INTERFACE_API int	InterfaceNewFrame( ulong ulClearCol )
+INTERFACE_API int	InterfaceNewFrame( uint32 ulClearCol )
 {
 int		R = (ulClearCol >> 16) & 0xFF;
 int		G = (ulClearCol >> 8) & 0xFF;
@@ -186,7 +186,7 @@ int		B = (ulClearCol & 0xFF);
 }
 
 
-INTERFACE_API void	InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void	InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 CIwFVec2*		pVerts = masTriOverlayBuffers[nLayer].mpVertBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
 CIwColour*		pCols = masTriOverlayBuffers[nLayer].mpColourBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
@@ -239,7 +239,7 @@ CIwFVec2*		pVerts3 = pVerts + 2;
 
 }
 
-INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 	InterfaceRect( nLayer, nX, nY, nWidth, 1, ulCol );
 	InterfaceRect( nLayer, nX, nY, 1, nHeight, ulCol );
@@ -248,7 +248,7 @@ INTERFACE_API void	InterfaceOutlineBox( int nLayer, int nX, int nY, int nWidth, 
 
 }
 
-INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol1, ulong ulCol2,ulong ulCol3, ulong ulCol4 )
+INTERFACE_API void	InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 )
 {
 CIwFVec2*		pVerts = masTriOverlayBuffers[nLayer].mpVertBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
 CIwColour*		pCols = masTriOverlayBuffers[nLayer].mpColourBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
@@ -309,7 +309,7 @@ CIwFVec2*		pVerts3 = pVerts + 2;
 
 }
 
-INTERFACE_API void	InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 )
+INTERFACE_API void	InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 )
 {
 CIwFVec2*		pVerts = masLineOverlayBuffers[nLayer].mpVertBuffer + masLineOverlayBuffers[nLayer].mnNumVertsInBuffer;
 CIwColour*		pCols = masLineOverlayBuffers[nLayer].mpColourBuffer + masLineOverlayBuffers[nLayer].mnNumVertsInBuffer;
@@ -342,7 +342,7 @@ CIwColour		col2;
 
 }
 
-INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 )
+INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
 {
 CIwFVec2*		pVerts = masTriOverlayBuffers[nLayer].mpVertBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
 CIwColour*		pCols = masTriOverlayBuffers[nLayer].mpColourBuffer + masTriOverlayBuffers[nLayer].mnNumVertsInBuffer;
@@ -1043,7 +1043,7 @@ INTERFACE_API void	InterfaceOverlaysAdditive( BOOL bFlag )
 	}
 }
 
-INTERFACE_API BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, ulong ulFlags )
+INTERFACE_API BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
 {
 	// todo 
 	return( FALSE );

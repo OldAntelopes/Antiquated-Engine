@@ -28,9 +28,9 @@ extern void Sprites3DReleaseGraphicsDeviceResources( void );
 
 extern SPRITE_GROUP	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
 
-extern void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags );
-extern void	Sprites3DAddSpriteRot( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags, float fRotation );
-extern void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags, float fScaleZ );
+extern void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags );
+extern void	Sprites3DAddSpriteRot( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags, float fRotation );
+extern void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags, float fScaleZ );
 
 extern void	Sprites3DFreeGroup( SPRITE_GROUP hGroup );
 

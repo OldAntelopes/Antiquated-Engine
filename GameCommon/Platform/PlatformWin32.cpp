@@ -64,7 +64,7 @@ BOOL	mbActivateMouseOverCursor = FALSE;
 u64		mullPlatformLastTick = 0;
 float	mfFrameDelta = 0.0f;
 int		mnProfileMarker = 0;
-ulong	maulProfileTimes[32];
+uint32	maulProfileTimes[32];
 char	maszProfileNames[32][32];
 
 #ifdef _DEBUG
@@ -81,7 +81,7 @@ void DetectMemoryLeaks()
 void		PlatformProfileTextEnd( void )
 {
 int		nLoop;
-ulong	ulTime;
+uint32	ulTime;
 
 	maulProfileTimes[ mnProfileMarker ] = SysGetTick();
 
@@ -143,7 +143,7 @@ void		PlatformProfileRender( void )
 {
 #ifdef PROFILE_ENABLED
 int		nLoop;
-ulong	ulTime;
+uint32	ulTime;
 char	acString[256];
 int		nLineY = 150;
 
@@ -538,7 +538,7 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 	case WM_LBUTTONUP:
 		{
-		ulong	ulExtraInfo = GetMessageExtraInfo();
+		uint32	ulExtraInfo = GetMessageExtraInfo();
 
 			mwMouseX = LOWORD(lParam);
 			mwMouseY = HIWORD(lParam);
@@ -709,7 +709,7 @@ int		nLen;
 
 }
 
-void	RecordDelta( float fDelta, ulong ulThisTick )
+void	RecordDelta( float fDelta, uint32 ulThisTick )
 {
 char	acString[256];
 int		nLen;

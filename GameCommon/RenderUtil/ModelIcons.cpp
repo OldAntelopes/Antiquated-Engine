@@ -28,7 +28,7 @@ public:
 	ModelIconHandle		mhModelIcon;
 	float		mfRotationAngle;
 	float		mfRotationSpeed;
-	ulong		mulLastUpdateTick;
+	uint32		mulLastUpdateTick;
 	BOOL		mbIsSpinning;
 	int			mhModelHandle;
 	int			mhTexture;
@@ -89,7 +89,7 @@ void		ModelIcon::UpdateIconTexture()
 VECT	xCamPos = { -1.0f, -1.0f, 1.0f };
 VECT	xCamDir = { 0.5f, 0.5f, -0.5f };
 VECT	xCamUp = { 0.0f, 0.0f, 1.0f };
-ulong	ulTick;
+uint32	ulTick;
 float	fDelta;
 VECT	xPos = { 0.0f, 0.0f, 0.0f };
 VECT	xRot = { 0.0f, 0.0f, 0.0f };
@@ -248,7 +248,7 @@ void		ModelIconDraw( ModelIconHandle handle, int layer, int X, int Y, int W, int
 {
 int		hEngineTexture = ModelIconGetIconTexture( handle );
 int		nOverlay = EngineTextureCreateInterfaceOverlay( layer, hEngineTexture );
-ulong ulCol = GetColWithModifiedAlpha( 0xFFFFFFFF, fAlpha );
+uint32 ulCol = GetColWithModifiedAlpha( 0xFFFFFFFF, fAlpha );
 
 	InterfaceTexturedRect( nOverlay, X, Y, W, H, ulCol, 0.0f, 0.0f, 1.0f, 1.0f );
 }

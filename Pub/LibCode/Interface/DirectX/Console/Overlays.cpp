@@ -73,7 +73,7 @@ int		nDrawHowMany;
 }
 
 
-INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 )
+INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 )
 {
 FLATVERTEX*		pxLineVertex;
 int		nWidth = InterfaceGetWidth();
@@ -123,7 +123,7 @@ int		nHeight = InterfaceGetHeight();
 
 }
 
-int AddOverlayTriVertices( FLATVERTEX* pVertices, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3, int nVertIndex, int nIconTextureNum )
+int AddOverlayTriVertices( FLATVERTEX* pVertices, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3, int nVertIndex, int nIconTextureNum )
 {
 	pVertices[ nVertIndex ].x = (float)(nX1);
 	pVertices[ nVertIndex ].y = (float)(nY1);
@@ -159,7 +159,7 @@ int AddOverlayTriVertices( FLATVERTEX* pVertices, int nX1, int nY1, int nX2, int
  * Returns     :
  * Description : 
  ***************************************************************************/
-int AddOverlayVertices( FLATVERTEX* pVertices, int nX, int nY, int nWidth, int nHeight, ulong ulCol, int nVertIndex, int nIconTextureNum )
+int AddOverlayVertices( FLATVERTEX* pVertices, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, int nVertIndex, int nIconTextureNum )
 {
 float	fX;
 float	fY;
@@ -244,7 +244,7 @@ INTERFACE_API void	InterfaceOverlaysAdditive( BOOL bFlag )
 }
 
 
-INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol1, ulong ulCol2,ulong ulCol3, ulong ulCol4 )
+INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 )
 {
 FLATVERTEX* pVertices;
 int nVertIndex;
@@ -347,7 +347,7 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol)
+INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol)
 {
 OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 	
@@ -373,7 +373,7 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 	pxContainer->mnNextOverlayVertex = AddOverlayVertices( pxContainer->mpOverlayVertices, nX + mnInterfaceDrawX, nY + mnInterfaceDrawY, nWidth, nHeight, ulCol, pxContainer->mnNextOverlayVertex, 0 );
 }
 
-INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 )
+INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
 {
 OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 	
@@ -406,12 +406,12 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
-ulong	ulColHi = ulCol;
-ulong	ulColLo;
-ulong	ulColLo2;
-ulong	ulColLo3;
+uint32	ulColHi = ulCol;
+uint32	ulColLo;
+uint32	ulColLo2;
+uint32	ulColLo3;
 float	R, G, B, A;
 
 	A = (float)( ulCol >> 24 );
@@ -423,20 +423,20 @@ float	R, G, B, A;
 		 ( G > 0.6f ) &&
 		 ( B > 0.6f ) )
 	{
-		ulColLo = (ulong)( A ) << 24;
-		ulColLo |= (ulong)( R * 0.8f ) << 16;
-		ulColLo |= (ulong)( G * 0.8f ) << 8;
-		ulColLo |= (ulong)( B * 0.8f );
+		ulColLo = (uint32)( A ) << 24;
+		ulColLo |= (uint32)( R * 0.8f ) << 16;
+		ulColLo |= (uint32)( G * 0.8f ) << 8;
+		ulColLo |= (uint32)( B * 0.8f );
 
-		ulColLo2 = (ulong)( A ) << 24;
-		ulColLo2 |= (ulong)( R * 0.3f ) << 16;
-		ulColLo2 |= (ulong)( G * 0.3f ) << 8;
-		ulColLo2 |= (ulong)( B * 0.3f );
+		ulColLo2 = (uint32)( A ) << 24;
+		ulColLo2 |= (uint32)( R * 0.3f ) << 16;
+		ulColLo2 |= (uint32)( G * 0.3f ) << 8;
+		ulColLo2 |= (uint32)( B * 0.3f );
 
-		ulColLo3 = (ulong)( A ) << 24;
-		ulColLo3 |= (ulong)( R * 0.5f ) << 16;
-		ulColLo3 |= (ulong)( G * 0.5f ) << 8;
-		ulColLo3 |= (ulong)( B * 0.5f );
+		ulColLo3 = (uint32)( A ) << 24;
+		ulColLo3 |= (uint32)( R * 0.5f ) << 16;
+		ulColLo3 |= (uint32)( G * 0.5f ) << 8;
+		ulColLo3 |= (uint32)( B * 0.5f );
 
 	/*
 		InterfaceLine( nLayer, nX - 1, nY, nX + nWidth + 1, nY, ulColHi, GetColWithModifiedAlpha(ulColHi,0.9f) );
@@ -509,7 +509,7 @@ INTERFACE_API void InterfaceShadedBox( int nLayer, int nX, int nY, int nWidth, i
 	}
 	else 
 	{
-		InterfaceRect( 1, nX, nY, nWidth, nHeight, (ulong)(nStyle) );
+		InterfaceRect( 1, nX, nY, nWidth, nHeight, (uint32)(nStyle) );
 
 		InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
 		InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );

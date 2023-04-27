@@ -38,7 +38,7 @@ public:
 		mulLastReceiveTime = SysGetTimeLong();
 	}
 
-	BOOL		Update( int hTCPSocket, ulong ulFromIP );
+	BOOL		Update( int hTCPSocket, uint32 ulFromIP );
 
 	BOOL		HasReceivedRequest( void ) { return( mbHasBody ); }
 
@@ -62,7 +62,7 @@ private:
 	BOOL		mbHasHeaders;
 	BOOL		mbHasBody;
 
-	ulong		mulLastReceiveTime;
+	uint32		mulLastReceiveTime;
 };
 
 
@@ -91,8 +91,8 @@ public:
 	const char*		GetHTTPRequestHeaders( void );
 	int				GetHTTPRequestBody( char* pcOutBuffer, int nOutBufferSize );
 
-	void			SetIP( ulong ulIP ) { m_ulIP = ulIP; }
-	ulong			GetIP( void ) { return( m_ulIP ); }
+	void			SetIP( uint32 ulIP ) { m_ulIP = ulIP; }
+	uint32			GetIP( void ) { return( m_ulIP ); }
 private:
 
 
@@ -113,7 +113,7 @@ private:
 
 	SOCKET				m_hTcpSocket;
 
-	ulong				m_ulIP;
+	uint32				m_ulIP;
 	ushort				m_uwPort;
 	unsigned int		mhTCPConnectThread;
 	RequestParamsList	mRequestParamsList;

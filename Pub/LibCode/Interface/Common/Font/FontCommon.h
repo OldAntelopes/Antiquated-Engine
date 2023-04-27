@@ -135,7 +135,7 @@ typedef struct
 {
 	int		nX;
 	int		nY;
-	ulong	nCol;
+	uint32	nCol;
 	char	acString[ MAX_CHARS_IN_STRING ];
 
 	union {
@@ -180,7 +180,7 @@ extern FLATVERTEX*			mpFontVertices;
 extern int					mnFontVertexIndex;
 extern int		mnPosInTextBuffer;
 
-extern int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, ulong ulCol, int nFont, int nFlag, float fTextScale );
+extern int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, uint32 ulCol, int nFont, int nFlag, float fTextScale );
 extern void	FontDefFreeAll( void );
 
 #ifdef __cplusplus

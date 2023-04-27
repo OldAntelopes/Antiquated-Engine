@@ -52,7 +52,7 @@ int		mnNumGrassBlades = 200;
 void		GrassGenerateVertexBuffer( int hVertexBuffer )
 {
 int		nLoop;
-ulong*		pulColStream = NULL;
+uint32*		pulColStream = NULL;
 int			nColStride = 0;
 VECT*		pxPosStream = NULL;
 int			nPosStride = 0;
@@ -66,8 +66,8 @@ float		fVBase = 0.0f;
 float		fUWidth = 1.0f;
 float		fVHeight = 1.0f;
 float		fHeightMod = 0.3f;
-ulong		ulCol = 0xFFFFFFFF;
-//ulong		ulCol = 0xFF000000;
+uint32		ulCol = 0xFFFFFFFF;
+//uint32		ulCol = 0xFF000000;
 float		fGrassSizeX = 0.1f;
 float		fGrassSizeZ = 0.7f;
 
@@ -90,7 +90,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 2
@@ -103,7 +103,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 3
@@ -116,7 +116,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			//-------------------------
@@ -131,7 +131,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 2
@@ -144,7 +144,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 3
@@ -157,7 +157,7 @@ float		fGrassSizeZ = 0.7f;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
 			pxNormStream = (VECT*)( ( (byte*)pxNormStream) + nNormStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			nVertCount += 6;

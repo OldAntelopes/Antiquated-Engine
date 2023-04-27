@@ -29,7 +29,7 @@ int					mnFontVertexIndex = 0;
 int					mnCurrentFontFlags = 0;
 float	mfGiantFontScale = 2.0f;
 
-ulong		manFontColours[] =
+uint32		manFontColours[] =
 {
 	0xE0F0F0F0,			/* UNUSED */
 	0xE0F0F0F0,			/* COL_SYS_SPECIAL */
@@ -104,7 +104,7 @@ ulong		manFontColours[] =
  * Returns     :
  * Description : 
  ***************************************************************************/
-void AddCharVertices( FLOATRECT* pxScrRect, FLOATRECT* pxTexRect, ulong ulCol, int nFlag )
+void AddCharVertices( FLOATRECT* pxScrRect, FLOATRECT* pxTexRect, uint32 ulCol, int nFlag )
 {
 float	fItalicOffset = 0.0f;
 
@@ -193,7 +193,7 @@ float	fItalicOffset = 0.0f;
  * Returns     : hex colour number(i hope)
  * Description : added by Kim, to get a hex colour number.
  **************************************************************************/
-ulong InterfaceGetARGBForColour(ulong nCol)
+uint32 InterfaceGetARGBForColour(uint32 nCol)
 {
 	// If its less than 0x1ff its a colour code
 	if ( ( nCol < 0x1FF ) &&
@@ -454,7 +454,7 @@ BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffset
 	return( TRUE );
 }
 
-BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, ulong ulFlags )
+BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
 	{
@@ -515,7 +515,7 @@ BOOL	ShouldAddString( const char* szString )
 	return( TRUE );
 }
 
-int		InterfaceGetFontNumFromColVal( ulong ulCol, int nFont )
+int		InterfaceGetFontNumFromColVal( uint32 ulCol, int nFont )
 {
 	if ( ulCol < 0x1FF )
 	{
@@ -548,7 +548,7 @@ int		InterfaceGetFontNumFromColVal( ulong ulCol, int nFont )
  * Returns     :
  * Description : 
  ***************************************************************************/
-void AddFontString( int nX, int nY, const char* szString, ulong ulCol, int nFlag )
+void AddFontString( int nX, int nY, const char* szString, uint32 ulCol, int nFlag )
 {
 char*	pcTextBuffer;
 int		nLen;
@@ -594,7 +594,7 @@ int		nLen;
  * Params      :
  * Description : 
  ***************************************************************************/
-void AddFontStringCenter( int nY, int nX1, int nX2, const char* szString, ulong ulCol )
+void AddFontStringCenter( int nY, int nX1, int nX2, const char* szString, uint32 ulCol )
 {
 char*	pcTextBuffer;
 RECT		xAlignRect;
@@ -789,7 +789,7 @@ int		nPreBackstepPos;
 }
 
 
-void InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont )
+void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 
 	if ( ( InterfaceIsSmall() == TRUE ) ||
@@ -799,7 +799,7 @@ void InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCo
 	}
 
 	AddFontString( nX , nY, szString, ulCol, mnCurrentFontFlags );
-	if ( (ulong)(ulCol) > 0x1FF )
+	if ( (uint32)(ulCol) > 0x1FF )
 	{
 		maxTextBuffer[ mnPosInTextBuffer - 1 ].bFont = (BYTE)(nFont);
 	}
@@ -815,7 +815,7 @@ void InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCo
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, ulong ulCol, int nFont )
+INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 	if ( InterfaceIsSmall() == TRUE )
 	{
@@ -824,7 +824,7 @@ INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, co
 	if ( ShouldAddString( szString ) )
 	{
 		AddFontStringCenter( nY, nX1, nX2, szString, ulCol );
-		if ( (ulong)(ulCol) < 0x1FF )
+		if ( (uint32)(ulCol) < 0x1FF )
 		{
 			if ( ulCol < COL_FONT2 )
 			{
@@ -852,19 +852,19 @@ INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, co
 }
 
 
-INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font )
+INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font )
 {
 	InterfaceTextCenter( nLayer, nX - 200, nX + 200, nY, szString, ulCol, font );
 
 }
 
-INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* text, ... )
 {
 char		acString[4096];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );
@@ -874,13 +874,13 @@ ulong*		pArgs;
 }
 
 
-INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* text, ... )
 {
 char		acString[4096];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );
@@ -890,13 +890,13 @@ ulong*		pArgs;
 
 }
 
-INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX, int nY, ulong ulCol, int font, const char* text, ... )
+INTERFACE_API void	InterfaceTxtCentre( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* text, ... )
 {
 char		acString[4096];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );
@@ -908,7 +908,7 @@ ulong*		pArgs;
 
 
 
-INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font, float fSize )
+INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font, float fSize )
 {
 TEXT_BUFFER*		pxText;
 char*	pcTextBuffer;
@@ -942,7 +942,7 @@ char*	pcTextBuffer;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont )
+void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 TEXT_BUFFER*		pxText;
 char*	pcTextBuffer;
@@ -1162,7 +1162,7 @@ float	fScreenScaling = 1.0f;
  * Returns     :
  * Description : 
  ***************************************************************************/
-int FontDrawChar( BYTE cChar, int nX, int nY, ulong ulCol, int nFont, int nFlag, float fScaleOverride )
+int FontDrawChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag, float fScaleOverride )
 {
 FLOATRECT	xScrRect;
 FLOATRECT	xTexRect;
@@ -1292,7 +1292,7 @@ int			nAdvance = 0;
 	{
 	FLOATRECT	xScrRect2 = xScrRect;
 	float		fMainAlpha = (float)( ulCol >> 24 ) / 255.0f; 
-	ulong		ulShadowCol;
+	uint32		ulShadowCol;
 
 		if ( nFlag & FONT_FLAG_GIANT )
 		{
@@ -1640,7 +1640,7 @@ void	InterfaceSetControllerIconFunction( InterfaceControllerIconCallback fnContr
  * Returns     :
  * Description : 
  ***************************************************************************/
-int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, ulong ulCol, int nFont, int nFlag, float fTextScale )
+int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, uint32 ulCol, int nFont, int nFlag, float fTextScale )
 {
 int		nX;
 int		nY;

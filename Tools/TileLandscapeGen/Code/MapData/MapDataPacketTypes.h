@@ -55,14 +55,14 @@ enum
 
 typedef struct
 {
-	ulong	aulTexIndex[NUM_TERRAIN_IN_PACKET];
+	uint32	aulTexIndex[NUM_TERRAIN_IN_PACKET];
 
 } MAP_PACKET_TERRAIN;
 
 typedef struct
 {
-	ulong	ulTexIndex1;
-	ulong	ulTexIndex2;
+	uint32	ulTexIndex1;
+	uint32	ulTexIndex2;
 
 } ONE_LINE_OF_TERRAIN;
 
@@ -92,35 +92,35 @@ typedef struct
 	BYTE	bCheckpointPad1;
 	short	wCheckpointPad2;
 
-	ulong	ulCheckpointPad3;
+	uint32	ulCheckpointPad3;
 
 } MAP_PACKET_CUSTOMRACE_CHECKPOINT;
 
 typedef struct
 {
-	ulong	ulCourseIndex1;
-	ulong	ulModeIndex2;
+	uint32	ulCourseIndex1;
+	uint32	ulModeIndex2;
 
 } MAP_PACKET_RACE_CHECKPOINT_LINE;
 
 typedef struct
 {
-	ulong	ulBuildingRecordNum1;
-	ulong	ulBuildingRecordNum2;
+	uint32	ulBuildingRecordNum1;
+	uint32	ulBuildingRecordNum2;
 	float	fHeight;
 	BYTE	bMode;
 	BYTE	bPad1;
 	ushort	uwPad1;
 
-	ulong	ulPad1;
+	uint32	ulPad1;
 
 } MAP_PACKET_BUILDING_CONNECTOR;
 
 
 typedef struct
 {
-	ulong	ulTypeIndex1;
-	ulong	ulIndex2;
+	uint32	ulTypeIndex1;
+	uint32	ulIndex2;
 
 } ONE_WALL;
 
@@ -149,7 +149,7 @@ typedef struct
 	int		nSize;
 	int		nDepth;
 	
-	ulong	ulPad1;
+	uint32	ulPad1;
 
 } MAP_PACKET_CRATER;
 
@@ -190,10 +190,10 @@ typedef struct
 
 	float	fBuildingPositionX;
 	float	fBuildingPositionY;
-	ulong	ulPadForZ;
+	uint32	ulPadForZ;
 	
-	ulong	ulPad1;
-	ulong	ulPad2;
+	uint32	ulPad1;
+	uint32	ulPad2;
 
 } MAP_PACKET_BUILDING;
 

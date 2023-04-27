@@ -101,7 +101,7 @@ char		acHeightmapFilename[256];
 
 }
 
-void	MenuInterfaceButtonPressHandler( int nButtonID, ulong ulParam )
+void	MenuInterfaceButtonPressHandler( int nButtonID, uint32 ulParam )
 {
 	switch( ulParam )
 	{
@@ -333,10 +333,10 @@ void		MenuInterfacePrint( const char* text, ... )
 {
 char		acString[1024];
 va_list		marker;
-//ulong*		pArgs;
+//uint32*		pArgs;
 int			nLen;
 
-//	pArgs = (ulong*)( &text ) + 1;
+//	pArgs = (uint32*)( &text ) + 1;
 
 	va_start( marker, text );     
 	vsprintf( acString, text, marker );

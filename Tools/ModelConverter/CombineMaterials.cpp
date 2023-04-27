@@ -277,7 +277,7 @@ CUSTOMVERTEX*		pxVert1;
 CUSTOMVERTEX*		pxVert2;
 CUSTOMVERTEX*		pxVert3;
 ushort*			puwIndices = NULL;
-ulong*			punIndices = NULL;
+uint32*			punIndices = NULL;
 int				nFaceLoop;
 int				nNumFaces;
 //CUSTOMVERTEX*		pxVertex;

@@ -1,4 +1,5 @@
 
+#include <math.h>
 #include <stdarg.h>
 #include <StandardDef.h>
 #include <System.h>
@@ -54,10 +55,10 @@ void		SysUserPrint( int mode, const char* text, ... )
 {
 char		acString[1024];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 int			nLen;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
 	va_start( marker, text );     
 	vsprintf( acString, text, marker );
@@ -113,20 +114,20 @@ void				SysSetFrameDelta( float fDelta )
 	mfSysFrameDelta = fDelta;
 }
 
-ulong	SysGetTimeLong(void )
+uint32	SysGetTimeLong(void )
 {
-ulong	ulCurrentTime = 0;
+uint32	ulCurrentTime = 0;
 #ifdef WIN32
 __time32_t	xtimet;
 //int		nRet;
 
 	_time32( &xtimet );
-	ulCurrentTime = *( (ulong*)(&xtimet) );
+	ulCurrentTime = *( (uint32*)(&xtimet) );
 #else
 time_t xTime;
 
 	time( &xTime );
-	ulCurrentTime = *( (ulong*)(&xTime) );
+	ulCurrentTime = *( (uint32*)(&xTime) );
 #endif
 	return( ulCurrentTime );
 }
@@ -304,12 +305,12 @@ char	acFullPath[256];
 }
 
 // Blend between two colours... When fCol1BlendStrength = 1.0f  its fully col1, when its 0.0g its fully colour 2
-unsigned int		GetBlendedCol( unsigned int ulCol1, unsigned int ulCol2, float fCol1BlendStrength )
+uint32		GetBlendedCol( uint32 ulCol1, uint32 ulCol2, float fCol1BlendStrength )
 {
 float	fR1, fG1, fB1, fA1;
 float	fR2, fG2, fB2, fA2;
-ulong	ulA, ulR, ulG, ulB;
-ulong	ulOut;
+uint32	ulA, ulR, ulG, ulB;
+uint32	ulOut;
 
 	fA1 = (float)( ulCol1 >> 24) / 0xFF;
 	fR1 = (float)( (ulCol1 >> 16) & 0xFF) / 0xFF;
@@ -326,10 +327,10 @@ ulong	ulOut;
 	fG1 = (fG1 * fCol1BlendStrength) + (fG2 * (1.0f-fCol1BlendStrength) );
 	fB1 = (fB1 * fCol1BlendStrength) + (fB2 * (1.0f-fCol1BlendStrength) );
 
-	ulA = (ulong)( fA1 * 0xFF );
-	ulR = (ulong)( fR1 * 0xFF );
-	ulG = (ulong)( fG1 * 0xFF );
-	ulB = (ulong)( fB1 * 0xFF );
+	ulA = (uint32)( fA1 * 0xFF );
+	ulR = (uint32)( fR1 * 0xFF );
+	ulG = (uint32)( fG1 * 0xFF );
+	ulB = (uint32)( fB1 * 0xFF );
 
 	ulOut = (ulA << 24) | ( ulR << 16) | (ulG << 8) | (ulB);
 	return( ulOut );
@@ -348,6 +349,16 @@ int		ClampInt( int nVal, int nMin, int nMax )
 	return( nVal );
 }
 
+float	FSlerp( float fValFrom, float fValTo, float fPhase )
+{
+float	fSlerpPhase;
+
+	fSlerpPhase = ( fPhase * A180 ) - A90;
+	fSlerpPhase = ((sinf( fSlerpPhase )) + 1.0f) * 0.5f;
+	return( ( fValFrom * (1.0f-fSlerpPhase) ) + ( fValTo * fSlerpPhase ) );
+}
+
+
 float	FClamp( float fVal, float fMin, float fMax )
 {
 	if ( fVal < fMin )
@@ -361,13 +372,13 @@ float	FClamp( float fVal, float fMin, float fMax )
 	return( fVal );
 }
 
-unsigned int		GetColValue( COLOUR xCol )
+uint32		GetColValue( COLOUR xCol )
 {
 ushort		uwRed;
 ushort		uwGreen;
 ushort		uwBlue;
 ushort		uwAlpha;
-ulong		ulCol;
+uint32		ulCol;
 
 	xCol.r = FClamp( xCol.r, 0.0f, 1.0f );
 	xCol.g = FClamp( xCol.g, 0.0f, 1.0f );
@@ -383,7 +394,7 @@ ulong		ulCol;
 	return( ulCol );	
 }
 
-COLOUR			GetColFloats( unsigned int ulCol )
+COLOUR			GetColFloats( uint32 ulCol )
 {
 COLOUR	xCol;
 
@@ -395,15 +406,15 @@ COLOUR	xCol;
 	return( xCol );
 }
 
-unsigned int	GetColWithModifiedAlpha( unsigned int ulCol, float fAlpha )
+uint32	GetColWithModifiedAlpha( uint32 ulCol, float fAlpha )
 {
-ulong	ulAlpha = ulCol >> 24;
-ulong	ulResult;
+uint32	ulAlpha = ulCol >> 24;
+uint32	ulResult;
 
-	ulAlpha = (ulong)( (float)ulAlpha * fAlpha );
+	ulAlpha = (uint32)( (float)ulAlpha * fAlpha );
 	if ( ulAlpha > 0xff ) ulAlpha = 0xFF;
 	ulResult = (ulCol & 0xFFFFFF) | (ulAlpha << 24);
-	return( ulResult );
+	return( (unsigned long)ulResult );
 }
 
 

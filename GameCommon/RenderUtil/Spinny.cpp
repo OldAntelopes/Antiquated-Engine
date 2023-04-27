@@ -5,7 +5,7 @@
 
 
 float		msfSpinnyAngle = 0.0f;
-ulong		mulLastSpinAngleUpdateTick = 0;
+uint32		mulLastSpinAngleUpdateTick = 0;
 
 void		SpinnyInit( void )
 {
@@ -25,9 +25,9 @@ int			nScale = 7;
 int			nPosX;
 int			nPosY;
 float		fStartAngle = msfSpinnyAngle;
-ulong		ulCurrentTick = SysGetTick();
+uint32		ulCurrentTick = SysGetTick();
 float		fStartAlpha = 1.0f;
-ulong		ulCol;
+uint32		ulCol;
 
 	if ( ulCurrentTick - mulLastSpinAngleUpdateTick > 50 )
 	{

@@ -6,6 +6,11 @@ extern "C"
 {
 #endif
 
+#ifndef UINT32_DEFINED
+typedef unsigned __int32		uint32;
+#define UINT32_DEFINED
+#endif
+
 //------------------------------------
 //   Maths.h
 //

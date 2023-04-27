@@ -670,7 +670,7 @@ typedef struct
 	short	nWidth;
 	short	nHeight;
 
-	ulong	ulCol;
+	uint32	ulCol;
 	float	fU1;
 	float	fU2;
 	float	fV1;
@@ -682,7 +682,7 @@ FLATVERTEX*		mpLineLockedBuffer = NULL;
 
 int		mnLinesAdded = 0;
 
-void		UVWrapRenderAddLine( int X, int Y, int X2, int Y2, ulong ulCol )
+void		UVWrapRenderAddLine( int X, int Y, int X2, int Y2, uint32 ulCol )
 {
 	if ( !mpLineLockedBuffer )
 	{
@@ -852,7 +852,7 @@ int		x2, y2;
 float	afCoordList[8];
 int		abSelections[3];
 int		edgeLoop;
-ulong	ulVertCol;
+uint32	ulVertCol;
 
 
 	afCoordList[0] = pMapping->u1;

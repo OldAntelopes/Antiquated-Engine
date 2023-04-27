@@ -163,10 +163,10 @@ int		nPolyCount = 0;
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int		ModelRenderImplGL( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags )
+int		ModelRenderImplGL( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags )
 {
 MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[ nModelHandle ];
-ulong		ulTick = mulLastRenderingTick;
+uint32		ulTick = mulLastRenderingTick;
 BOOL		boDoChangeMat = FALSE;
 int			nLODToUse = 0;
 int		nPolyCount = 0;

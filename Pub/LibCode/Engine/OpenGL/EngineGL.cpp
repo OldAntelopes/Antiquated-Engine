@@ -26,7 +26,7 @@ void	EngineDefaultState( void )
 
 }
 
-void	EngineSetRenderTargetTexture( TEXTURE_HANDLE hTexture, ulong ulClearCol, BOOL bClear )
+void	EngineSetRenderTargetTexture( TEXTURE_HANDLE hTexture, uint32 ulClearCol, BOOL bClear )
 {
 	// TODO
 }

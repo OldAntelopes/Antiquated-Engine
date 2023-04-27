@@ -32,7 +32,7 @@ BOOL	msbEngineInitialised = FALSE;
 BOOL	msbEngineNoTexturesOverride = FALSE;
 BOOL	msbEngineIsVRMode = FALSE;
 BOOL	msbEngineMaterialBlendOverride = FALSE;
-ulong	mulEngineLastFrameTick = 0;
+uint32	mulEngineLastFrameTick = 0;
 
 //-------------------------------------------------------------------------------------------------
 
@@ -212,9 +212,9 @@ void		EngineSceneShadowsEndShadowPass( void )
 }
 
 
-ulong	EngineGetColValue( int R, int G, int B, int A )
+uint32	EngineGetColValue( int R, int G, int B, int A )
 {
-ulong		ulCol;
+uint32		ulCol;
 
 	ulCol = (R << 16 ) | ( G << 8 ) | ( B ) | (A << 24);
 	return( ulCol );
@@ -250,7 +250,7 @@ void	EngineResetLighting( void )
 
 void	EngineUpdate( BOOL bNewFrame )
 {
-ulong	ulNewTick = SysGetTick();
+uint32	ulNewTick = SysGetTick();
 
 #ifdef ENGINEDX
 	EngineTextureManagerUpdateDX();

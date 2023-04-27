@@ -53,7 +53,7 @@ void	BaseMeshGL::ReorderByMaterial( fnVertexRemapCallback, void*  )
 }
 
 
-void	BaseMeshGL::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, ulong* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, ulong* pulHitCount )
+void	BaseMeshGL::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, uint32* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, uint32* pulHitCount )
 {
 	// TODO
 }
@@ -112,8 +112,8 @@ void	BaseMeshGL::Create( int nNumFaces, int nNumVertices, int nFlags )
 
 	m_pVertexBuffer = new EngineVertexBufferGL( nNumVertices );
 
-	m_ulNumVertices = (ulong)( nNumVertices );
-	m_ulNumFaces = (ulong)( nNumFaces );
+	m_ulNumVertices = (uint32)( nNumVertices );
+	m_ulNumFaces = (uint32)( nNumFaces );
 }
 
 BOOL	BaseMeshGL::Is32BitIndexBuffer( void )
@@ -124,9 +124,9 @@ BOOL	BaseMeshGL::Is32BitIndexBuffer( void )
 void	BaseMeshGL::DrawSubset( int materialNum )
 {
 CUSTOMVERTEX*	pxVertexBuffer;
-ulong	uLoop;
-ulong	indexBase = 0;
-ulong	vertex = 0;
+uint32	uLoop;
+uint32	indexBase = 0;
+uint32	vertex = 0;
 
 	glEnable (GL_TEXTURE_2D); 
 	glBegin (GL_TRIANGLES);

@@ -217,7 +217,7 @@ void	HTTPDownloadSetContentPath( int nIndex, const char* szContentPathRoot )
 void	HTTPDownloadTryNextPath( HTTP_DOWNLOAD_DETAILS* pxDetails )
 {
 #ifndef TOOL
-ulong iID;
+uint32 iID;
 HANDLE hThread;
 char*	pcDownloadURLRoot = NULL;
 char	acFullURL[256];
@@ -305,7 +305,7 @@ HTTP_DOWNLOAD_DETAILS*	pxNewDetails;
 
 void	HTTPDownloadInitiate( int nType, const char* szFullURL, const char* szLocalFilename, fnFetchFileCallback fnCompleteCallback,HTTPDownloadUpdateCallback fnUpdateCallback, long lCBParam, BOOL bIgnoreCache )
 {
-ulong iID;
+uint32 iID;
 HANDLE hThread;
 HTTP_DOWNLOAD_DETAILS*	pxNewDetails;
 
@@ -338,7 +338,7 @@ HTTP_DOWNLOAD_DETAILS*	pxNewDetails;
 
 void	HTTPDownloadInitiatePartial( int nType, char* szFullURL, char* szLocalFilename, fnFetchFileCallback fnCompleteCallback,HTTPDownloadUpdateCallback fnUpdateCallback, long lCBParam, int nBytesFromStart, int nBytesToRead )
 {
-ulong iID;
+uint32 iID;
 HANDLE hThread;
 HTTP_DOWNLOAD_DETAILS*	pxNewDetails;
 

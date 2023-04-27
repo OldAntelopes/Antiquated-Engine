@@ -327,13 +327,13 @@ int		manAnimationMatchScores[MAX_ANIMATION_USES][MAX_ANIMATION_USES] =
 
 VECT	mxAttachPoint;
 int		mnNextModelData = 0;
-ulong	mulLastRenderingTick = 0;
+uint32	mulLastRenderingTick = 0;
 BOOL	mbRenderingIsShadowPass = FALSE;
 BOOL	mbRenderingShadowMapActive = FALSE;
 float	msfFireVFXAngle1 = 0.4f;
 float	msfFireVFXAngle2 = 1.7f;
 float	msfFlickerBrightness = 0.8f;
-ulong	mulNextFlickerBrightnessChange = 100;
+uint32	mulNextFlickerBrightnessChange = 100;
 
 MODEL_RENDER_DATA		maxModelRenderData[ MAX_MODELS_LOADED ];
 
@@ -574,7 +574,7 @@ MODEL_RENDER_DATA* pxModelData;
 }
 
 
-void ModelRenderSetCurrentTriggerCallbackFunc( int nModelHandle, void fnFunc(ulong), ulong ulParam )
+void ModelRenderSetCurrentTriggerCallbackFunc( int nModelHandle, void fnFunc(uint32), uint32 ulParam )
 {
 MODEL_RENDER_DATA* pxModelData;
 BOOL		boAnimDoesHaveTrigger;
@@ -629,7 +629,7 @@ MODEL_RENDER_DATA*		pxModelData;
  * Params      :
  * Description : Sets the next anim to use, which is blended to once the current animation finishes
  ***************************************************************************/
-void	ModelSetAnimationNext( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(ulong), ulong ulParam )
+void	ModelSetAnimationNext( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(uint32), uint32 ulParam )
 {
 MODEL_RENDER_DATA*		pxModelData;
 
@@ -689,7 +689,7 @@ MODEL_RENDER_DATA*		pxModelData;
  * Params      :
  * Description : 
  ***************************************************************************/
-void	ModelSetAnimationImmediate( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(ulong), ulong ulParam )
+void	ModelSetAnimationImmediate( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(uint32), uint32 ulParam )
 {
 MODEL_RENDER_DATA*		pxModelData;
 MODEL_KEYFRAME_DATA*		pxKeyframeData;
@@ -993,7 +993,7 @@ void ModelRenderSetNextAnimAsCurrent( MODEL_RENDER_DATA* pxModelData )
  * Params      :
  * Description : 
  ***************************************************************************/
-void ModelRenderUpdateAnimation( MODEL_RENDER_DATA* pxModelData, ulong ulTick )
+void ModelRenderUpdateAnimation( MODEL_RENDER_DATA* pxModelData, uint32 ulTick )
 {
 int			nOriginalFrame;
 MODEL_KEYFRAME_DATA*		pxLastKeyframeData;
@@ -1103,7 +1103,7 @@ float	fAnimSpeed = 1.0f;
 			}
 
 			pxModelData->xAnimationState.ulLastFrameTick = pxModelData->xAnimationState.ulNextFrameTick;
-			pxModelData->xAnimationState.ulNextFrameTick += (ulong)( pxLastKeyframeData->uwKeyframeTime / fAnimSpeed );	// Anim speed
+			pxModelData->xAnimationState.ulNextFrameTick += (uint32)( pxLastKeyframeData->uwKeyframeTime / fAnimSpeed );	// Anim speed
 		}
 	}
 
@@ -1140,7 +1140,7 @@ int				nVertLoop;
  *				 counters, moving on to the 'next animation' as appropriate, then regenerates
  *				 the baseMesh from the blended frame data for the current animation state.
  ***************************************************************************/
-void ModelRenderKeyframeAnimationGenerateBaseMesh( MODEL_RENDER_DATA* pxModelData, ulong ulTick )
+void ModelRenderKeyframeAnimationGenerateBaseMesh( MODEL_RENDER_DATA* pxModelData, uint32 ulTick )
 {
 CUSTOMVERTEX*	pxVertices = NULL;
 int		nVertLoop;
@@ -1149,8 +1149,8 @@ VECT*		pxLastVerts;
 VECT*		pxNextNormals = NULL;
 VECT*		pxLastNormals = NULL;
 float		fBlendAmount;
-ulong		ulTickRange;
-ulong		ulTickGap;
+uint32		ulTickRange;
+uint32		ulTickGap;
 
 	if ( ( pxModelData->pxBaseMesh == NULL ) || 
 		 ( pxModelData->xAnimationState.boIsPaused == TRUE ) ) 
@@ -1442,7 +1442,7 @@ MODEL_RENDER_DATA*		pxModelData;
 	pxModelData->pxBaseMesh->UnlockVertexBuffer();
 }
 
-void		ModelSetVertexColourAll( int nModelHandle, ulong uARGB )
+void		ModelSetVertexColourAll( int nModelHandle, uint32 uARGB )
 {
 MODEL_RENDER_DATA*		pxModelData;
 CUSTOMVERTEX*	pxVertices;
@@ -1628,7 +1628,7 @@ float	fVal = fVal1 + fVal2 + fVal3 + fVal4 + fVal5;
 
 void	ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos )
 {
-ulong	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
+uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 
 	switch( pxModelData->xEffectAttachData.nEffectType )
 	{
@@ -1956,7 +1956,7 @@ void		ModelRenderingFree( void )
  
 }
 
-void		ModelRenderingUpdate( ulong ulTickIncrease )
+void		ModelRenderingUpdate( uint32 ulTickIncrease )
 {
 float	fFrameDelta = (ulTickIncrease) * 0.001f;
 
@@ -2104,7 +2104,7 @@ int			nLODToUse = 0;
 	return( nModelHandle );
 }
 
-int		ModelRenderQuat( int nModelHandle, const VECT* pxPos, const ENGINEQUATERNION* pxQuat, ulong ulRenderFlags )
+int		ModelRenderQuat( int nModelHandle, const VECT* pxPos, const ENGINEQUATERNION* pxQuat, uint32 ulRenderFlags )
 {
 MODEL_RENDER_DATA*		pxModelData;
 int		nNumPolysRendered = 0;
@@ -2152,7 +2152,7 @@ int			nLODToUse = 0;
 }
 
 
-int		ModelRenderSeparateWheel( int nModelHandle, int nWheelNum, const ENGINEMATRIX* pxWorldMat, ulong ulRenderFlags )
+int		ModelRenderSeparateWheel( int nModelHandle, int nWheelNum, const ENGINEMATRIX* pxWorldMat, uint32 ulRenderFlags )
 {
 MODEL_RENDER_DATA*		pxModelData;
 
@@ -2197,7 +2197,7 @@ MODEL_RENDER_DATA*		pxModelData;
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int		ModelRender( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags )
+int		ModelRender( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags )
 {
 MODEL_RENDER_DATA*		pxModelData;
 int		nNumPolysRendered = 0;

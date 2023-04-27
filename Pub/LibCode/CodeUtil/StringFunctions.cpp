@@ -251,7 +251,7 @@ u64		tinstrtou64( const char* szVal, char** delimiter, int nBase )
 #endif
 }
 
-char* GetRealTimeDate( ulong ulTimeSeconds, BOOL bIncludeClockTime )
+char* GetRealTimeDate( uint32 ulTimeSeconds, BOOL bIncludeClockTime )
 {
 #ifdef _WIN32
 struct tm *dcp;

@@ -60,10 +60,10 @@ void	TCPConnections::UpdateNewTCPConnections( void )
 ClientConnection*		pNewConnection;
 char StationName[64];
 DWORD	dwAddress;
-ulong ulIPAddress;
+uint32 ulIPAddress;
 
 	TcpGetRemoteID (m_WebServerPendingNewConnection, StationName, sizeof StationName, &dwAddress);
-	ulIPAddress = *((ulong*)&dwAddress);
+	ulIPAddress = *((uint32*)&dwAddress);
 	pNewConnection = WebServerConnectionManager::Get().DecodeNewTCPConnection(ulIPAddress);
 
 	if ( pNewConnection )
@@ -131,7 +131,7 @@ char*	pcBuffEnd = recvBuff + size - 1;
 int		nBytesReceived = 0;
 int		error;
 
-    ret = recv( hSocket, &c, 1, MSG_PEEK );
+    ret = recv( hSocket, &c, 1, MSG_PEEK | MSG_DONTWAIT );
 
 	// Messages have been returned
 	if ( ret > 0 )

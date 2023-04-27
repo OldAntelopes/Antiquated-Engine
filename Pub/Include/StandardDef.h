@@ -324,7 +324,15 @@ typedef unsigned short			ushort;
 typedef unsigned int			uint;
 #endif //not _SYS_TYPES_H_
 typedef unsigned long long		u64;
-typedef unsigned long			ulong;
+#ifndef UINT32_DEFINED
+#ifdef WIN32
+typedef unsigned __int32		uint32;
+#else
+typedef unsigned int			uint32;
+#endif
+#define UINT32_DEFINED
+#endif
+
 typedef unsigned char			uchar;
 #ifndef __WINE_RPCNDR_H
 typedef unsigned char			byte;
@@ -395,7 +403,7 @@ typedef struct
 	ushort	uwProductDamageField;
 	int		nSellPrice;
 	int		nBuyPrice;
-	ulong	ulLastProduced;
+	uint32	ulLastProduced;
 } AN_ITEM;
 
 extern	int		MyRand( void );

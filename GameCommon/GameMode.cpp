@@ -242,7 +242,7 @@ GameMode*		GameModeGetCurrent( void )
 	return( mspCurrentGameMode );
 }
 
-void		GameModeNewFrame( ulong ulBackgroundClearCol )
+void		GameModeNewFrame( uint32 ulBackgroundClearCol )
 {
 	// If we need to change and we currently have a d3d device
 	if ( InterfaceDoesNeedChanging() == TRUE ) 
@@ -265,7 +265,7 @@ void		GameModeNewFrame( ulong ulBackgroundClearCol )
 	}
 }
 
-void		GameModeRender( ulong ulBackgroundClearCol )
+void		GameModeRender( uint32 ulBackgroundClearCol )
 {
 	GameModeNewFrame( ulBackgroundClearCol );
 

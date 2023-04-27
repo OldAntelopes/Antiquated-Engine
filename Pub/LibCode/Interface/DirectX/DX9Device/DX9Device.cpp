@@ -140,8 +140,8 @@ INTERFACE_API int InterfaceGetHeight( void )
 BOOL InterfaceShowFullscreenPanic( char* szErrorString )
 {	
 MSG msg;
-ulong		ulThisTickGap = 0;
-ulong		ulLastTick = GetTickCount();
+uint32		ulThisTickGap = 0;
+uint32		ulLastTick = GetTickCount();
 
 	// Enter the message loop
 	ZeroMemory( &msg, sizeof(msg) );
@@ -421,12 +421,12 @@ D3DDISPLAYMODE d3ddm;
 
 	if ( msnInterfaceMaxRenderPageWidth != 0 )
 	{
-		if ( pD3Dpp->BackBufferWidth > (ulong)msnInterfaceMaxRenderPageWidth )
+		if ( pD3Dpp->BackBufferWidth > (uint32)msnInterfaceMaxRenderPageWidth )
 		{
 		float	fAdjust = ( (float)pD3Dpp->BackBufferWidth ) / msnInterfaceMaxRenderPageWidth;
 
 			 pD3Dpp->BackBufferWidth = msnInterfaceMaxRenderPageWidth;
-			 pD3Dpp->BackBufferHeight = (ulong)( pD3Dpp->BackBufferHeight / fAdjust );
+			 pD3Dpp->BackBufferHeight = (uint32)( pD3Dpp->BackBufferHeight / fAdjust );
 			if ( boMinPageSize == TRUE )
 			{
 				if ( pD3Dpp->BackBufferWidth < 900 )
@@ -791,10 +791,10 @@ INTERFACE_API INT_PTR CALLBACK InterfaceVidOptionsDlgProc( HWND hDlg, UINT msg, 
 }
 
 
-ulong	mulRefCount;
+uint32	mulRefCount;
 INTERFACE_API void InterfaceFreeAllD3D( void )
 {
-//ulong	ulRefCount;
+//uint32	ulRefCount;
     if( mpInterfaceD3DDevice != NULL )
 	{
 		mpInterfaceD3DDevice->SetTexture(0, NULL);
@@ -898,7 +898,7 @@ void		InterfaceSetIsUsingDefaultFonts( BOOL bUsingDefaultFonts )
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API int InterfaceNewFrame( ulong ulCol )
+INTERFACE_API int InterfaceNewFrame( uint32 ulCol )
 {
 D3DCOLOR xColor;
 BOOL	boSmallQuit = FALSE;
@@ -975,7 +975,7 @@ INTERFACE_API float	InterfaceGetFPS( void )
 }
 
 #define		NUM_FRAME_TIMES		16
-ulong maulInterfaceLastFrameTimes[NUM_FRAME_TIMES] = { 0 };
+uint32 maulInterfaceLastFrameTimes[NUM_FRAME_TIMES] = { 0 };
 int		mnInterfaceNextFrameTimeStore = 0;
 
 /***************************************************************************
@@ -1007,12 +1007,12 @@ HRESULT	hr;
 	}
 	else
 	{
-	ulong	ulFrameTime = (ulong)(ullThisTick - mullInterfaceLastPresentTick);
+	uint32	ulFrameTime = (uint32)(ullThisTick - mullInterfaceLastPresentTick);
 
 		if ( ulFrameTime > 0 )
 		{
 		int		nLoop;
-		ulong	ulAverageFrameTime = 0;
+		uint32	ulAverageFrameTime = 0;
 
 			maulInterfaceLastFrameTimes[mnInterfaceNextFrameTimeStore] = ulFrameTime;
 			mnInterfaceNextFrameTimeStore = (mnInterfaceNextFrameTimeStore+1) % NUM_FRAME_TIMES;

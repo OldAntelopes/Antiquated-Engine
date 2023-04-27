@@ -152,7 +152,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 	{
 	int		nLoop;
 	int		hCurrentVertexBuffer = mahVertexBuffers[ msnCurrentVertexBufferIndex ];
-	ulong*		pulColStream = NULL;
+	uint32*		pulColStream = NULL;
 	int			nColStride = 0;
 	VECT*		pxPosStream = NULL;
 	int			nPosStride = 0;
@@ -166,7 +166,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 	float		fVBase = 0.0f;
 	float		fUWidth = 1.0f;
 	float		fVHeight = 1.0f;
-	ulong		ulCol = 0xFFFFFFFF;
+	uint32		ulCol = 0xFFFFFFFF;
 	float		fMapToWorldSize = LandscapeMapToWorldScale();
 	BOOL		bNeedsSeaTile = FALSE;
 	float		fSeaHeight = SeaGetHeight();
@@ -201,7 +201,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				}
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 
@@ -220,7 +220,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				}
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 
@@ -239,7 +239,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				}
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 
@@ -255,7 +255,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				*pxNormalStream = LandscapeGetNormal( pItems->nMapX + 1, pItems->nMapY );
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 
@@ -274,7 +274,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				}
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 
@@ -288,7 +288,7 @@ BOOL	LandscapeTileRenderList::RenderList( void )
 				*pxNormalStream = LandscapeGetNormal( pItems->nMapX, pItems->nMapY + 1 );
 
 				pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-				pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+				pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 				pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 				pxNormalStream = (VECT*)( ( (byte*)pxNormalStream) + nNormalStride );
 

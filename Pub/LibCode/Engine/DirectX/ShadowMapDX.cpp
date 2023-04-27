@@ -238,13 +238,13 @@ int		EngineShadowMapGetDepthMap( void )
 
 void		EngineShadowMapInitDepthRenderPassAutoTarget( float fTargetDist )
 {
-//ulong	ulBackgroundCol = 0;//0x001f0000;//0xff000000;
-ulong	ulBackgroundCol = 0xffffffff;
+//uint32	ulBackgroundCol = 0;//0x001f0000;//0xff000000;
+uint32	ulBackgroundCol = 0xffffffff;
 float	fVal = 1.0f;
 VECT	xCamDir = *EngineCameraGetDirection();
 VECT	xCamPos = *EngineCameraGetPos();
 
-//	ulBackgroundCol = *( (ulong*)( &fVal ) );
+//	ulBackgroundCol = *( (uint32*)( &fVal ) );
 
 	mxShadowMapCamPosStore = *EngineCameraGetPos();
 	mxShadowMapCamDirStore = *EngineCameraGetDirection();
@@ -272,11 +272,11 @@ VECT	xCamPos = *EngineCameraGetPos();
 
 void		EngineShadowMapInitDepthRenderPass( const VECT* pxCamTarget )
 {
-//ulong	ulBackgroundCol = 0;//0x001f0000;//0xff000000;
-ulong	ulBackgroundCol = 0xffffffff;
+//uint32	ulBackgroundCol = 0;//0x001f0000;//0xff000000;
+uint32	ulBackgroundCol = 0xffffffff;
 float	fVal = 1.0f;
 
-//	ulBackgroundCol = *( (ulong*)( &fVal ) );
+//	ulBackgroundCol = *( (uint32*)( &fVal ) );
 
 	mxShadowMapCamPosStore = *EngineCameraGetPos();
 	mxShadowMapCamDirStore = *EngineCameraGetDirection();

@@ -32,7 +32,7 @@ private:
 	float			mfAngleMod1;
 	float			mfAngleMod2;
 
-	ulong			mulCol;
+	uint32			mulCol;
 	float			mfSize;
 	float			mfRotation;
 	float			mfRotationVel;
@@ -152,7 +152,7 @@ int		nOverlay;
 int		nPosX, nPosY;
 int		nSize;
 float	fGlobalAlphaMod = 0.2f;
-ulong	ulCol = GetColWithModifiedAlpha( mulCol, fGlobalAlphaMod );
+uint32	ulCol = GetColWithModifiedAlpha( mulCol, fGlobalAlphaMod );
 
 	if ( mnRenderType < 4 )
 	{

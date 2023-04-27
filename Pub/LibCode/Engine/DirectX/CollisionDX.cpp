@@ -203,7 +203,7 @@ float	fMinCollisionDist;
 		BOOL	boCollision = FALSE;
 		float	fCollisionDist = 10000.0f;
 		EngineMesh*		pxBaseMesh;
-		ulong 	ulCollIndex;
+		uint32 	ulCollIndex;
 
 			pxBaseMesh = maxModelRenderData[ nModelHandle ].pxBaseMesh;
 			pxBaseMesh->RayTest( (VECT*)&xPoint, (VECT*)&xRay, &boCollision, &ulCollIndex, NULL, NULL, &fCollisionDist, NULL, NULL );

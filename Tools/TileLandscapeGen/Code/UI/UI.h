@@ -16,15 +16,15 @@ enum
 	UIBUTTONID_MAX,
 };
 
-typedef	void(*UIButtonHandler)( int nButtonID, ulong ulParam );
+typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam );
 
 //-------------------------------------- UIButton
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
 
-extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam );
+extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam );
 
-extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, ulong ulParam );
+extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam );
 
 
 //---------------------------------------- UISlider

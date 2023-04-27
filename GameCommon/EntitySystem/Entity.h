@@ -18,14 +18,14 @@ public:
 	virtual void		OnEntityAnimationUpdate( int hModelNum ) {}
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 
-	void	Init( ulong ulEntityUID, int typeID, const VECT* pxPos, int nInitParam = 0 );
+	void	Init( uint32 ulEntityUID, int typeID, const VECT* pxPos, int nInitParam = 0 );
 	void	AddToWorld( void );
 	void	Update( float fDelta );
 	void	Render( void );
 	
 	void	SetGraphic( const char* szModelName, const char* szTextureName, int nInstanceNum );
 
-	ulong	GetEntityUID( void ) { return( mulEntityUID ); }
+	uint32	GetEntityUID( void ) { return( mulEntityUID ); }
 
 	const VECT*	GetPos( void ) { return( &mxPos ); }
 	const ENGINEQUATERNION*	GetOrientation( void ) { return( &mxOrientation ); }
@@ -67,7 +67,7 @@ private:
 	void		DefaultRender( void );
 	void		UpdateTargetTravel( float fDelta );
 	
-	ulong		mulEntityUID;
+	uint32		mulEntityUID;
 	int			mnEntityGraphicsNum;
 	VECT		mxPos;
 	VECT		mxRot;

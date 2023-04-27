@@ -18,7 +18,7 @@ typedef struct
 
 extern int		EngineSimplifyMesh( int nModelHandle, float fReduceAmount, SIMPLIFICATION_PARAMS* pxParams );
 
-extern int		ModelRenderImplGL( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
+extern int		ModelRenderImplGL( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags );
 
 extern void	ModelRenderSetMaterialRenderStates( MODEL_RENDER_DATA* pxModelData );
 

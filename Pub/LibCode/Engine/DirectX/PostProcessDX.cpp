@@ -41,7 +41,7 @@ float	mfFullBlurAmount = 0.0f;
 int					mhPostProcessGrabScreenTexture = NOTFOUND;
 float	msfPostProcessDefaultBloomValue = 0.5f;
 
-int	EnginePostProcessGenerateQuad( int width, int height, ulong ulCol )
+int	EnginePostProcessGenerateQuad( int width, int height, uint32 ulCol )
 {
 int			nVertexBufferHandle;
 ENGINEBUFFERVERTEX		vertices[6];
@@ -124,7 +124,7 @@ void		EnginePostProcessSetEnabled( BOOL bFlag )
 }
 
 
-BOOL		EnginePostProcessStartScene( ulong ulBackgroundCol )
+BOOL		EnginePostProcessStartScene( uint32 ulBackgroundCol )
 {
 BOOL	bRet = TRUE;
 
@@ -409,7 +409,7 @@ void		EnginePostProcessEndScene( void )
 
 void	EnginePostProcessCreateVertexBuffers( void )
 {
-ulong		ulCol;
+uint32		ulCol;
 
 	if ( EngineIsVRMode() )
 	{
@@ -521,11 +521,11 @@ void		EnginePostProcessSetValue( const char* szName, float fValue )
 	{
 		if ( mhPostProcessOutputAlphaVertexBuffer != NOTFOUND )
 		{
-		ulong		ulCol;
+		uint32		ulCol;
 
 			if ( fValue < 0.0f ) fValue = 0.0f;
 			if ( fValue > 1.0f ) fValue = 1.0f;
-			ulCol = (ulong)( fValue * 255.0f );
+			ulCol = (uint32)( fValue * 255.0f );
 			ulCol <<= 24;
 			ulCol |= 0xFFFFFF;
 

@@ -414,7 +414,7 @@ HTREEITEM		mhCurrentLeaf;
 
 void	InteriorMapEditorNewFrame( void )
 {
-ulong		ulCol = 0x80808080;
+uint32		ulCol = 0x80808080;
 
 	MouseCamSetMoveSpeed(4.0f);
 	MouseCamSetRotSpeed(1.2f);

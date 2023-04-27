@@ -70,7 +70,7 @@ void	MapGenReleaseBitmap( void )
 
 eMapGenType		MapGenGetTileType( float fWorldX, float fWorldY )
 {
-ulong		ulCol;
+uint32		ulCol;
 float		fR, fG, fB, fA;
 int			nMapGenX, nMapGenY;
 float	fMapModX = (float)mnMapGenBitmapSizeX / LandscapeGetMapSizeX();
@@ -81,9 +81,9 @@ float	fWorldToGameMap = LandscapeWorldToMapScale();
 	nMapGenY = (int)( (fWorldY * fWorldToGameMap) * fMapModY );
 
 	InterfaceTextureGetColourAtPoint( mhMapGenBitmap, mpbMapGenLockedBitmap, mnMapGenBitmapPitch, mnMapGenBitmapFormat, nMapGenX, nMapGenY, &fR, &fG, &fB, &fA );
-	ulCol = (ulong)( fR * 255.0f ) << 16;
-	ulCol |= (ulong)( fG * 255.0f ) << 8;
-	ulCol |= (ulong)( fB * 255.0f );
+	ulCol = (uint32)( fR * 255.0f ) << 16;
+	ulCol |= (uint32)( fG * 255.0f ) << 8;
+	ulCol |= (uint32)( fB * 255.0f );
 	ulCol |= 0xFF000000;
 
 	switch( ulCol )

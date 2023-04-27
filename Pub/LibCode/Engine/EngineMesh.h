@@ -38,7 +38,7 @@ public:
 
 	void	DrawSubset( int );
 
-	void	RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, ulong* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, ulong* pulHitCount );
+	void	RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, uint32* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, uint32* pulHitCount );
 
 	void	ReorderByMaterial( fnVertexRemapCallback, void* );
 

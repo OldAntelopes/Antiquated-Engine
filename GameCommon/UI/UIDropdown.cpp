@@ -278,7 +278,7 @@ UIDropdown*		pDropdown = DropdownFind( nHandle );
 }
 
 
-int		UIDropdownAddElement( int nHandle, const char* szElementName, ulong ulElementParam )
+int		UIDropdownAddElement( int nHandle, const char* szElementName, uint32 ulElementParam )
 {
 UIDropdown*		pDropdown = DropdownFind( nHandle );
 
@@ -304,7 +304,7 @@ UIDropdown*		pDropdown = DropdownFind( nHandle );
 
 }
 
-ulong	UIDropdownGetSelectedParam( int nHandle )
+uint32	UIDropdownGetSelectedParam( int nHandle )
 {
 UIDropdown*		pDropdown = DropdownFind( nHandle );
 
@@ -384,7 +384,7 @@ void		UIDropdown::Render( int X, int Y, int W, int H, int nMaxH, float fAlpha )
 int		nTextY = Y + ((H-16)/2);
 int		nItemSize = 40;
 int	nTexOffY = (nItemSize - 24) / 2;
-ulong	ulCol;
+uint32	ulCol;
 
 	if ( nTexOffY < 0 ) nTexOffY = 0;
 
@@ -432,7 +432,7 @@ ulong	ulCol;
 		int		nTriX3 = X + (W/2) + 40;
 		int		nTriY1 = Y + H + 2;
 		int		nTriY2 = Y + H + 20;
-		ulong	ulTriCol = 0xD0C0C0C0;
+		uint32	ulTriCol = 0xD0C0C0C0;
 
 			nMaxListHeight = Y + H + nListHeight - 36;
 

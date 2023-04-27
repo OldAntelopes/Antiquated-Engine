@@ -65,7 +65,7 @@ char*	pcOutRunner = szWordOut;
 }
 
 
-BOOL	CurrentReceive::Update( int hTCPSocket, ulong ulFromIP )
+BOOL	CurrentReceive::Update( int hTCPSocket, uint32 ulFromIP )
 {
 char	szRecvBuffer[1024];
 int		ret;
@@ -110,7 +110,7 @@ int		ret;
 		}
 		else if ( ret == 0 )
 		{
-		ulong		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
+		uint32		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
 			// Timeout all connections if we haven't received anything from them for over a minute..
 			if ( ulSecsSinceReceive > 60 )
 			{
@@ -198,7 +198,7 @@ int		ret;
 			}
 			else if ( ret == 0 )
 			{
-			ulong		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
+			uint32		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
 				// Timeout all connections if we haven't received anything from them for over a minute..
 				if ( ulSecsSinceReceive > 60 )
 				{
@@ -250,7 +250,7 @@ int		ret;
 		}
 		else if ( ret == 0 )
 		{
-		ulong		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
+		uint32		ulSecsSinceReceive = SysGetTimeLong() - mulLastReceiveTime;
 			// Timeout all connections if we haven't received anything from them for over a minute..
 			if ( ulSecsSinceReceive > 60 )
 			{

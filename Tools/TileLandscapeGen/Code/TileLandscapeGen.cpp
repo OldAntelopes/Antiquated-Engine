@@ -17,7 +17,7 @@
 #include "TileLandscapeGen.h"
 #include "MenuInterface.h"
 
-ulong	mulLastProcessRenderTick = 0;
+uint32	mulLastProcessRenderTick = 0;
 
 
 

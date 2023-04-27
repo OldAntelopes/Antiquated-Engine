@@ -17,8 +17,8 @@ extern void*	OculusInitWindow( void* );
 
 extern void*	OculusInitD3DDevice( void* pD3D );
 
-extern void		OculusStartSceneLeftEye( ulong ulClearCol );
-extern void		OculusStartSceneRightEye( ulong ulClearCol );
+extern void		OculusStartSceneLeftEye( uint32 ulClearCol );
+extern void		OculusStartSceneRightEye( uint32 ulClearCol );
 extern void		OculusStartEndScene( void );
 
 extern void		OculusReleaseGraphics( void );

@@ -41,7 +41,7 @@ D3DSURFACE_DESC		xSurface;
 byte*		pbDestination;
 byte*		pbSrc;
 ushort*		puwSrc;
-ulong*		pulDest;
+uint32*		pulDest;
 ushort*		puwDest;
 byte*		pbDest;
 int			nX;
@@ -119,7 +119,7 @@ int			nFormat;
 			for ( nY = 0; nY < nHeight; nY++ )
 			{
 				puwSrc = (ushort*)( pbSrc );
-				pulDest = (ulong*)( pbDestination );
+				pulDest = (uint32*)( pbDestination );
 				puwDest = (ushort*)( pbDestination );
 				pbDest = pbDestination;
 				for ( nX = 0; nX < nWidth; nX++ )
@@ -273,7 +273,7 @@ void RenderStrings( int nLayer )
 {
 int		nLoop;
 RECT	xRect;
-ulong	ulCol;
+uint32	ulCol;
 int		nFont;
 int		nFlag;
 float	fTextScale;

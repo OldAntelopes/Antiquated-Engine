@@ -96,7 +96,7 @@ protected:
 	void	PreDraw( void );
 	void	Draw( void );
 
-	ulong	GetColourValue( char* pcVal );
+	uint32	GetColourValue( char* pcVal );
 	int		GetWidthValue( char* pcVal );
 	int		GetHeightValue( char* pcVal );
 
@@ -116,9 +116,9 @@ protected:
 	int			m_nCursorY;
 	int			m_nCurrentLineExtentY;
 	int		mnCurrentLineHeight;
-	ulong	m_CurrentTextCol;
-	ulong	m_CurrentLinkCol;
-	ulong	m_CurrentHoverLinkCol;
+	uint32	m_CurrentTextCol;
+	uint32	m_CurrentLinkCol;
+	uint32	m_CurrentHoverLinkCol;
 	char*	m_szLink;
 	int		m_Flags;
 
@@ -127,7 +127,7 @@ protected:
 	BYTE	mbPad2;
 	BYTE	mbPad3;
 
-	ulong		m_ulBackgroundColour;
+	uint32		m_ulBackgroundColour;
 
 	char*		m_pszName;
 	char*		m_pszText;
@@ -236,7 +236,7 @@ protected:
 	virtual void	SizeChildFromParent( HTMLElement* );
 private:
 	int		mnFontSize;
-	ulong		mulNewColour;
+	uint32		mulNewColour;
 
 };
 

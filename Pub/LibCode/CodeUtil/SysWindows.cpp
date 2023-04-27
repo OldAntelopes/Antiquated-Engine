@@ -225,7 +225,7 @@ SYSTEMTIME	systime;
 	pTime->wYear = systime.wYear;
 }
 
-ulong				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
+uint32				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
 {
 time_t	epoch;
 tm		xTime;
@@ -240,10 +240,10 @@ tm		xTime;
 	// todo 
 	epoch = mktime( &xTime );
 
-	return( *( (ulong*)( &epoch ) ) );
+	return( *( (uint32*)( &epoch ) ) );
 }
 
-void		SysGetLocalTimeFromUnixTimestamp( ulong ulUnixTime, SYS_LOCALTIME* pTime )
+void		SysGetLocalTimeFromUnixTimestamp( uint32 ulUnixTime, SYS_LOCALTIME* pTime )
 {
 struct tm *dcp;
 
@@ -298,9 +298,9 @@ void		SysPanicIf( int condition, const char* text, ... )
 	{
 	char		acString[1024];
 	va_list		marker;
-	ulong*		pArgs;
+	uint32*		pArgs;
 	int			nLen;
-		pArgs = (ulong*)( &text ) + 1;
+		pArgs = (uint32*)( &text ) + 1;
 
 		va_start( marker, text );     
 		vsprintf( acString, text, marker );
@@ -415,14 +415,14 @@ int		loop;
 }
 
 
-const char*		SysNetworkGetIPAddressText( ulong ulIP )
+const char*		SysNetworkGetIPAddressText( uint32 ulIP )
 {
 	return( inet_ntoa( *((struct in_addr*)(&ulIP))) );
 }
 
-ulong			SysNetworkGetIPAddress( const char* szIPAddressString )
+uint32			SysNetworkGetIPAddress( const char* szIPAddressString )
 {
-	return( (ulong)(inet_addr( szIPAddressString )) );
+	return( (uint32)(inet_addr( szIPAddressString )) );
 }
 
 
@@ -821,7 +821,7 @@ __int64		u64CurrentTick;
 //   Returns the number of milliseconds since the puter was turned on
 //		(Or when the application started.. doesnt matter which as long as it goes up regularly..)
 //--------------------------------------------------------
-ulong	SysGetTick( void )
+uint32	SysGetTick( void )
 {
 __int64		u64CurrentTick;
 	
@@ -832,7 +832,7 @@ __int64		u64CurrentTick;
 		QueryPerformanceFrequency( (LARGE_INTEGER*)&u64ticksPerSecond );
 
 		u64CurrentTick = (u64CurrentTick * 1000) / u64ticksPerSecond;
-		return( (ulong)( u64CurrentTick ) );
+		return( (uint32)( u64CurrentTick ) );
 	}
 
 	return( GetTickCount() );
@@ -847,7 +847,7 @@ float	fTime = DXUtil_Timer(TIMER_GETABSOLUTETIME);
 	{
 		return( GetTickCount() );
 	}
-	return( (ulong)(fTime*1000.0f) );
+	return( (uint32)(fTime*1000.0f) );
 #endif
 #endif
 */
@@ -1064,12 +1064,12 @@ void				SysExitThread( int nRetVal )
 }
 
 
-unsigned int		SysCreateThread( fnThreadFunction pfnThreadFunction, void* pThreadPointerParam, ulong ulThreadParam, int nPriority )
+unsigned int		SysCreateThread( fnThreadFunction pfnThreadFunction, void* pThreadPointerParam, uint32 ulThreadParam, int nPriority )
 {
-ulong iID;
+uint32 iID;
 HANDLE hThread;
 
-	hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)pfnThreadFunction,(LPVOID)(pThreadPointerParam),ulThreadParam,&iID);
+	hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)pfnThreadFunction,(LPVOID)(pThreadPointerParam),ulThreadParam,(LPDWORD)&iID);
 	if ( nPriority < 0 )
 	{
 		SetThreadPriority( hThread, THREAD_PRIORITY_BELOW_NORMAL );

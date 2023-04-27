@@ -38,9 +38,9 @@ public:
 			 ( nScreenY1 > 0 ) &&
 			 ( nScreenY2 > 0 ) )
 		{
-		ulong	ulCol;
+		uint32	ulCol;
 
-			ulCol = 0xFF000000 | ( (ulong)(color.getX() * 0xFF) << 16) | ((ulong)( color.getY() * 0xFF) << 8) | ((ulong)( color.getZ() * 0xFF));
+			ulCol = 0xFF000000 | ( (uint32)(color.getX() * 0xFF) << 16) | ((uint32)( color.getY() * 0xFF) << 8) | ((uint32)( color.getZ() * 0xFF));
 			InterfaceLine( 0, nScreenX1, nScreenY1, nScreenX2, nScreenY2, ulCol, ulCol );
 		}
 #else
@@ -51,8 +51,8 @@ public:
 	
 		if ( fCamDist < 250.0f )
 		{
-		ulong	ulCol;
-			ulCol = 0xFF000000 | ( (ulong)(color.getX() * 0xFF) << 16) | ((ulong)( color.getY() * 0xFF) << 8) | ((ulong)( color.getZ() * 0xFF));
+		uint32	ulCol;
+			ulCol = 0xFF000000 | ( (uint32)(color.getX() * 0xFF) << 16) | ((uint32)( color.getY() * 0xFF) << 8) | ((uint32)( color.getZ() * 0xFF));
 			Lines3DAddLine( &xFrom, &xTo, ulCol, ulCol );
 		}
 #endif
@@ -82,9 +82,9 @@ public:
 			 ( nScreenY1 > 0 ) &&
 			 ( nScreenY2 > 0 ) )
 		{
-		ulong	ulCol;
+		uint32	ulCol;
 
-			ulCol = 0xFF000000 | ( (ulong)(color.getX() * 0xFF) << 16) | ((ulong)( color.getY() * 0xFF) << 8) | ((ulong)( color.getZ() * 0xFF));
+			ulCol = 0xFF000000 | ( (uint32)(color.getX() * 0xFF) << 16) | ((uint32)( color.getY() * 0xFF) << 8) | ((uint32)( color.getZ() * 0xFF));
 			InterfaceLine( 0, nScreenX1, nScreenY1, nScreenX2, nScreenY2, ulCol, ulCol );
 		}
 

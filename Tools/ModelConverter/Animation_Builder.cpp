@@ -546,7 +546,7 @@ void AnimationBuilderRebuildList( void )
 	LVITEM			xInsert;
 	char			acString[256];
 	//char*			szName;
-	//ulong			ulIP;
+	//uint32			ulIP;
 	//ushort		uwPort;
 	int				nListTop;
 

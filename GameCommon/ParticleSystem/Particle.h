@@ -17,7 +17,7 @@ public:
 
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 
-	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, ulong ulCol, float fLongevity, int nInitParm = 0 );
+	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0 );
 	void	Update( float fDelta );
 	virtual void	Render( void );
 	
@@ -30,7 +30,7 @@ public:
 	void	SetPos( const VECT* pxPos ) { mxPos = *pxPos; }
 	void	SetVel( const VECT* pxVel ) { mxVel = *pxVel; }
 	void	SetRot( float fRot ) { mfRot = fRot; }
-	void	SetCol( ulong ulCol ) { mulCol = ulCol; }
+	void	SetCol( uint32 ulCol ) { mulCol = ulCol; }
 
 	void	SetSpriteScale( float fScale ) { mfSpriteScale = fScale; }
 	void	SetSpriteFrameNum( int nFrameNum ) { mnSpriteFrameNum = nFrameNum; }
@@ -42,7 +42,7 @@ public:
 	
 	float	GetLongevity( void ) { return( mfLongevity ); }
 	float	GetTimeAlive( void ) { return( mfTimeAlive ); }
-	ulong	GetCol( void ) { return( mulCol ); }
+	uint32	GetCol( void ) { return( mulCol ); }
 
 	void		SetNext( Particle* pNext ) { mpNext = pNext; }
 	Particle*	GetNext( void ) { return( mpNext ); }
@@ -54,7 +54,7 @@ private:
 	VECT		mxPos;
 	VECT		mxVel;
 	int			mType;
-	ulong		mulCol;
+	uint32		mulCol;
 	float		mfLongevity;
 	float		mfTimeAlive;
 	float		mfSpriteScale;

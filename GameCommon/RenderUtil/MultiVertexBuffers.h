@@ -51,12 +51,12 @@ public:
 	void		AddVert( void )
 	{
 		mpxPosStream = (VECT*)( ( (byte*)mpxPosStream) + mnPosStride );
-		mpulColStream = (ulong*)( ( (byte*)mpulColStream) + mnColStride );
+		mpulColStream = (uint32*)( ( (byte*)mpulColStream) + mnColStride );
 		mpfUVStream = (float*)( ( (byte*)mpfUVStream) + mnUVStride );
 		mnCurrentPos++;
 	}
 
-	void		SetNextVertex( const VECT* pxPos, const VECT* pxNormal, float fU, float fV, ulong ulCol )
+	void		SetNextVertex( const VECT* pxPos, const VECT* pxNormal, float fU, float fV, uint32 ulCol )
 	{
 		*mpulColStream = ulCol;
 		*mpxPosStream = *pxPos;
@@ -102,7 +102,7 @@ public:
 
 	}
 
-	ulong*		mpulColStream;
+	uint32*		mpulColStream;
 	VECT*		mpxPosStream;
 	float*		mpfUVStream;
 

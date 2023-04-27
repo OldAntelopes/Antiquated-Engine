@@ -12,13 +12,13 @@ MODEL_RENDER_DATA*	pxModelData = maxModelRenderData + nModelHandle;
 CUSTOMVERTEX*		pxVertices;
 CUSTOMVERTEX*		pxNewVertices;
 ushort*			puwIndices;
-ulong*			punIndices;
+uint32*			punIndices;
 ushort*			puwNewIndices;
-ulong*			punNewIndices;
+uint32*			punNewIndices;
 int				nIndexLoop;
 int				nNumFaces;
 int				nNumIndices;
-ulong			ulIndex;
+uint32			ulIndex;
 EngineMesh*		pxNewMesh;
 DWORD*			pxAttributes;
 DWORD*			pxNewAttributes;
@@ -73,7 +73,7 @@ DWORD*			pxNewAttributes;
 			{
 				ulIndex = punIndices[nIndexLoop];
 				pxNewVertices[nIndexLoop] = pxVertices[ulIndex];
-				punNewIndices[nIndexLoop] = (ulong)( nIndexLoop );
+				punNewIndices[nIndexLoop] = (uint32)( nIndexLoop );
 			}
 		}
 		else
@@ -92,7 +92,7 @@ DWORD*			pxNewAttributes;
 		{
 			ulIndex = puwIndices[nIndexLoop];
 			pxNewVertices[nIndexLoop] = pxVertices[ulIndex];
-			punNewIndices[nIndexLoop] = (ulong)( nIndexLoop );
+			punNewIndices[nIndexLoop] = (uint32)( nIndexLoop );
 		}
 	}
 	else
@@ -358,10 +358,10 @@ int				nNumFaces;
 int				nNumIndices;
 ushort			uwIndex;
 EngineMesh*		pxNewMesh;
-ulong*			pulNewVertexLookup;
-ulong			ulNewVertCount = 0;
+uint32*			pulNewVertexLookup;
+uint32			ulNewVertCount = 0;
 int				nNewNumVerts;
-ulong			ulNewVertNum;
+uint32			ulNewVertNum;
 
 	if ( ( nModelHandle == NOTFOUND ) ||
 		 ( pxModelData->pxBaseMesh == NULL ) )
@@ -372,8 +372,8 @@ ulong			ulNewVertNum;
 	nNumFaces = pxModelData->xStats.nNumIndices / 3;
 	nNumIndices = pxModelData->xStats.nNumIndices;
 
-	pulNewVertexLookup = (ulong*)( malloc( pxModelData->xStats.nNumVertices * sizeof( ulong ) ) );
-	memset( pulNewVertexLookup, 0xFFFFFFFF, pxModelData->xStats.nNumVertices * sizeof( ulong ) );
+	pulNewVertexLookup = (uint32*)( malloc( pxModelData->xStats.nNumVertices * sizeof( uint32 ) ) );
+	memset( pulNewVertexLookup, 0xFFFFFFFF, pxModelData->xStats.nNumVertices * sizeof( uint32 ) );
 
 	pxModelData->pxBaseMesh->LockIndexBuffer( NULL, (byte**)( &puwIndices ) );
 

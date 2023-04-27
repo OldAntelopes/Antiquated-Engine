@@ -115,7 +115,7 @@ char	mszCommandLineFile[256];
 
 int		mnLODUsedDisplay = -1;
 int		mnBackgroundColour = 0;
-ulong	mulLastExportFlags = ATM_EXPORT_FLAGS_COMPRESSION | ATM_EXPORT_FLAGS_VERY_COMPRESSED_UVS | ATM_EXPORT_FLAGS_COMPRESSED_VERTICES | ATM_EXPORT_FLAGS_MATERIALS;
+uint32	mulLastExportFlags = ATM_EXPORT_FLAGS_COMPRESSION | ATM_EXPORT_FLAGS_VERY_COMPRESSED_UVS | ATM_EXPORT_FLAGS_COMPRESSED_VERTICES | ATM_EXPORT_FLAGS_MATERIALS;
 
 char	macBatchConvFolder[256];
 char	macLoadedTextureFilename[256];
@@ -153,7 +153,7 @@ HWND	mhwndGraphicWindow = NULL;
 
 int		mnNumLinesTextAdded = 0;
 
-ulong	gulLastTick = 0;
+uint32	gulLastTick = 0;
 
 MVECT				mxCamVect;
 MVECT				mxBaseCamPos;
@@ -272,10 +272,10 @@ void	ModelConvTextBoxSet( const char* format, ... )
 {
 char		acMessage[2048];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 BOOL		bEndsWithNewLine = FALSE;
 
-	pArgs = (ulong*)( &format ) + 1;
+	pArgs = (uint32*)( &format ) + 1;
 
 	va_start( marker, format );     
 	vsprintf( acMessage, format, marker );
@@ -287,10 +287,10 @@ void	ModelConvTextAdd( const char* format, ... )
 {
 char		acMessage[2048];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 BOOL		bEndsWithNewLine = FALSE;
 
-	pArgs = (ulong*)( &format ) + 1;
+	pArgs = (uint32*)( &format ) + 1;
 
 	va_start( marker, format );     
 	vsprintf( acMessage, format, marker );
@@ -665,7 +665,7 @@ void	ModelConvResetCameraToModel( void )
 }
 
 
-int ModelConvLoadModel( const char* acFilename, ulong ulFlags, float fScale )
+int ModelConvLoadModel( const char* acFilename, uint32 ulFlags, float fScale )
 {
 int		nLock;
 int		nModelHandle;
@@ -745,7 +745,7 @@ void	ModelConvSetTemporaryDisplayModel( int nHandle )
 // Function : ModelConvSetExportFlags
 //		
 //---------------------------------------------------
-void	ModelConvSetExportFlags( ulong ulFlag )
+void	ModelConvSetExportFlags( uint32 ulFlag )
 {
 	if ( (ulFlag &ATM_EXPORT_FLAGS_COMPRESSION) )
 	{	
@@ -908,9 +908,9 @@ void	ModelConvSetLODUsedDisplay( int nLODUsed )
 // Function : ModelConvGetExportFlags
 //		
 //---------------------------------------------------
-ulong	ModelConvGetExportFlags( void )
+uint32	ModelConvGetExportFlags( void )
 {
-ulong	ulFlags = 0;
+uint32	ulFlags = 0;
 
 
 	if ( (GetMenuState( GetMenu(mhwndMainDialog), IDM_ATM_COMPRESSION, 0 ) & MF_CHECKED) != 0 )
@@ -1115,7 +1115,7 @@ VECT	xCamUp;
 
 void	ModelConvNewFrame( void )
 {
-ulong		ulCol;
+uint32		ulCol;
 
 	// If we need to change and we currently have a d3d device
 	if ( ( InterfaceDoesNeedChanging() == TRUE ) &&
@@ -1354,7 +1354,7 @@ int		nScreenX, nScreenY;
 }
 
 
-void		ModelConverterKeyControlsUpdate( ulong ulTick )
+void		ModelConverterKeyControlsUpdate( uint32 ulTick )
 {
 	if ( ( mbThisWindowIsFocused ) &&
 		 ( mbDisableWASD == FALSE ) ) 
@@ -1438,7 +1438,7 @@ int		nHandleToDraw;
 MODEL_RENDER_DATA*		pxModelData;
 VECT	xPos;
 VECT*	pxAttachPos;
-ulong	ulTickGap;
+uint32	ulTickGap;
 bool	bDrawUsingSceneObject = true;
 float	fDelta;
 
@@ -2959,8 +2959,8 @@ MODEL_RENDER_DATA*	pxModelData;
 char	acFilename[256];
 char	acBaseFilename[256];
 int		nStringLen;
-ulong	ulFlags = ModelConvGetExportFlags();
-ulong	ulLockFlags = 0;
+uint32	ulFlags = ModelConvGetExportFlags();
+uint32	ulLockFlags = 0;
 
 	if ( m_MainSceneObject.GetModelHandle() != NOTFOUND )
 	{
@@ -3197,7 +3197,7 @@ LRESULT CALLBACK PopupDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 
 typedef struct
 {
-	ulong	ulExportFlags;
+	uint32	ulExportFlags;
 	int		nX;
 	int		nY;
 	int		nWidth;
@@ -3341,7 +3341,7 @@ int		nNumModelFiles = 0;
 char*	pcString;
 FILE*	pFile;
 int		nSize;
-ulong	ulExportFlags = ModelConvGetExportFlags();
+uint32	ulExportFlags = ModelConvGetExportFlags();
 
 
 	sprintf( acString, "%s*.*", szFolder );	 
@@ -3466,7 +3466,7 @@ HWND	hwndPopup;
 char*	pcString;
 FILE*	pFile;
 int		nSize;
-ulong	ulExportFlags = ModelConvGetExportFlags();
+uint32	ulExportFlags = ModelConvGetExportFlags();
 
 	hwndPopup = CreateDialog(ghInstance, (LPCTSTR)IDD_BATCH_PROGRESS, mhwndBatchRescaleDialog, (DLGPROC)PopupDlgProc );
 
@@ -3566,7 +3566,7 @@ ulong	ulExportFlags = ModelConvGetExportFlags();
 	EndDialog( hwndPopup, 0 );
 }
 
-void ModelConvBatchRescaleRun( ulong ulFlags )
+void ModelConvBatchRescaleRun( uint32 ulFlags )
 {
 //	ModelConvBatchRescaleProcessFolderNoRecurse( macBatchRescaleFolder );
 	
@@ -3578,7 +3578,7 @@ void ModelConvBatchRescaleRun( ulong ulFlags )
 }
 
 
-void ModelConvBatchConversionRun( ulong ulFlags )
+void ModelConvBatchConversionRun( uint32 ulFlags )
 {
 WIN32_FIND_DATA FileData; 
 char	acString[256];
@@ -3593,7 +3593,7 @@ HWND	hwndPopup;
 char*	pcString;
 FILE*	pFile;
 int		nSize;
-ulong	ulExportFlags = ModelConvGetExportFlags();
+uint32	ulExportFlags = ModelConvGetExportFlags();
 
 	hwndPopup = CreateDialog(ghInstance, (LPCTSTR)IDD_BATCH_PROGRESS, mhwndBatchConvertDialog, (DLGPROC)PopupDlgProc );
 
@@ -4109,8 +4109,8 @@ void	ModelConvSaveAs( int nModelHandle, char* acFilename, int nMode, BOOL bStore
 char	acString[256];
 FILE*	pFile;
 int		nSize;
-ulong	ulFlags = ModelConvGetExportFlags();
-ulong	ulLockFlags = 0;
+uint32	ulFlags = ModelConvGetExportFlags();
+uint32	ulLockFlags = 0;
 
 	if ( ModelGetStats(nModelHandle)->ulLockID != 0 )
 	{
@@ -5857,11 +5857,11 @@ int DevLog( int eLogType, const char *format, ... )
 	char		acString[512];
 	char		acMessage[512];
 	va_list		marker;
-	ulong*		pArgs;
+	uint32*		pArgs;
 	int			nLen;
 	BOOL		bEndsWithNewLine = FALSE;
 
-		pArgs = (ulong*)( &format ) + 1;
+		pArgs = (uint32*)( &format ) + 1;
 
 		va_start( marker, format );     
 		vsprintf( acMessage, format, marker );
@@ -5869,7 +5869,7 @@ int DevLog( int eLogType, const char *format, ... )
 		nLen = strlen(acMessage);
 		if ( nLen > 0)
 		{
-		ulong		ulTick = SysGetTick();
+		uint32		ulTick = SysGetTick();
 
 			if ( acMessage[nLen-1] == '\n')
 			{

@@ -36,9 +36,9 @@ void		SysPanicIf( int condition, const char* text, ... )
 	{
 	char		acString[1024];
 	va_list		marker;
-	ulong*		pArgs;
+	uint32*		pArgs;
 	int			nLen;
-		pArgs = (ulong*)( &text ) + 1;
+		pArgs = (uint32*)( &text ) + 1;
 
 		va_start( marker, text );     
 		vsprintf( acString, text, marker );
@@ -54,7 +54,7 @@ void		SysPanicIf( int condition, const char* text, ... )
 }
 
 
-unsigned int		SysCreateThread( fnThreadFunction pfnThreadFunction, void* pThreadPointerParam, ulong ulThreadParam, int nPriority )
+unsigned int		SysCreateThread( fnThreadFunction pfnThreadFunction, void* pThreadPointerParam, uint32 ulThreadParam, int nPriority )
 {
 int	ret;
 pthread_t	threadHandle;
@@ -74,14 +74,14 @@ pthread_t	threadHandle;
 }
 
 
-const char*		SysNetworkGetIPAddressText( ulong ulIP )
+const char*		SysNetworkGetIPAddressText( uint32 ulIP )
 {
 	return( inet_ntoa( *((struct in_addr*)(&ulIP))) );
 }
 
-ulong			SysNetworkGetIPAddress( const char* szIPAddressString )
+uint32			SysNetworkGetIPAddress( const char* szIPAddressString )
 {
-	return( (ulong)(inet_addr( szIPAddressString )) );
+	return( (uint32)(inet_addr( szIPAddressString )) );
 }
 
 
@@ -122,12 +122,20 @@ BOOL SysSetCurrentDir( const char* szDir )
 //   Returns the number of milliseconds since the puter was turned on
 //		(Or when the application started.. doesnt matter which as long as it goes up regularly..)
 //--------------------------------------------------------
-ulong	SysGetTick( void )
+uint32	SysGetTick( void )
 {
+    struct timespec ts;
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+
+    return ( (uint32)( (uint64_t)(ts.tv_nsec / 1000000) + ((uint64_t)ts.tv_sec * 1000ull) ) );
+
+#ifdef OLD_IMPLEMENTATION
 struct timeval xCurrentTime ;
 
     gettimeofday(&xCurrentTime, 0) ;
     return( (time(0)*1000000 + xCurrentTime.tv_usec) / 1000 ) ;
+#endif
 }
 
 

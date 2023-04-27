@@ -18,7 +18,7 @@
 #define		LINE_VERTEX_BUFFER_SIZE			65536
 
 
-INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol1, ulong ulCol2,ulong ulCol3, ulong ulCol4 )
+INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 )
 {
 float	fX;
 float	fY;
@@ -59,7 +59,7 @@ float	fR, fG, fB, fA;
  * Returns     :
  * Description : OpenGL version
  ***************************************************************************/
-INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol)
+INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol)
 {
 	if ( nLayer == 0 )
 	{
@@ -77,7 +77,7 @@ INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nH
  * Returns     :
  * Description : OpenGL version
  ***************************************************************************/
-INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 	InterfaceRect( 0, nX - 2, nY - 2, 2, nHeight + 4, ulCol );
 	InterfaceRect( 0, nX + nWidth, nY - 2, 2, nHeight + 4, ulCol );
@@ -127,7 +127,7 @@ INTERFACE_API void InterfaceShadedBox( int nLayer, int nX, int nY, int nWidth, i
 	}
 	else 
 	{
-		InterfaceRect( 1, nX, nY, nWidth, nHeight, (ulong)(nStyle) );
+		InterfaceRect( 1, nX, nY, nWidth, nHeight, (uint32)(nStyle) );
 
 		InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
 		InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
@@ -204,7 +204,7 @@ void UnlockOverlays( void )
 {
 }
 
-INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 )
+INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
 {
 float	fR, fG, fB, fA;
 
@@ -228,7 +228,7 @@ float	fR, fG, fB, fA;
 
 }
 
-INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 )
+INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 )
 {
 float	fR, fG, fB, fA;
 

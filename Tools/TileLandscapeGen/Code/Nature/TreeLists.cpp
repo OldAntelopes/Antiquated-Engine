@@ -14,7 +14,7 @@
 
 typedef struct 
 {
-	ulong		ulRenderFrameTick;
+	uint32		ulRenderFrameTick;
 	Tree*		pTreeList;
 
 } TREE_LIST;
@@ -143,7 +143,7 @@ int		nLoop;
 
 }
 
-void	TreeListsProcessView( fnProcessTreeCallback fnProcess, ulong ulParam  )
+void	TreeListsProcessView( fnProcessTreeCallback fnProcess, uint32 ulParam  )
 {
 int		nListLoopY;
 int		nListLoopX;

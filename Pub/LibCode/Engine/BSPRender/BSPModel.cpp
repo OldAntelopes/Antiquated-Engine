@@ -8,15 +8,15 @@
 
 struct quake2_bsp_lump
 {   
-	ulong    offset;     // offset (in bytes) of the data from the beginning of the file
-    ulong    length;     // length (in bytes) of the data
+	uint32    offset;     // offset (in bytes) of the data from the beginning of the file
+    uint32    length;     // length (in bytes) of the data
 
 };
 
 struct quake2_bsp_header
 { 
-	ulong    magic;      // magic number ("IBSP")
-    ulong    version;    // version of the BSP format (38)
+	uint32    magic;      // magic number ("IBSP")
+    uint32    version;    // version of the BSP format (38)
 
     quake2_bsp_lump  lump[19];   // directory of the lumps
 };

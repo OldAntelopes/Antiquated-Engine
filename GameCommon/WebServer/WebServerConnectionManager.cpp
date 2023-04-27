@@ -186,7 +186,7 @@ ClientConnectionList*		pNext;
 //
 //
 //-----------------------------------------------------------------------------------------------------
-ClientConnection*		WebServerConnectionManager::DecodeNewTCPConnection( ulong ulIP )
+ClientConnection*		WebServerConnectionManager::DecodeNewTCPConnection( uint32 ulIP )
 {
 ClientConnection*		pNewConnection;
 

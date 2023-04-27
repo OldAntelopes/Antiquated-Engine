@@ -98,7 +98,7 @@ int		nDrawHowMany;
 }
 
 
-INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 )
+INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 )
 {
 FLATVERTEX*		pxLineVertex;
 int		nWidth = InterfaceGetWidth();
@@ -152,7 +152,7 @@ int		nHeight = InterfaceGetHeight();
  * Returns     :
  * Description : 
  ***************************************************************************/
-int AddOverlayVertices( FLATVERTEX* pVertices, int nX, int nY, int nWidth, int nHeight, ulong ulCol, int nVertIndex, int nIconTextureNum )
+int AddOverlayVertices( FLATVERTEX* pVertices, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, int nVertIndex, int nIconTextureNum )
 {
 float	fX;
 float	fY;
@@ -235,7 +235,7 @@ float	fV1;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void AddOverlayRect( int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void AddOverlayRect( int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 #ifdef USING_OPENGL
 
@@ -266,7 +266,7 @@ INTERFACE_API void AddOverlayRect( int nX, int nY, int nWidth, int nHeight, ulon
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void AddOverlayRect2( int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void AddOverlayRect2( int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 #ifdef USING_OPENGL
 float	fX;
@@ -318,7 +318,7 @@ float	fR, fG, fB, fA;
 
 
 
-INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol1, ulong ulCol2,ulong ulCol3, ulong ulCol4 )
+INTERFACE_API void InterfaceShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 )
 {
 float	fX;
 float	fY;
@@ -441,7 +441,7 @@ float	fV1 = 1.0f;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol)
+INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol)
 {
 	if ( nLayer == 0 )
 	{
@@ -459,7 +459,7 @@ INTERFACE_API void InterfaceRect( int nLayer, int nX, int nY, int nWidth, int nH
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, ulong ulCol )
+INTERFACE_API void InterfaceOutlineBox ( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol )
 {
 	AddOverlayRect( nX - 2, nY - 2, 2, nHeight + 4, ulCol );
 	AddOverlayRect( nX + nWidth, nY - 2, 2, nHeight + 4, ulCol );
@@ -509,7 +509,7 @@ INTERFACE_API void InterfaceShadedBox( int nLayer, int nX, int nY, int nWidth, i
 	}
 	else 
 	{
-		AddOverlayRect2( nX, nY, nWidth, nHeight, (ulong)(nStyle) );
+		AddOverlayRect2( nX, nY, nWidth, nHeight, (uint32)(nStyle) );
 
 		AddOverlayRect2( nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
 		AddOverlayRect2( nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
@@ -760,12 +760,12 @@ void UnlockOverlays( void )
 }
 
 #ifdef USING_OPENGL
-INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, ulong ulCol1, ulong ulCol2, ulong ulCol3 )
+INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
 {
 	// todo
 }
 
-INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, ulong ulCol1, ulong ulCol2 )
+INTERFACE_API void InterfaceLine( int nLayer, int nX1, int nY1, int nX2, int nY2, uint32 ulCol1, uint32 ulCol2 )
 {
 	// todo
 }

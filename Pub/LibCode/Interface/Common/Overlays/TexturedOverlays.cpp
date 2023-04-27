@@ -42,13 +42,13 @@ typedef struct
 	short	nX2;
 	short	nY2;
 
-	ulong	ulCol;
+	uint32	ulCol;
 	float	fU1;
 	float	fU2;
 	union {	float	fU3;	float fRot; };
 	float	fV1;
 	float	fV2;
-	union { float	fV3;	ulong ulCol2; };
+	union { float	fV3;	uint32 ulCol2; };
 
 	void*	pNext;
 
@@ -62,7 +62,7 @@ typedef struct
 {
 	LPGRAPHICSTEXTURE		pTexture;
 	char					acFilename[128];
-	ulong					ulLastTouched;
+	uint32					ulLastTouched;
 	int						nRefCount;
 
 } INTERNAL_TEXTURES;
@@ -742,7 +742,7 @@ int	nRet;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, ulong ulCol )
+INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, uint32 ulCol )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
@@ -774,7 +774,7 @@ TEXTURED_RECT_DEF* pxRectDef;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, float fU, float fV, float fUWidth, float fUHeight )
+INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fUWidth, float fUHeight )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
@@ -804,7 +804,7 @@ TEXTURED_RECT_DEF* pxRectDef;
 	}
 }
 
-INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, ulong ulCol, ulong ulCol2, float fU, float fV, float fUWidth, float fUHeight )
+INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fUWidth, float fUHeight )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
@@ -841,7 +841,7 @@ TEXTURED_RECT_DEF* pxRectDef;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, ulong ulCol, float fRotAngle, float fScale )
+INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotAngle, float fScale )
 {
 #ifdef USING_OPENGL
 		// TODO!!
@@ -1256,7 +1256,7 @@ int		nR = 0;
 int		nG = 0;
 int		nB = 0;
 int		nA = 0;
-ulong	ulCol;
+uint32	ulCol;
 ushort	uwColVal;
 
 	switch( nFormat )
@@ -1281,7 +1281,7 @@ ushort	uwColVal;
 		break;
 	case D3DFMT_A8R8G8B8:		// 4 bytes per pixel
 	case D3DFMT_X8R8G8B8:
-		ulCol = *( (ulong*)( pbRow + (x * 4) ) );
+		ulCol = *( (uint32*)( pbRow + (x * 4) ) );
 		nA = ((ulCol >> 24) & 0xFF);
 		nR = ((ulCol >> 16) & 0xFF);
 		nG = ((ulCol >> 8) & 0xFF);

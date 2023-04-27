@@ -68,8 +68,8 @@ typedef struct
 {
 	int		nEffectAttachVertex;
 	int		nEffectType;
-	ulong	ulEffectParam1;
-	ulong	ulEffectParam2;
+	uint32	ulEffectParam1;
+	uint32	ulEffectParam2;
 	VECT	xEffectAttachOffset;
 
 } EFFECT_DATA_CHUNK;
@@ -140,7 +140,7 @@ typedef struct
 
 typedef struct
 {
-	ulong	ulLockID;
+	uint32	ulLockID;
 	BYTE	bLockMode;
 	BYTE	bPad1;
 	BYTE	bPad2;
@@ -169,8 +169,8 @@ typedef struct
 
 //----------------------------------------------------------------------------------------------------
 
-ulong		mulExportFlags = 0;
-ulong		mulExportLockFlags = 0;
+uint32		mulExportFlags = 0;
+uint32		mulExportLockFlags = 0;
 
 //----------------------------------------------------------------------------------------------------
 
@@ -208,11 +208,11 @@ ATM_OLD_BASIC_CONTENTS	xContentsChunk;
 				if ( xContentsChunk.ulLockID != 0 )
 				{
 #ifdef SERVER
-					if ( xContentsChunk.ulLockID != (ulong)(RegistrationGetServerID()) )
+					if ( xContentsChunk.ulLockID != (uint32)(RegistrationGetServerID()) )
 					{
 #else
 #ifndef TOOL
- 					if ( xContentsChunk.ulLockID != (ulong)(EngineGetGameInterface()->GetUniqueMachineID()) )
+ 					if ( xContentsChunk.ulLockID != (uint32)(EngineGetGameInterface()->GetUniqueMachineID()) )
 					{
 #else
 					if ( 0 )
@@ -385,15 +385,15 @@ byte*		ModelExportChunkColours( MODEL_RENDER_DATA* pxModelData, int nChunkNum, i
 CUSTOMVERTEX*	pxVertices;
 int				nVertsInMesh;
 int				nVertLoop;
-ulong*	pulColBuffer;
+uint32*	pulColBuffer;
 byte*	pbChunkMem;
 
 	if ( pxModelData->pxBaseMesh != NULL )
 	{
 		nVertsInMesh = pxModelData->pxBaseMesh->GetNumVertices();
 
-		pbChunkMem = (byte*)( SystemMalloc( nVertsInMesh * sizeof(ulong) ) );
-		pulColBuffer = (ulong*)( pbChunkMem );
+		pbChunkMem = (byte*)( SystemMalloc( nVertsInMesh * sizeof(uint32) ) );
+		pulColBuffer = (uint32*)( pbChunkMem );
 
 		pxModelData->pxBaseMesh->LockVertexBuffer( 0, (byte**)( &pxVertices ) );
 		for ( nVertLoop = 0; nVertLoop < nVertsInMesh; nVertLoop++ )
@@ -404,7 +404,7 @@ byte*	pbChunkMem;
 		}
 		pxModelData->pxBaseMesh->UnlockVertexBuffer();
 
-		*(pnSize) = sizeof( ulong );
+		*(pnSize) = sizeof( uint32 );
 		*(pnElements) = nVertsInMesh;
 		return( pbChunkMem );
 	}
@@ -515,7 +515,7 @@ byte*			pbChunkMem;
 				pxModelData->pxBaseMesh->LockIndexBuffer( 0, (byte**)( &puwIndices ) );
 				for ( nVertLoop = 0; nVertLoop < nNumIndices; nVertLoop++ )
 				{
-					*(punIndexBuffer++) = (ulong)( *(puwIndices++) );
+					*(punIndexBuffer++) = (uint32)( *(puwIndices++) );
 				}
 				pxModelData->pxBaseMesh->UnlockIndexBuffer();
 			}
@@ -1055,7 +1055,7 @@ int				nVertsInMesh;
 int				nFacesInMesh;
 ATM_BASIC_CONTENTS*	pxContents;
 byte*	pbChunkMem;
-ulong	ulCurrentTime;
+uint32	ulCurrentTime;
 time_t	xtimet;
 
 	if ( pxModelData->pxBaseMesh != NULL )
@@ -1082,7 +1082,7 @@ time_t	xtimet;
 		}
 
 		time( &xtimet );
-		ulCurrentTime = *( (ulong*)(&xtimet) );
+		ulCurrentTime = *( (uint32*)(&xtimet) );
 		ulCurrentTime &= 0xFFFF;
 		ulCurrentTime |= ( ( rand() & 0xFFFF ) << 16 );
 
@@ -2094,7 +2094,7 @@ byte*	pbCompressedMemBuffer;
 byte*	pbMemToCompress;
 int		nFileSize;
 ATM_FILE_HEADER*	pxFileHeader;
-ulong	ulCompressedSize;
+uLongf	ulCompressedSize;
 FILE*	pFile;
 short	wResult;
 
@@ -2116,7 +2116,7 @@ short	wResult;
 		ulCompressedSize = (int)(nFileSize * 1.2f) + 12;
 		pbCompressedMemBuffer = (byte*)SystemMalloc( ulCompressedSize );
 		wResult = compress(pbCompressedMemBuffer, &ulCompressedSize, pbMemToCompress, nFileSize - sizeof( ATM_FILE_HEADER ) );
-		if ( ulCompressedSize < (ulong)(nFileSize) )
+		if ( ulCompressedSize < (uint32)(nFileSize) )
 		{
 			pxFileHeader->bCompressedFlag = 1;
 			pxFileHeader->ulUncompressedSize = nFileSize - sizeof( ATM_FILE_HEADER );
@@ -2145,7 +2145,7 @@ short	wResult;
  * Params      :
  * Description : Saves the specified model with the given filename
  ***************************************************************************/
-void		ModelExportATM( int nModelHandle, const char* szFilename, ulong ulSaveFlags, ulong ulLockFlags )
+void		ModelExportATM( int nModelHandle, const char* szFilename, uint32 ulSaveFlags, uint32 ulLockFlags )
 {
 MODEL_RENDER_DATA* pxModelData;
 FILE*	pFile;
@@ -2357,7 +2357,7 @@ ushort*		puwIndices = NULL;
  * Params      : 
  * Description : 
  ***************************************************************************/
-void	ModelSetVertexColours( int nModelHandle, ulong ulCol )
+void	ModelSetVertexColours( int nModelHandle, uint32 ulCol )
 {
 CUSTOMVERTEX*	pxVertices;
 MODEL_RENDER_DATA* pxModelData;
@@ -3034,7 +3034,7 @@ void	ModelLoadProcessChunkMaterials( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_H
 {
 GLOBAL_PROPERTIES_CHUNK*		pxMaterials;
 CUSTOMVERTEX*		pxVertices;
-ulong	ulAlpha;
+uint32	ulAlpha;
 int		nVertLoop;
 
 	pxMaterials = (GLOBAL_PROPERTIES_CHUNK*)( pbMem );
@@ -3044,7 +3044,7 @@ int		nVertLoop;
 
 	if ( pxModelData->xGlobalProperties.bBlendType != 0 )
 	{
-		ulAlpha = (((ulong)(pxModelData->xGlobalProperties.bOpacity) * 255)/100) << 24;
+		ulAlpha = (((uint32)(pxModelData->xGlobalProperties.bOpacity) * 255)/100) << 24;
 
 		if ( pxModelData->pxBaseMesh != NULL )
 		{
@@ -3129,9 +3129,9 @@ void	ModelLoadProcessChunkVertColours( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK
 {
 CUSTOMVERTEX*	pxVertices;
 int			nVertLoop;
-ulong*		pulSrcColours;
+uint32*		pulSrcColours;
 
-	pulSrcColours = (ulong*)( pbMem );
+	pulSrcColours = (uint32*)( pbMem );
 	if ( pxModelData->pxBaseMesh != NULL )
 	{
 		pxModelData->pxBaseMesh->LockVertexBuffer( 0, (byte**)( &pxVertices ) );
@@ -3437,12 +3437,12 @@ int		nChunkSize;
 		// Check if compressed..
 		if ( xFileHeader.bCompressedFlag == 1 )
 		{
-		ulong	nUncompressedSize;
+		uLongf	nUncompressedSize;
 		byte*	pbUncompressedMem;
 		int		ret;
 
 			nUncompressedSize = xFileHeader.ulUncompressedSize;
-			if ( nUncompressedSize < (ulong)pxModelData->xStats.nFileSize )
+			if ( nUncompressedSize < (uint32)pxModelData->xStats.nFileSize )
 			{
 				nUncompressedSize = pxModelData->xStats.nFileSize;
 			}
@@ -3502,7 +3502,7 @@ int		nChunkSize;
 				}
 				pbSrcPtr += xFileHeader.bSizeOfChunkHeader;
 				nProcessedBytes += xFileHeader.bSizeOfChunkHeader;
-//				SysDebugPrint("Processed %d - header at %08x\n", nProcessedBytes, (ulong)( pxChunkHeader ) );
+//				SysDebugPrint("Processed %d - header at %08x\n", nProcessedBytes, (uint32)( pxChunkHeader ) );
 //				SysDebugPrint("Next chunk: num elements %d, sizeof %d\n", pxChunkHeader->nNumElementsInChunk, pxChunkHeader->nSizeOfElement );
 
 				if ( nProcessedBytes + (pxChunkHeader->nNumElementsInChunk * pxChunkHeader->nSizeOfElement) > pxModelData->xStats.nFileSize )
@@ -3767,7 +3767,7 @@ int		nChunkSize;
 //  A convenience function.. Game can create a model handle with a 'custom renderer'.. Nothing is loaded but the model handle can then be stored and
 // used in the normal ways, same as a proper model.. when its rendered the custom function is called instead
 //----------------------------------------------
-int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, ulong ulCreateParam )
+int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, uint32 ulCreateParam )
 {
 MODEL_RENDER_DATA*		pxModelData;
 int		nHandle;
@@ -3787,7 +3787,7 @@ int		nHandle;
  * Params      : Returns the modelHandle of the model loaded, or NOTFOUND if unsuccessful
  * Description : Attempts to load the specified model
  ***************************************************************************/
-int		ModelLoadFromMem( const char* szFilename, ulong ulLoadFlags, float fScale, byte* pbMem, int nMemSize )
+int		ModelLoadFromMem( const char* szFilename, uint32 ulLoadFlags, float fScale, byte* pbMem, int nMemSize )
 {
 MODEL_RENDER_DATA*		pxModelData;
 int		nHandle;
@@ -3992,7 +3992,7 @@ MODEL_RENDER_DATA*		pxModelData;
  * Params      : Returns the modelHandle of the model loaded, or NOTFOUND if unsuccessful
  * Description : Attempts to load the specified model
  ***************************************************************************/
-int		ModelLoad( const char* szFilename, ulong ulLoadFlags, float fScale )
+int		ModelLoad( const char* szFilename, uint32 ulLoadFlags, float fScale )
 {
 int		nHandle;
 FILE*	pFile;
@@ -4028,7 +4028,7 @@ byte*	pbFileInMem;
  * Params      : Returns the modelHandle of the model loaded, or NOTFOUND if unsuccessful
  * Description : Attempts to load the specified model
  ***************************************************************************/
-int		ModelLoadFromArchive( const char* szFilename, ulong ulLoadFlags, float fScale, int nArchiveHandle )
+int		ModelLoadFromArchive( const char* szFilename, uint32 ulLoadFlags, float fScale, int nArchiveHandle )
 {
 int		nHandle;
 int		nFileHandle;

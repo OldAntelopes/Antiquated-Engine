@@ -19,7 +19,7 @@ extern void Lines3DInitialise( int nMaxVertices );
 
 extern void Lines3DShutdown( void );
 
-extern void	Lines3DAddLine( const VECT* pxPoint1, const VECT* pxPoint2, ulong ulCol, ulong ulCol2 );
+extern void	Lines3DAddLine( const VECT* pxPoint1, const VECT* pxPoint2, uint32 ulCol, uint32 ulCol2 );
 
 extern void Lines3DFlush( LINES3D_RENDER_PARAMS* pxRenderParams );
 

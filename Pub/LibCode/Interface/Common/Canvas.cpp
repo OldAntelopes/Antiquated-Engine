@@ -67,21 +67,21 @@ char*			pcOutRunner = acKey;
 	*pcOutRunner = 0;
 }
 
-void		CanvasText( int nLayer, float fX, float fY, const char* szText, ulong ulCol, int nFont, float fMaxWidth, float fScale )
+void		CanvasText( int nLayer, float fX, float fY, const char* szText, uint32 ulCol, int nFont, float fMaxWidth, float fScale )
 {
 const char*		pcRunner;
 char			acTextBuff[1024];
 const char*		pcStringStart = szText;
 char			acTagBuff[128];
 int				nOriginalFlags = 0;//mnCurrentFontFlags;
-ulong			ulOriginalCol = ulCol;
+uint32			ulOriginalCol = ulCol;
 int				nNewFlags = 0;//mnCurrentFontFlags;
 int				nCurrentFlags = 0;
 int				nSegmentLen = 0;
 const char*		pcTagStart;
 int				nSegmentX;
 int				nY;
-ulong			ulNewCol = ulCol;
+uint32			ulNewCol = ulCol;
 int				nSegmentMaxW;
 int				nStringWidth;
 char*			pcSecondLine;

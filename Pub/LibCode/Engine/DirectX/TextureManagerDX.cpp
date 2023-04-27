@@ -328,7 +328,7 @@ D3DSURFACE_DESC		xSourceDesc;
 }
 
 
-void	EngineSetRenderTargetTexture( TEXTURE_HANDLE hTexture, ulong ulClearCol, BOOL bClear )
+void	EngineSetRenderTargetTexture( TEXTURE_HANDLE hTexture, uint32 ulClearCol, BOOL bClear )
 {
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineSetRenderTargetTexture TBI" );
@@ -666,7 +666,7 @@ int		nMipLevels = 1;
 	D3DLOCKED_RECT	xLockedRectDest;
 	//D3DLOCKED_RECT	xLockedRectSrc; //unused ?
 	byte*		pbDestination;
-	ulong*		pulWrite;
+	uint32*		pulWrite;
 	byte*		pbSrc;
 	int			nX;
 	int			nY;
@@ -677,7 +677,7 @@ int		nMipLevels = 1;
 	
 		for ( nY = 0; nY < height; nY++ )
 		{
-			pulWrite = (ulong*)pbDestination;
+			pulWrite = (uint32*)pbDestination;
 			for ( nX = 0; nX < width; nX++ )
 			{
 				R = *pbSrc++;
@@ -700,7 +700,7 @@ int		nMipLevels = 1;
 	maTextureReferences[nLoop].pTexture = pxTexture;
 	maTextureReferences[nLoop].nUsed = 1;
 	maTextureReferences[nLoop].nState = TEXTURE_STATE_LOADED;
-	sprintf( maTextureReferences[nLoop].szFilename, "[LoadFromMem %08x size %d]", (ulong)pbMem, nMemSize );
+	sprintf( maTextureReferences[nLoop].szFilename, "[LoadFromMem %08x size %d]", (uint32)pbMem, nMemSize );
 	if ( nLoop >= mnHighestTextureSlotUsed )
 	{
 		mnHighestTextureSlotUsed = nLoop + 1;
@@ -1169,7 +1169,7 @@ int	nRet = 0;
 		}
 		else
 		{
-		ulong		ulChromaKeyCol = 0xFF0000FF;
+		uint32		ulChromaKeyCol = 0xFF0000FF;
 		IGRAPHICSFORMAT	d3dtextureFormat = EngineDXGetGraphicsFormat( mnLoadThreadBufferFormat );
 
 			if ( pTextureReference->nMode & NO_CHROMAKEY )
@@ -1189,7 +1189,7 @@ int	nRet = 0;
 			if ( pTextureReference->nMode & REMOVE_ALPHA )
 			{
 			int			nPitch;
-			ulong*		pulColours;
+			uint32*		pulColours;
 			BYTE*		pbRow;
 			int			nImageW;
 			int			nImageH;
@@ -1207,7 +1207,7 @@ int	nRet = 0;
 
 				for ( nLoopY = 0; nLoopY < nImageH; nLoopY++ )
 				{
-					pulColours = (ulong*)pbRow;
+					pulColours = (uint32*)pbRow;
 					for ( nLoopX = 0; nLoopX < nImageW; nLoopX++ )
 					{
 						*pulColours = ((*pulColours) & 0x00FFFFFF);
@@ -1387,13 +1387,13 @@ int		nLoop;
 
 void	EngineTextureManagerInitDX( void )
 {
-ulong iID;
+uint32 iID;
 
 	if ( mhTextureLoadThread == 0 )
 	{
 		ZeroMemory( maTextureReferences, sizeof( TEXTURE_REFERENCES ) * MAX_TEXTURES_IN_MANAGER );
 		// Start a thread that will load the textures
-		mhTextureLoadThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)EngineTextureLoadThread,0,0,&iID);
+		mhTextureLoadThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)EngineTextureLoadThread,0,0,(LPDWORD)&iID);
 	}
 }
 
@@ -1508,8 +1508,8 @@ D3DSURFACE_DESC		xSurface;
 byte*		pbDestination;
 byte*		pbSrc;
 ushort*		puwSrc;
-ulong*		pulSrc;
-ulong*		pulDest;
+uint32*		pulSrc;
+uint32*		pulDest;
 ushort*		puwDest;
 byte*		pbDest;
 int			nX;
@@ -1573,8 +1573,8 @@ int			nSourceFormat;
 			for ( nY = 0; nY < nHeight; nY++ )
 			{
 				puwSrc = (ushort*)( pbSrc );
-				pulSrc = (ulong*)( pbSrc );
-				pulDest = (ulong*)( pbDestination );
+				pulSrc = (uint32*)( pbSrc );
+				pulDest = (uint32*)( pbDestination );
 				puwDest = (ushort*)( pbDestination );
 				pbDest = pbDestination;
 				for ( nX = 0; nX < nWidth; nX++ )

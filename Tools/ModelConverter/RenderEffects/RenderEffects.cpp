@@ -69,7 +69,7 @@ BOOL	RenderEffectParticle::Update( float fDelta )
 void	RenderEffectParticle::Render( void )
 {
 int		hSpriteGroup = Sprites3DGetGroup( mshRenderEffectsSmokeTexture, 1.0f, (eSpriteGroupRenderFlags)( kSpriteRender_Default | kSpriteRender_Rotated ) );
-ulong	ulCol = 0x80ffffff;
+uint32	ulCol = 0x80ffffff;
 float	fAlpha = 1.0f;
 float	fTimeLeft = mfExpiryTime - mfLifetime;
 

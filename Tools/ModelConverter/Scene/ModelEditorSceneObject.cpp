@@ -1302,7 +1302,7 @@ BOOL	bSelectFirstOnly = TRUE;
 
 void	CSceneObject::RenderNormals( VECT* pxPos, VECT* pxRot )
 {
-//ulong ulCol;
+//uint32 ulCol;
 VECT	xVert1, xVert2;
 int		nLoop;
 int		nStride;
@@ -1350,7 +1350,7 @@ VECT*	pxNormalsInModel = ModelGetNormalList( mnModelHandle, &nStride );
 
 void	CSceneObject::RenderVertexPoints( VECT* pxPos, VECT* pxRot )
 {
-ulong ulCol;
+uint32 ulCol;
 //VECT	xVertex;
 int		nLoop;
 int		nNumVertices = ModelGetStats( mnModelHandle )->nNumVertices;

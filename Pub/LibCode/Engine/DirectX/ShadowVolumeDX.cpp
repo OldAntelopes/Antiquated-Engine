@@ -737,7 +737,7 @@ void		ShadowVolumeRenderModel( int nModelHandle, const VECT* pxPos, const VECT* 
 void	UpdateBigSquareCols( void )
 {
 SHADOWVERTEX* v;
-ulong	ulCol = ( (ulong)( 110.0f * mfShadowStrength ) ) << 24;
+uint32	ulCol = ( (uint32)( 110.0f * mfShadowStrength ) ) << 24;
 	
 	m_pBigSquareVB->Lock( 0, 0, (VERTEX_LOCKTYPE)&v, 0 );
 	v[0].color = ulCol;

@@ -128,13 +128,13 @@ void	ModelConvSetVertexAlphas( void )
 MODEL_RENDER_DATA*	pxModelData;
 CUSTOMVERTEX*		pxVertices;
 int			nVertLoop;
-ulong		ulAlpha;
+uint32		ulAlpha;
 int		nModelHandle = ModelConvGetCurrentModel();
 
 	if ( nModelHandle != NOTFOUND )
 	{
 		pxModelData = maxModelRenderData + nModelHandle;
-		ulAlpha = (((ulong)(pxModelData->xGlobalProperties.bOpacity) * 255)/100) << 24;
+		ulAlpha = (((uint32)(pxModelData->xGlobalProperties.bOpacity) * 255)/100) << 24;
 
 		if ( pxModelData->pxBaseMesh != NULL )
 		{

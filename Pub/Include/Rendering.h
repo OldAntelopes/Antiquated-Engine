@@ -16,7 +16,7 @@ extern "C"
 
 //	Main ModelRendering init, free, update
 extern void		ModelRenderingFree( void );
-extern void		ModelRenderingUpdate( ulong );
+extern void		ModelRenderingUpdate( uint32 );
 extern void		ModelRenderingLateRenderPass( void );
 extern void		ModelRenderingInit( void );
 extern void		ModelRenderingFlush( void );
@@ -54,19 +54,19 @@ enum eRenderFlags    // For ulRenderFlags parameter in ModelRender
 
 };
 
-typedef	void		(*fnCustomMeshRenderer)( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
+typedef	void		(*fnCustomMeshRenderer)( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags );
 
 
 
 // Main load, render and free calls
-extern int		ModelLoad( const char* szFilename, ulong ulLoadFlags, float fScale ); // Returns a ModelHandle or NOTFOUND if unsuccessful
-extern int		ModelLoadFromArchive( const char* szFilename, ulong ulLoadFlags, float fScale, int nArchiveHandle ); // Returns a ModelHandle or NOTFOUND if unsuccessful
-extern int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, ulong ulCreateParam );
+extern int		ModelLoad( const char* szFilename, uint32 ulLoadFlags, float fScale ); // Returns a ModelHandle or NOTFOUND if unsuccessful
+extern int		ModelLoadFromArchive( const char* szFilename, uint32 ulLoadFlags, float fScale, int nArchiveHandle ); // Returns a ModelHandle or NOTFOUND if unsuccessful
+extern int		ModelCreateCustomRenderer( const char* szName, fnCustomMeshRenderer fnCustomRenderer, uint32 ulCreateParam );
 
-extern int		ModelRender( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
-extern int		ModelRenderSeparateWheel( int nModelHandle, int nWheelNum, const ENGINEMATRIX* pxWorldMat, ulong ulRenderFlags );
-extern int		ModelRenderQuat( int nModelHandle, const VECT* pxPos, const ENGINEQUATERNION* pxQuat, ulong ulRenderFlags );
-extern int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, ulong ulRenderFlags, VECT* pxScale );
+extern int		ModelRender( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags );
+extern int		ModelRenderSeparateWheel( int nModelHandle, int nWheelNum, const ENGINEMATRIX* pxWorldMat, uint32 ulRenderFlags );
+extern int		ModelRenderQuat( int nModelHandle, const VECT* pxPos, const ENGINEQUATERNION* pxQuat, uint32 ulRenderFlags );
+extern int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, uint32 ulRenderFlags, VECT* pxScale );
 
 extern void		ModelFree( int nModelHandle );
 extern int		ModelClone( int nModelHandle );
@@ -84,7 +84,7 @@ typedef struct
 
     VECT		position;	
     VECT		normal;		
-    ulong		color;		
+    uint32		color;		
     float	    tu;		 
 	float		tv;
 		
@@ -97,7 +97,7 @@ typedef struct
 
     VECT		position;	
     VECT		normal;		
-    ulong		color;		
+    uint32		color;		
     float	    tu;		 
 	float		tv;		 
     float	    tu2;		 
@@ -109,7 +109,7 @@ typedef struct
 
     VECT		position;	
     VECT		normal;		
-    ulong		color;		
+    uint32		color;		
     float	    tu;		 
 	float		tv;		 
     float	    tu2;		 
@@ -123,7 +123,7 @@ typedef struct
 
     VECT		position;	
     VECT		normal;		
-    ulong		color;		
+    uint32		color;		
     float	    tu;		 
 	float		tv;		 
     float	    tu2;		 
@@ -158,8 +158,8 @@ typedef struct
 
 	char	acFilename[256];
 
-	ulong	ulLockID;
-	ulong	ulLockCode;
+	uint32	ulLockID;
+	uint32	ulLockCode;
 
 	BYTE	bNumLODs;
 	BYTE	bLODUsed;
@@ -191,7 +191,7 @@ extern VECT*	ModelGetVertexList( int nModelHandle, int* pnStride );
 extern VECT*	ModelGetNormalList( int nModelHandle, int* pnStride );
 
 extern void		ModelStoreVertexList( int nModelHandle );
-extern void		ModelSetVertexColourAll( int nModelHandle, ulong uARGB );
+extern void		ModelSetVertexColourAll( int nModelHandle, uint32 uARGB );
 
 // Stuff for turrets, wheels etc..
 extern VECT*	ModelGetAttachPoint( int nModelHandle, int nAttachNum );
@@ -208,7 +208,7 @@ extern void		ModelSetWheelSpinRotation( int nModelHandle, float fVertRot );
 extern void		ModelSetFrontWheelTurnRotation( int nModelHandle, float fRot );
 
 // Misc other bits
-extern void		ModelSetVertexColours( int nModelHandle, ulong ulCol );
+extern void		ModelSetVertexColours( int nModelHandle, uint32 ulCol );
 extern void		ModelSetShadowCaster( int nModelHandle, int nMode );
 extern int		ModelGetLockState( const char* szFilename );
 
@@ -342,8 +342,8 @@ enum			// Used by ModelSetAnimationImmediate etc. (see below)
 // Animation functions
 extern int		ModelGetCurrentAnimation( int nModelHandle );
 
-extern void		ModelSetAnimationImmediate( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(ulong), ulong ulParam );
-extern void		ModelSetAnimationNext( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(ulong), ulong ulParam );
+extern void		ModelSetAnimationImmediate( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(uint32), uint32 ulParam );
+extern void		ModelSetAnimationNext( int nModelHandle, int nAnimationUse, int nPriority, void fnFunc(uint32), uint32 ulParam );
 extern void		ModelSetAnimationSpeedModifier( int nModelHandle, float fAnimSpeedMod );
 
 extern void		ModelAnimationPause( int nModelHandle, BOOL boFlag );

@@ -36,7 +36,7 @@ ID3DXMesh*	pMesh;
 ID3DXMesh*	pNewMesh = NULL;
 CUSTOMVERTEX*		pxVertices;
 ushort*				puwIndices;
-ulong*				pulIndices;
+uint32*				pulIndices;
 int		nVertX;
 int		nVertY;
 int		nBaseVert;
@@ -110,7 +110,7 @@ VECT	xBoundMax = { 0.0f, 0.0f, 0.0f };
 
 		if ( b32bitIndices )
 		{
-			pulIndices = (ulong*)( puwIndices );
+			pulIndices = (uint32*)( puwIndices );
 		}
 		nBaseVertBase = 0;
 		for ( nVertY = 0; nVertY < nMapH; nVertY += nResolution )
@@ -182,7 +182,7 @@ ID3DXMesh*	pMesh;
 ID3DXMesh*	pNewMesh = NULL;
 CUSTOMVERTEX*		pxVertices;
 ushort*				puwIndices;
-ulong*				pulIndices;
+uint32*				pulIndices;
 int		nVertX;
 int		nVertY;
 int		nMapX;
@@ -239,7 +239,7 @@ int		nResolution = 1;
 
 		if ( b32bitIndices )
 		{
-			pulIndices = (ulong*)( puwIndices );
+			pulIndices = (uint32*)( puwIndices );
 		}
 		nBaseVertBase = 0;
 		for ( nVertY = 0; nVertY < nMapH; nVertY += nResolution )
@@ -292,7 +292,7 @@ LANDSCAPE_BLOCKS*		pBlocks = maLandscapeBlocks;
 VECT	xRayDir = *pxRayDir;
 float	fCollisionDist = 10000.0f;
 BOOL	boCollision = FALSE;
-ulong	uwCollIndex;
+uint32	uwCollIndex;
 
 	VectNormalize( &xRayDir );
 
@@ -323,7 +323,7 @@ ulong	uwCollIndex;
 	float	fCollisionDist = 10000.0f;
 	BOOL	boCollision = FALSE;
 	VECT	xRayDir = *pxRayDir;
-	ulong	uwCollIndex;
+	uint32	uwCollIndex;
 
 		VectNormalize( &xRayDir );
 		D3DXIntersect( mpFullLandscapeMesh, (D3DXVECTOR3*)pxRayStart,(D3DXVECTOR3*)&xRayDir, &boCollision, &uwCollIndex, NULL, NULL, &fCollisionDist, NULL, NULL );

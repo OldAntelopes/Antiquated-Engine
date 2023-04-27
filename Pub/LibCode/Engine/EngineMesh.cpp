@@ -71,7 +71,7 @@ void	EngineMesh::ReorderByMaterial( fnVertexRemapCallback callbackFunction, void
 }
 
 
-void	EngineMesh::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, ulong* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, ulong* pulHitCount )
+void	EngineMesh::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, uint32* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, uint32* pulHitCount )
 {
 	mpBaseMesh->RayTest( pRayPos, pRayDir, pbHit, pFaceIndex, pU, pV, pfDist, pIntersectBuffer, pulHitCount );
 }

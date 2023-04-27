@@ -9,7 +9,7 @@ extern "C"
 
 extern void		EnginePostProcessSetEnabled( BOOL bFlag );
 
-extern BOOL		EnginePostProcessStartScene( ulong ulBackgroundCol );
+extern BOOL		EnginePostProcessStartScene( uint32 ulBackgroundCol );
 extern void		EnginePostProcessEndScene( void );
 
 

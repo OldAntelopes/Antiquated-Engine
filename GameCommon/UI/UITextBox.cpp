@@ -8,7 +8,7 @@
 #include "UI.h"
 #include "UITextBox.h"
 
-ulong			msulTextBoxRenderFrame = 0;
+uint32			msulTextBoxRenderFrame = 0;
 
 
 class UITextBox
@@ -53,7 +53,7 @@ private:
 	int				mnTextBufferSize;
 	int				mnTextMaxLen;
 	int				mnMode;
-	ulong			mulLastRenderFrame;
+	uint32			mulLastRenderFrame;
 	BOOL			mbIsFocused;
 	UITextBox*		mpNext;
 };

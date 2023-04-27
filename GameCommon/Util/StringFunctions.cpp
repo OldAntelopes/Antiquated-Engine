@@ -5,13 +5,13 @@
 
 #include "StringFunctions.h"
 
-extern void		GetISODateString( ulong ulUnixTime, char* pcOut );
-extern ulong	ReadISODateString( const char* szDate );
+extern void		GetISODateString( uint32 ulUnixTime, char* pcOut );
+extern uint32	ReadISODateString( const char* szDate );
 
-void		GetApproximateTimeSince( ulong ulTimeOfEvent, char* pcOut )
+void		GetApproximateTimeSince( uint32 ulTimeOfEvent, char* pcOut )
 {
-ulong		ulSystemTime = SysGetTimeLong();
-ulong		ulTimeGap;
+uint32		ulSystemTime = SysGetTimeLong();
+uint32		ulTimeGap;
 
 	if ( ulSystemTime > ulTimeOfEvent )
 	{
@@ -62,7 +62,7 @@ ulong		ulTimeGap;
 	}
 }
 
-void		GetShortTimeString( ulong ulTimeSeconds, char* pcOut, BOOL bAccurateSeconds )
+void		GetShortTimeString( uint32 ulTimeSeconds, char* pcOut, BOOL bAccurateSeconds )
 {
 	if ( ulTimeSeconds >= (24*60*60) )
 	{
@@ -114,7 +114,7 @@ void		GetShortTimeString( ulong ulTimeSeconds, char* pcOut, BOOL bAccurateSecond
 	}
 	else if ( ulTimeSeconds >= (60*2) )
 	{
-	ulong	ulNumSeconds = (ulTimeSeconds % 60 );
+	uint32	ulNumSeconds = (ulTimeSeconds % 60 );
 
 		if ( ( bAccurateSeconds ) &&
 			 ( ulNumSeconds != 0 ) )
@@ -128,7 +128,7 @@ void		GetShortTimeString( ulong ulTimeSeconds, char* pcOut, BOOL bAccurateSecond
 	}
 	else if ( ulTimeSeconds >= (60) )
 	{
-	ulong	ulNumSeconds = (ulTimeSeconds % 60 );
+	uint32	ulNumSeconds = (ulTimeSeconds % 60 );
 
 		if ( ( bAccurateSeconds ) &&
 			 ( ulNumSeconds != 0 ) )
@@ -158,7 +158,7 @@ void		GetShortTimeString( ulong ulTimeSeconds, char* pcOut, BOOL bAccurateSecond
 }
 
 
-void		GetNumberStringWithCommas( ulong ulNumber, char* pcOut )
+void		GetNumberStringWithCommas( uint32 ulNumber, char* pcOut )
 {
 	if ( ulNumber >= 1000000000 )
 	{
@@ -183,11 +183,11 @@ void		GetNumberStringWithCommas( ulong ulNumber, char* pcOut )
 void		GetMoneyStringWithCommas( int nNumber, char* pcOut )
 {
 char	acBuff[256];
-	GetNumberStringWithCommas( (ulong)(nNumber), acBuff );
+	GetNumberStringWithCommas( (uint32)(nNumber), acBuff );
 	sprintf( pcOut, "$%s", acBuff );
 }
 
-void		GetISODateString( ulong ulUnixTime, char* pcOut )
+void		GetISODateString( uint32 ulUnixTime, char* pcOut )
 {
 SYS_LOCALTIME		xLocalTime;
 
@@ -195,7 +195,7 @@ SYS_LOCALTIME		xLocalTime;
 	sprintf( pcOut, "%d-%02d-%02dT%02d:%02d:%02d", xLocalTime.wYear, xLocalTime.wMonth, xLocalTime.wDay, xLocalTime.wHour, xLocalTime.wMinute, xLocalTime.wSecond );
 } 
 
-ulong	ReadISODateString( const char* szDate )
+uint32	ReadISODateString( const char* szDate )
 {
 SYS_LOCALTIME		xLocalTime;
 char		acBuff[256];
@@ -205,7 +205,7 @@ char*		pcDay;
 char*		pcHour;
 char*		pcMinute;
 char*		pcSec;
-ulong		ulTimestamp;
+uint32		ulTimestamp;
 
 	strcpy( acBuff, szDate );
 	pcYear = acBuff;
@@ -231,7 +231,7 @@ const char*		acMonthNames[12] =
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-void		GetDateString( ulong ulUnixTime, char* pcOut )
+void		GetDateString( uint32 ulUnixTime, char* pcOut )
 {
 SYS_LOCALTIME		xLocalTime;
 

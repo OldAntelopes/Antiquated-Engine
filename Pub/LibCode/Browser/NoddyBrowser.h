@@ -65,8 +65,8 @@ private:
 
 	char*	FindBody( char* pRunner );
 
-	ulong	ulBackgroundCol;
-	ulong	ulGlobalAlpha;
+	uint32	ulBackgroundCol;
+	uint32	ulGlobalAlpha;
 
 	char	m_szLastReadFile[256];
 	char	m_szCachedRoot[256];

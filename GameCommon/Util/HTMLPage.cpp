@@ -40,9 +40,9 @@ void		HTMLPageAdd( const char* text, ... )
 {
 char		acString[2048];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
 	va_start( marker, text );     
 	vsprintf( acString, text, marker );

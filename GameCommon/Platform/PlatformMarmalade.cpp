@@ -17,7 +17,7 @@
 #define		SAVE_DATA_BUFFER_SIZE	32764
 
 int		mnProfileMarker = 0;
-ulong	maulProfileTimes[32];
+uint32	maulProfileTimes[32];
 char	maszProfileNames[32][32];
 u64		mullPlatformLastTick = 0;
 float	mfFrameDelta = 0.0f;
@@ -483,7 +483,7 @@ void	PlatformLogEvent( const char* szEventString, const char* szKey, int nValue 
 void		PlatformProfileTextEnd( void )
 {
 int		nLoop;
-ulong	ulTime;
+uint32	ulTime;
 
 	maulProfileTimes[ mnProfileMarker ] = SysGetTick();
 
@@ -511,7 +511,7 @@ void		PlatformProfileRender( void )
 {
 #ifdef PROFILE_ENABLED
 int		nLoop;
-ulong	ulTime;
+uint32	ulTime;
 char	acString[256];
 int		nLineY = 150;
 

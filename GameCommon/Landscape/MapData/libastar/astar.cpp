@@ -178,15 +178,15 @@ static const char *names[8] = { "N", "NE", "E", "SE",  "S", "SW",  "W", "NW" };
  *
  */
 
-static ulong 
-manhattan_distance (const ulong x0, const ulong y0,
-                    const ulong x1, const ulong y1)
+static uint32 
+manhattan_distance (const uint32 x0, const uint32 y0,
+                    const uint32 x1, const uint32 y1)
 {
         // Return the Manhattan distance between the two sets of
         // co-ordinates.
 
-        return (ulong) abs ((int) x1 - (int) x0) +
-                (ulong) abs ((int) y1 - (int) y0);
+        return (uint32) abs ((int) x1 - (int) x0) +
+                (uint32) abs ((int) y1 - (int) y0);
 }
 
 
@@ -203,7 +203,7 @@ astar_reset_grid (astar_t * as)
         // Don't reset it if it's already clean.
         if (as->grid_clean) return;
         __debug ("Resetting grid...\n");
-        ulong i = 0, area = as->w * as->h;
+        uint32 i = 0, area = as->w * as->h;
         for (i = 0; i < area; i++) {
                 as->grid[i].init = 0;
                 as->grid[i].route = 0;
@@ -212,7 +212,7 @@ astar_reset_grid (astar_t * as)
 
 
 static inline square_t *
-get_square (astar_t * as, const ulong ofs, const ulong x, const ulong y)
+get_square (astar_t * as, const uint32 ofs, const uint32 x, const uint32 y)
 {
         assert (as != NULL);
         register square_t * s = &(as->grid[ofs]);
@@ -240,7 +240,7 @@ get_square (astar_t * as, const ulong ofs, const ulong x, const ulong y)
 }
 
 
-static ulong
+static uint32
 astar_find_best_compromise (astar_t * as)
 {
         // All the work is done incrementally in astar_add_closed(). Calculate the last
@@ -252,7 +252,7 @@ astar_find_best_compromise (astar_t * as)
 
 
 inline static void
-astar_add_open (astar_t * as, square_t * s, ulong gridofs, ulong g, ulong h)
+astar_add_open (astar_t * as, square_t * s, uint32 gridofs, uint32 g, uint32 h)
 {
         assert (as != NULL);
         assert (&(as->grid[gridofs]) == s);
@@ -264,7 +264,7 @@ astar_add_open (astar_t * as, square_t * s, ulong gridofs, ulong g, ulong h)
 #endif // TEST_ASTAR
 
         // As per A* algorithm.
-        ulong f = g + h;
+        uint32 f = g + h;
         
         __debug("\t+O Adding (%d,%d) (ofs=%d, f=%u, g=%u, h=%u) to open list.\n",
                 gridofs % as->w, gridofs / as->w, gridofs, f, g, h);
@@ -286,7 +286,7 @@ astar_add_open (astar_t * as, square_t * s, ulong gridofs, ulong g, ulong h)
 
 
 inline static void
-astar_add_closed (astar_t * as, square_t * s, ulong gridofs)
+astar_add_closed (astar_t * as, square_t * s, uint32 gridofs)
 {
         __debug("\t+C Adding (%d,%d) (ofs=%d) to closed list:",
                 gridofs % as->w, gridofs / as->w, gridofs);
@@ -324,14 +324,14 @@ astar_add_closed (astar_t * as, square_t * s, ulong gridofs)
 
 
 inline static void
-astar_update (astar_t * as, square_t * square, ulong gridofs, ulong g)
+astar_update (astar_t * as, square_t * square, uint32 gridofs, uint32 g)
 {
         assert (as != NULL);
         assert (square != NULL);
 
         // As per A* algorithm (h doesn't change because it only depends on the location
         // of the square).
-        ulong f = g + square->h;
+        uint32 f = g + square->h;
 
         // Paranoia -- we should only be updating to lower g.
         assert (&(as->grid[gridofs]) == square);
@@ -348,7 +348,7 @@ astar_update (astar_t * as, square_t * square, ulong gridofs, ulong g)
                 __debug("*** astar_heap_update: ");
                 __debug_square (as, square);
 
-                ulong newofs = astar_heap_update (as->heap, square);
+                uint32 newofs = astar_heap_update (as->heap, square);
                 assert (as->heap->data[newofs] == square->f);
                 as->updates++;
                 __debug("++ Updated (%d,%d) (new_ofs=%d, new_f=%u, new_g=%u, h=%u).\n",
@@ -372,11 +372,11 @@ astar_update (astar_t * as, square_t * square, ulong gridofs, ulong g)
 ///////////////////////////////////////////////////////////////////////////////
 
 astar_t *
-astar_new (const ulong w,
-           const ulong h,
-           BYTE (*get) (const ulong, const ulong),
-           ulong  (*heuristic) (const ulong, const ulong,
-                                   const ulong, const ulong))
+astar_new (const uint32 w,
+           const uint32 h,
+           BYTE (*get) (const uint32, const uint32),
+           uint32  (*heuristic) (const uint32, const uint32,
+                                   const uint32, const uint32))
            
 {
         astar_t * as = (astar_t *) malloc (sizeof (astar_t));
@@ -429,7 +429,7 @@ astar_new (const ulong w,
         as->get = get;
 
         // Allocate data structures (initialise the grid to zeroes).
-        ulong area = w * h;
+        uint32 area = w * h;
         as->heap = astar_heap_new (area, area);
         as->grid = (square_t *) calloc (area, sizeof (square_t));
 
@@ -449,7 +449,7 @@ astar_new (const ulong w,
 
 
 void
-astar_set_origin (astar_t * as, const ulong x, const ulong y)
+astar_set_origin (astar_t * as, const uint32 x, const uint32 y)
 {
         assert (as != NULL);
         as->origin_x = x;
@@ -458,14 +458,14 @@ astar_set_origin (astar_t * as, const ulong x, const ulong y)
 }
 
 void
-astar_set_max_cost (astar_t *as, const ulong max_cost)
+astar_set_max_cost (astar_t *as, const uint32 max_cost)
 {
         assert (as != NULL);
         as->max_cost = max_cost;
 }
 
 void
-astar_set_timeout (astar_t *as, const ulong timeout)
+astar_set_timeout (astar_t *as, const uint32 timeout)
 {
         assert (as != NULL);
         as->timeout = timeout;
@@ -490,7 +490,7 @@ astar_set_dxy (astar_t *as, const BYTE dir, const int dx, const int dy)
 
 
 void
-astar_set_cost (astar_t *as, const BYTE dir, const ulong cost)
+astar_set_cost (astar_t *as, const BYTE dir, const uint32 cost)
 {
         assert (as != NULL);
         as->mc[dir & 7] = cost;
@@ -498,7 +498,7 @@ astar_set_cost (astar_t *as, const BYTE dir, const ulong cost)
 
 
 void
-astar_set_steering_penalty (astar_t *as, const ulong steering_penalty)
+astar_set_steering_penalty (astar_t *as, const uint32 steering_penalty)
 {
         assert (as != NULL);
         as->steering_penalty = steering_penalty;
@@ -506,7 +506,7 @@ astar_set_steering_penalty (astar_t *as, const ulong steering_penalty)
 
 
 void
-astar_set_heuristic_factor (astar_t *as, const ulong heuristic_factor)
+astar_set_heuristic_factor (astar_t *as, const uint32 heuristic_factor)
 {
         assert (as != NULL);
         as->heuristic_factor = heuristic_factor;
@@ -559,8 +559,8 @@ astar_destroy (astar_t * as)
 
 void
 astar_init_grid (astar_t * as,
-                 ulong origin_x, ulong origin_y,
-                 BYTE(*get)(const ulong, const ulong))
+                 uint32 origin_x, uint32 origin_y,
+                 BYTE(*get)(const uint32, const uint32))
 {
         assert (as != NULL);
         assert (as->grid != NULL);
@@ -570,7 +570,7 @@ astar_init_grid (astar_t * as,
         astar_set_origin (as, origin_x, origin_y);
         as->get = get;
 
-        register ulong x, y;
+        register uint32 x, y;
         register square_t * square = as->grid;
         
         for (y = 0; y < as->h; y++) {
@@ -600,7 +600,7 @@ astar_init_grid (astar_t * as,
 
 
 static int
-astar_mark_route (astar_t *as, ulong ofs)
+astar_mark_route (astar_t *as, uint32 ofs)
 {
         assert (as != NULL);
         assert (as->grid != NULL);
@@ -611,7 +611,7 @@ astar_mark_route (astar_t *as, ulong ofs)
          */
 
         square_t * s = &as->grid[ofs];
-        ulong dir;
+        uint32 dir;
 
 	s->route = 1;
         as->steps = 0;
@@ -620,7 +620,7 @@ astar_mark_route (astar_t *as, ulong ofs)
                 dir = s->dir;
 
                 // Find the offset of this square's parent on the route.
-                ulong parent_ofs = ofs + as->dx[dir] + as->dy[dir] * as->w;
+                uint32 parent_ofs = ofs + as->dx[dir] + as->dy[dir] * as->w;
                 __debug ("ofs=%u, dir=%u (%s), parent_ofs=%u\n", ofs, dir, names[dir], parent_ofs);
 
                 // Set the route direction in the parent.
@@ -651,7 +651,7 @@ astar_mark_route (astar_t *as, ulong ofs)
         __debug ("ROUTE: ");
         ofs = as->ofs0;
         while (as->grid[ofs].route) {
-                ulong dir = as->grid[ofs].rdir;
+                uint32 dir = as->grid[ofs].rdir;
                 __debug ("%s, ", names[dir]);
                 ofs += as->dx[dir] + as->dy[dir] * as->w;
         }
@@ -689,7 +689,7 @@ _astar_main_notfound (astar_t * as)
 
 static inline int
 _astar_main_blocked (astar_t * as, square_t * square,
-                     ulong current_ofs, ulong x, ulong y)
+                     uint32 current_ofs, uint32 x, uint32 y)
 {
         // Is this square blocked? This can only happen with the starting block,
         // really. But it could make the algorithm go into an endless
@@ -709,7 +709,7 @@ _astar_main_blocked (astar_t * as, square_t * square,
 
 
 static inline int
-_astar_main_found (astar_t * as, square_t * square, ulong current_ofs)
+_astar_main_found (astar_t * as, square_t * square, uint32 current_ofs)
 {
         if (current_ofs != as->ofs1) return 0;
 
@@ -734,7 +734,7 @@ _astar_main_timeout (astar_t * as)
 }
 
 
-static inline ulong
+static inline uint32
 _astar_eval_g (astar_t * as, square_t * from, square_t * to, int rdir)
 {
         // Directions come to us reversed: dir is in the natural
@@ -746,7 +746,7 @@ _astar_eval_g (astar_t * as, square_t * from, square_t * to, int rdir)
         int dir = REVERSE_DIR (rdir);
 
         // Original G.
-        ulong g = from->g;
+        uint32 g = from->g;
 
         // Add movement cost.
         g += as->mc [dir];
@@ -774,13 +774,13 @@ _astar_eval_g (astar_t * as, square_t * from, square_t * to, int rdir)
 
 static inline void
 _astar_main_maybe_update_square (astar_t * as, square_t * square,
-                                 square_t * adj, ulong adj_ofs,
+                                 square_t * adj, uint32 adj_ofs,
                                  int dir)
 {
         // This square has already been considered. Is this a
         // better path to it (lower G)?
         
-        ulong g = _astar_eval_g (as, square, adj, dir);
+        uint32 g = _astar_eval_g (as, square, adj, dir);
         
         if (g < adj->g) {
                 __debug ("\t...on the open list AND A BETTER CHOICE (new g=%u, old g=%u).\n",
@@ -801,7 +801,7 @@ static inline int
 astar_main_loop (astar_t * as)
 {
         square_t * square = NULL;
-        ulong   current_ofs;
+        uint32   current_ofs;
         register int dir;
 
         // Obtain the starting square.
@@ -819,7 +819,7 @@ astar_main_loop (astar_t * as)
         // STEP 1. ADD STARTING SQUARE TO THE OPEN LIST
         //
         ///////////////////////////////////////////////////////////////////////////////
-        ulong h = _astar_eval_h (as, as->x0, as->y0, as->x1, as->y1);
+        uint32 h = _astar_eval_h (as, as->x0, as->y0, as->x1, as->y1);
         astar_add_open (as, square, current_ofs, 0, h);
 
 
@@ -839,8 +839,8 @@ astar_main_loop (astar_t * as)
                 __debug ("\n");
 
                 // Get the co-ordinates of the current square.
-                ulong x = getx (as, square);
-                ulong y = gety (as, square);
+                uint32 x = getx (as, square);
+                uint32 y = gety (as, square);
                 current_ofs = getofs (as, square);
 
                 ///////////////////////////////////////////////////////////////
@@ -899,8 +899,8 @@ astar_main_loop (astar_t * as)
 		// down to 0. This is faster (simpler loop conditionals)
 
                 for (dir = 0; dir < NUM_DIRS; dir++) {
-                        ulong adj_x = x + as->dx[dir];
-                        ulong adj_y = y + as->dy[dir];
+                        uint32 adj_x = x + as->dx[dir];
+                        uint32 adj_y = y + as->dy[dir];
 
 			// Odd-numbered directions are the non-cardinal
 			// ones. If the movement mode is along the cardinal
@@ -917,7 +917,7 @@ astar_main_loop (astar_t * as)
 
                         // Rather than co-ordinates, calculate the offset of the adjacent
                         // square directly.
-                        ulong adj_ofs = mkofs (as, adj_x, adj_y);
+                        uint32 adj_ofs = mkofs (as, adj_x, adj_y);
                         square_t * adj = get_square (as, adj_ofs, adj_x, adj_y);
 
                         __debug ("Step 2, dir=%d d=(%d,%d): ", dir, as->dx[dir], as->dy[dir]);
@@ -941,8 +941,8 @@ astar_main_loop (astar_t * as)
                         } else {
 
                                 // Not on the open list, add it.
-                                ulong g = _astar_eval_g (as, square, adj, dir);
-                                ulong h = _astar_eval_h (as,
+                                uint32 g = _astar_eval_g (as, square, adj, dir);
+                                uint32 h = _astar_eval_h (as,
                                                             x + as->dx[dir],
                                                             y + as->dy[dir],
                                                             as->x1,
@@ -985,7 +985,7 @@ astar_main_loop (astar_t * as)
                 // open list. When adding squares to the closed list, we don't
                 // remove them from the heap. Instead we do this here, on
                 // demand. It saves processor cycles.
-                ulong current_f;
+                uint32 current_f;
                 __debug ("\nStep 4. Popping best next square\n");
                 while (!astar_heap_is_empty (as->heap)) {
                         current_f = astar_heap_pop (as->heap, &square);
@@ -1021,8 +1021,8 @@ astar_main_loop (astar_t * as)
 
 int
 astar_run (astar_t *as,
-           const ulong x0, const ulong y0,
-           const ulong x1, const ulong y1)
+           const uint32 x0, const uint32 y0,
+           const uint32 x1, const uint32 y1)
 {
         assert (as != NULL);
         assert (as->grid != NULL);
@@ -1086,7 +1086,7 @@ astar_run (astar_t *as,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-ulong
+uint32
 astar_get_directions (astar_t *as, direction_t ** directions)
 {
         assert (as != NULL);
@@ -1104,11 +1104,11 @@ astar_get_directions (astar_t *as, direction_t ** directions)
 
         // Now form the array of directions. Start at the beginning, and
         // reverse the direction of the A* path to find the real a-to-b path.
-        ulong ofs = as->ofs0;
-	ulong i;
+        uint32 ofs = as->ofs0;
+	uint32 i;
 	for (i = 0; i < as->steps; i++) {
                 // Obtain the direction
-                ulong dir = as->grid[ofs].rdir;
+                uint32 dir = as->grid[ofs].rdir;
                 // Store the direction.
                 *dp++ = (BYTE)dir;
                 // Move to the next square.
@@ -1143,7 +1143,7 @@ astar_free_directions (direction_t * directions)
 static void
 astar_print_heap (astar_t * as, const char * title)
 {
-        ulong x;
+        uint32 x;
         __debug ("\n%s (length=%d)\n", title, as->heap->length);
         for (x = 0; x < as->heap->length; x++) {
                 __debug("%3d. (%d,%d) [ofs %d] -> f=%d==%d %2s -> GRID "
@@ -1169,11 +1169,11 @@ astar_print_heap (astar_t * as, const char * title)
 void
 astar_print (astar_t * as)
 {
-        ulong y, x;
+        uint32 y, x;
         register square_t * s = as->grid;
 
 #ifdef TEST_ASTAR
-        BYTE grid_get (ulong, ulong);
+        BYTE grid_get (uint32, uint32);
 #endif // TEST_ASTAR
 
         __debug("So far:\n");
@@ -1311,7 +1311,7 @@ const char * grid[] = {
 
 
 BYTE
-grid_get (ulong x, ulong y)
+grid_get (uint32 x, uint32 y)
 {
         assert (x < GRID_COLS);
         assert (y < GRID_ROWS);
@@ -1346,7 +1346,7 @@ main (int argc, char ** argv)
 #endif // HEAP_DEBUG
 
         astar_t * as = astar_new (40, 40, grid_get, NULL);
-        ulong result_code, i, rep;
+        uint32 result_code, i, rep;
 
         //astar_t * as = astar_new (0,0, 0,0, 25,20, 40);
         //astar_t * as = astar_new (0,0, 5,5, 25,20, 40);
@@ -1413,9 +1413,9 @@ main (int argc, char ** argv)
 			
 			// Verify the directions.
 			BYTE * directions;
-			ulong route_steps = astar_get_directions (as, &directions);
-			ulong i, x = as->x0, y=as->y0;
-			ulong list_steps = 0;
+			uint32 route_steps = astar_get_directions (as, &directions);
+			uint32 i, x = as->x0, y=as->y0;
+			uint32 list_steps = 0;
 			
 			if (route_steps) {
 				printf("Verifying directions. %d step(s) returned.\n", route_steps);

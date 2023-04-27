@@ -117,7 +117,7 @@ void RenderStrings( int nLayer )
 {
 int		nLoop;
 RECT	xRect;
-ulong		nCol;
+uint32		nCol;
 int		nFont;
 int		nFlag;
 int		nCurrentBindTexture = -1;

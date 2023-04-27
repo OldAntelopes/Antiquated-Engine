@@ -13,7 +13,7 @@ typedef struct
 {
 	LPGRAPHICSTEXTURE		pTexture;
 	char					acFilename[128];
-	ulong					ulLastTouched;
+	uint32					ulLastTouched;
 	short					wRefCount;
 	short					wInMorgue;
 	int						nPitch;

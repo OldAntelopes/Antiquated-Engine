@@ -135,8 +135,8 @@ extern void		EngineSetViewport( int X, int Y, int W, int H );
 extern void		EngineRestoreViewport( void );
 
 extern	void	EngineSetZBias( int Value );
-extern	void	EngineSetFog( unsigned long ulFogCol, float fFogStart, float fFogEnd );
-extern	void	EngineSetFogColour( unsigned int uARGB );
+extern	void	EngineSetFog( uint32 ulFogCol, float fFogStart, float fFogEnd );
+extern	void	EngineSetFogColour( uint32 uARGB );
 
 extern  void	EngineSetPointRenderSize( float fPointSize );
 extern void		EngineClearZBuffer( void );
@@ -144,7 +144,7 @@ extern void		EngineSetMaterialColourSource( BOOL );
 extern void		EngineSetMaterialBlendOverride( BOOL );
 extern BOOL		EngineGetMaterialBlendOverride( void );
 
-extern unsigned long	EngineGetColValue( int R, int G, int B, int A );
+extern uint32	EngineGetColValue( int R, int G, int B, int A );
 
 //-----------------------------------------------------------------------------
 //  Scene shadows
@@ -218,7 +218,7 @@ extern void			EngineCopyTexture( TEXTURE_HANDLE hSrcTexture, TEXTURE_HANDLE hDes
 extern void			EngineCopyTextureToPosition( TEXTURE_HANDLE hSrcTexture, TEXTURE_HANDLE hDestTexture, int nDestPosX, int nDestPosY );
 
 extern TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode );
-extern void				EngineSetRenderTargetTexture( TEXTURE_HANDLE handle, unsigned long ulClearCol, BOOL bClear );
+extern void				EngineSetRenderTargetTexture( TEXTURE_HANDLE handle, uint32 ulClearCol, BOOL bClear );
 extern void				EngineRestoreRenderTarget( void );
 
 extern int				EngineTextureCreateInterfaceOverlay( int nLayer, TEXTURE_HANDLE );
@@ -374,7 +374,7 @@ extern BOOL		EngineVertexBufferCopy(  VERTEX_BUFFER_HANDLE hDestination,  VERTEX
 extern BOOL		EngineVertexBufferCopyWithCol(  VERTEX_BUFFER_HANDLE hDestination,  VERTEX_BUFFER_HANDLE hSource, unsigned long ulCol );
 
 // Modifying vertex buffers
-extern unsigned long*	EngineVertexBufferLockColourStream( VERTEX_BUFFER_HANDLE, int* pnStride );
+extern uint32*	EngineVertexBufferLockColourStream( VERTEX_BUFFER_HANDLE, int* pnStride );
 extern void		EngineVertexBufferUnlockColourStream( VERTEX_BUFFER_HANDLE );
 
 extern VECT*	EngineVertexBufferLockPositionStream( VERTEX_BUFFER_HANDLE, int* pnStride );

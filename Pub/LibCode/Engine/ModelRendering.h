@@ -67,16 +67,16 @@ typedef struct
 	ushort			uwCurrentAnimPriority;
 	ushort			uwNextAnimPriority;
 		
-	ulong			ulLastFrameTick;
-	ulong			ulNextFrameTick;
+	uint32			ulLastFrameTick;
+	uint32			ulNextFrameTick;
 	ushort			uwAnimNextFrame;
 	ushort			uwAnimLastFrame;
 
-	void	(*pfnCurrentTriggerFunc)( ulong ulParam );
-	void	(*pfnNextTriggerFunc)( ulong ulParam );
+	void	(*pfnCurrentTriggerFunc)( uint32 ulParam );
+	void	(*pfnNextTriggerFunc)( uint32 ulParam );
 
-	ulong		ulCurrentTriggerParam;
-	ulong		ulNextTriggerParam;
+	uint32		ulCurrentTriggerParam;
+	uint32		ulNextTriggerParam;
 	
 	BOOL		boIsPaused;
 
@@ -116,11 +116,11 @@ typedef struct
 	VECT	xAttachOffset;
 
 	int		nEffectType;
-	ulong	ulEffectParam1;
-	ulong	ulEffectParam2;
+	uint32	ulEffectParam1;
+	uint32	ulEffectParam2;
 
-	ulong	ulLastEffectTick;
-	ulong	ulLastEffectSwitch;
+	uint32	ulLastEffectTick;
+	uint32	ulLastEffectSwitch;
 
 } EFFECT_ATTACH_DATA;
 
@@ -199,7 +199,7 @@ typedef struct
 	BYTE		bWheelDisplayMode;
 	BYTE		bHasEffect;
 	BYTE		bPad4;
-	ulong		ulLastShadowCastedTime;
+	uint32		ulLastShadowCastedTime;
 
 	LOD_DATA		xLodData;
 
@@ -226,7 +226,7 @@ extern void		ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPo
 
 extern void		ModelRenderingProcessStaticEffects( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, int nUserParam );
 
-extern void		ModelRenderKeyframeAnimationGenerateBaseMesh(  MODEL_RENDER_DATA* pxModelData, ulong ulTick );
+extern void		ModelRenderKeyframeAnimationGenerateBaseMesh(  MODEL_RENDER_DATA* pxModelData, uint32 ulTick );
 
 extern void		ModelSetGlobalProperties( int nModelHandle, GLOBAL_PROPERTIES_CHUNK* pxProperties );
 
@@ -236,7 +236,7 @@ extern void		ModelRenderKeyframeAnimationUpdateBaseMeshFromKeyframes( MODEL_REND
 
 extern MODEL_RENDER_DATA		maxModelRenderData[ MAX_MODELS_LOADED ];
 
-extern ulong	mulLastRenderingTick;
+extern uint32	mulLastRenderingTick;
 
 
 #ifdef __cplusplus

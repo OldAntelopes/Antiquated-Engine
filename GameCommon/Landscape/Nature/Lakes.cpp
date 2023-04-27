@@ -76,7 +76,7 @@ int		LakeRenderFlushVertexBuffer( void )
 BOOL	LakeRenderRenderLists( void )
 {
 int		hCurrentVertexBuffer = mahLakeVertexBuffers[ msnLakeCurrentVertexBufferIndex ];
-ulong*		pulColStream = NULL;
+uint32*		pulColStream = NULL;
 int			nColStride = 0;
 VECT*		pxPosStream = NULL;
 int			nPosStride = 0;
@@ -88,7 +88,7 @@ float		fUBase = 0.0f;
 float		fVBase = 0.0f;
 float		fUWidth = 1.0f;
 float		fVHeight = 1.0f;
-ulong		ulCol = 0xFFFFFFFF;
+uint32		ulCol = 0xFFFFFFFF;
 float		fMapToWorldSize = LandscapeMapToWorldScale();
 
 	ulCol = EngineGetColValue( 0x50, 0x60, 0xA0, 0xA0 );
@@ -113,7 +113,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 2
@@ -125,7 +125,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 1 - vert 3
@@ -137,7 +137,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			//-------------------------
@@ -151,7 +151,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVBase;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 2
@@ -163,7 +163,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			// Tri 2 - vert 3
@@ -175,7 +175,7 @@ float		fMapToWorldSize = LandscapeMapToWorldScale();
 			pfUVStream[1] = fVHeight;
 
 			pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-			pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+			pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 			pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 			pItems = pItems->mpNext;

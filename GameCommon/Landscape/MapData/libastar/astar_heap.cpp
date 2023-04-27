@@ -63,7 +63,7 @@ FILE * __heap_debugfp;
 
 
 asheap_t *
-astar_heap_new (ulong initial_length, ulong delta)
+astar_heap_new (uint32 initial_length, uint32 delta)
 {
 	asheap_t * heap = (asheap_t *) malloc (sizeof (asheap_t));
 	check_null (heap, "heap_new(), allocating memory");
@@ -72,7 +72,7 @@ astar_heap_new (ulong initial_length, ulong delta)
 	heap->length = 0;
 	heap->delta = delta;
 	heap->alloc = initial_length;
-	heap->data = (ulong *) malloc (sizeof (ulong) * heap->alloc);
+	heap->data = (uint32 *) malloc (sizeof (uint32) * heap->alloc);
 	check_null (heap->data, "heap_new(), allocating data block");
 	heap->squares = (square_t **) malloc (sizeof (square_t *) * heap->alloc);
 	check_null (heap->squares, "heap_new(), allocating payload block");
@@ -98,21 +98,21 @@ astar_heap_clear (asheap_t * heap)
 }
 
 
-ulong
+uint32
 astar_heap_sizeof (asheap_t * heap)
 {
-	return sizeof (asheap_t) + sizeof (ulong) * 2 * (heap)->alloc;
+	return sizeof (asheap_t) + sizeof (uint32) * 2 * (heap)->alloc;
 }
 
 
 #ifdef HEAP_DEBUG
 
 void
-astar_heap_highlight (asheap_t * heap, ulong highlight)
+astar_heap_highlight (asheap_t * heap, uint32 highlight)
 {
-	ulong i;
+	uint32 i;
 	for (i=0; i<heap->length; i++) {
-		ulong val = heap->data[i];
+		uint32 val = heap->data[i];
 		int p = i > 0? PARENT_OF(i): 0;
 		if (val == highlight) printf ("%2d -> \033[0;7m%3d\033[0m", i, val, p);
 		else printf ("%2d -> %3d", i, val, p);
@@ -134,14 +134,14 @@ astar_heap_highlight (asheap_t * heap, ulong highlight)
 
 
 void
-astar_heap_add (asheap_t * heap, ulong val, square_t * square)
+astar_heap_add (asheap_t * heap, uint32 val, square_t * square)
 {
 	assert (heap != NULL);
 
 	// Is is full?
 	if (heap->length == heap->alloc) {
 		heap->alloc += heap->delta;
-		heap->data = (ulong *) realloc (heap->data, sizeof (ulong) * heap->alloc);
+		heap->data = (uint32 *) realloc (heap->data, sizeof (uint32) * heap->alloc);
 		check_null (heap->data, "heap_add(), growing data block");
 		heap->squares = (square_t **) realloc (heap->squares,
 						       sizeof (square_t *) * heap->alloc);
@@ -161,8 +161,8 @@ astar_heap_add (asheap_t * heap, ulong val, square_t * square)
 	heap->squares [heap->length] = square;
 
 	// Bubble up.
-	ulong parent_val, parent_ofs;
-	ulong i = heap->length;
+	uint32 parent_val, parent_ofs;
+	uint32 i = heap->length;
 	square_t* parent_payload;
 	while (i > 0) {
 
@@ -200,7 +200,7 @@ astar_heap_is_empty (asheap_t * heap)
 }
 
 
-ulong
+uint32
 astar_heap_pop (asheap_t * heap, square_t ** square)
 {
 	assert (heap != NULL);
@@ -214,11 +214,11 @@ astar_heap_pop (asheap_t * heap, square_t ** square)
 	}
 
 	// Get the root value and payload.
-	ulong retval = heap->data [0];
+	uint32 retval = heap->data [0];
 	if (square != NULL) *square = heap->squares [0];
 
 	// Move the last value to the root.
-	ulong val = heap->data [heap->length - 1];
+	uint32 val = heap->data [heap->length - 1];
 	heap->data[0] = val;
 	heap->squares[0] = heap->squares [heap->length - 1];
 
@@ -226,8 +226,8 @@ astar_heap_pop (asheap_t * heap, square_t ** square)
 	heap->length--;
 	
 	// Bubble down.
-	ulong child_val1, child_val2, child_ofs1, child_ofs2;
-	ulong i = 0;
+	uint32 child_val1, child_val2, child_ofs1, child_ofs2;
+	uint32 i = 0;
 
 	for (;;) {
 
@@ -283,7 +283,7 @@ astar_heap_pop (asheap_t * heap, square_t ** square)
 static OUR_INLINE int
 astar_heap_getofs (asheap_t * heap, square_t * payload)
 {
-	ulong i;
+	uint32 i;
 	for (i = 0; i <= heap->length; i++) {
 		if (heap->squares[i] == payload) return i;
 	}
@@ -291,14 +291,14 @@ astar_heap_getofs (asheap_t * heap, square_t * payload)
 }
 
 
-OUR_INLINE static ulong
+OUR_INLINE static uint32
 astar_heap_bubble_up (asheap_t * heap, square_t * payload, int heapofs)
 {
 	// Bubble up. This keeps the heap consistent (all children
 	// have greater values).
 
-	register ulong parent_val, parent_ofs;
-	register ulong val;
+	register uint32 parent_val, parent_ofs;
+	register uint32 val;
 	register int i = heapofs;
 
 	// Let's do this thang.
@@ -348,7 +348,7 @@ astar_heap_bubble_up (asheap_t * heap, square_t * payload, int heapofs)
 }
 
 
-ulong
+uint32
 astar_heap_update (asheap_t * heap, square_t * payload)
 {
 	assert (heap != NULL);
@@ -368,7 +368,7 @@ astar_heap_update (asheap_t * heap, square_t * payload)
 	heap->data [ofs] = payload->f;
 
 	// Bubble up to keep the heap consistent.
-	ulong new_ofs = astar_heap_bubble_up (heap, payload, ofs);
+	uint32 new_ofs = astar_heap_bubble_up (heap, payload, ofs);
 
 	return new_ofs;
 }
@@ -377,7 +377,7 @@ astar_heap_update (asheap_t * heap, square_t * payload)
 void
 astar_heap_fprint (asheap_t * heap, FILE * fp)
 {
-	ulong i;
+	uint32 i;
 
 	for (i = 0; i < heap->length; i++) {
 #ifdef SQUARE_HAS_OFS
@@ -420,13 +420,13 @@ main (int argc, char ** argv)
 #endif // HEAP_DEBUG
 
 	asheap_t * h = astar_heap_new (10, 100);
-	ulong i;
+	uint32 i;
 	srand(0);
 
 	printf ("Size of void * on this system: %d bytes\n", sizeof (void *));
 
 	for (i = 0; i < NUM_INS; i++) {
-		ulong x = rand() % 1000;
+		uint32 x = rand() % 1000;
 
 		// We use 32-bit integers as payload, rather than
 		// pointers. On 64-bit boxes, pointers are 64 bits wide. Fix
@@ -436,7 +436,7 @@ main (int argc, char ** argv)
 		uint64_t xx = x;
 		printf ("Adding #%d (%d) -> %p (%llu)...\n", i, x, (void*)xx, (void*)xx);
 #else
-		ulong xx = x;
+		uint32 xx = x;
 		printf ("Adding #%d (%d) -> %p (%u)...\n", i, x, (void*)xx, (void*)xx);
 #endif // __WORDSIZE == 64
 
@@ -444,16 +444,16 @@ main (int argc, char ** argv)
 	}
 	assert (h->length == NUM_INS);
 
-	ulong prev = 0;
+	uint32 prev = 0;
 	while (!astar_heap_is_empty (h)) {
 		square_t * payload;
-		ulong next = astar_heap_pop (h, &payload);
+		uint32 next = astar_heap_pop (h, &payload);
 		prev = next;
 		assert (next >= prev);
 #if __WORDSIZE == 64
 		assert ((uint64_t) payload == (uint64_t) next);
 #else
-		assert ((ulong) payload == (ulong) next);
+		assert ((uint32) payload == (uint32) next);
 #endif // __WORDSIZE
 	}
 

@@ -13,7 +13,7 @@ public:
 	void		Initialise( const char* szString, float fRevealSpeed );
 
 	void		Update( float fDelta );
-	void		Render( int X, int Y, int W, float fAlpha, ulong ulCol, int nFont, int nFlags );
+	void		Render( int X, int Y, int W, float fAlpha, uint32 ulCol, int nFont, int nFlags );
 
 private:
 

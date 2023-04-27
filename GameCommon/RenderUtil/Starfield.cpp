@@ -9,13 +9,13 @@
 typedef struct
 {
 	VECT	xPos;
-	ulong	ulBaseCol;
+	uint32	ulBaseCol;
 
 	BYTE	bType;
 	BYTE	bPhase;
 	ushort	uwGlowTime;
 
-	ulong	ulGlowCol;
+	uint32	ulGlowCol;
 	float	fDotCache;
 
 } BACKGROUND_STAR;
@@ -30,7 +30,7 @@ typedef struct
 BACKGROUND_STAR*	mpxBackgroundStarfield = NULL;
 int		mnBackgroundStarfieldProcessPhase = -1;
 int		mnBackgroundStarsToDraw = MAX_NUM_BACKGROUND_STARS;
-ulong	mulLastBackgroundCountChange = 0;
+uint32	mulLastBackgroundCountChange = 0;
 
 
 
@@ -111,7 +111,7 @@ VECT		xVect;
 
 	if ( mpxBackgroundStarfield )
 	{
-	ulong	ulTimeTakenToUpdate = SysGetTick();
+	uint32	ulTimeTakenToUpdate = SysGetTick();
 
 		pxStar = mpxBackgroundStarfield;
 		for ( Loop = 0; Loop < mnBackgroundStarsToDraw; Loop++ )

@@ -5,9 +5,9 @@
 // Externed in UI.h
 /*
 extern int		UIDropdownCreate( void );
-extern int		UIDropdownAddElement( int nHandle, const char* szElementName, ulong ulElementParam );
+extern int		UIDropdownAddElement( int nHandle, const char* szElementName, uint32 ulElementParam );
 extern void		UIDropdownRender( int nHandle, int ScreenX, int ScreenY, int ScreenW, int ScreenH, int nFullH );
-extern int		UIDropdownGetSelection( char* szElementNameOut, ulong* pulElementParamOut );
+extern int		UIDropdownGetSelection( char* szElementNameOut, uint32* pulElementParamOut );
 extern void		UIDropdownDestroy( int nHandle );
 */
 

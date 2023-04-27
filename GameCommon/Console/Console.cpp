@@ -40,7 +40,7 @@ private:
 	struct CONSOLE_BUFFER
 	{
 		char	acText[NUM_CHARS_IN_CONSOLE_BUFFER_LINE];
-		ulong	uCol;
+		uint32	uCol;
 	};
 
 	CONSOLE_BUFFER		m_aConsoleBuffer[ MAX_LINES_IN_SUB_CONSOLE_BUFFER ];
@@ -100,7 +100,7 @@ int		nLineNum;
 int		nNumLinesToDisplay;
 int		nWidth;
 const char*	pcEditString = PlatformKeyboardGetInputString( FALSE );
-ulong	ulCol;
+uint32	ulCol;
 
 	mboHasUnseenText = FALSE;
 	if ( ( nDisplayEditMode == 2 ) ||
@@ -346,10 +346,10 @@ void		ConsolePrint( int mode, const char* text, ... )
 {
 char		acString[1024];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 //int			nLen;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
 	va_start( marker, text );     
 	vsprintf( acString, text, marker );

@@ -13,7 +13,7 @@ typedef struct
 {
 	int		nTileTextureLookupNum;
 	int		hTextureHandle;
-	ulong	ulLastTouched;
+	uint32	ulLastTouched;
 
 } HIRES_LANDSCAPE_TEXTURES;
 
@@ -21,7 +21,7 @@ typedef struct
 //----------------
 
 int			maLoResLandscapeTextures[ NUM_LORES_TEXTURES ];
-ulong		mulTextureTouchFrame = 100;
+uint32		mulTextureTouchFrame = 100;
 BOOL		mbLandscapeTexturesJpegs = TRUE;
 
 HIRES_LANDSCAPE_TEXTURES		maHiResLandscapeTextures[ MAX_NUM_HIRES_LANDSCAPE_TEXTURES_LOADED ];
@@ -31,7 +31,7 @@ int		mahTileTextureLookUp[ TEXTURE_LOOKUP_SLOTS ] = { NOTFOUND };
 int		LandscapeTileGenTexturesGetNextFreeHandle( void )
 {
 int		nLoop;
-ulong	ulOldestFrame = mulTextureTouchFrame - 2;
+uint32	ulOldestFrame = mulTextureTouchFrame - 2;
 int		nOldestIndex = NOTFOUND;
 	
 	for ( nLoop = 0; nLoop < MAX_NUM_HIRES_LANDSCAPE_TEXTURES_LOADED; nLoop++ )

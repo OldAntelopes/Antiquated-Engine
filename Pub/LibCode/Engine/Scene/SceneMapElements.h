@@ -146,7 +146,7 @@ class SceneLightElement : public SceneMapElement
 public:
 	const char*	GetTypeName( void ) { return( "Light" ); }
 
-	void	SetColour( ulong ulARGB );
+	void	SetColour( uint32 ulARGB );
 	void	SetLightType( int type );
 	void	SetRange( float fScale );
 	void	SetAttenuation( float fAtten );
@@ -155,7 +155,7 @@ protected:
 #ifdef TOOL
 	virtual void	SaveElement( FILE* );
 #endif
-	ulong		mulLightColour;
+	uint32		mulLightColour;
 	int			mnLightType;
 	float		mfScale;
 	float		mfAtten1;

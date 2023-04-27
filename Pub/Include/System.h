@@ -50,11 +50,11 @@ typedef struct
 
 
 extern void				SysGetLocalTime( SYS_LOCALTIME* pMem );		// Date/time
-extern ulong			SysGetTimeLong(void ); // returns time in seconds (from 1,jan 1970 or whateva)
-extern unsigned long	SysGetTick( void );		// millisecond tick
+extern uint32			SysGetTimeLong(void ); // returns time in seconds (from 1,jan 1970 or whateva)
+extern uint32			SysGetTick( void );		// millisecond tick
 extern u64				SysGetMicrosecondTick( void );		
-extern void				SysGetLocalTimeFromUnixTimestamp( ulong ulUnixTime, SYS_LOCALTIME* pTime );
-extern ulong			SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime );
+extern void				SysGetLocalTimeFromUnixTimestamp( uint32 ulUnixTime, SYS_LOCALTIME* pTime );
+extern uint32			SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime );
 extern float			SysGetFrameDelta();
 
 extern void				SysSetFrameDelta( float fDelta );
@@ -175,8 +175,8 @@ extern const char*	SysGetFileExtension( const char* szFilename );		// Returns a 
 
 extern BOOL	SysLaunchBrowserWindow( const char* szWeblink );
 
-extern const char*		SysNetworkGetIPAddressText( unsigned long ulIP );
-extern unsigned long	SysNetworkGetIPAddress( const char* szIPAddressString );
+extern const char*		SysNetworkGetIPAddressText( uint32 ulIP );
+extern uint32			SysNetworkGetIPAddress( const char* szIPAddressString );
 
 extern void	SysGetLogDateTime( char* szOutBuffer );
 
@@ -206,7 +206,7 @@ extern void*	SysGetMainWindow( void );
 //------------- Thread routines
 typedef	long(*fnThreadFunction)( long );
 
-extern unsigned int		SysCreateThread( fnThreadFunction, void* pThreadPointerParam, ulong ulThreadParam, int nPriority );
+extern unsigned int		SysCreateThread( fnThreadFunction, void* pThreadPointerParam, uint32 ulThreadParam, int nPriority );
 extern void				SysExitThread( int nRetVal );
 
 //------------- System OS processing

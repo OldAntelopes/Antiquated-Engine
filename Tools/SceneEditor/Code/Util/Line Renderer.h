@@ -16,7 +16,7 @@ extern void FreeLineRenderer( void );
 
 extern void RenderLines( BOOL, BOOL, BOOL , BOOL);
 
-extern void AddLine( MVECT* pxPoint1, MVECT* pxPoint2, ulong ulCol, ulong ulCol2 );
+extern void AddLine( MVECT* pxPoint1, MVECT* pxPoint2, uint32 ulCol, uint32 ulCol2 );
 
 
 

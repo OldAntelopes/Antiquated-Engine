@@ -24,7 +24,7 @@ typedef struct
 {
 	VECT	 position; // The position
 	VECT	 normal; // The position
-	ulong    color;    // The color
+	uint32    color;    // The color
 	FLOAT    tu, tv;   // The texture coordinates
 	FLOAT    tu2, tv2;   // The texture coordinates
 	VECT	tangent;

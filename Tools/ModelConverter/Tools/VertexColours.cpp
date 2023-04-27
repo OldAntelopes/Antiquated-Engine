@@ -26,12 +26,12 @@ VECT	xSunDir = { -1.0f, -1.0f, -1.0f };
 VECT	xRay = { -1.0f, -1.0f, -1.0f };
 BOOL	boCollision = FALSE;
 float	fCollisionDist = 10000.0f;
-ulong 	ulCollIndex;
+uint32 	ulCollIndex;
 float	fDist;
-ulong	ulAmbientR = 0x40;
-ulong	ulAmbientG = 0x40;
-ulong	ulAmbientB = 0x40;
-ulong	ambient	= 0xFF404040;
+uint32	ulAmbientR = 0x40;
+uint32	ulAmbientG = 0x40;
+uint32	ulAmbientB = 0x40;
+uint32	ambient	= 0xFF404040;
 VECT	xNormal;
 
 	if ( nHandle != NOTFOUND )
@@ -65,14 +65,14 @@ VECT	xNormal;
 					else
 					{
 					float	fDot;
-					ulong	R,G,B;
+					uint32	R,G,B;
 						xNormal = *( (VECT*)&pxVertices->normal );
 						fDot = VectDot( &xNormal, &xSunDir ) * -1.0f;
 						if ( fDot > 0.0f )
 						{
-							R = (ulong)((0xFF-ulAmbientR) * fDot) + ulAmbientR;
-							G = (ulong)((0xFF-ulAmbientG) * fDot) + ulAmbientG;
-							B = (ulong)((0xFF-ulAmbientB) * fDot) + ulAmbientB;
+							R = (uint32)((0xFF-ulAmbientR) * fDot) + ulAmbientR;
+							G = (uint32)((0xFF-ulAmbientG) * fDot) + ulAmbientG;
+							B = (uint32)((0xFF-ulAmbientB) * fDot) + ulAmbientB;
 							pxVertices->color = 0xFF000000 | (R<<16) | (G<<8) | (B);
 						}
 						else

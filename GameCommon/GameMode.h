@@ -107,7 +107,7 @@ extern void		GameModeChange( int nNewGameMode );
 extern void		GameModeSet( GameMode* pGameMode );
 
 extern void		GameModeUpdate( float fDelta );
-extern void		GameModeRender( ulong ulBackgroundClearColARGB );
+extern void		GameModeRender( uint32 ulBackgroundClearColARGB );
 
 extern void		GameModeShutdown( void );
 

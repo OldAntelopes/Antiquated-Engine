@@ -149,8 +149,8 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR lpCmdLine, INT )
 	MainInitialise();
 
 	MSG		msg;
-	ulong	ulTimer = SysGetTick();
-	ulong	ulLastTimer = SysGetTick();
+	uint32	ulTimer = SysGetTick();
+	uint32	ulLastTimer = SysGetTick();
 	ZeroMemory( &msg, sizeof(msg) );
 		
 	// Do the main loop

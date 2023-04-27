@@ -16,7 +16,7 @@
 
 typedef struct 
 {
-	ulong		ulRenderFrameTick;
+	uint32		ulRenderFrameTick;
 	int			nNumTrees;
 	Tree*		pTreeList;
 

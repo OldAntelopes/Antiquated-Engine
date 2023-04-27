@@ -19,7 +19,7 @@ typedef struct
 {
 	int		nX;
 	int		nY;
-	ulong	ulCol;
+	uint32	ulCol;
 	char*	pcString;
 
 	int		nWidth;

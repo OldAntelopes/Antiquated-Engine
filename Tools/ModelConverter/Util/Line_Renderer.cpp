@@ -25,7 +25,7 @@ CUSTOMVERTEX* mspLineRendererVertices;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void AddLine( MVECT* pxPoint1, MVECT* pxPoint2, ulong ulCol, ulong ulCol2 )
+void AddLine( MVECT* pxPoint1, MVECT* pxPoint2, uint32 ulCol, uint32 ulCol2 )
 {
 CUSTOMVERTEX* pVertices;
 

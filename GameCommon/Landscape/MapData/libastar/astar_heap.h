@@ -55,39 +55,39 @@ extern "C" {
  */
 
 typedef struct {
-	ulong    f;
-	ulong    g;
-	ulong    h;
+	uint32    f;
+	uint32    g;
+	uint32    h;
 
 #if defined(HEAP_DEBUG) || defined(ASTAR_DEBUG)
 #define SQUARE_HAS_OFS
 	// We use this for debugging.
-	ulong    ofs;
+	uint32    ofs;
 #endif
 
 	// This bitfield uses 18 of 32 bits.
 
-	ulong    cost:8;     // We assign a base cost 0-255. 255=impassable.
-	ulong    open:1;	// Is this in the open set?
-	ulong    closed:1;	// Is this in the closed list?
-	ulong    dir:3;      // Direction to this square's parent.
-	ulong    rdir:3;     // Source->Destination direction.
-	ulong    route:1;    // This is part of the final route.
-	ulong    init:1;     // This square has been initialised.
+	uint32    cost:8;     // We assign a base cost 0-255. 255=impassable.
+	uint32    open:1;	// Is this in the open set?
+	uint32    closed:1;	// Is this in the closed list?
+	uint32    dir:3;      // Direction to this square's parent.
+	uint32    rdir:3;     // Source->Destination direction.
+	uint32    route:1;    // This is part of the final route.
+	uint32    init:1;     // This square has been initialised.
 
 } square_t;
 
 
 typedef struct {
-	ulong  *  data;	// Data.
+	uint32  *  data;	// Data.
 	square_t  ** squares;   // Payload (array of square_t pointers)
-	ulong     length;	// Entries in use.
-	ulong     alloc;	// Entries allocated.
-	ulong     delta;     // Size increase.
+	uint32     length;	// Entries in use.
+	uint32     alloc;	// Entries allocated.
+	uint32     delta;     // Size increase.
 } asheap_t;
 
 
-asheap_t * astar_heap_new (ulong initial_length, ulong delta);
+asheap_t * astar_heap_new (uint32 initial_length, uint32 delta);
 
 
 void astar_heap_destroy (asheap_t * heap);
@@ -96,16 +96,16 @@ void astar_heap_destroy (asheap_t * heap);
 void astar_heap_clear (asheap_t * heap);
 
 
-ulong astar_heap_sizeof (asheap_t * heap);
+uint32 astar_heap_sizeof (asheap_t * heap);
 
 
-void astar_heap_add (asheap_t * heap, ulong val, square_t * payload);
+void astar_heap_add (asheap_t * heap, uint32 val, square_t * payload);
 
 
-ulong astar_heap_pop (asheap_t * heap, square_t ** payload);
+uint32 astar_heap_pop (asheap_t * heap, square_t ** payload);
 
 
-ulong astar_heap_update (asheap_t * heap, square_t * payload);
+uint32 astar_heap_update (asheap_t * heap, square_t * payload);
 
 
 int astar_heap_is_empty (asheap_t * heap);

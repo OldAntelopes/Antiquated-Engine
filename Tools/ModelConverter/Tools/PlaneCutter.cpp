@@ -379,7 +379,7 @@ int		nNumSelectedFaces = pSceneObject->GetNumFacesSelected();
 	int		nLoop;
 	int		nFaceNum;
 	ushort*	puwIndices;
-	ulong*	punIndices;
+	uint32*	punIndices;
 	int		nModelHandle = pSceneObject->GetModelHandle();
 	MODEL_RENDER_DATA*	pxModelData;
 	SliceFaceList*	pFaceList = NULL;
@@ -391,7 +391,7 @@ int		nNumSelectedFaces = pSceneObject->GetNumFacesSelected();
 	CUSTOMVERTEX*	pxVert3;
 	EngineMesh*		pNewMesh;
 //	VECT			xVert1, xVert2, xVert3;
-	ulong		unIndex1, unIndex2, unIndex3;
+	uint32		unIndex1, unIndex2, unIndex3;
 	int			nNewNumVerts;
 	int			nNewNumFaces;
 
@@ -403,7 +403,7 @@ int		nNumSelectedFaces = pSceneObject->GetNumFacesSelected();
 		pxModelData->pxBaseMesh->LockIndexBuffer( 0, (BYTE**)&puwIndices );
 		if ( pxModelData->pxBaseMesh->Is32BitIndexBuffer() )
 		{
-			punIndices = (ulong*)( puwIndices );
+			punIndices = (uint32*)( puwIndices );
 		}
 
 		pxModelData->pxBaseMesh->LockVertexBuffer( NULL, (byte**)( &pxVertices ) );

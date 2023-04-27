@@ -11,7 +11,7 @@
 #include "UI/UI.h"
 #include "Platform\Platform.h"
 
-ulong	mulLastTick = 0;
+uint32	mulLastTick = 0;
 
 
 BOOL	mbTileSpriteGenHasLoadedShaders = FALSE;
@@ -192,7 +192,7 @@ void	ToolUpdateFrame( float fDelta )
 
 void		MainUpdate( void )
 {
-ulong	ulThisTick = SysGetTick();
+uint32	ulThisTick = SysGetTick();
 float	fDelta = (float)( ulThisTick - mulLastTick ) * 0.001f;
 
 	if ( fDelta > 0.0f )

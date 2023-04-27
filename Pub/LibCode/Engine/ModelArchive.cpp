@@ -25,7 +25,7 @@ void	EngineModelArchiveFillHeader( MODEL_ARCHIVE_FILE_HEADER* pHeader, int nNumb
 //--------------------------------------------------------
 
 
-void	ModelArchive::Render( const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags )
+void	ModelArchive::Render( const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags )
 {
 	if ( mpMap )
 	{

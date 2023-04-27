@@ -26,7 +26,7 @@ public:
 	~ModelArchive();
 
 	void		Load( const char* szFilename );
-	void		Render( const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags );
+	void		Render( const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags );
 private:
 
 	class SceneMap*		mpMap;

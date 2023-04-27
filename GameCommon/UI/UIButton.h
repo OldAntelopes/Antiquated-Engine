@@ -3,8 +3,8 @@
 
 
 // ------- externed in UI.h =
-//		extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam );
-//		extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, ulong ulParam );
+//		extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam );
+//		extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam );
 //
 
 

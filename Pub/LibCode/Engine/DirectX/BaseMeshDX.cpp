@@ -84,9 +84,9 @@ int		nNumFaces = GetNumFaces();
 }
 
 
-void	BaseMeshDX9::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, ulong* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, ulong* pulHitCount )
+void	BaseMeshDX9::RayTest( const VECT* pRayPos, const VECT* pRayDir, BOOL* pbHit, uint32* pFaceIndex, float* pU, float* pV, float* pfDist, void* pIntersectBuffer, uint32* pulHitCount )
 {
-	D3DXIntersect( mpDXPlatformMesh, (const D3DXVECTOR3*)pRayPos, (const D3DXVECTOR3*)pRayDir, pbHit, pFaceIndex, pU, pV, pfDist, (LPD3DXBUFFER*)pIntersectBuffer, pulHitCount );
+	D3DXIntersect( mpDXPlatformMesh, (const D3DXVECTOR3*)pRayPos, (const D3DXVECTOR3*)pRayDir, pbHit, (LPDWORD)pFaceIndex, pU, pV, pfDist, (LPD3DXBUFFER*)pIntersectBuffer, (LPDWORD)pulHitCount );
 }
 
 int		BaseMeshDX9::LockVertexBuffer( int flags, unsigned char** ppVertices )

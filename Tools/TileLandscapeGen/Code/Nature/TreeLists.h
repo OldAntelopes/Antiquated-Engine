@@ -4,7 +4,7 @@
 
 class Tree;
 
-typedef	void(*fnProcessTreeCallback)( Tree*, ulong );
+typedef	void(*fnProcessTreeCallback)( Tree*, uint32 );
 
 
 void	TreeListsInit( void );
@@ -19,7 +19,7 @@ void	TreeListsSetView( int nGameMapMinX, int nGameMapMinY, int nGameMapMaxX, int
 void	TreeListsRenderPass1( void );
 void	TreeListsRenderPass2( void );
 
-void	TreeListsProcessView( fnProcessTreeCallback, ulong ulParam  );
+void	TreeListsProcessView( fnProcessTreeCallback, uint32 ulParam  );
 
 void	TreeListsFree( void );
 

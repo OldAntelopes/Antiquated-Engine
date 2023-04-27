@@ -358,7 +358,7 @@ BOOL		SysSetCurrentDir( char* szDir )
 //   Returns the number of milliseconds since the puter was turned on
 //		(Or when the application started.. doesnt matter which as long as it goes up regularly..)
 //--------------------------------------------------------
-ulong	SysGetTick( void )
+uint32	SysGetTick( void )
 {
 	return( GetTickCount() );
 }

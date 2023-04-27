@@ -15,7 +15,7 @@ short		mwUIPressX = 0;
 short		mwUIPressY = 0;
 
 int			mnUIButtonIDPressed = NOTFOUND;
-ulong		mulUIButtonIDPressedParam = 0;
+uint32		mulUIButtonIDPressedParam = 0;
 
 class UIButtonHandlerList
 {
@@ -168,7 +168,7 @@ UIButtonHandlerList*		pNext;
 }
 
 
-void		UIPressIDSet( int nButtonID, ulong ulParam )
+void		UIPressIDSet( int nButtonID, uint32 ulParam )
 {
 	mnUIButtonIDPressed = nButtonID;
 	mulUIButtonIDPressedParam = ulParam;

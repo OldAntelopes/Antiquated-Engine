@@ -185,20 +185,20 @@ float	fTempY;
 	*pnTextureY = (int)( fTempY );
 }
 
-void	LandscapeShadowSetShadow( BYTE* pbTexture, int nPitch, int nPixelX, int nPixelY, ulong ulCol )
+void	LandscapeShadowSetShadow( BYTE* pbTexture, int nPitch, int nPixelX, int nPixelY, uint32 ulCol )
 {
 	if ( ( nPixelX > 0 ) &&
 		 ( nPixelY > 0 ) &&
 		 ( nPixelX < mnGeneratedTextureSize ) &&
 		 ( nPixelY < mnGeneratedTextureSize ) )
 	{
-	ulong*	pulTexture;
-	ulong	B;
-	ulong	sourceB;
-	ulong	ulSource;
+	uint32*	pulTexture;
+	uint32	B;
+	uint32	sourceB;
+	uint32	ulSource;
 
 		pbTexture += (nPitch * nPixelY);
-		pulTexture = (ulong*)pbTexture;
+		pulTexture = (uint32*)pbTexture;
 		pulTexture += nPixelX;
 
 		B = ulCol & 0xFF;
@@ -217,7 +217,7 @@ void	LandscapeShadowSetShadow( BYTE* pbTexture, int nPitch, int nPixelX, int nPi
 
 #define		SHADOW_SPRITE_SIZE		16
 
-ulong		ulTreeShadowMap[] = 
+uint32		ulTreeShadowMap[] = 
 {
 	0xFFB0B0B0, 0xff505050,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,
 	0xff505050, 0xFFB0B0B0, 0xff505050,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,
@@ -240,7 +240,7 @@ ulong		ulTreeShadowMap[] =
 	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000, 0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0x00000000,	0xFF505050,
 };
 
-void	LandscapeShadowTreeProcess( Tree* pTree, ulong ulJob )
+void	LandscapeShadowTreeProcess( Tree* pTree, uint32 ulJob )
 {
 SHADOW_JOB* pJob = (SHADOW_JOB*)( ulJob );
 float	fWorldXPerPixel = (pJob->jobDef.nGeneratorTilesPerTextureX * LandscapeMapToWorldScale() ) / (float)(mnGeneratedTextureSize);
@@ -301,7 +301,7 @@ int		nTileMaxY = nTileY + (int)( ( ( pJob->nY2 - pJob->nY1 ) * fWorldYPerPixel )
 	TreeListsSetView( nTileX - 1, nTileY - 1, nTileMaxX + 1, nTileMaxY + 1 );
 
 	// Go through list of trees within that map range
-	TreeListsProcessView( LandscapeShadowTreeProcess, (ulong)( pJob ) );
+	TreeListsProcessView( LandscapeShadowTreeProcess, (uint32)( pJob ) );
 
 
 	
@@ -320,11 +320,11 @@ BYTE*	pbTextureBase;
 BYTE*	pbTexture = pJob->pbTexture;
 int		nLoopX;
 int		nLoopY;
-ulong*	pulTexture;
-ulong	ulCol;
-ulong	ulR;
-ulong	ulG;
-ulong	ulB;
+uint32*	pulTexture;
+uint32	ulCol;
+uint32	ulR;
+uint32	ulG;
+uint32	ulB;
 VECT	xWorldCoord;
 VECT	xWorldCoordLineBase;
 VECT	xRayStart;
@@ -353,7 +353,7 @@ int		nLoopRays;
 	for ( nLoopY = pJob->nY1; nLoopY < pJob->nY2; nLoopY++ )
 	{
 		xWorldCoord = xWorldCoordLineBase;
-		pulTexture = (ulong*)pbTextureBase;
+		pulTexture = (uint32*)pbTextureBase;
 		pulTexture += pJob->nX1;
 		for ( nLoopX = pJob->nX1; nLoopX < pJob->nX2; nLoopX++ )
 		{
@@ -422,9 +422,9 @@ int		nLoopRays;
 //				ulR = ;
 //				ulG = 0xFF;
 //				ulB = 0;
-				ulR = (ulong)( 255.0f * fMod );
-				ulG = (ulong)( 255.0f * fMod );
-				ulB = (ulong)( 255.0f * fMod );
+				ulR = (uint32)( 255.0f * fMod );
+				ulG = (uint32)( 255.0f * fMod );
+				ulB = (uint32)( 255.0f * fMod );
 
 				*pulTexture = 0xFF000000 | (ulR << 16) | (ulG << 8) | (ulB);
 			}
@@ -521,7 +521,7 @@ float	fPosH = 512.0f;
 
 void	LandscapeApplyShadowsThreaded( GeneratorJobGroupDef* pJobDef )
 {
-ulong iID;
+uint32 iID;
 HANDLE hThread;
 SHADOW_JOB			xJob1;
 SHADOW_JOB			xJob2;

@@ -29,7 +29,7 @@ struct TEXTURED_RECT_DEF
 	short	nX2;
 	short	nY2;
 
-	ulong	ulCol;
+	uint32	ulCol;
 	float	fU1;
 	float	fU2;
 	union {	float	fU3;	float fRot; };

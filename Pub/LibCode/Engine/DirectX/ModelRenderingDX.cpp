@@ -71,7 +71,7 @@ MODEL_RENDER_DATA*		pxModelData;
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int	ModelRenderAttachedModel( MODEL_RENDER_DATA*	pxModelData, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags, D3DXMATRIX	matOriginalWorld, int nWhichAttachedModel, const ENGINEQUATERNION* pxQuat )
+int	ModelRenderAttachedModel( MODEL_RENDER_DATA*	pxModelData, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags, D3DXMATRIX	matOriginalWorld, int nWhichAttachedModel, const ENGINEQUATERNION* pxQuat )
 {
 MODEL_RENDER_DATA*		pxSubModelData;
 CUSTOMVERTEX* pxVertices;
@@ -622,7 +622,7 @@ void	ModelRenderSetMaterialRenderStates( MODEL_RENDER_DATA* pxModelData )
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int		ModelRenderAttachedModelBasic( MODEL_RENDER_DATA*	pxModelData, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags, D3DXMATRIX	matOriginalWorld, int nWhichAttachedModel )
+int		ModelRenderAttachedModelBasic( MODEL_RENDER_DATA*	pxModelData, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags, D3DXMATRIX	matOriginalWorld, int nWhichAttachedModel )
 {
 MODEL_RENDER_DATA*		pxSubModelData = NULL;
 CUSTOMVERTEX* pxVertices;
@@ -737,7 +737,7 @@ int			nRet;
 
 
 #define SHOW_SHADOW_TEXTURE
-ulong	mulShadowDisplayTick = 0;
+uint32	mulShadowDisplayTick = 0;
 D3DXMATRIX matWorldStore;
 D3DXMATRIX matProjStore;
 D3DXMATRIX matViewStore;
@@ -772,7 +772,7 @@ void		RenderingComputeBoundingSphere( const CUSTOMVERTEX* pVertices, int nNumVer
 #ifndef TOOL	// None of this stuff is included when not in the game - the shadow casting
 				// relies on knowing where the game camera is etc..
 
-ulong		mulLastShadowCastTime = 0;
+uint32		mulLastShadowCastTime = 0;
 BOOL	mboDidCastShadow = FALSE;
 
 BOOL		ModelRenderDidCastShadow( void )
@@ -931,7 +931,7 @@ ENGINEMATRIX	matRotZ;
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int		RenderDXMesh( MODEL_RENDER_DATA* pxModelData, ulong ulRenderFlags )
+int		RenderDXMesh( MODEL_RENDER_DATA* pxModelData, uint32 ulRenderFlags )
 {
 int		ret = 0;
 int		nPolyCount = 0;
@@ -1023,7 +1023,7 @@ ENGINEMATERIAL		xBaseMaterial;
 
 
 
-int		ModelRenderDXRenderSkinnedModel( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags, const ENGINEQUATERNION* pxQuat )
+int		ModelRenderDXRenderSkinnedModel( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags, const ENGINEQUATERNION* pxQuat )
 {
 D3DXMATRIX	matWorld;
 MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[ nModelHandle ];
@@ -1138,10 +1138,10 @@ D3DXVECTOR3		xAttachPointTransformed;
  * Params      :
  * Description : Draws the specified model
  ***************************************************************************/
-int		ModelRenderImplDX( int nModelHandle, const VECT* pxPos, const VECT* pxRot, ulong ulRenderFlags, const ENGINEQUATERNION* pxQuat )
+int		ModelRenderImplDX( int nModelHandle, const VECT* pxPos, const VECT* pxRot, uint32 ulRenderFlags, const ENGINEQUATERNION* pxQuat )
 {
 MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[ nModelHandle ];
-ulong		ulTick = mulLastRenderingTick;
+uint32		ulTick = mulLastRenderingTick;
 D3DXMATRIX	matOriginalWorld;
 int		nPolyCount = 0;
 ENGINEMATRIX	matRestore;
@@ -1339,7 +1339,7 @@ int		nVertsTotal;
 	}
 }
 
-int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, ulong ulRenderFlags, VECT* pxScale )
+int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, uint32 ulRenderFlags, VECT* pxScale )
 {
 ENGINEMATRIX	matWorld;
 ENGINEMATRIX	matRotX;

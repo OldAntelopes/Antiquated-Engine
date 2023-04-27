@@ -109,7 +109,7 @@ void	ButtonStyle::Render( int X, int Y, int W, int H, const char* szText, int mo
 {
 int		nButtonImageW = 8;
 int		nButtonImageH = 8;
-ulong	ulBackgroundCol;
+uint32	ulBackgroundCol;
 float	fAlphaVal = m_fGlobalAlpha * fAlpha;
 
 	if ( mahUIButtonOverlays[0] == NOTFOUND )
@@ -138,7 +138,7 @@ float	fAlphaVal = m_fGlobalAlpha * fAlpha;
 	InterfaceTexturedRect( mahUIButtonOverlays[7], X+nButtonImageW, Y+H-nButtonImageH, W-(nButtonImageW*2), nButtonImageH, ulBackgroundCol, 0.0f, 0.0f, 1.0f, 1.0f );
 	InterfaceTexturedRect( mahUIButtonOverlays[8], X+W-nButtonImageW, Y+H-nButtonImageH, nButtonImageW, nButtonImageH, ulBackgroundCol, 0.0f, 0.0f, 1.0f, 1.0f );
 
-	ulong	ulTextCol = GetColWithModifiedAlpha( 0xD0F0E0C0, fAlphaVal );
+	uint32	ulTextCol = GetColWithModifiedAlpha( 0xD0F0E0C0, fAlphaVal );
 	int		nTextH = GetStringHeight( szText, 1 );
 	int		nTextY;
 
@@ -174,14 +174,14 @@ void		UIButtonsShutdown( void )
 	msButtonStyle.Free();
 }
 
-void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam, float fAlpha )
+void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha )
 {
 #ifdef BASIC_RENDER
 int		nTextSize;
 int		nTextOffsetY;
 #endif
-ulong	ulButtonMainCol = 0xB0707070;
-ulong	ulTextCol = 0xD0F0F0F0;
+uint32	ulButtonMainCol = 0xB0707070;
+uint32	ulTextCol = 0xD0F0F0F0;
 BOOL	bEnabled = TRUE;
 
 #ifdef BASIC_RENDER
@@ -237,13 +237,13 @@ BOOL	bEnabled = TRUE;
 }
 
 
-void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam )
+void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam )
 {
 	UIButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, nMode, ulParam, 1.0f );
 }
 
 
-BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, ulong ulParam )
+BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam )
 {
 	UIHoverItem( nX, nY, nWidth, nHeight );
 

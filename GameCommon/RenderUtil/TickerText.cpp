@@ -46,7 +46,7 @@ void	TickerText::Update( float fDelta )
 }
 
 
-void	TickerText::Render( int X, int Y, int W, float fAlpha, ulong ulCol, int nFont, int nFlags )
+void	TickerText::Render( int X, int Y, int W, float fAlpha, uint32 ulCol, int nFont, int nFlags )
 {
 char		acString[512];
 int			nLoop;

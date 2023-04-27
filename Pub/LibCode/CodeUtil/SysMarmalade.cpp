@@ -17,10 +17,10 @@ void		SysPanicIf( int condition, const char* text, ... )
 	{
 	char		acString[1024];
 	va_list		marker;
-	ulong*		pArgs;
+	uint32*		pArgs;
 	int			nLen;
 
-		pArgs = (ulong*)( &text ) + 1;
+		pArgs = (uint32*)( &text ) + 1;
 
 	    va_start( marker, text );     
 		vsprintf( acString, text, marker );
@@ -68,9 +68,9 @@ void		SysGetMACaddress( unsigned char* szOutBuffer )
 
 }
 
-ulong	SysGetTimeLong(void )
+uint32	SysGetTimeLong(void )
 {
-ulong	ulCurrentTime = (ulong)( s3eTimerGetUTC() / 1000 );
+uint32	ulCurrentTime = (uint32)( s3eTimerGetUTC() / 1000 );
 	return( ulCurrentTime );
 }
 
@@ -85,17 +85,17 @@ void				SysExitThread( int nRetval )
 	s3eThreadExit( (void*)nRetval );
 }
 
-unsigned int		SysCreateThread( fnThreadFunction threadFunction, void* pThreadPointerParam, ulong ulThreadParam, int nPriority )
+unsigned int		SysCreateThread( fnThreadFunction threadFunction, void* pThreadPointerParam, uint32 ulThreadParam, int nPriority )
 {
 s3eThread*	pThread;
 
 	// MARMALADE TODO - Note we're not passing the ulThreadParam at all... may need to work a way of doing that
 	// similarly with thread priority
 	pThread = s3eThreadCreate( (s3eThreadStartFunc) threadFunction, pThreadPointerParam, NULL );
-	return( (ulong)pThread );
+	return( (uint32)pThread );
 }
 
-ulong				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
+uint32				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
 {
 time_t	epoch;
 tm		xTime;
@@ -110,10 +110,10 @@ tm		xTime;
 	// todo 
 	epoch = mktime( &xTime );
 
-	return( *( (ulong*)( &epoch ) ) );
+	return( *( (uint32*)( &epoch ) ) );
 }
 
-void		SysGetLocalTimeFromUnixTimestamp( ulong ulUnixTime, SYS_LOCALTIME* pTime )
+void		SysGetLocalTimeFromUnixTimestamp( uint32 ulUnixTime, SYS_LOCALTIME* pTime )
 {
 struct tm *dcp;
 
@@ -155,9 +155,9 @@ void	SysSleep( int nMillisecs )
 	s3eDeviceYield(nMillisecs);
 }
 
-ulong	SysGetTick( void )
+uint32	SysGetTick( void )
 {
-	return( (ulong) s3eTimerGetMs() );
+	return( (uint32) s3eTimerGetMs() );
 }
 
 u64		SysGetMicrosecondTick( void )
@@ -206,10 +206,10 @@ void		SysDebugPrint( const char* text, ... )
 {
 char		acString[1024];
 va_list		marker;
-ulong*		pArgs;
+uint32*		pArgs;
 int			nLen;
 
-	pArgs = (ulong*)( &text ) + 1;
+	pArgs = (uint32*)( &text ) + 1;
 
     va_start( marker, text );     
 	vsprintf( acString, text, marker );

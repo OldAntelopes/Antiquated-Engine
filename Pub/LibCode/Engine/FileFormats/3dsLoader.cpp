@@ -393,9 +393,9 @@ Chunk::~Chunk()
  ***************************************************************************/
 void		ModelExport3dsMaterials(int nModelHandle, FILE* pFile )
 {
-ulong	ulMatChunk = 253;//60;//75;
+uint32	ulMatChunk = 253;//60;//75;
 ushort	uwVal;
-ulong	ulVal;
+uint32	ulVal;
 char	acString[256];
 BYTE	bVal;
 float	fVal;
@@ -403,23 +403,23 @@ float	fVal;
 			uwVal = 0xafff;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = ulMatChunk;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 			uwVal = 0xa000;		// mat name
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 6 + 5;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 			sprintf( acString, "mat1" );
 			fwrite( acString, 5, 1, pFile );
 
 			uwVal = MAT_AMBIENT;		// 
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 15;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0011;		// colour chunk
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 9;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				bVal = 0x0;
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
@@ -428,11 +428,11 @@ float	fVal;
 			uwVal = MAT_DIFFUSE;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 15;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0011;	// colour chunk
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 9;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				bVal = 0xFF;
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
@@ -441,11 +441,11 @@ float	fVal;
 			uwVal = MAT_SPECULAR;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 15;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0011;		// colour chunk
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 9;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				bVal = 0x0;
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
 				fwrite( &bVal, sizeof( byte ), 1, pFile );
@@ -454,111 +454,111 @@ float	fVal;
 			uwVal = MAT_SHININESS;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;		// percentage chunk
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = MAT_SHIN2PCT;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = 0xa050;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = 0xa052;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = 0xa053;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = 0xa100;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 8;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 			uwVal = 3;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 
 			uwVal = MAT_SELF_ILPCT;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 14;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			uwVal = 0xa08a;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 6;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 			uwVal = 0xa087;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 10;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 			fVal = 0.0f;
 			fwrite( &fVal, sizeof( float), 1, pFile );
 			
 			uwVal = 0xa200;
 			fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 			ulVal = 83;
-			fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+			fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0x0030;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 100;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 
 				uwVal = 0xa300;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 6 + 5;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				sprintf( acString, "tex1" );
 				fwrite( acString, 5, 1, pFile );
 
 				uwVal = 0xa351;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 8;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				uwVal = 0;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 
 				uwVal = 0xa353;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 10;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				fVal = 0.0f;
 				fwrite( &fVal, sizeof( float ), 1, pFile );
 				// chunk so far = 37
@@ -566,28 +566,28 @@ float	fVal;
 				uwVal = MAT_MAP_USCALE;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 10;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				fVal = 1.0f;
 				fwrite( &fVal, sizeof( float ), 1, pFile );
 
 				uwVal = MAT_MAP_VSCALE;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 10;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				fVal = 1.0f;
 				fwrite( &fVal, sizeof( float ), 1, pFile );
 
 				uwVal = MAT_MAP_UOFFSET;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 10;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				fVal = 0.0f;
 				fwrite( &fVal, sizeof( float ), 1, pFile );
 
 				uwVal = MAT_MAP_VOFFSET;
 				fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 				ulVal = 10;
-				fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+				fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 				fVal = 0.0f;
 				fwrite( &fVal, sizeof( float ), 1, pFile );
 
@@ -608,15 +608,15 @@ int		nVertexChunkSize;
 int		nFaceChunkSize;
 int		nMappingChunkSize;
 ushort	uwVal;
-ulong	ulObjectChunkSize;
-ulong	ulVal;
+uint32	ulObjectChunkSize;
+uint32	ulVal;
 BYTE	bVal;
 int		nLoop;
 VECT	xVect;
 float	fVal;
-ulong	ulExtras = 54;
+uint32	ulExtras = 54;
 //char	acString[256];
-ulong	ulMatChunk = 253;
+uint32	ulMatChunk = 253;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
 	pFile = fopen( acFilename, "wb");
@@ -632,26 +632,26 @@ ulong	ulMatChunk = 253;
 		uwVal = 0x4d4d;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = ulObjectChunkSize + 24 + 1 + ulExtras + 30 + ulMatChunk;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = 0x2;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = 10;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		ulVal = 3;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = 0x3d3d;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = ulObjectChunkSize + 18 + 1 + ulExtras + 20 + ulMatChunk;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = 0x3d3e;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = 10;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		ulVal = 3;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 			// Write a basic material
 			ModelExport3dsMaterials( nModelHandle, pFile );
@@ -659,26 +659,26 @@ ulong	ulMatChunk = 253;
 		uwVal = 0x0100;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = 10;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		fVal = 1.0f;
 		fwrite( &fVal, sizeof( float ), 1, pFile );
 
 		uwVal = 0x4000;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = ulObjectChunkSize + 12 + 1 + ulExtras;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		bVal = 0;
 		fwrite( &bVal, sizeof( BYTE ), 1, pFile );
 
 		uwVal = 0x4100;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = 6 + ulObjectChunkSize + ulExtras;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = 0x4110;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = nVertexChunkSize;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = (ushort)(pxModelData->xStats.nNumVertices);
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
@@ -695,7 +695,7 @@ ulong	ulMatChunk = 253;
 		uwVal = 0x4140;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = nMappingChunkSize;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 
 		uwVal = (ushort)(pxModelData->xStats.nNumVertices);
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
@@ -710,7 +710,7 @@ ulong	ulMatChunk = 253;
 		uwVal = 0x4160;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = 54;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		fVal = 1.0f;		
 		fwrite( &fVal, sizeof( float ), 1, pFile );
 		fVal = 0.0f;		
@@ -733,7 +733,7 @@ ulong	ulMatChunk = 253;
 		uwVal = 0x4120;
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 		ulVal = nFaceChunkSize;
-		fwrite( &ulVal, sizeof( ulong ), 1, pFile );
+		fwrite( &ulVal, sizeof( uint32 ), 1, pFile );
 		uwVal = (ushort)(pxModelData->xStats.nNumIndices / 3);
 		fwrite( &uwVal, sizeof( ushort ), 1, pFile );
 
@@ -803,11 +803,11 @@ int		nNumFaces;
 
 
 
-void	ReadMaterialInfo(FILE* pFile, ulong ulParentChunkLength)
+void	ReadMaterialInfo(FILE* pFile, uint32 ulParentChunkLength)
 {
-ulong		ulBytesRead = 0;
+uint32		ulBytesRead = 0;
 ushort	uwChunkID;
-ulong	ulChunkLength;
+uint32	ulChunkLength;
 
 	while (ulBytesRead < ulParentChunkLength)
 	{
@@ -859,7 +859,7 @@ ulong	ulChunkLength;
 void		ModelConvGetRequiredInfo( FILE* pFile, int nFileSize )
 {
 ushort	uwChunkID;
-ulong	ulChunkLength;
+uint32	ulChunkLength;
 ushort	uwData;
 int		nLoop;
 char	cChar;
@@ -942,11 +942,11 @@ char	cChar;
 
 char	mszCurrentMaterialName[32] = "";
 
-void	ProcessMaterialInfo(FILE* pFile, ulong ulParentChunkLength, MODEL_RENDER_DATA* pxModelData )
+void	ProcessMaterialInfo(FILE* pFile, uint32 ulParentChunkLength, MODEL_RENDER_DATA* pxModelData )
 {
-ulong		ulBytesRead = 0;
+uint32		ulBytesRead = 0;
 ushort	uwChunkID;
-ulong	ulChunkLength;
+uint32	ulChunkLength;
 char	szFilenameBuffer[256];
 ModelMaterialData*		pMaterialData;
 
@@ -1012,9 +1012,9 @@ void		ModelConvRead3ds( FILE* pFile, int nFileSize, MODEL_RENDER_DATA* pxModelDa
 {
 CUSTOMVERTEX*	pxVertices;
 ushort*			puwIndices = NULL;
-ulong*			punIndices = NULL;
+uint32*			punIndices = NULL;
 ushort	uwChunkID;
-ulong	ulChunkLength;
+uint32	ulChunkLength;
 ushort	uwData;
 int		nLoop;
 char	cChar;

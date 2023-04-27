@@ -120,10 +120,10 @@ int		nRes;
  * Returns     :
  * Description : 
  ***************************************************************************/
-inline void CopyLine888Additive ( ulong* pulWrite, byte* pbRead, int nWidth )
+inline void CopyLine888Additive ( uint32* pulWrite, byte* pbRead, int nWidth )
 {
 int	nPixLoop;
-ulong	ulPixel;
+uint32	ulPixel;
 byte		bR;
 byte		bG;
 byte		bB;
@@ -212,7 +212,7 @@ BYTE*			pbCurrentLine;
 byte*			pbRead;
 byte*			pbDestination;
 ushort*			puwWrite;
-ulong*			pulWrite;
+uint32*			pulWrite;
 byte		bR;
 byte		bG;
 byte		bB;
@@ -238,10 +238,10 @@ int		nPixLoop;
 				switch ( pxInfo->nFlags )
 				{
 				case RENDER_TYPE_ADDITIVE:
-					CopyLine888Additive( (ulong*)( pbDestination ), pbCurrentLine, pxInfo->nWidth );
+					CopyLine888Additive( (uint32*)( pbDestination ), pbCurrentLine, pxInfo->nWidth );
 					break;
 				default:
-					pulWrite = (ulong*)( pbDestination );
+					pulWrite = (uint32*)( pbDestination );
 					nPixLoop = 0;
 					do
 					{
@@ -443,8 +443,8 @@ IGRAPHICSSURFACE*		pxSurface = NULL;
 			if ( nHeight == 0 ) nHeight = xSrcDesc.Height;
 
 			if ( 0 ) 
-//				 ( xSrcDesc.Width != (ulong)(nWidth) ) ||
-//				 ( xSrcDesc.Height != (ulong)(nHeight) ) )
+//				 ( xSrcDesc.Width != (uint32)(nWidth) ) ||
+//				 ( xSrcDesc.Height != (uint32)(nHeight) ) )
 			{
 				xRect.left = xPoint.x;
 				xRect.top = xPoint.y;
@@ -569,8 +569,8 @@ D3DSURFACE_DESC		xDestDesc;
 			if ( nWidth == 0 ) nWidth = xSrcDesc.Width;
 			if ( nHeight == 0 ) nHeight = xSrcDesc.Height;
 
-			if ( ( xSrcDesc.Width != (ulong)(nWidth) ) ||
-				 ( xSrcDesc.Height != (ulong)(nHeight) ) )
+			if ( ( xSrcDesc.Width != (uint32)(nWidth) ) ||
+				 ( xSrcDesc.Height != (uint32)(nHeight) ) )
 			{
 				xRect.left = xPoint.x;
 				xRect.top = xPoint.y;

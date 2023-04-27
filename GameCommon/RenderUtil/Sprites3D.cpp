@@ -24,7 +24,7 @@ public:
 	float		mfScale;
 	float		mfScaleZ;
 	int			mnFrameNum;
-	ulong		mulCol;
+	uint32		mulCol;
 	Sprite*		mpNext;
 };
 
@@ -65,7 +65,7 @@ void	Sprite::RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpr
 {
 float		fUBase,	fVBase;
 float		fUWidth, fVHeight;
-ulong		ulCol = mulCol;
+uint32		ulCol = mulCol;
 VECT		xPos = mxPos;
 VECT		xOffset;
 int			nNumPerRow = (int)( 1.0f / fGridScale );
@@ -186,7 +186,7 @@ void	Sprite::Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSprite
 {
 float		fUBase,	fVBase;
 float		fUWidth, fVHeight;
-ulong		ulCol = mulCol;
+uint32		ulCol = mulCol;
 VECT		xPos = mxPos;
 VECT		xOffset;
 int			nNumPerRow = (int)( 1.0f / fGridScale );
@@ -429,7 +429,7 @@ SpriteGroup*	pSpriteGroups = mspSpriteGroups;
 	return( pSpriteGroups->mhGroupNum );
 }
 
-void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags, float fScaleZ )
+void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags, float fScaleZ )
 {
 SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 
@@ -449,7 +449,7 @@ SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 }
 
 
-void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags )
+void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags )
 {
 SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 
@@ -469,7 +469,7 @@ SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 }
 
 
-void	Sprites3DAddSpriteRot( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, ulong ulCol, int nFrameNum, int nFlags, float fRotation )
+void	Sprites3DAddSpriteRot( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, int nFlags, float fRotation )
 {
 SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 

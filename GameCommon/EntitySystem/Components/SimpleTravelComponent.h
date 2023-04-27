@@ -42,7 +42,7 @@ private:
 	VECT		mxDestination;
 	BOOL		mbIsTravelling;
 	
-	ulong		mulTargetEntityUID;
+	uint32		mulTargetEntityUID;
 	float		mfTargetDist;
 
 //	GroundMotionSettings		mMotionSettings;

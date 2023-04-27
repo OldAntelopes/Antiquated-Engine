@@ -79,13 +79,13 @@ void	HTMLElement::Draw( void )
 
 
 
-ulong	HTMLElement::GetColourValue( char* pcVal )
+uint32	HTMLElement::GetColourValue( char* pcVal )
 {
-ulong ulCol = 0;
+uint32 ulCol = 0;
 
 	if ( *pcVal == '#' )
 	{
-	ulong	R, G, B;
+	uint32	R, G, B;
 		ulCol = strtol( pcVal + 1, NULL, 16 );
 		R = ulCol >> 16;
 		G = ((ulCol >> 8) & 0xFF );
@@ -730,8 +730,8 @@ int		nWidthAvailable;
 char*	pcTextToDisplay = m_pszText;
 char*	pcEndOfFirstLine = NULL;
 int		nFontFlags = 0;
-ulong	ulCol = 0xD0E0E0E0;
-ulong	ulRealCol = 0xD0E0E0E0;
+uint32	ulCol = 0xD0E0E0E0;
+uint32	ulRealCol = 0xD0E0E0E0;
 int		nWidthDisplayed = 0;
 int		nRealY;
 int		nFontNum = mbCurrentFont;

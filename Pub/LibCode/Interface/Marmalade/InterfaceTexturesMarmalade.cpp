@@ -332,7 +332,7 @@ int		nR = 0;
 int		nG = 0;
 int		nB = 0;
 int		nA = 0;
-ulong	ulCol;
+uint32	ulCol;
 ushort	uwColVal;
 int		nPaletteNum;
 CIwTexture*		pTexture = (CIwTexture*)InterfaceTextureGetRawPointer( nTextureHandle );
@@ -417,7 +417,7 @@ const BYTE*	pbPalette;
 		nB = ( uwColVal & 0x1F ) << 3;
 		break;
 	case CIwImage::RGBA_8888:
-		ulCol = *( (ulong*)( pbRow + (x * 4) ) );
+		ulCol = *( (uint32*)( pbRow + (x * 4) ) );
 		nR = ((ulCol >> 24) & 0xFF);
 		nG = ((ulCol >> 16) & 0xFF);
 		nB = ((ulCol >> 8) & 0xFF);
@@ -431,14 +431,14 @@ const BYTE*	pbPalette;
 		nB = pbPalette[(nPaletteNum*3)+2];
 		break;
 	case CIwImage::ARGB_8888:
-		ulCol = *( (ulong*)( pbRow + (x * 4) ) );
+		ulCol = *( (uint32*)( pbRow + (x * 4) ) );
 		nA = ((ulCol >> 24) & 0xFF);
 		nR = ((ulCol >> 16) & 0xFF);
 		nG = ((ulCol >> 8) & 0xFF);
 		nB = (ulCol & 0xFF);
 		break;
 	case CIwImage::ABGR_8888:
-		ulCol = *( (ulong*)( pbRow + (x * 4) ) );
+		ulCol = *( (uint32*)( pbRow + (x * 4) ) );
 		nA = ((ulCol >> 24) & 0xFF);
 		nB = ((ulCol >> 16) & 0xFF);
 		nG = ((ulCol >> 8) & 0xFF);

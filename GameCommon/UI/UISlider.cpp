@@ -205,7 +205,7 @@ int			nSliderRange = mnMax - mnMin;
 int			nSliderMidY = nY + (nHeight/2);
 int			nSliderTabWidth = nWidth / (nSliderRange+1);
 int			nCursorX, nCursorY;
-ulong		ulCol;
+uint32		ulCol;
 
 	PlatformGetCurrentCursorPosition( &nCursorX, &nCursorY );
 

@@ -87,14 +87,14 @@ typedef struct {
 	//
 	///////////////////////////////////////////////////////////////////////////////
 	
-	ulong    origin_x;   // X ordinate of the top-left corner.
-	ulong    origin_y;   // Y ordinate of the top-left corner.
+	uint32    origin_x;   // X ordinate of the top-left corner.
+	uint32    origin_y;   // Y ordinate of the top-left corner.
 
-	ulong    x0, y0;     // Starting location.
-	ulong    x1, y1;     // Destination location.
+	uint32    x0, y0;     // Starting location.
+	uint32    x1, y1;     // Destination location.
 
-	ulong    w;          // Width (pitch) of the grid.
-	ulong    h;		// Height of the grid.
+	uint32    w;          // Width (pitch) of the grid.
+	uint32    h;		// Height of the grid.
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -105,12 +105,12 @@ typedef struct {
 
 	// Stop calculating when the route incurs this much cost.
 
-	ulong    max_cost;
+	uint32    max_cost;
 
 
 	// Maximum search time in microseconds (1000000us=1s).
 
-	ulong    timeout;
+	uint32    timeout;
 
 	// Arrays of 8 elements holding delta-x and delta-y pairs for the eight
 	// directions.
@@ -145,8 +145,8 @@ typedef struct {
 	// built-in Manhattan distance will be used. The result of the heuristic will be
 	// multiplied by the heuristic_factor above.
 	
-	ulong  (* heuristic) (const ulong x0, const ulong y0,
-				 const ulong x1, const ulong y1);
+	uint32  (* heuristic) (const uint32 x0, const uint32 y0,
+				 const uint32 x1, const uint32 y1);
 
 	// The map initialisation function. Given co-ordinates (x,y) on the game map
 	// (i.e. adjusted for the map origin (origin_x,origin_y) such that the X range is
@@ -159,7 +159,7 @@ typedef struct {
 	// this, or by setting get() and allowing the algorithm to only request the map
 	// squares it needs. The latter is preferable for large maps.
 
-	BYTE (*get) (const ulong x, const ulong y);
+	BYTE (*get) (const uint32 x, const uint32 y);
 
 	///////////////////////////////////////////////////////////////////////////////
 	//
@@ -167,23 +167,23 @@ typedef struct {
 	//
 	///////////////////////////////////////////////////////////////////////////////
 
-	ulong    ofs0;       // Starting location (as grid offset)
-	ulong    ofs1;       // Destination (as grid offset)
-	ulong    bestscore;  // Best H so far.
+	uint32    ofs0;       // Starting location (as grid offset)
+	uint32    ofs1;       // Destination (as grid offset)
+	uint32    bestscore;  // Best H so far.
 	asheap_t *  heap;	// The binary heap holds F |-> square_t mappings.
 	square_t *  grid;	// The grid holds the actual square_t structs.
 
 	// Bitfield holding search state.
 
-	ulong  origin_set:1; // The origin has been set.
-	ulong  must_reset:1; // A search has ran, must reset.
-	ulong  grid_init:1;  // The grid has been initialised.
-	ulong  grid_clean:1; // The grid is ready for use.
-	ulong  have_route:1; // A (partial) route has been found.
-	ulong  have_best:1;  // There's a compromise route.
-    ulong  move_8way:1;   // Move along all 8 directions.
+	uint32  origin_set:1; // The origin has been set.
+	uint32  must_reset:1; // A search has ran, must reset.
+	uint32  grid_init:1;  // The grid has been initialised.
+	uint32  grid_clean:1; // The grid is ready for use.
+	uint32  have_route:1; // A (partial) route has been found.
+	uint32  have_best:1;  // There's a compromise route.
+    uint32  move_8way:1;   // Move along all 8 directions.
 	
-	ulong t0;      // Algorithm start time.
+	uint32 t0;      // Algorithm start time.
 
 	///////////////////////////////////////////////////////////////////////////////
 	//
@@ -191,20 +191,20 @@ typedef struct {
 	//
 	///////////////////////////////////////////////////////////////////////////////
 
-	ulong    steps;	// Number of moves in the route.
-	ulong    score;	// Score of the route.
-	ulong    result;	// Result code of the routing.
+	uint32    steps;	// Number of moves in the route.
+	uint32    score;	// Score of the route.
+	uint32    result;	// Result code of the routing.
 	char *      str_result; // Stringified result code.
-	ulong    usecs;      // Search time in microseconds.
-	ulong    loops;      // Number of search loops.
-	ulong    gets;       // Number of times get() was called.
-	ulong    updates;    // Keeps track of heap updates (they're expensive).
-	ulong    open;       // Number of open positions.
-	ulong    closed;     // Number of closed positions.
+	uint32    usecs;      // Search time in microseconds.
+	uint32    loops;      // Number of search loops.
+	uint32    gets;       // Number of times get() was called.
+	uint32    updates;    // Keeps track of heap updates (they're expensive).
+	uint32    open;       // Number of open positions.
+	uint32    closed;     // Number of closed positions.
 
-	ulong    bestofs;    // If a route wasn't found, the best offset we could reach.
-	ulong    bestx;      // Likewise, the X ordinate of the best ending point.
-	ulong    besty;      // Likewise, the X ordinate of the best ending point.
+	uint32    bestofs;    // If a route wasn't found, the best offset we could reach.
+	uint32    bestx;      // Likewise, the X ordinate of the best ending point.
+	uint32    besty;      // Likewise, the X ordinate of the best ending point.
 } astar_t;
 
 
@@ -246,40 +246,40 @@ typedef struct {
 
 
 astar_t *
-astar_new (const ulong w, const ulong h,
-	   BYTE (*get) (const ulong, const ulong),
-	   ulong  (*heuristic) (const ulong, const ulong,
-				   const ulong, const ulong));
+astar_new (const uint32 w, const uint32 h,
+	   BYTE (*get) (const uint32, const uint32),
+	   uint32  (*heuristic) (const uint32, const uint32,
+				   const uint32, const uint32));
 	   
 void	astar_destroy (astar_t * as);
 
 void astar_init_grid (astar_t * as,
-		      ulong origin_x, ulong origin_y,
-		      BYTE(*get)(const ulong, const ulong));
+		      uint32 origin_x, uint32 origin_y,
+		      BYTE(*get)(const uint32, const uint32));
 
 void astar_set_movement_mode (astar_t * as, int movement_mode);
 
-ulong astar_get_directions (astar_t *as, direction_t ** directions);
+uint32 astar_get_directions (astar_t *as, direction_t ** directions);
 
 void astar_free_directions (direction_t * directions);
 
-void astar_set_origin (astar_t * as, const ulong x, const ulong y);
+void astar_set_origin (astar_t * as, const uint32 x, const uint32 y);
 
-void astar_set_max_cost (astar_t *as, const ulong max_cost);
+void astar_set_max_cost (astar_t *as, const uint32 max_cost);
 
-void astar_set_timeout (astar_t *as, const ulong timeout);
+void astar_set_timeout (astar_t *as, const uint32 timeout);
 
 void astar_set_dxy (astar_t *as, const BYTE dir, const int dx, const int dy);
 
-void astar_set_cost (astar_t *as, const BYTE dir, const ulong cost);
+void astar_set_cost (astar_t *as, const BYTE dir, const uint32 cost);
 
-void astar_set_steering_penalty (astar_t *as, const ulong steering_penalty);
+void astar_set_steering_penalty (astar_t *as, const uint32 steering_penalty);
 
-void astar_set_heuristic_factor (astar_t *as, const ulong heuristic_factor);
+void astar_set_heuristic_factor (astar_t *as, const uint32 heuristic_factor);
 
 int astar_run (astar_t * as,
-	       const ulong x0, const ulong y0,
-	       const ulong x1, const ulong y1);
+	       const uint32 x0, const uint32 y0,
+	       const uint32 x1, const uint32 y1);
 
 // Return the last A* result code.
 #define astar_result(as) (as)->result

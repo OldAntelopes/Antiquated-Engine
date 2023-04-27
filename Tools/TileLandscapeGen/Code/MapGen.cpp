@@ -448,12 +448,12 @@ int		nLoopX;
 int		nLoopY;
 BYTE*	pbLockedTexture;
 int		nPitch;
-ulong*	pulTextureARGB;
-ulong	ulCol;
+uint32*	pulTextureARGB;
+uint32	ulCol;
 MAPGEN_DATA*	pMapGenData = mspMapGenData;
  
 	pbLockedTexture = EngineLockTexture( hTexture, &nPitch, TRUE );
-	pulTextureARGB = (ulong*)( pbLockedTexture );
+	pulTextureARGB = (uint32*)( pbLockedTexture );
 	for ( nLoopY = 0; nLoopY < nHeightmapWidth; nLoopY++ )
 	{
 		for ( nLoopX = 0; nLoopX < nHeightmapWidth; nLoopX++ )
@@ -514,7 +514,7 @@ MAPGEN_DATA*	pMapGenData = mspMapGenData;
 
 typedef struct
 {
-	ulong	ulPathFileHeaderCode;
+	uint32	ulPathFileHeaderCode;
 	BYTE	bVersion;
 	BYTE	bSizeOfHeader;
 	BYTE	bPad1;

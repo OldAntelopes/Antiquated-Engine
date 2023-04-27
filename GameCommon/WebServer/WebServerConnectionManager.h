@@ -29,7 +29,7 @@ public:
 
 	void	DeleteAllConnections( void );
 
-	ClientConnection*		DecodeNewTCPConnection( ulong ulIP );
+	ClientConnection*		DecodeNewTCPConnection( uint32 ulIP );
 
 private:
 

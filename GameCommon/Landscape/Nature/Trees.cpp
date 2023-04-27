@@ -29,7 +29,7 @@ Tree*		mspTreeList = NULL;
 int			mahTreeSpriteVertexBuffer[NUM_TREE_SPRITE_VERTEX_BUFFERS] = { NOTFOUND, NOTFOUND };
 int			mnCurrentTreeSpriteVertexBufferIndex = 0;
 
-ulong*		mpulTreeRenderColStream = NULL;
+uint32*		mpulTreeRenderColStream = NULL;
 int			mnTreeRenderColStride = 0;
 VECT*		mpxTreeRenderPosStream = NULL;
 int			mnTreeRenderPosStride = 0;
@@ -89,10 +89,10 @@ void	Tree::Render( void )
 int			nColStride = mnTreeRenderColStride;
 int			nPosStride = mnTreeRenderPosStride;
 int			nUVStride = mnTreeRenderUVStride;
-ulong*		pulColStream = (ulong*)( ( (byte*)mpulTreeRenderColStream) + (nColStride*mnTreeRenderVertexBufferPos) );
+uint32*		pulColStream = (uint32*)( ( (byte*)mpulTreeRenderColStream) + (nColStride*mnTreeRenderVertexBufferPos) );
 VECT*		pxPosStream = (VECT*)( ( (byte*)mpxTreeRenderPosStream) + (nPosStride*mnTreeRenderVertexBufferPos) );
 float*		pfUVStream = (float*)( ( (byte*)mpfTreeRenderUVStream) + (nUVStride*mnTreeRenderVertexBufferPos));
-ulong		ulCol = 0xFFFFFFFF;
+uint32		ulCol = 0xFFFFFFFF;
 float		fBasePosX;
 float		fBasePosY;
 float		fWidthX;
@@ -124,7 +124,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	// Tri 1 - vert 2
@@ -138,7 +138,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	// Tri 1 - vert 3
@@ -152,7 +152,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase + fVHeight;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	//-------------------------
@@ -168,7 +168,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	// Tri 2 - vert 2
@@ -182,7 +182,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase + fVHeight;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	// Tri 2 - vert 3
@@ -196,7 +196,7 @@ float		fSpriteHeight = 3.5f * mfTreeSpriteSize;
 	pfUVStream[1] = fVBase + fVHeight;
 
 	pxPosStream = (VECT*)( ( (byte*)pxPosStream) + nPosStride );
-	pulColStream = (ulong*)( ( (byte*)pulColStream) + nColStride );
+	pulColStream = (uint32*)( ( (byte*)pulColStream) + nColStride );
 	pfUVStream = (float*)( ( (byte*)pfUVStream) + nUVStride );
 
 	mnTreeRenderVertexBufferPos += 6;

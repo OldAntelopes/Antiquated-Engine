@@ -45,7 +45,7 @@ void	Entity::SetGraphic( const char* szModelName, const char* szTextureName, int
 	mnEntityGraphicsNum = EntityGraphicsCreate( szModelName, szTextureName, nInstanceNum );
 }
 	
-void	Entity::Init( ulong ulEntityUID, int type, const VECT* pxPos, int nInitParam )
+void	Entity::Init( uint32 ulEntityUID, int type, const VECT* pxPos, int nInitParam )
 {
 	mulEntityUID = ulEntityUID;
 	mType = type;

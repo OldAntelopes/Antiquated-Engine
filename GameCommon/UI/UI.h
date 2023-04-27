@@ -15,7 +15,7 @@ enum
 	UIRESERVEDBUTTONID_STANDARDLOGININTERFACE = -3,
 };
 
-typedef	void(*UIButtonHandler)( int nButtonID, ulong ulParam );
+typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam );
 
 typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
 
@@ -24,9 +24,9 @@ typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
 
-extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam );
-extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, ulong ulParam );
-extern void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam, float fAlpha );
+extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam );
+extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam );
+extern void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha );
 
 
 //---------------------------------------- UISlider
@@ -47,10 +47,10 @@ extern void		UIScrollablePageDestroy( int nHandle );
 
 //---------------------------------------- UIDropdown
 extern int		UIDropdownCreate( void );
-extern int		UIDropdownAddElement( int nHandle, const char* szElementName, ulong ulElementParam );
+extern int		UIDropdownAddElement( int nHandle, const char* szElementName, uint32 ulElementParam );
 extern void		UIDropdownRender( int nHandle, int ScreenX, int ScreenY, int ScreenW, int ScreenH, int nFullH, float fAlpha );
-extern int		UIDropdownGetSelection( int nHandle, char* szElementNameOut, ulong* pulElementParamOut );
-extern ulong	UIDropdownGetSelectedParam( int nHandle );
+extern int		UIDropdownGetSelection( int nHandle, char* szElementNameOut, uint32* pulElementParamOut );
+extern uint32	UIDropdownGetSelectedParam( int nHandle );
 extern int		UIDropdownGetNumElements( int nHandle );
 extern void		UIDropdownSetValueChangeCallback( int nHandle, fnValueChangeCallback callbackFunc, void* pUserParam );
 
@@ -83,7 +83,7 @@ extern void		UIOnInterfaceDraw( void );
 //-----------------------------------------------------------------
 // UI Internal
 
-extern void		UIPressIDSet( int nButtonID, ulong ulParam );
+extern void		UIPressIDSet( int nButtonID, uint32 ulParam );
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
 extern void		UIHoverItem( int X, int Y, int W, int H );
 

@@ -20,7 +20,7 @@ BOOL	mbLineVertexBufferLocked = FALSE;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void Lines3DAddLine( const VECT* pxPoint1, const VECT* pxPoint2, ulong ulCol, ulong ulCol2 )
+void Lines3DAddLine( const VECT* pxPoint1, const VECT* pxPoint2, uint32 ulCol, uint32 ulCol2 )
 {
 ENGINEBUFFERVERTEX* pVertices;
 

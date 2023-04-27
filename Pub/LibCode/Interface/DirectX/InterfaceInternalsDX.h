@@ -14,12 +14,14 @@ extern "C"				// All interfaces use a C-linkage
 	
 #ifndef MIT_TYPES
 #define MIT_TYPES
-
 typedef unsigned short			ushort;
-typedef unsigned long			ulong;
 typedef unsigned char			uchar;
 typedef unsigned int			uint;
-	
+#endif
+
+#ifndef UINT32_DEFINED
+typedef unsigned __int32		uint32;
+#define UINT32_DEFINED
 #endif
 
 #ifdef TUD11

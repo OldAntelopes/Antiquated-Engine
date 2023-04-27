@@ -20,7 +20,7 @@ public:
 	typedef struct
 	{
 		VECT	xPos;
-		ulong	ulTimeAdded;
+		uint32	ulTimeAdded;
 		BOOL	mbIsVisible;
 	} TRAIL_POINT;
 
@@ -56,12 +56,12 @@ public:
 
 	void	Initialise( int nType, TRAIL_HANDLE nTrailHandle );
 
-	void	Update( const VECT* pxCurrentPos, ulong ulPointGap, BOOL bDoDraw = TRUE );
+	void	Update( const VECT* pxCurrentPos, uint32 ulPointGap, BOOL bDoDraw = TRUE );
 	int		Render( void );
 
 	void	SetScale( float fScale ) { mfScale = fScale; }
 	void	SetAlpha( float fAlpha ) { mfAlpha = fAlpha; }
-	void	SetDecayTime( ulong ulTime ) { mulDecayTime = ulTime; }
+	void	SetDecayTime( uint32 ulTime ) { mulDecayTime = ulTime; }
 	void	RequestDelete( BOOL bImmediately ) { mbWantsDelete = TRUE; mbDeleteImmediately = bImmediately; }
 
 	TRAIL_HANDLE	GetHandle( void ) { return( mnTrailHandle ); }
@@ -92,7 +92,7 @@ public:
 private:
 
 
-	ulong	GetColour( int nIndex );
+	uint32	GetColour( int nIndex );
 
 	void	AddPos( const VECT* pxIn, BOOL bDoDraw = TRUE );
 	BOOL	GetPos( int nIndex, VECT* pxOut );
@@ -104,12 +104,12 @@ private:
 
 	TRAIL_POINT		axTrailListInternal[MAX_POINTS_IN_TRAIL_LIST];
 	int		mnNextTrailPoint;
-	ulong	mulLastInternalAddTick;
+	uint32	mulLastInternalAddTick;
 	int		mnType;
 	VECT	mxCurrentPos;
 	float	mfScale;
 	float	mfAlpha;
-	ulong	mulDecayTime;
+	uint32	mulDecayTime;
 
 	int		mhTrailVertexBuffer;
 	int		mhTrailIndexBuffer;
@@ -168,20 +168,20 @@ BOOL	bSwitch = FALSE;
 }
 
 
-ulong	TrailListInternal::GetColour( int nIndex )
+uint32	TrailListInternal::GetColour( int nIndex )
 {
 	if ( nIndex < MAX_POINTS_IN_TRAIL_LIST )
 	{
-	ulong		ulCurrentTick = SysGetTick();
+	uint32		ulCurrentTick = SysGetTick();
 	int	nActualIndex = (mnNextTrailPoint + nIndex) % MAX_POINTS_IN_TRAIL_LIST;
-	ulong	ulAliveTime = ulCurrentTick - axTrailListInternal[nActualIndex].ulTimeAdded;
+	uint32	ulAliveTime = ulCurrentTick - axTrailListInternal[nActualIndex].ulTimeAdded;
  
 		if ( axTrailListInternal[nActualIndex].mbIsVisible == FALSE ) return( 0 );
 
 		if ( ulAliveTime > 0 )
 		{
-		ulong	nExpiryTime;
-		ulong	ulCol;
+		uint32	nExpiryTime;
+		uint32	ulCol;
 		int		nColMax = 0xD0;
 
 			if ( mnType == 0 )
@@ -215,7 +215,7 @@ BOOL	TrailListInternal::GetPos( int nIndex, VECT* pxOut )
 
 void	TrailListInternal::AddPos( const VECT* pxIn, BOOL bDoDraw )
 {
-ulong	ulCurrentTick = SysGetTick();
+uint32	ulCurrentTick = SysGetTick();
 
 	axTrailListInternal[ mnNextTrailPoint ].mbIsVisible = bDoDraw;
 	if ( pxIn )
@@ -244,7 +244,7 @@ ulong	ulCurrentTick = SysGetTick();
 
 void	TrailListInternal::UpdateInternal( void )
 {
-ulong		ulCurrentTick = SysGetTick();
+uint32		ulCurrentTick = SysGetTick();
 
 	if ( axTrailListInternal[ mnNextTrailPoint ].ulTimeAdded != 0 )
 	{
@@ -258,9 +258,9 @@ ulong		ulCurrentTick = SysGetTick();
 	}
 }
 
-void	TrailListInternal::Update( const VECT* pxCurrentPos, ulong ulPointGap, BOOL bDoDraw )
+void	TrailListInternal::Update( const VECT* pxCurrentPos, uint32 ulPointGap, BOOL bDoDraw )
 {
-ulong	ulCurrentTick = SysGetTick();
+uint32	ulCurrentTick = SysGetTick();
 
 	if ( ulCurrentTick - mulLastInternalAddTick > ulPointGap )
 	{
@@ -286,7 +286,7 @@ VECT	xCamDir = *EngineCameraGetDirection();
 VECT	xTangent;
 VECT	xRight = { 0.0f, 1.0f, 0.0f };
 float	fScale = mfScale;
-ulong	ulLastCol;
+uint32	ulLastCol;
 BOOL	bStillAlive = FALSE;
 
 	if ( mhTrailVertexBuffer != NOTFOUND )
@@ -560,7 +560,7 @@ TrailListInternal*		pNewTrail = new TrailListInternal;
 	return( pNewTrail->GetHandle() );
 }
 
-void		TrailUpdateEx( TRAIL_HANDLE hHandle, const VECT* pxPos, BOOL bVisible, ulong ulUpdateIntervalMS )
+void		TrailUpdateEx( TRAIL_HANDLE hHandle, const VECT* pxPos, BOOL bVisible, uint32 ulUpdateIntervalMS )
 {
 TrailListInternal*		pTrail = TrailFind( hHandle );
 	

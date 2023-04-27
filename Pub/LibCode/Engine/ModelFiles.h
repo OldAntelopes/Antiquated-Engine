@@ -70,7 +70,7 @@ typedef struct
 	BYTE		bCompressedFlag;
 	BYTE		bPad2;
 
-	ulong		ulUncompressedSize;
+	uint32		ulUncompressedSize;
 
 } ATM_FILE_HEADER;
 
@@ -93,7 +93,7 @@ typedef struct
 	BYTE	bNumMaterials;
 	ushort	uwNumVertices;
 	
-	ulong	ulUniqueModelID;
+	uint32	ulUniqueModelID;
 
 	ushort	uwNumFaces;
 	ushort	uwContentsFlags;
@@ -102,8 +102,8 @@ typedef struct
 	byte	bWheelDisplayMode;
 	byte	bPad1;
 
-	ulong	ulLockID;
-	ulong	ulLockCode;
+	uint32	ulLockID;
+	uint32	ulLockCode;
 
 } ATM_OLD_BASIC_CONTENTS;
 
@@ -115,7 +115,7 @@ typedef struct
 
 	int		nNumVertices;
 	
-	ulong	ulUniqueModelID;
+	uint32	ulUniqueModelID;
 
 	int		nNumFaces;
 	
@@ -127,12 +127,12 @@ typedef struct
 	byte	bPad1;
 	ushort	uwPad3;
 
-	ulong	ulLockID;
-	ulong	ulLockCode;
+	uint32	ulLockID;
+	uint32	ulLockCode;
 
 } ATM_BASIC_CONTENTS;
 
-extern void		ModelExportATM( int nModelHandle, const char* szFilename, ulong ulSaveFlags, ulong ulLockFlags );
+extern void		ModelExportATM( int nModelHandle, const char* szFilename, uint32 ulSaveFlags, uint32 ulLockFlags );
 
 
 extern void		ModelLoaderExport3ds( int nModelHandle, const char* acFilename );

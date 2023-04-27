@@ -10,7 +10,7 @@ short		mwUIPressX = 0;
 short		mwUIPressY = 0;
 
 int			mnUIButtonIDPressed = NOTFOUND;
-ulong		mulUIButtonIDPressedParam = 0;
+uint32		mulUIButtonIDPressedParam = 0;
 
 UIButtonHandler			mafnUIButtonHandlers[UIBUTTONID_MAX] = 
 {
@@ -29,12 +29,12 @@ void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandl
 }
 
 
-void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, ulong ulParam )
+void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam )
 {
 int		nTextSize;
 int		nTextOffsetY;
-ulong	ulButtonMainCol = 0xB0707070;
-ulong	ulTextCol = 0xD0F0F0F0;
+uint32	ulButtonMainCol = 0xB0707070;
+uint32	ulTextCol = 0xD0F0F0F0;
 BOOL	bEnabled = TRUE;
 
 	nTextSize = 14;
@@ -81,7 +81,7 @@ BOOL	bEnabled = TRUE;
 	
 }
 
-BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, ulong ulParam )
+BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam )
 {
 	if ( ( mwUIPressX >= nX ) &&
 		 ( mwUIPressX <= nX + nWidth ) &&

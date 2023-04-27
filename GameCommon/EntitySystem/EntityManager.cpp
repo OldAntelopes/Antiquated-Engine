@@ -8,7 +8,7 @@
 #include "EntityGraphics.h"
 #include "EntityManager.h"
 
-ulong		msulNextEntityUID = 0x100;
+uint32		msulNextEntityUID = 0x100;
 int			msnNextEntityTypeID = 5001;
 
 RegisteredEntityList*	mspRegisteredEntityList = NULL;
@@ -212,7 +212,7 @@ void		EntityManagerShutdown( void )
 }
 
 
-Entity*		EntityManagerGetEntity( ulong ulEntityUID )
+Entity*		EntityManagerGetEntity( uint32 ulEntityUID )
 {
 RegisteredEntityList*	pRegisteredEntityList = mspRegisteredEntityList;
 

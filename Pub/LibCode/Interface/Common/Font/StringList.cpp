@@ -55,7 +55,7 @@ int		nLen;
 }
 
 
-INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font, float fSize )
+INTERFACE_API void	InterfaceTextScaled( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font, float fSize )
 {
 TEXT_BUFFER*	pcTextBuffer = maxTextBuffer + mnPosInTextBuffer;
 
@@ -159,7 +159,7 @@ char*			pcOutRunner = acKey;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont )
+void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 TEXT_BUFFER*	pcTextBuffer = maxTextBuffer + mnPosInTextBuffer;
 
@@ -268,7 +268,7 @@ INTERFACE_API char*	InterfaceTextLimitWidth( int nLayer, int nX, int nY, const c
 	return( NULL );
 }
 
-INTERFACE_API void	InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, ulong ulCol, int font )
+INTERFACE_API void	InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int font )
 {
 TEXT_BUFFER*	pxTextBuffer = maxTextBuffer + mnPosInTextBuffer;
 
@@ -300,14 +300,14 @@ TEXT_BUFFER*	pxTextBuffer = maxTextBuffer + mnPosInTextBuffer;
 }
 
 
-INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int font )
+INTERFACE_API void	InterfaceTextCentre( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int font )
 {
 	InterfaceTextCenter( nLayer, nX - 600, nX + 600, nY, szString, ulCol, font );
 }
 
 
 
-void		InterfaceTextAddString( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont, int nFontFlags )
+void		InterfaceTextAddString( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont, int nFontFlags )
 {
 TEXT_BUFFER*	pxTextBuffer = maxTextBuffer + mnPosInTextBuffer;
 
@@ -342,19 +342,19 @@ TEXT_BUFFER*	pxTextBuffer = maxTextBuffer + mnPosInTextBuffer;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void InterfaceText( int nLayer, int nX, int nY, const char* szString, ulong ulCol, int nFont )
+void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 const char*		pcRunner;
 char			acTextBuff[1024];
 const char*		pcStringStart = szString;
 char			acTagBuff[128];
 int				nOriginalFlags = mnCurrentFontFlags;
-ulong			ulOriginalCol = ulCol;
+uint32			ulOriginalCol = ulCol;
 int				nNewFlags = mnCurrentFontFlags;
 int				nSegmentLen = 0;
 const char*		pcTagStart;
 int				nSegmentX = nX;
-ulong			ulNewCol = ulCol;
+uint32			ulNewCol = ulCol;
 
 	// Parse line for any tags..
 	pcRunner = szString;
