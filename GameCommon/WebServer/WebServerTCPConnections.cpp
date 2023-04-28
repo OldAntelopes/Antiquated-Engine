@@ -131,7 +131,11 @@ char*	pcBuffEnd = recvBuff + size - 1;
 int		nBytesReceived = 0;
 int		error;
 
+#ifdef WIN32
+    ret = recv( hSocket, &c, 1, MSG_PEEK );
+#else
     ret = recv( hSocket, &c, 1, MSG_PEEK | MSG_DONTWAIT );
+#endif
 
 	// Messages have been returned
 	if ( ret > 0 )
