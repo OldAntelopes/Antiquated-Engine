@@ -44,6 +44,7 @@ public:
 int		msnModelIconsNextHandle = 0x100;
 ModelIcon*		mspModelIconsList = NULL;
 ModelIcon*		mspNextToUpdate = NULL;
+int		msnMaxNumIconsToUpdatePerFrame = 3;
 
 void		ModelIcon::SetLighting()
 {
@@ -140,6 +141,11 @@ MODEL_STATS*		pxModelStats;
 
 //-----------------------------------------------
 
+void		ModelIconsSetNumUpdatesLimit( int nCount )
+{
+	msnMaxNumIconsToUpdatePerFrame = nCount;
+}
+
 void		ModelIconsInit( void )
 {
 
@@ -225,6 +231,8 @@ ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIc
 
 void		ModelIconsUpdate( void )
 {
+int		nCount = msnMaxNumIconsToUpdatePerFrame;
+
 	if ( mspNextToUpdate == NULL )
 	{
 		mspNextToUpdate = mspModelIconsList;
@@ -235,11 +243,14 @@ void		ModelIconsUpdate( void )
 		if ( mspNextToUpdate->mbIsSpinning )
 		{
 			mspNextToUpdate->UpdateIconTexture();
-			mspNextToUpdate = mspNextToUpdate->mpNext;
-			// Only update 1 at a time
-			return;
 		}
 		mspNextToUpdate = mspNextToUpdate->mpNext;
+		nCount--;
+		if ( nCount == 0 )
+		{
+			// Limit number of updates per frame
+			return;
+		}
 	}
 
 }

@@ -45,6 +45,7 @@ extern void		ModelIconsFreeAll( void );
 
 extern void		ModelIconsShutdown( void );
 
+extern void		ModelIconsSetNumUpdatesLimit( int );
 
 #ifdef __cplusplus
 }
