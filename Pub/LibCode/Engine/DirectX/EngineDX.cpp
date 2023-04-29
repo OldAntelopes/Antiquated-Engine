@@ -1567,6 +1567,7 @@ ENGINEMATERIAL xStandardMat;
 	EngineSetMaterial(&xStandardMat);
 }
 
+
 void EngineSetStandardMaterial( void )
 {
 ENGINEMATERIAL xStandardMat;
@@ -1584,6 +1585,8 @@ ENGINEMATERIAL xStandardMat;
 	xStandardMat.Ambient.g = 1.0f;
 	xStandardMat.Ambient.b = 1.0f;
 	xStandardMat.Ambient.a = 1.0f;
+
+	// Note no specular by default..
 
 	EngineSetMaterial(&xStandardMat);
 }

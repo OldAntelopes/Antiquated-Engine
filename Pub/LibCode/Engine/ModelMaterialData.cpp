@@ -94,13 +94,10 @@ void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATE
 				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderAmbient, 4 );
 			}
 
-			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gxMaterialEmissive");
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialEmissive");
 			if ( handle )
 			{
-			D3DXVECTOR4		xVec( (float*)&mxModelMaterialShaderEmissive );
-				
-				mxEmssiveVecValue = xVec;
-				mpNormalMapRenderPSConstantTable->SetVector( mpEngineDevice, handle, &mxEmssiveVecValue );
+				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderEmissive, 4 );
 			}
 
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialSpecularPower");
