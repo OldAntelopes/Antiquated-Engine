@@ -63,6 +63,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -79,6 +80,10 @@
     <IncludePath>D:\GameDev\Antiquated\Pub\Include;$(IncludePath)</IncludePath>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
     <TargetName>lib$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\GameDev\Antiquated\Pub\Include;$(IncludePath)</IncludePath>
+    <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\CodeUtil\Archive.cpp" />
@@ -97,6 +102,12 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CLanguageStandard>gnu11</CLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <CLanguageStandard>gnu11</CLanguageStandard>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

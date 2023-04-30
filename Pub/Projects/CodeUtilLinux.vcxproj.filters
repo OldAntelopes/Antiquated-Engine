@@ -15,8 +15,13 @@
     <ClInclude Include="..\Include\System.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\LibCode\CodeUtil\Archive.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\CodeUtil\SysUnix.c" />
+    <ClCompile Include="..\LibCode\CodeUtil\Archive.cpp" />
+    <ClCompile Include="..\LibCode\CodeUtil\StringFunctions.cpp" />
+    <ClCompile Include="..\LibCode\CodeUtil\SysCommon.cpp" />
+    <ClCompile Include="..\LibCode\CodeUtil\SysUnixConsole.c" />
   </ItemGroup>
 </Project>
