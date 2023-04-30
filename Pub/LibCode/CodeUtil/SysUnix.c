@@ -6,6 +6,8 @@
 
 
 #include <unistd.h>
+#include <dirent.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
@@ -27,6 +29,54 @@
 void				SysExitThread( int nRetVal )
 {
 	pthread_exit(NULL);
+}
+
+BOOL		SysFinite( float fVal )
+{
+	if ( __builtin_isfinite( fVal ) )
+	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback callback )
+{
+DIR* dirp;
+struct dirent* dp = NULL;
+char	acString[256];
+BOOL boFinished = FALSE; 
+
+//	sprintf( acString, "%s/*", szDirectoryName );	 
+	dirp = opendir(szSrcFolder);
+	if (dirp != NULL)
+	{
+		dp = readdir(dirp);
+	}
+	
+	if (dp == NULL)
+	{
+		return;
+	}
+
+	while ( !boFinished )
+	{ 
+		if ( dp->d_name[0] != '.' )
+		{
+			if (dp->d_type != DT_DIR)
+			{
+				sprintf( acString, "%s/%s", szSrcFolder, dp->d_name );
+				callback( acString );
+			}
+		}
+
+	    dp = readdir(dirp);
+	    if (dp == NULL)
+		{
+		    boFinished = TRUE; 
+		}
+	}
+	closedir(dirp);
 }
 
 
@@ -115,6 +165,30 @@ void SysGetCurrentDir( int nStrLen, char* szBuffer )
 BOOL SysSetCurrentDir( const char* szDir )
 {
 	return( (chdir( szDir ) != 0) ? FALSE : TRUE );
+}
+
+u64		SysGetMicrosecondTick( void )
+{
+    struct timespec ts;
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+
+    return ( (uint32)( (uint64_t)(ts.tv_nsec / 1000) + ((uint64_t)ts.tv_sec * 1000000ull) ) );
+}
+
+BOOL SysDoesDirExist( const char* szPath)
+{
+DIR* dir = opendir(szPath);
+	if (dir) 
+	{   
+		closedir(dir);
+		return( TRUE );
+	}
+	return( FALSE );
+}
+const char*	SysGetWritableDataFolderPath( const char* szGameName )
+{
+	return ("./");
 }
 
 //-------------------------------------------------------

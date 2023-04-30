@@ -67,9 +67,11 @@ extern void		SysMakeSubDirectories( const char* pcFilename, const char* pcRootPa
 // 'quicker' (?) versions of stricmp etc that fail as soon as they know the strings dont match
 // (i.e. they dont behave the same as stricmp etc so are not fully interchangeable)
 extern int		tinstricmp( const char*, const char* );
+extern int		tinstrnicmp( const char*, const char*, int nVal );
 extern int		tinstrcmp( const char*, const char* );
 extern unsigned long long		tinstrtou64( const char* szVal, char** delimiters, int nBase );
 
+extern BOOL		SysFinite( float );
 // --------------------------- File resource interface
 
 typedef struct

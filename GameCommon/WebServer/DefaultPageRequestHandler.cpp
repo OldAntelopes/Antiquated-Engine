@@ -7,13 +7,13 @@
 #include "WebServerConnectionManager.h"
 #include "../Util/cJSON.h"
 
-DefaultRequestBuffer*		mspBufferedRequests = NULL;
+DefaultRequestBuffer*		mspDefaultBufferedRequests = NULL;
 
 RegisteredRequestHandlerList*	mspRegisteredRequestHandlerList = NULL;
 
 void	DefaultPageRequestHandlerDeleteDefaultRequestBuffer( DefaultRequestBuffer* pDefaultRequestBufferToDelete )
 {
-DefaultRequestBuffer*		pDefaultRequestBuffers = mspBufferedRequests;
+DefaultRequestBuffer*		pDefaultRequestBuffers = mspDefaultBufferedRequests;
 DefaultRequestBuffer*		pLast = NULL;
 DefaultRequestBuffer*		pNext;
 
@@ -28,7 +28,7 @@ DefaultRequestBuffer*		pNext;
 			}
 			else
 			{
-				mspBufferedRequests = pNext;
+				mspDefaultBufferedRequests = pNext;
 			}
 			delete pDefaultRequestBufferToDelete;
 			return;
@@ -159,8 +159,8 @@ char	szRecvBuffer[4096];
 	//  validate login details before we send a response.
 	// For basic default behaviour this isnt really needed
 	pDefaultRequestBuffer = new DefaultRequestBuffer;
-	pDefaultRequestBuffer->mpNext = mspBufferedRequests;
-	mspBufferedRequests = pDefaultRequestBuffer;
+	pDefaultRequestBuffer->mpNext = mspDefaultBufferedRequests;
+	mspDefaultBufferedRequests = pDefaultRequestBuffer;
 
 	nBodyLen = pConnection->GetHTTPRequestBody( szRecvBuffer, 4096 );
 

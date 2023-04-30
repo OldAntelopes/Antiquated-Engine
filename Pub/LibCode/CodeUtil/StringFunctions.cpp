@@ -284,6 +284,15 @@ struct tm *dcp;
 	return( macDateBuffer );
 }
 
+int		tinstrnicmp( const char* str1, const char* str2, int nVal )
+{
+#ifdef WIN32
+	return( strnicmp( str1, str2, nVal ) );
+#else
+	return( strncasecmp( str1, str2, nVal ) );
+#endif
+}
+
 //----------------------------------
 // tinstricmp
 //	returns  0 if the text matches

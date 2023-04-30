@@ -115,7 +115,6 @@ BOOL SysGetOpenFilenameDialog( char* szFileFilter, char* szTitle, char* szDefaul
 
 
 void ModelSelectorSelectListNum( int nParam ) {}
-void ModelSelectorSetFileCommand( short w1, int n1, int n2, char* pcName ) {}
 void WindowSetConnectionStatusString( int nStatus ) {}
 void WindowServerUpdateMessageScroll( void ) {}
 void WindowsServerUpdateChatPlayerList( void ) {}
@@ -125,7 +124,6 @@ void IndependentListUpdate( void ){}
 void GatewaysRefreshList( void ) {}
 void SearchPageAddResponse( void ) {}
 BOOL IndependentListIsBlocked( int nServerID ) { return( FALSE ); }
-void ModelSelectorRefreshDirList( void ) {}
 void ServerChangeIcon( void ) {}
 void WindowServerShowLoginPopup( void ) {}
 void EconomyUpdateTreasuryMessage( void ) {}

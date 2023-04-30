@@ -516,6 +516,16 @@ UINT	unWinFlags = 0;
 	return( (nRet == IDNO) ? FALSE : TRUE );
 }
 
+BOOL		SysFinite( float fVal )
+{
+	if ( _finite( fVal ) )
+	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+
 BOOL SysDoesDirExist( const char* szPath)
 {
 DWORD dwAttrib = GetFileAttributes(szPath);
