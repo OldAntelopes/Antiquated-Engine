@@ -236,8 +236,6 @@ tm		xTime;
 	xTime.tm_mon = pTime->wMonth;
 	xTime.tm_sec = pTime->wSecond;
 	xTime.tm_year = pTime->wYear;
-
-	// todo 
 	epoch = mktime( &xTime );
 
 	return( *( (uint32*)( &epoch ) ) );

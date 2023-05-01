@@ -79,6 +79,22 @@ BOOL boFinished = FALSE;
 	closedir(dirp);
 }
 
+uint32				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
+{
+time_t	epoch;
+struct tm		xTime;
+
+	xTime.tm_hour = pTime->wHour;
+	xTime.tm_mday = pTime->wDay;
+	xTime.tm_min = pTime->wMinute;
+	xTime.tm_mon = pTime->wMonth;
+	xTime.tm_sec = pTime->wSecond;
+	xTime.tm_year = pTime->wYear;
+	epoch = mktime( &xTime );
+
+	return( *( (uint32*)( &epoch ) ) );
+}
+
 
 void		SysPanicIf( int condition, const char* text, ... )
 {
