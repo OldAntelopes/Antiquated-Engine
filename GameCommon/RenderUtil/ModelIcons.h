@@ -19,6 +19,8 @@ enum eModelIconFlags
 extern ModelIconHandle		ModelIconCreate( const char* szModel, const char* szTexture, eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName );
 extern ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture, eModelIconFlags flags, int nLoadFromArchive, const char* szDebugName );
 
+extern void		ModelIconUpdateHandlesIfChanged( ModelIconHandle handle, int hModel, int hTexture );
+
 // Change the camera distance of the icon view
 extern void		ModelIconSetViewDistModifier( ModelIconHandle handle, float fDist );	
 
@@ -34,6 +36,9 @@ extern void		ModelIconPauseUpdates( ModelIconHandle handle, BOOL bFlag );
 // Clean up
 extern void		ModelIconRelease( ModelIconHandle handle );
 
+// Info on what model and textures handles are currently in use to render the modelIcon
+extern int		ModelIconGetUsedModelHandle( ModelIconHandle handle );
+extern int		ModelIconGetUsedTextureHandle( ModelIconHandle handle );
 
 //----------------------------------------------------------
 // System stuff

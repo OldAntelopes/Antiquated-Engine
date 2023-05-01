@@ -82,7 +82,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\ModelConverterD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -134,7 +134,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdk.lib;jpeglib.lib;CodeUtil.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;Interface-dx9.lib;EngineTool.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdk.lib;jpeglib.lib;CodeUtil.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;Interface-dx9.lib;EngineTool.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\ModelConverter.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

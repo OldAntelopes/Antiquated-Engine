@@ -608,7 +608,7 @@ void AnimationBuilderUpdateList( void )
 	int				nLoop;
 	LVITEM			xInsert;
 	char			acString[256];
-	int				nListTop;
+//	int				nListTop;
 
 		if ( nNumItemsInList != mnModelsInAnimation )
 		{

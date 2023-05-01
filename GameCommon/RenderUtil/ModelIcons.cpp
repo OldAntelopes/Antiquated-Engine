@@ -264,6 +264,66 @@ uint32 ulCol = GetColWithModifiedAlpha( 0xFFFFFFFF, fAlpha );
 	InterfaceTexturedRect( nOverlay, X, Y, W, H, ulCol, 0.0f, 0.0f, 1.0f, 1.0f );
 }
 
+int		ModelIconGetUsedModelHandle( ModelIconHandle handle )
+{
+ModelIcon*		pModelIcons = mspModelIconsList;
+	
+	while( pModelIcons )
+	{
+		if ( pModelIcons->mhModelIcon == handle )
+		{
+			return( pModelIcons->mhModelHandle );
+		}
+		pModelIcons = pModelIcons->mpNext;
+	}
+	return( NOTFOUND );
+}
+
+int		ModelIconGetUsedTextureHandle( ModelIconHandle handle )
+{
+ModelIcon*		pModelIcons = mspModelIconsList;
+	
+	while( pModelIcons )
+	{
+		if ( pModelIcons->mhModelIcon == handle )
+		{
+			return( pModelIcons->mhTexture );
+		}
+		pModelIcons = pModelIcons->mpNext;
+	}
+	return( NOTFOUND );
+}
+
+void		ModelIconUpdateHandlesIfChanged( ModelIconHandle handle, int hModel, int hTexture )
+{
+ModelIcon*		pModelIcons = mspModelIconsList;
+	
+	while( pModelIcons )
+	{
+		if ( pModelIcons->mhModelIcon == handle )
+		{
+			if ( pModelIcons->mbOwnsHandles == FALSE )
+			{
+				if ( pModelIcons->mhModelHandle != hModel )
+				{
+					pModelIcons->mhModelHandle = hModel;
+				}
+
+				if ( pModelIcons->mhTexture != hTexture )
+				{
+					pModelIcons->mhTexture = hTexture;	
+				}
+			}
+			else
+			{
+				PANIC_IF(TRUE, "Should only use UpdateHandles on a ModelIcon that was created from handles");
+			}
+		}
+		pModelIcons = pModelIcons->mpNext;
+	}
+}
+
+
 // Stop/start it spinning
 void		ModelIconPauseUpdates( ModelIconHandle handle, BOOL bFlag )
 {

@@ -1306,6 +1306,7 @@ MODEL_RENDER_DATA*		pxModelData;
 	switch ( pxModelData->bWheelDisplayMode )
 	{
 	case 6:
+	case 10:
 		pxModelData->xWheel1AttachData.xCurrentRotations.y = A360 - fVertRot;
 		pxModelData->xWheel2AttachData.xCurrentRotations.y = fVertRot;	
 		pxModelData->xWheel3AttachData.xCurrentRotations.y = A360 - fVertRot;

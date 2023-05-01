@@ -1045,6 +1045,9 @@ BEGIN
 
             MENUITEM "Bike (X forward)",            ID_SUBMODELS_WHEELMODE_BIKE
 
+            MENUITEM "4-wheels (Y-Forward) No-steer", 
+                                                    ID_SUBMODELS_WHEELMODE_WHEELS_YFORWARD_NOSTEER
+
             MENUITEM "4-wheels (X forward)",        ID_SUBMODELS_WHEELMODE_NORMAL
             , CHECKED
             MENUITEM "Plane Type 1 (X forward)",    ID_SUBMODELS_WHEELMODE_PLANETYPE1

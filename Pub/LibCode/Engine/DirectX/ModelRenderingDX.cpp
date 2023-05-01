@@ -173,6 +173,11 @@ int		nHorizTurretAttachVertex = -1;
 			case 9:  // plane 2   (y-forward)
 				xRot.y = pxModelData->xWheel1AttachData.xCurrentRotations.x;
 				break;
+			case 10:		// 4 wheels, no sterring
+				xRot.x = TwoPi - pxModelData->xWheel1AttachData.xCurrentRotations.y;
+				fWheelTurn = pxModelData->xWheel1AttachData.xCurrentRotations.z;
+				xRot.z = 0.0f;
+				break;
 			}
 			break;
 		case MODEL_ATTACHED_WHEEL_2:
@@ -184,6 +189,7 @@ int		nHorizTurretAttachVertex = -1;
 				xRot.y = TwoPi-pxModelData->xWheel2AttachData.xCurrentRotations.y;
 				break;
 			case 6:		 // 4-wheels, y-forward
+			case 10:
 				xRot.x = TwoPi-pxModelData->xWheel2AttachData.xCurrentRotations.y;
 				break;
 			default:
@@ -210,6 +216,7 @@ int		nHorizTurretAttachVertex = -1;
 			case 7:		// bike, y-forward
 			case 8:		// plane1, y-forward
 			case 9:		// plane2, y-forward
+			case 10:
 				xRot.x = TwoPi - pxModelData->xWheel3AttachData.xCurrentRotations.y;
 				break;
 			case 0:
@@ -225,6 +232,7 @@ int		nHorizTurretAttachVertex = -1;
 				xRot.y = TwoPi-pxModelData->xWheel4AttachData.xCurrentRotations.y;
 				break;
 			case 6:
+			case 10:
 				xRot.x = TwoPi-pxModelData->xWheel4AttachData.xCurrentRotations.y;
 				break;
 			default:

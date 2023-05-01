@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.33a"
+#define	MODELCONV_VERSIONSTRING		"2.34"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -415,7 +415,8 @@ void ModelConvSetWheelModeOption( int mode )
 	CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_BIKE_YFORWARD, MF_UNCHECKED);
 	CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_PLANETYPE1_YFORWARD, MF_UNCHECKED);
 	CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_PLANETYPE2_YFORWARD, MF_UNCHECKED);
-
+	CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_WHEELS_YFORWARD_NOSTEER, MF_UNCHECKED);
+	
 	
 	switch( mode )
 	{
@@ -448,6 +449,9 @@ void ModelConvSetWheelModeOption( int mode )
 		break;		
 	case 9:
 		CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_PLANETYPE2_YFORWARD, MF_CHECKED);
+		break;		
+	case 10:
+		CheckMenuItem(GetMenu(mhwndMainDialog), ID_SUBMODELS_WHEELMODE_WHEELS_YFORWARD_NOSTEER, MF_CHECKED);
 		break;		
 	}
 }
