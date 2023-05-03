@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------------------------
 
 BOOL	mboInterfaceInitialised = FALSE;
-float	mfMipMapBias = 0.0f;//-0.25f;
+float	mfMipMapBias = -1.0f;//-0.25f;
 int		mnOptionTextureFiltering = TRUE;
 int		mnOptionBackBuffer = TRUE;
 int		mnOptionVsync = TRUE;

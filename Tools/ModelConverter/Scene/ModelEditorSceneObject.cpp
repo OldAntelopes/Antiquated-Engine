@@ -1467,6 +1467,7 @@ int		CSceneObject::Render( eRENDER_MODE mode )
 ENGINEMATRIX	xMatrix;
 int		nPolys = 0;
 
+	EngineSetStandardMaterialWithSpecular(30.0f, 0.5f ); 
 	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
 	EngineSetTexture(0,mhTexture);
 

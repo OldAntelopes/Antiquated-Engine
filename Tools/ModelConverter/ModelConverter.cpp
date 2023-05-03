@@ -459,9 +459,7 @@ void ModelConvSetWheelModeOption( int mode )
 
 /***************************************************************************
  * Function    : ModelConverterAddStandardLighting
- * Params      :
- * Returns     :
- * Description : Message handler for the "save changes" dialog box
+ * Description : 
  ***************************************************************************/
 void ModelConverterAddStandardLighting( void)
 {
@@ -477,13 +475,13 @@ ENGINE_LIGHT	xLight;
 	case 0:
 	default:
 		xLight.Type = DIRECTIONAL_LIGHT;
-		xLight.Diffuse.r = 0.8f;
-		xLight.Diffuse.g = 0.8f;
-		xLight.Diffuse.b = 0.8f;
+		xLight.Diffuse.r = 0.7f;
+		xLight.Diffuse.g = 0.7f;
+		xLight.Diffuse.b = 0.7f;
 		xLight.Diffuse.a = 1.0f;
-		xLight.Ambient.r = 0.2f;
-		xLight.Ambient.g = 0.2f;
-		xLight.Ambient.b = 0.2f;
+		xLight.Ambient.r = 0.4f;
+		xLight.Ambient.g = 0.4f;
+		xLight.Ambient.b = 0.4f;
 		xLight.Ambient.a = 1.0f;
 		xLight.Specular.r = 0.5f;
 		xLight.Specular.g = 0.5f;
@@ -524,9 +522,9 @@ ENGINE_LIGHT	xLight;
 		xLight.Ambient.g = 0.1f;
 		xLight.Ambient.b = 0.1f;
 		xLight.Ambient.a = 1.0f;
-		xLight.Specular.r = 1.0f;
-		xLight.Specular.g = 1.0f;
-		xLight.Specular.b = 1.0f;
+		xLight.Specular.r = 0.5f;
+		xLight.Specular.g = 0.5f;
+		xLight.Specular.b = 0.5f;
 		xLight.Specular.a = 1.0f;
 		xLight.Direction.x = -1.1f;
 		xLight.Direction.y = -0.9f;
