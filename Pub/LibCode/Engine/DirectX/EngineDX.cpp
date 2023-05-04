@@ -930,6 +930,11 @@ void				EngineSetVertexShader( LPGRAPHICSVERTEXSHADER pVertexShader, const char*
 }
 
 
+void		EngineSetMipBias( float fVal  )
+{
+	mpEngineDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, (DWORD)fVal);
+}
+
 
 IGRAPHICSFORMAT		EngineDXGetGraphicsFormat( eSurfaceFormat format )
 {

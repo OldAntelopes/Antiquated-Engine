@@ -982,7 +982,7 @@ int			nMidSquare = 5;
 		}
 		else
 		{
-			AddLine( &xPos1, &xPos2, 0xA0101010, 0xA0101010 );
+			AddLine( &xPos1, &xPos2, 0xA0808080, 0xA0808080 );
 		}
 		xPos1.x += mfFloorSteps;
 		xPos2.x += mfFloorSteps;
@@ -1003,7 +1003,7 @@ int			nMidSquare = 5;
 		}
 		else
 		{
-			AddLine( &xPos1, &xPos2, 0xA0303030, 0xA0303030);
+			AddLine( &xPos1, &xPos2, 0xA0808080, 0xA0808080);
 		}
 		xPos1.y += mfFloorSteps;
 		xPos2.y += mfFloorSteps;
@@ -1480,6 +1480,12 @@ float	fDelta;
 	if ( InterfaceDoesNeedChanging() == TRUE ) return;
 
 	InterfaceBeginRender();
+
+	if ( mnBackgroundColour == 0 )
+	{
+		InterfaceShadedRect( 0, 0, 0, InterfaceGetWidth(), InterfaceGetHeight(), 0xFF181818, 0xFF101010, 0xFF505050, 0xFF484848 );
+		InterfaceDraw();
+	}
 
 	ModelConverterSetupCamera();
 

@@ -145,7 +145,7 @@ extern void		EngineSetMaterialBlendOverride( BOOL );
 extern BOOL		EngineGetMaterialBlendOverride( void );
 
 extern uint32	EngineGetColValue( int R, int G, int B, int A );
-
+extern void		EngineSetMipBias( float );
 //-----------------------------------------------------------------------------
 //  Scene shadows
 //-----------------------------------------------------------------------------
