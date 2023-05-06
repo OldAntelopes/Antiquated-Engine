@@ -1,19 +1,10 @@
 
 //------------------------------------------------------
 // Global variables
-extern float4	gAmbientColor;
-extern float4	gMaterialDiffuse;
-extern float4	gMaterialAmbient;
-
-extern float4	gDiffuseColor;
-
-extern float3	gLightDirection;
-extern float3	xCamPos;
 
 extern float	gHasDiffuseMap;
 extern float	gHasSpecularMap;
 extern float	gHasNormalMap;
-extern bool		gLightingEnabled;
 
 extern float	gMaterialSpecularPower;
 extern float	gAmbientIntensity;
@@ -22,9 +13,19 @@ extern float	gDiffuseIntensity;
 extern float	gShadowMapSize;
 extern float	gShadowEpsilon;
 
-extern float4	gMaterialSpecular;
-extern float4	gxMaterialEmissive;
+extern float4	gAmbientColor;			// Light col
 extern float4	gSpecularColor;
+extern float4	gDiffuseColor;
+
+extern float4	gMaterialDiffuse;		// Material cols
+extern float4	gMaterialAmbient;
+extern float4	gMaterialSpecular;
+extern float4	gMaterialEmissive;
+
+extern float3	gLightDirection;
+extern float3	xCamPos;
+
+extern bool		gLightingEnabled;
 
 //------------------------------------------------------
 
@@ -103,29 +104,20 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
 		normal = normalize( float4(vNormal,0.0) );
 	}
 
-
 	float4	lightDirection = float4(-gLightDirection,1.0);
-
     float4 ambientBounce = saturate(dot(-lightDirection,normal));
- 
-     float diffuse = saturate(dot(lightDirection,normal));
-	float4	specularColor = float4( 0.0, 0.0, 0.0, 0.0 );
-	float	specularPower = 4.0f;
+    float diffuse = saturate(dot(lightDirection,normal));
+	float4 specularColor = float4(0.0f,0.0f,0.0f,0.0f);
 
 	if ( gMaterialSpecularPower > 1.0 )
 	{
 		if ( gMaterialSpecular.w > 0 )
 		{
 			float3 reflection = reflect(-lightDirection,normal);
-			float specular = pow(saturate(dot(reflection,View)),gMaterialSpecularPower);
+			float specular = pow(saturate(dot(reflection,View)),gMaterialSpecularPower) * 0.5f;
 			specular *= fPrimaryDiffuseShadowingStrength;
-			specular *= 0.5f;
-			if ( gHasSpecularMap > 0 )
-			{
-	//			specular = specular * (tex2D(specularMapSampler, TexCoord));
-			}
-
-			specularColor = 0.0f;//saturate(gSpecularColor * specular * gMaterialSpecular);
+			specularColor = saturate(gSpecularColor * specular * gMaterialSpecular);
+//			specularColor = float4(0.0f,0.0f,0.0f,0.0f);
 		}
    }
 
@@ -138,6 +130,7 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
 	if ( gLightingEnabled == false )
 	{
 	    diffuseMain = gMaterialDiffuse;
+		texColor.w *= diffuseMain.w;		// Use the alpha in the material
 	}
 	else if ( gNumPointLights + gNumSpotLights > 0)
 	{
@@ -152,7 +145,7 @@ PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
 
 	float4		lighting = float4( saturate( fAmbientMain.xyz + fAmbientBounce.xyz + diffuseMain.xyz ), 1.0f );
 	lighting.w = 1.0f;
-	Out.Color = saturate( (texColor * lighting) );//+ gxMaterialEmissive ) ;
+	Out.Color = saturate( (texColor * lighting) + (texColor * gMaterialEmissive) );
 	Out.Color = saturate( Out.Color + specularColor );
 	// --------------- Fog ----------------------
 	Out.Color = FogApply( Out.Color, xCamPos, PositionWS );
