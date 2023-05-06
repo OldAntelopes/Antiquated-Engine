@@ -165,6 +165,7 @@ public:
 		m_nArchiveFileHandle = NOTFOUND;
 		m_pArchiveFileSystem = NULL;
 		m_pArchiveFile = NULL;
+		m_pNext = NULL;
 	}
 	~ArchiveFileRef()
 	{
