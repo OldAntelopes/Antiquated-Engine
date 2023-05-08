@@ -3018,11 +3018,11 @@ MODEL_RENDER_DATA*	pxModelData;
 				pxModelData = maxModelRenderData + m_MainSceneObject.GetModelHandle();
 				if ( pxModelData->xLodData.fHighDist == 0.0f )
 				{
-					pxModelData->xLodData.fHighDist = 5.0f / mfScaleUnit;
+					pxModelData->xLodData.fHighDist = 50.0f / mfScaleUnit;
 				}
 				if ( pxModelData->xLodData.fMedDist == 0.0f )
 				{	
-					pxModelData->xLodData.fMedDist = 20.0f / mfScaleUnit;
+					pxModelData->xLodData.fMedDist = 200.0f / mfScaleUnit;
 				}				
 				sprintf( acString, "%.02f", (pxModelData->xLodData.fHighDist * mfScaleUnit) );
 				SetDlgItemText( hDlg, IDC_EDIT1, acString );
@@ -4324,7 +4324,7 @@ char		acCurrentDir[256];
 	mbDisableWASD = TRUE;
 	if ( SysGetSaveFilenameDialog( "PNG File(*.png)\0*.png\0", "Export Thumbnail", acCurrentDir, 0, acExportFilename ) == TRUE )
 	{
-	int		hThumbnailTarget = EngineCreateRenderTargetTexture( 600, 424, 3 );
+	int		hThumbnailTarget = EngineCreateRenderTargetTexture( 600, 424, 3, "Thumbnail Export" );
 	int		nHandleToDraw;
 	MODEL_RENDER_DATA*	pxModelData;
 	VECT	xPos;

@@ -378,8 +378,8 @@ void		OculusStartSceneLeftEye( uint32 ulClearCol )
 	{
 //		mhLeftViewRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetWidth()/2, InterfaceGetHeight() );	
 //		mhRightViewRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetWidth()/2, InterfaceGetHeight() );	
-		mhOculusLeftViewRenderTarget = EngineCreateRenderTargetTexture( 960, 1080, 0 );	
-		mhOculusRightViewRenderTarget = EngineCreateRenderTargetTexture( 960, 1080, 0 );	
+		mhOculusLeftViewRenderTarget = EngineCreateRenderTargetTexture( 960, 1080, 0, "VR Left Eye" );	
+		mhOculusRightViewRenderTarget = EngineCreateRenderTargetTexture( 960, 1080, 0, "VR Right Eye" );	
 	}
 	
 	EngineSetRenderTargetTexture( mhOculusLeftViewRenderTarget, ulClearCol, TRUE );

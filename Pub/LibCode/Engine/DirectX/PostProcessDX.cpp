@@ -456,14 +456,14 @@ BOOL		EnginePostProcessInitGraphics( void )
 		mnSmallTargetW = InterfaceGetWidth() / mnBlurQualityMod;
 		mnSmallTargetH = InterfaceGetHeight() / mnBlurQualityMod;
 
-		mhPostProcessRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetWidth(), InterfaceGetHeight(), 1 );	
+		mhPostProcessRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetWidth(), InterfaceGetHeight(), 1, "PostProcess" );	
 		if ( mhPostProcessRenderTarget == NOTFOUND )
 		{
 			mboPostProcessEnabled = FALSE;
 			return( FALSE );		
 		}
-		mhPostProcessSmallRenderTarget = EngineCreateRenderTargetTexture( mnSmallTargetW, mnSmallTargetH, 1 );
-		mhPostProcessSmallBlurRenderTarget = EngineCreateRenderTargetTexture( mnSmallTargetW, mnSmallTargetH, 1 );
+		mhPostProcessSmallRenderTarget = EngineCreateRenderTargetTexture( mnSmallTargetW, mnSmallTargetH, 1, "PostProcess Small" );
+		mhPostProcessSmallBlurRenderTarget = EngineCreateRenderTargetTexture( mnSmallTargetW, mnSmallTargetH, 1, "PostProcess Blur" );
 
 		EnginePostProcessCreateVertexBuffers();
 

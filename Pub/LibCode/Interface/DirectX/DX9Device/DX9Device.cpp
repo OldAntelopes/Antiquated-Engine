@@ -715,6 +715,10 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 				}
 				sprintf( acString, "%d render targets\r\n", EngineTextureManagerGetNumRenderTargets() );
 				strcat( acErrorMsg, acString );
+				if ( EngineTextureManagerGetNumRenderTargets() > 0 )
+				{
+					EngineRenderTargetsTrackingListAllocated( acErrorMsg );
+				}
 
 				
 				PANIC_IF( TRUE, acErrorMsg );

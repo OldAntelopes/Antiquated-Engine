@@ -217,7 +217,7 @@ extern void			EngineProcessTexture( TEXTURE_HANDLE, int nProcessMode );
 extern void			EngineCopyTexture( TEXTURE_HANDLE hSrcTexture, TEXTURE_HANDLE hDestTexture );
 extern void			EngineCopyTextureToPosition( TEXTURE_HANDLE hSrcTexture, TEXTURE_HANDLE hDestTexture, int nDestPosX, int nDestPosY );
 
-extern TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode );
+extern TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode, const char* szTrackingName );
 extern void				EngineSetRenderTargetTexture( TEXTURE_HANDLE handle, uint32 ulClearCol, BOOL bClear );
 extern void				EngineRestoreRenderTarget( void );
 

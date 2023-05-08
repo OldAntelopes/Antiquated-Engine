@@ -192,7 +192,7 @@ int		nTextureHandle;
 		pNewModelIcon->mbOwnsHandles = TRUE;
 		pNewModelIcon->mszDebugName = (char*)( malloc( strlen( szDebugName) + 1 ));
 		strcpy( pNewModelIcon->mszDebugName, szDebugName );
-		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
+		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1, szDebugName );
 		pNewModelIcon->mulLastUpdateTick = SysGetTick();
 
 		return( nNewHandle );
@@ -221,7 +221,7 @@ ModelIconHandle		ModelIconCreateFromHandles( int hModel, int hTexture,  eModelIc
 		pNewModelIcon->mbOwnsHandles = FALSE;
 		pNewModelIcon->mszDebugName = (char*)( malloc( strlen( szDebugName) + 1 ));
 		strcpy( pNewModelIcon->mszDebugName, szDebugName );
-		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1 );
+		pNewModelIcon->mhRenderTargetTexture = EngineCreateRenderTargetTexture( 256, 256, 1, szDebugName );
 		pNewModelIcon->mulLastUpdateTick = SysGetTick();
 
 		return( nNewHandle );

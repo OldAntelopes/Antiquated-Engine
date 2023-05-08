@@ -36,7 +36,7 @@ void		EngineSceneShadowsSetRenderParams( float fLightCamTargetDist, float fLight
 	// TODO
 }
 
-TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode )
+TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode, const char* szTrackingName )
 {
 	// TODO
 	return( NOTFOUND );

@@ -93,6 +93,26 @@ int		EngineTextureManagerGetNumRenderTargets( void )
 	return( msnNumberOfRenderTargetsCreated );
 }
 
+void		EngineRenderTargetsTrackingListAllocated( char* acErrorOut )
+{
+int		nLoop;
+int		nCount = 0;
+char	acString[256];
+int		nExplosionTexturesCount = 0;
+int		nValidCount = 0;
+
+	for ( nLoop = 0; nLoop < MAX_TEXTURES_IN_MANAGER; nLoop++ )
+	{
+		if ( ( maTextureReferences[nLoop].nUsed != 0 ) &&
+			 ( maTextureReferences[nLoop].boIsRenderTarget == TRUE ) )
+		{
+			sprintf( acString, "-- %s\r\n", maTextureReferences[nLoop].szFilename );	
+			strcat( acErrorOut, acString );
+		}	
+	}
+
+}
+
 void		EngineTextureManagerDump( TextureManagerPrintCallback fnPrintCallback )
 {
 int		nLoop;
@@ -421,7 +441,7 @@ _D3DFORMAT		maPreferredRenderTargetFormats[] =
 	D3DFMT_UNKNOWN
 };
 
-TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode )
+TEXTURE_HANDLE	EngineCreateRenderTargetTexture( int nWidth, int nHeight, int mode, const char* szTrackingName )
 {
 D3DDISPLAYMODE d3ddm;
 HRESULT hr;
@@ -510,7 +530,14 @@ int		nFormatsLoop = 0;
 		maTextureReferences[nLoop].nUsed = 1;
 		maTextureReferences[nLoop].nState = TEXTURE_STATE_LOADED;
 		maTextureReferences[nLoop].boIsRenderTarget = TRUE;
-		strcpy( maTextureReferences[nLoop].szFilename, "[CreateRenderTarget]" );
+		if ( szTrackingName )
+		{
+			strcpy( maTextureReferences[nLoop].szFilename, szTrackingName );
+		}
+		else
+		{
+			strcpy( maTextureReferences[nLoop].szFilename, "[CreateRenderTarget]" );
+		}
 		
 		switch( mode )
 		{

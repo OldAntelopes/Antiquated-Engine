@@ -71,21 +71,18 @@ void PanicImpl( const char* szErrorString )
 	{	 
 		mboMessageBoxActive = TRUE;
 
-	/*		TODO - Put this back in!!!!
-#ifndef USING_OPENGL
-		if ( ( InterfaceIsFullscreen() == TRUE ) &&
-		     ( mpInterfaceD3DDevice != NULL ) )
+		if ( InterfaceIsFullscreen() == FALSE )
 		{
-			if ( InterfaceShowFullscreenPanic( szErrorString ) == TRUE )
+			PanicImplShowDialog( szErrorString );
+			mboMessageBoxActive = FALSE;
+		}
+		else
+		{
+//			if ( InterfaceShowFullscreenPanic( szErrorString ) == TRUE )
 			{
 				mboDontShowAnyMoreWarnings = TRUE;
 			}
 		}
-		else
-#endif
-		*/
-		PanicImplShowDialog( szErrorString );
-		mboMessageBoxActive = FALSE;
 	}
 
 } 

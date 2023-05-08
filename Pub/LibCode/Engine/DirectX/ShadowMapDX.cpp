@@ -50,7 +50,7 @@ void		EngineShadowMapLoadShaders( void )
 		mpShadowMapPass1VertexShader = EngineLoadVertexShader( "ShadowMapPass1", &mpShadowMapRenderConstantTable, 0 );
 		mpShadowMapPass1PixelShader = EngineLoadPixelShader( "ShadowMapPass1", &mpShadowMapRenderPSConstantTable, 0 );
 
-		mhShadowMapRenderTarget = EngineCreateRenderTargetTexture( mnShadowMapSize, mnShadowMapSize, 4 );	
+		mhShadowMapRenderTarget = EngineCreateRenderTargetTexture( mnShadowMapSize, mnShadowMapSize, 4, "ShadowMap" );	
 
 		mbShadowMapHasLoadedShaders = TRUE;
 	}

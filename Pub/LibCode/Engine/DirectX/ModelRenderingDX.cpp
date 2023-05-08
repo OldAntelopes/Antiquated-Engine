@@ -820,7 +820,7 @@ float		fScaleMod = 0.8f * fScale;
 	mpEngineDevice->GetRenderTarget( 0, &pNormalRenderTarget );
 	mpEngineDevice->GetDepthStencilSurface( &pNormalDepthStencil );
 
-	hNewTexture = EngineCreateRenderTargetTexture( 256, 256, 0 );
+	hNewTexture = EngineCreateRenderTargetTexture( 256, 256, 0, "Model Preview" );
 	if ( hNewTexture != 0 )
 	{
 		pRenderTargetTexture = EngineGetTextureDirectDX(hNewTexture);
