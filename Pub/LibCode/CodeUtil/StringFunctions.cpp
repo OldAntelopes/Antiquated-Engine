@@ -284,6 +284,18 @@ struct tm *dcp;
 	return( macDateBuffer );
 }
 
+void	GetCurrentDateTimeString( char* szBufferOut )
+{
+time_t	xtimet;
+uint32	ulCurrentDate;
+
+	time( &xtimet );
+	ulCurrentDate = *( (uint32*)(&xtimet) );	
+
+	strcpy( szBufferOut, GetRealTimeDate(ulCurrentDate, TRUE) );
+}
+
+
 int		tinstrnicmp( const char* str1, const char* str2, int nVal )
 {
 #ifdef WIN32
