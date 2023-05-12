@@ -94,7 +94,6 @@ UNDO_BUFFER			mxUndoBuffer;
 
 SceneEditor_SELECTION		maSelectedItems[ MAX_ITEMS_SELECTED ];
 int					mnNumItemsInSelection = 0;
-LPDIRECT3DDEVICE9       g_pd3dDevice = NULL;
 
 /*
 class	CMultiTreeCtrl : public CTreeCtrl 
