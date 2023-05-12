@@ -20,6 +20,7 @@
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btFixedConstraint.h" />
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGearConstraint.h" />
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.h" />
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpring2Constraint.h" />
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.h" />
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btHinge2Constraint.h" />
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btHingeConstraint.h" />
@@ -64,6 +65,7 @@
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btFixedConstraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGearConstraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp" />
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpring2Constraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btHinge2Constraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btHingeConstraint.cpp" />
@@ -76,7 +78,6 @@
     <ClCompile Include="..\Include\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\Dynamics\btRigidBody.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp" />
-    <ClCompile Include="..\Include\BulletDynamics\Dynamics\Bullet-C-API.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBody.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraint.cpp" />
     <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBodyConstraintSolver.cpp" />
