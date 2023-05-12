@@ -104,7 +104,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;d3dx9.lib;d3d9.lib;jpeglib.lib;zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;d3dx9.lib;d3d9.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\00_HelloWorld.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -150,11 +150,11 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;odbc32.lib;odbccp32.lib;d3dx9.lib;d3d9.lib;dxerr9.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;odbc32.lib;odbccp32.lib;d3dx9.lib;d3d9.lib;dxerr9.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\00_HelloWorld-Debug.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Objs\HelloWorld\Debug/00_HelloWorld-Debug.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>

@@ -104,7 +104,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;dxerr9.lib;zlib.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;odbc32.lib;odbccp32.lib;d3d9.lib;jpeglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;CodeUtilD.lib;EngineD-DX9.lib;InterfaceD-DX9.lib;dxerr9.lib;zlib.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;odbc32.lib;odbccp32.lib;d3d9.lib;jpeglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\02_BasicEngine-debug.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -151,7 +151,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;dxguid.lib;d3dx9.lib;d3d9.lib;d3dxof.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;CodeUtil.lib;Interface-DX9.lib;Engine-DX9.lib;odbc32.lib;odbccp32.lib;dxerr9.lib;dxguid.lib;d3dx9.lib;d3d9.lib;d3dxof.lib;jpeglib.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\02_BasicEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs\;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

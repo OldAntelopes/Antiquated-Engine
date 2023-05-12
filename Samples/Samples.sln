@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_BasicInterface", "01_Bas
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_BasicEngine", "02_BasicEngine.vcxproj", "{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_ArcadeGameSample", "03_ArcadeGameSample.vcxproj", "{B272C1A2-235D-4330-993D-0C9DCA64A426}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug DX11|Win32 = Debug DX11|Win32
@@ -71,22 +69,6 @@ Global
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Debug|Win32.Build.0 = Release|Win32
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.ActiveCfg = Release|Win32
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.Build.0 = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug GL|Win32.ActiveCfg = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug GL|Win32.Build.0 = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug OpenGL|Win32.ActiveCfg = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Debug OpenGL|Win32.Build.0 = Debug DX9|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release DX9|Win32.ActiveCfg = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release DX9|Win32.Build.0 = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release OpenGL|Win32.ActiveCfg = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Release OpenGL|Win32.Build.0 = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Debug|Win32.ActiveCfg = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Debug|Win32.Build.0 = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Release|Win32.ActiveCfg = Release|Win32
-		{B272C1A2-235D-4330-993D-0C9DCA64A426}.Tool Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
