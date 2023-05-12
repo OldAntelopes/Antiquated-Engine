@@ -19,6 +19,8 @@
 #include "ShadowVolumeDX.h"
 
 //-------------------------------------------------------------------------------------------------
+LPGRAPHICS             g_pD3D       = NULL; // Used to create the D3DDevice
+LPGRAPHICSDEVICE       g_pd3dDevice = NULL; // Our rendering device
 
 LPGRAPHICSDEVICE       mpEngineDevice = NULL;
 	
