@@ -282,14 +282,14 @@ short wNotifyCode;
 
 			fScale *= fScaleUnit;
 			SetDlgItemText( hDlg, IDC_SCALE_UNITS, "m high" );
-			sprintf( acString, "Current model height = %.2fm", fScale );
+			sprintf( acString, "Current model height = %.5fm", fScale );
 			SetDlgItemText( hDlg, IDC_CURRENT_SCALE, acString );
 
-			sprintf( acString, "X : %.3f to %.3f = %.2fm", pxStats->xBoundMin.x, pxStats->xBoundMax.x, (pxStats->xBoundMax.x - pxStats->xBoundMin.x)*fScaleUnit);
+			sprintf( acString, "X : %.5f to %.5f = %.5fm", pxStats->xBoundMin.x, pxStats->xBoundMax.x, (pxStats->xBoundMax.x - pxStats->xBoundMin.x)*fScaleUnit);
 			SetDlgItemText( hDlg, IDC_CURRENT_X_SCALE, acString );
-			sprintf( acString, "Y : %.3f to %.3f = %.2fm", pxStats->xBoundMin.y, pxStats->xBoundMax.y, (pxStats->xBoundMax.y - pxStats->xBoundMin.y)*fScaleUnit );
+			sprintf( acString, "Y : %.5f to %.5f = %.5fm", pxStats->xBoundMin.y, pxStats->xBoundMax.y, (pxStats->xBoundMax.y - pxStats->xBoundMin.y)*fScaleUnit );
 			SetDlgItemText( hDlg, IDC_CURRENT_Y_SCALE, acString );
-			sprintf( acString, "Z : %.3f to %.3f = %.2fm", pxStats->xBoundMin.z, pxStats->xBoundMax.z, (pxStats->xBoundMax.z - pxStats->xBoundMin.z)*fScaleUnit );
+			sprintf( acString, "Z : %.5f to %.5f = %.5fm", pxStats->xBoundMin.z, pxStats->xBoundMax.z, (pxStats->xBoundMax.z - pxStats->xBoundMin.z)*fScaleUnit );
 			SetDlgItemText( hDlg, IDC_CURRENT_Z_SCALE, acString );
 
 			SendDlgItemMessage( hDlg, IDC_RADIO1, BM_SETCHECK, BST_CHECKED, 0 );

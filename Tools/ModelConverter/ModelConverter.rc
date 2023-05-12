@@ -1239,10 +1239,11 @@ BEGIN
         MENUITEM "Convert Y-up to Z-up",        ID_TOOLS_CONVERTYUPTOZUP
         POPUP "&Scale"
         BEGIN
-            MENUITEM "Scale dialog",                ID_SCALE_SCALEDIALOG
+            MENUITEM "Scale dialog...",             ID_SCALE_SCALEDIALOG
             MENUITEM "Scale up old TU model",       ID_SCALE_SCALEUPOLDTUMODEL
 
             MENUITEM "Scale to 15m grid",           ID_SCALE_SCALETO15GRID
+            MENUITEM "Match Model...",              IDM_SCALE_MATCH
         END
         MENUITEM SEPARATOR
         MENUITEM "S&tick To Floor",             ID_TOOLS_STICKTOFLOOR

@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.34"
+#define	MODELCONV_VERSIONSTRING		"2.35"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -4240,6 +4240,56 @@ int			hImportModel;
 	}
 }
 
+void	ModelConverterScaleMatch( void )
+{
+char*		pszLoadFilter = "All supported formats\0*.x;*.3ds;*.atm;*.fbx;*.obj;*.bsp\0DirectX Model Files (*.x)\0*.x\03DS Files (*.3ds)\0*.3ds\0The Universal Model Format (*.atm)\0*.atm\0Autodesk FBX (*.fbx)\0*.fbx\0Wavefront OBJ Files (*.obj)\0*.obj\0Quake 2/Halflife BSP File (*.bsp)\0*.bsp\0All Files (*.*)\0*.*\0";
+char		acFilename[256];
+int			hImportModel;
+
+	acFilename[0] = 0;
+
+	SysGetOpenFilenameDialog( pszLoadFilter, "Select model file to match scale with..", macModelConvLastLoadFolder, 0, acFilename );
+
+	if ( acFilename[0] != 0 )
+	{
+	int		hLocalModel = ModelConvGetCurrentModel();
+
+		hImportModel = ModelLoad( acFilename, 0, 1.0f );
+
+		if ( hImportModel != NOTFOUND )
+		{
+		MODEL_STATS		xMatchStats = *ModelGetStats( hImportModel );
+		MODEL_STATS		xLocalStats = *ModelGetStats( hLocalModel );
+		VECT			xMatchScale;
+		VECT			xLocalScale;
+		VECT			xRescaleFactor;
+		VECT			xMoveOffset;
+
+			VectSub( &xMatchScale, &xMatchStats.xBoundMax, &xMatchStats.xBoundMin );
+			VectSub( &xLocalScale, &xLocalStats.xBoundMax, &xLocalStats.xBoundMin );
+
+			if ( xLocalScale.x > 0.0f )
+			{
+				xRescaleFactor.x = xMatchScale.x / xLocalScale.x;
+			}
+			if ( xLocalScale.y > 0.0f )
+			{
+				xRescaleFactor.y = xMatchScale.y / xLocalScale.y;
+			}
+			if ( xLocalScale.z > 0.0f )
+			{
+				xRescaleFactor.z = xMatchScale.z / xLocalScale.z;
+			}
+			ModelScale( hLocalModel, xRescaleFactor.x, xRescaleFactor.y, xRescaleFactor.z );
+
+			xLocalStats = *ModelGetStats( hLocalModel );
+			VectSub( &xMoveOffset, &xMatchStats.xBoundSphereCentre, &xLocalStats.xBoundSphereCentre );
+			ModelMoveVerts( hLocalModel, xMoveOffset.x, xMoveOffset.y, xMoveOffset.z );
+			ModelFree( hImportModel );
+			ModelConverterDisplayFrame( FALSE );
+		}
+	}			
+}
 
 //---------------------------------------------------
 // Function : ModelConvSaveAsDialog
@@ -5213,6 +5263,10 @@ int	nVal;
 					UpdateWindow( hMaterialDlg );
 				}
 				break;
+			case IDM_SCALE_MATCH:
+				ModelConverterScaleMatch();
+				break;
+
 			case ID_REMOVEALLANIMATIONS:
 				ModelConvRemoveAllAnimations();
 				break;
