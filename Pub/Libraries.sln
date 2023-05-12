@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arcade", "Projects\Arcade.vcxproj", "{65B9AD05-46EC-4FC0-9C16-741F413F3375}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CodeUtil", "Projects\CodeUtil.vcxproj", "{B885331D-D9B4-49B0-AAFD-1CEB7BEEA8D8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Projects\Engine.vcxproj", "{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}"
@@ -33,20 +31,6 @@ Global
 		Tool Release|Win32 = Tool Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug DX11|Win32.ActiveCfg = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug DX11|Win32.Build.0 = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug GL|Win32.ActiveCfg = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug GL|Win32.Build.0 = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug|Win32.ActiveCfg = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Debug|Win32.Build.0 = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Release GL|Win32.ActiveCfg = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Release GL|Win32.Build.0 = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Release|Win32.ActiveCfg = Client Release|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Release|Win32.Build.0 = Client Release|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Tool Debug|Win32.ActiveCfg = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Tool Debug|Win32.Build.0 = Client Debug|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Tool Release|Win32.ActiveCfg = Client Release|Win32
-		{65B9AD05-46EC-4FC0-9C16-741F413F3375}.Tool Release|Win32.Build.0 = Client Release|Win32
 		{B885331D-D9B4-49B0-AAFD-1CEB7BEEA8D8}.Debug DX11|Win32.ActiveCfg = Debug|Win32
 		{B885331D-D9B4-49B0-AAFD-1CEB7BEEA8D8}.Debug DX11|Win32.Build.0 = Debug|Win32
 		{B885331D-D9B4-49B0-AAFD-1CEB7BEEA8D8}.Debug GL|Win32.ActiveCfg = Debug Console|Win32
