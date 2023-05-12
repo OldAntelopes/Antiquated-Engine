@@ -113,22 +113,13 @@ BOOL SysGetOpenFilenameDialog( char* szFileFilter, char* szTitle, char* szDefaul
 // windows-only functions are all kept inside LibWinServer, but for now just providing
 // empty implementations here is sufficient)
 
-
-void ModelSelectorSelectListNum( int nParam ) {}
 void WindowSetConnectionStatusString( int nStatus ) {}
 void WindowServerUpdateMessageScroll( void ) {}
 void WindowsServerUpdateChatPlayerList( void ) {}
-void WindowSetIslandStatusString( char* pcStatus ) {}
 void GatewayPageRefreshServerList( void ) {}
 void IndependentListUpdate( void ){}
-void GatewaysRefreshList( void ) {}
 void SearchPageAddResponse( void ) {}
 BOOL IndependentListIsBlocked( int nServerID ) { return( FALSE ); }
 void ServerChangeIcon( void ) {}
 void WindowServerShowLoginPopup( void ) {}
-void EconomyUpdateTreasuryMessage( void ) {}
-void SettingsEditorRefreshFields( void ) {}
-void FirstRunPagesRefreshList( BOOL ) {}
-void BuildingSelectionInitialise( void ) {}
-void BuildingSelectInitialiseDialogValues( void ) {}
 
