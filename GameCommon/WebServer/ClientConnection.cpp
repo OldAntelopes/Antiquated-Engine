@@ -191,6 +191,11 @@ int		ret;
 				{
 					mnContentLength = strtol( acHeaderValue, NULL, 10 );
 				}
+				else
+				{
+					// Don't bother storing any headers we don't understand
+					mpcRequestHeadersRunner -= ret;
+				}
 			}
 			else if ( ret == TCPSOCKET_ERROR_DISCONNECT )
 			{
