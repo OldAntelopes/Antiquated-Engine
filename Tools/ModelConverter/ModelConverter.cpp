@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.35"
+#define	MODELCONV_VERSIONSTRING		"2.35a"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -95,7 +95,6 @@ int		mnLightingMode = 0;
 int		mnLastDisplayPolyRendered = 0;
 int		mnLastDisplaySelectionWindow = 0;
 
-LPDIRECT3DDEVICE9       g_pd3dDevice = NULL;
 VECT	mxMousePos;
 VECT	mxMouseDownPos;
 BOOL	mboLeftMouseDown = FALSE;
@@ -4283,7 +4282,7 @@ int			hImportModel;
 			ModelScale( hLocalModel, xRescaleFactor.x, xRescaleFactor.y, xRescaleFactor.z );
 
 			xLocalStats = *ModelGetStats( hLocalModel );
-			VectSub( &xMoveOffset, &xMatchStats.xBoundSphereCentre, &xLocalStats.xBoundSphereCentre );
+			VectSub( &xMoveOffset, &xMatchStats.xBoundMin, &xLocalStats.xBoundMin );
 			ModelMoveVerts( hLocalModel, xMoveOffset.x, xMoveOffset.y, xMoveOffset.z );
 			ModelFree( hImportModel );
 			ModelConverterDisplayFrame( FALSE );
