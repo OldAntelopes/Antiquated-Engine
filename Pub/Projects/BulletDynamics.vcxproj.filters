@@ -48,6 +48,9 @@
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.h">
       <Filter>ConstraintSolver</Filter>
     </ClInclude>
+    <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpring2Constraint.h">
+      <Filter>ConstraintSolver</Filter>
+    </ClInclude>
     <ClInclude Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.h">
       <Filter>ConstraintSolver</Filter>
     </ClInclude>
@@ -176,6 +179,9 @@
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp">
       <Filter>ConstraintSolver</Filter>
     </ClCompile>
+    <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpring2Constraint.cpp">
+      <Filter>ConstraintSolver</Filter>
+    </ClCompile>
     <ClCompile Include="..\Include\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.cpp">
       <Filter>ConstraintSolver</Filter>
     </ClCompile>
@@ -210,9 +216,6 @@
       <Filter>Dynamics</Filter>
     </ClCompile>
     <ClCompile Include="..\Include\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp">
-      <Filter>Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\BulletDynamics\Dynamics\Bullet-C-API.cpp">
       <Filter>Dynamics</Filter>
     </ClCompile>
     <ClCompile Include="..\Include\BulletDynamics\Featherstone\btMultiBody.cpp">

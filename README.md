@@ -6,7 +6,7 @@ The code contained here was generated over many years as part of various hobby p
 
 It is not well designed, well implemented, well structured or well.. anything .. it just is what it is. Sorry, Adrian. Considering that most of it was written in a rush very late at night, often after a few whiskeys, its always surprising any of it works at all. (Which it probably doesnt)
 
-This github project has mostly been created for the sake of posterity rather than any expectation of practical value. 
+This github project has mostly been created for the sake of posterity rather than any expectation of practical value, although the code is still in active use in the old game. 
 
 Overall structure of the repo
 -----------------------------

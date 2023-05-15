@@ -1126,3 +1126,12 @@ BOOL		SysOSQuitApplicationRequested( void )
 {
 	return( mboApplicationExitRequested );
 }
+
+// Compatibility of recent VS with old version of libs (curl, openssl). Remove when libs are updated.
+#if defined _MSC_VER
+#if _MSC_VER > 1800  // After VS 2013
+FILE _iob[] = { *stdin, *stdout, *stderr };
+extern "C" FILE * __cdecl __iob_func(void) { return _iob; }
+#endif
+#endif  // _MSC_VER
+
