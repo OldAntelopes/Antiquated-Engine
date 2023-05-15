@@ -24,6 +24,7 @@ public:
 		bIgnoreCache = FALSE;
 		nResponseCode = 0;
 		nPostBodyLen = 0;
+		nCustomTimeout = 0;
 	}
 
 	HTTPResponseHandler				fnResponseCallback;
@@ -47,6 +48,7 @@ public:
 
 	BYTE*		pbResponseBuffer;
 	int			nResponseBufferSize;
+	int			nCustomTimeout;
 	void*		pLocalFile;
 };
 

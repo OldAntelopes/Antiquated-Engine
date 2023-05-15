@@ -116,7 +116,7 @@ int			nRet;
 }
 
 
-int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam )
+int		HTTPPostEx( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam, int nTimeoutSecs )
 {
 	if ( mbHTTPInitialised )
 	{
@@ -157,6 +157,12 @@ int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHa
 	}
 	return( 1 );
 
+}
+
+
+int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam )
+{
+	return( HTTPPostEx( acFullURL, pbBody, nBodyLen, fnResponseHandler, vpParam, 0 ) ); 
 }
 
 int		HTTPGetFile( const char *acFullURL, const char* szLocalFilename, HTTPResponseHandler fnResponseHandler, void* vpParam )
