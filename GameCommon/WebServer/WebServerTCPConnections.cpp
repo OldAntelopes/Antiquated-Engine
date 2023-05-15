@@ -195,7 +195,11 @@ int		error;
 		return( 0 );
 	}
 #else
-	// TODO - LINUX alt?
+	if ( ( errno == EWOULDBLOCK ) ||
+		 ( errno == EAGAIN ) )
+	{
+		return( 0 );
+	}
 #endif
 	return( TCPSOCKET_ERROR_DISCONNECT );
 }

@@ -4,7 +4,7 @@
 #include "Blowfish.h"
 
 #define uchar unsigned char // 8-bit
-#define uint unsigned long // 32-bit
+#define uint uint32 // 32-bit
 
 #define F(x,t) t = keystruct->s[0][(x) >> 24]; \
                t += keystruct->s[1][((x) >> 16) & 0xff]; \
@@ -229,7 +229,7 @@ void BlowfishSetKey( const BYTE* user_key, int len, BLOWFISH_KEY *keystruct )
 {
    uchar block[8]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
    int idx,idx2;
-   
+
    // Copy over the constant init array vals (so the originals aren't destroyed).
    memcpy(keystruct->p,p_perm,sizeof(uint) * 18);
    memcpy(keystruct->s,s_perm,sizeof(uint) * 1024);
