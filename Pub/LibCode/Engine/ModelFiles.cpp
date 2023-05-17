@@ -2353,6 +2353,25 @@ ushort*		puwIndices = NULL;
 
 
 /***************************************************************************
+ * Function    : ModelSetMaterialEmissive
+ ***************************************************************************/
+void		ModelSetMaterialEmissive( int nModelHandle, int nMaterialNum, const ENGINEMATERIAL_COLOUR* pxCol )
+{
+MODEL_RENDER_DATA* pxModelData;
+ModelMaterialData*		pMaterialData;
+
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	pMaterialData = FindMaterial( pxModelData, nMaterialNum );
+	if ( pMaterialData )
+	{
+		pMaterialData->SetColour( ModelMaterialData::EMISSIVE, (MATERIAL_COLOUR*)pxCol );
+	}
+
+}
+
+
+
+/***************************************************************************
  * Function    : ModelSetVertexColours
  * Params      : 
  * Description : 

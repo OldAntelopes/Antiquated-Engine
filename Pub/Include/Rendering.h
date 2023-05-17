@@ -1,6 +1,8 @@
 #ifndef TRACTOR_RENDERING_H
 #define TRACTOR_RENDERING_H
 
+#include "Engine.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -208,6 +210,7 @@ extern void		ModelSetWheelSpinRotation( int nModelHandle, float fVertRot );
 extern void		ModelSetFrontWheelTurnRotation( int nModelHandle, float fRot );
 
 // Misc other bits
+extern void		ModelSetMaterialEmissive( int nModelHandle, int nMaterialNum, const ENGINEMATERIAL_COLOUR* pxCol );
 extern void		ModelSetVertexColours( int nModelHandle, uint32 ulCol );
 extern void		ModelSetShadowCaster( int nModelHandle, int nMode );
 extern int		ModelGetLockState( const char* szFilename );

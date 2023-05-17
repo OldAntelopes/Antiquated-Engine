@@ -805,7 +805,7 @@ MATERIAL_COLOUR		ModelMaterialData::GetColour( eCOLOUR_CHANNELS channel )
 	return( m_aColours[ channel ] );
 }
 
-void	ModelMaterialData::SetColour( eCOLOUR_CHANNELS channel, MATERIAL_COLOUR* pCol )
+void	ModelMaterialData::SetColour( eCOLOUR_CHANNELS channel, const MATERIAL_COLOUR* pCol )
 {
 	m_aColours[ channel ] = *pCol;
 }

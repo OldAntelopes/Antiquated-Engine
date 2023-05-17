@@ -9,7 +9,7 @@ typedef struct
 	float	fGreen;
 	float	fBlue;
 	float	fAlpha;
-} MATERIAL_COLOUR;
+} MATERIAL_COLOUR;				// Needs to match ENGINEMATERIAL_COLOUR
 
 enum eTEX_CHANNELS
 {
@@ -94,7 +94,7 @@ public:
 	byte*			GetSourceData( int texchannel, int* pnSize );
 
 	MATERIAL_COLOUR	GetColour( eCOLOUR_CHANNELS );
-	void			SetColour( eCOLOUR_CHANNELS, MATERIAL_COLOUR* pCol );
+	void			SetColour( eCOLOUR_CHANNELS, const MATERIAL_COLOUR* pCol );
 
 	float			GetSpecularPower() { return( m_specularPower ); }
 	void			SetSpecularPower( float fVal ) { m_specularPower = fVal; }
