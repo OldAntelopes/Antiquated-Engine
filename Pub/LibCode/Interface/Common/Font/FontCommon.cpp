@@ -1414,81 +1414,88 @@ int		nAdvance = 0;
  ***************************************************************************/
 int GetStringWidth( const char* pcString, int nFont )
 {
-int		nX;
-BYTE	cChar;
-int		nCount;
-int		nFontScreenWidth = 0;
-int		nAdvance = 0;
-
-	nX = 0;
-	nCount = 0;
-
-	while ( ( *(pcString) != 0 ) &&
-		     ( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
+	if ( pcString )
 	{
-		cChar = *(pcString);
-		switch ( cChar )
+	int		nX;
+	BYTE	cChar;
+	int		nCount;
+	int		nFontScreenWidth = 0;
+	int		nAdvance = 0;
+
+		nX = 0;
+		nCount = 0;
+
+		while ( ( *(pcString) != 0 ) &&
+				 ( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
 		{
-		case '\t':
-			if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
+			cChar = *(pcString);
+			switch ( cChar )
 			{
-				nX += ( 4*10 );
-			}
-			else
-			{
-				nX += (4*12);
-			}
-			break;
-		case 250:
-			nX += (GetStringHeight( "A", nFont ) + 4 );
-			pcString++;
-			nCount++;
-			break;
-		default:
-			// If valid tag
-			if ( ( cChar == '<' ) &&
-				 ( pcString[1] != 0 ) &&
-				 ( pcString[1] != ' ' ) )
-			{
-			const char* pcTagStart = pcString;
-			int			nTagStartCount = nCount;
-			int			nTagCount = 0;
-
-				pcString++;
-				while ( ( *(pcString) != 0 ) &&
-						( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
+			case '\t':
+				if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
 				{
-					if ( ( *pcString == '>' ) ||
-						 ( nTagCount >= 64 )) 
-					{
-						break;
-					}
-					pcString++;
-					nTagCount++;
-					nCount++;
+					nX += ( 4*10 );
 				}
-
-				if ( *pcString != '>' )
+				else
 				{
-					pcString = pcTagStart;
-					nCount = nTagStartCount;
+					nX += (4*12);
+				}
+				break;
+			case 250:
+				nX += (GetStringHeight( "A", nFont ) + 4 );
+				pcString++;
+				nCount++;
+				break;
+			default:
+				// If valid tag
+				if ( ( cChar == '<' ) &&
+					 ( pcString[1] != 0 ) &&
+					 ( pcString[1] != ' ' ) )
+				{
+				const char* pcTagStart = pcString;
+				int			nTagStartCount = nCount;
+				int			nTagCount = 0;
+
+					pcString++;
+					while ( ( *(pcString) != 0 ) &&
+							( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
+					{
+						if ( ( *pcString == '>' ) ||
+							 ( nTagCount >= 64 )) 
+						{
+							break;
+						}
+						pcString++;
+						nTagCount++;
+						nCount++;
+					}
+
+					if ( *pcString != '>' )
+					{
+						pcString = pcTagStart;
+						nCount = nTagStartCount;
+						FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
+						nX += (nAdvance + 1);
+					}
+				}
+				else
+				{
 					FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
 					nX += (nAdvance + 1);
 				}
+				break;
 			}
-			else
-			{
-				FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
-				nX += (nAdvance + 1);
-			}
-			break;
+
+			pcString++;
+			nCount++;
 		}
 
-		pcString++;
-		nCount++;
+		return( nX );
 	}
-
-	return( nX );
+	else
+	{
+		return( 0 );
+	}
 }
 
 

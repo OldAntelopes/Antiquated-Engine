@@ -223,6 +223,7 @@ SYSTEMTIME	systime;
 	pTime->wMonth = systime.wMonth;
 	pTime->wSecond = systime.wSecond;
 	pTime->wYear = systime.wYear;
+	pTime->wDayOfWeek = systime.wDayOfWeek;
 }
 
 uint32				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
@@ -255,6 +256,7 @@ struct tm *dcp;
 		pTime->wMonth = dcp->tm_mon;
 		pTime->wSecond = dcp->tm_sec;
 		pTime->wYear = dcp->tm_year;
+		pTime->wDayOfWeek = dcp->tm_wday;
 	}
 	else
 	{

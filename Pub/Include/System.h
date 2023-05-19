@@ -45,7 +45,8 @@ typedef struct
 	short	wHour;
 	short	wMinute;
 	short	wSecond;
-
+	short	wDayOfWeek;
+	
 } SYS_LOCALTIME;
 
 

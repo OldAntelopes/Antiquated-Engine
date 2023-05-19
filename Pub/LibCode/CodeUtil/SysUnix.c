@@ -164,13 +164,13 @@ struct tm* systime;
 	time( &xTime );
 	systime = localtime( &xTime );
      
-
-        pTime->wDay = systime->tm_wday;
-        pTime->wHour = systime->tm_hour;
-        pTime->wMinute = systime->tm_min;
-        pTime->wMonth = systime->tm_mon;
-        pTime->wSecond = systime->tm_sec;
-        pTime->wYear = systime->tm_year;
+	pTime->wDay = systime->tm_wday;
+    pTime->wHour = systime->tm_hour;
+    pTime->wMinute = systime->tm_min;
+    pTime->wMonth = systime->tm_mon;
+    pTime->wSecond = systime->tm_sec;
+    pTime->wYear = systime->tm_year;
+	pTime->wDayOfWeek = systime->tm_wday;
 }
 
 void SysGetCurrentDir( int nStrLen, char* szBuffer )
