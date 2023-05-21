@@ -30,6 +30,7 @@ extern BOOL		PhysicsWorldRayTest( const VECT* pxRayStart, const VECT* pxRayEnd, 
 extern void		PhysicsWorldShutdown( void );
 
 extern void		PhysicsWorldEnableDebugRender( BOOL bFlag );
+extern BOOL		PhysicsWorldIsDebugRenderEnabled( void );
 
 #ifdef __cplusplus
 }

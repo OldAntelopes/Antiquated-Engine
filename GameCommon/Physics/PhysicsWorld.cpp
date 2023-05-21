@@ -179,6 +179,13 @@ static bool myCustomMaterialCombinerCallback(
     return false;
 }
 
+
+BOOL		PhysicsWorldIsDebugRenderEnabled( void )
+{
+	return( msbPhysicsDebugDraw );
+}
+
+
 void		PhysicsWorldEnableDebugRender( BOOL bFlag )
 {
 	msbPhysicsDebugDraw = bFlag;
