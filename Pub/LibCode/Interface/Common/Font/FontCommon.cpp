@@ -751,7 +751,7 @@ int		nPreBackstepPos;
 	{
 		if ( ulCol != 0 )
 		{
-			InterfaceText( nLayer, nX, nY, szString, ulCol, nFont );
+			InterfaceTextCentre( nLayer, nX, nY, szString, ulCol, nFont );
 		}
 		return( NULL );
 	}
