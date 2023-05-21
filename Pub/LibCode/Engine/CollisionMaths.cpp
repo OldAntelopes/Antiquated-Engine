@@ -117,7 +117,7 @@ VECT	xEdge2;
 	xSphereVel.x = pSphereEnd->x - pSphereStart->x;
 	xSphereVel.y = pSphereEnd->y - pSphereStart->y;
 	xSphereVel.z = pSphereEnd->z - pSphereStart->z;
-	fDistToCompare = VectGetLength( (VECT*)&xSphereVel ) + fSphereRadius;
+	fDistToCompare = VectGetLength( (VECT*)&xSphereVel );// + fSphereRadius;
 	if ( testIntersectionTriSphere( (const Vec3f*)&aTriPts[0], xTriNormal, xSphere, xSphereVel, fDistTravelled, &xReaction ) == true )
 	{
 		if ( fDistTravelled < fDistToCompare )
