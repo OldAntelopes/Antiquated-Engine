@@ -85,12 +85,15 @@ uint32 ulCol = 0;
 
 	if ( *pcVal == '#' )
 	{
-	uint32	R, G, B;
-		ulCol = strtol( pcVal + 1, NULL, 16 );
-		R = ulCol >> 16;
-		G = ((ulCol >> 8) & 0xFF );
-		B = (ulCol & 0xFF);
-		ulCol |= 0xD0000000;
+	uint32	A;
+		ulCol = strtoul( pcVal + 1, NULL, 16 );
+		A = ulCol >> 24;
+		if ( A == 0 )
+		{
+			A = 0xD0;
+		}
+		ulCol &= 0xffffff;
+		ulCol |= (A << 24);
 	}
 	else if ( stricmp( pcVal, "white" ) == 0 )
 	{

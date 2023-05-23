@@ -526,7 +526,7 @@ char*	pcBase = pRunner;
 // NoddyBrowser::DisplayScrollbar
 //  Top level function called by the game to display the page we've loaded
 //----------------------------------------------------------------------
-bool	NoddyBrowser::DisplayScrollbar( int X, int Y, int Width, int Height, int GlobalAlpha )
+bool	NoddyBrowser::DisplayScrollbar( int X, int Y, int Width, int Height, float fGlobalAlpha )
 {
 char	acString[128];
 int		nHeightOfBar;
@@ -616,26 +616,32 @@ int		nTopOfBar;
 
 
 //----------------------------------------------------------------------
-// NoddyBrowser::DisplayPage
+// NoddyBrowser::DisplayBrowserPage
 //  Top level function called by the game to display the page we've loaded
 //----------------------------------------------------------------------
-void	NoddyBrowser::DisplayPage( int X, int Y, int Width, int Height, int GlobalAlpha, int nFlags )
+void	NoddyBrowser::DisplayBrowserPage( int X, int Y, int Width, int Height, float fGlobalAlpha, eDisplayFlags displayFlags )
 {
 char*	pRunner = m_pcLoadedPage;
-uint32	ulPageCol = (uint32)( GlobalAlpha );
 int		nScrollbarWidth = 15;
 int		nScrollbarWidthUsed = 0;
 
 	m_PageDisplayHeight = Height - 8;
 	m_PageDisplayWidth	= Width - 29;
 
-	if ( nFlags == 0 )
+	if ( (displayFlags & NO_BACKGROUND) == 0 )
 	{
-		// Temp - page col should come from body..
-		ulPageCol <<= 24;
-		ulGlobalAlpha = ulPageCol;
-		ulPageCol |= 0xFFFFFF;
-		InterfaceRect( 0, X, Y, Width, Height, 0x60000000 );//ulPageCol );
+	uint32	ulPageCol;
+
+		if ( displayFlags & DARKENER_BACKGROUND )
+		{
+			ulPageCol = GetColWithModifiedAlpha( 0x60010101, fGlobalAlpha );
+		}
+		else
+		{
+			// Temp - page col should come from body..
+			ulPageCol = GetColWithModifiedAlpha( 0xE0FFFFFF, fGlobalAlpha );
+		}
+		InterfaceRect( 0, X, Y, Width, Height, ulPageCol );
 	}
 
 	m_PageDisplayY = Y + 2;
@@ -645,48 +651,50 @@ int		nScrollbarWidthUsed = 0;
 	m_PageBounds.nMinY = m_PageDisplayY;
 	m_PageBounds.nMaxY = m_PageDisplayY + m_PageDisplayHeight;
 
-	// Update scrollbar pos if the left mouse was downed over the scrolliebar
-	if ( m_ScrollbarDown > 0 )
+	if ( (displayFlags & NO_SCROLLBAR) == 0 )
 	{
-		switch( m_ScrollbarDown )
+		// Update scrollbar pos if the left mouse was downed over the scrolliebar
+		if ( m_ScrollbarDown > 0 )
 		{
-		case 1:	// up arrow
-			m_PageScrollY--;
-			if ( m_PageScrollY < 0 )
+			switch( m_ScrollbarDown )
 			{
-				m_PageScrollY = 0;
-			}
-			break;
-		case 2:	// down arrow
-			m_PageScrollY++;
-			if ( m_PageScrollY > m_nScrollMaxY )
-			{
-				m_PageScrollY = m_nScrollMaxY;
-			}
-			break;
-		case 3:	// drag bar
-			int		nScrollBarMoveY = gwMouseY - m_ScrollbarDragOriginal;
-			if ( m_fScrollPixelsPerLine > 0.0f )
-			{
-				m_PageScrollY = m_ScrollbarOriginalY + (int)(nScrollBarMoveY / m_fScrollPixelsPerLine );
+			case 1:	// up arrow
+				m_PageScrollY--;
 				if ( m_PageScrollY < 0 )
 				{
 					m_PageScrollY = 0;
 				}
-				else if ( m_PageScrollY > m_nScrollMaxY )
+				break;
+			case 2:	// down arrow
+				m_PageScrollY++;
+				if ( m_PageScrollY > m_nScrollMaxY )
 				{
 					m_PageScrollY = m_nScrollMaxY;
 				}
+				break;
+			case 3:	// drag bar
+				int		nScrollBarMoveY = gwMouseY - m_ScrollbarDragOriginal;
+				if ( m_fScrollPixelsPerLine > 0.0f )
+				{
+					m_PageScrollY = m_ScrollbarOriginalY + (int)(nScrollBarMoveY / m_fScrollPixelsPerLine );
+					if ( m_PageScrollY < 0 )
+					{
+						m_PageScrollY = 0;
+					}
+					else if ( m_PageScrollY > m_nScrollMaxY )
+					{
+						m_PageScrollY = m_nScrollMaxY;
+					}
+				}
+				break;
 			}
-			break;
+		}
+
+		if ( DisplayScrollbar( X+Width-nScrollbarWidth, Y, nScrollbarWidth, Height, fGlobalAlpha ) )
+		{
+			nScrollbarWidthUsed = nScrollbarWidth;
 		}
 	}
-
-	if ( DisplayScrollbar( X+Width-nScrollbarWidth, Y, nScrollbarWidth, Height, GlobalAlpha ) )
-	{
-		nScrollbarWidthUsed = nScrollbarWidth;
-	}
-
 	if ( m_PageLoadState == 2 )
 	{
 		if ( pRunner )

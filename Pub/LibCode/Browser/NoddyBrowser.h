@@ -21,12 +21,20 @@ class	NoddyBrowser
 friend class NoddyBrowserSection;
 friend class HTMLParser;
 public:
+	enum eDisplayFlags
+	{
+		NORMAL,
+		NO_SCROLLBAR = 0x1,
+		NO_BACKGROUND = 0x2,
+		DARKENER_BACKGROUND = 0x4,
+	};
+
 	NoddyBrowser();
 	static NoddyBrowser&	Get();
 
 	void	LoadPageFromMem( char* pbMem, int nMemSize );
 	void	LoadPage( char*, BOOL bLocalFileOnly = FALSE );
-	void	DisplayPage( int X, int Y, int Width, int Height, int nGlobalAlpha, int nFlags );
+	void	DisplayBrowserPage( int X, int Y, int Width, int Height, float fGlobalAlpha, eDisplayFlags nFlags );
 	void	CleanupPage( void );
 	void	Close( void );
 
@@ -61,7 +69,7 @@ private:
 	
 	void	SetSectionRegion( int X, int Y, int Width, int Height );
 	void	DisplaySection( char* pRunner );
-	bool	DisplayScrollbar( int X, int Y, int Width, int Height, int GlobalAlpha );
+	bool	DisplayScrollbar( int X, int Y, int Width, int Height, float fGlobalAlpha );
 
 	char*	FindBody( char* pRunner );
 
