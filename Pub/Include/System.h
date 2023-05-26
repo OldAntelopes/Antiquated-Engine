@@ -51,6 +51,7 @@ typedef struct
 
 
 extern void				SysGetLocalTime( SYS_LOCALTIME* pMem );		// Date/time
+extern void				SysGetUTCTime( SYS_LOCALTIME* pMem );		// (This assumes the local machine as the clock set right.. )
 extern uint32			SysGetTimeLong(void ); // returns time in seconds (from 1,jan 1970 or whateva)
 extern uint32			SysGetTick( void );		// millisecond tick
 extern u64				SysGetMicrosecondTick( void );		

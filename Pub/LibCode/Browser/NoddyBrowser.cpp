@@ -129,7 +129,7 @@ BOOL	NoddyBrowser::LeftMouseDown( int X, int Y )
 
 
 
-void HTMLPageDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void HTMLPageDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult )
 {
 	NoddyBrowser::Get().SetDownloadReturnVal( nRet );
 	if ( nRet == HTTPDOWNLOAD_SUCCESS )

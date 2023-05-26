@@ -379,7 +379,7 @@ struct servent far * lpServEnt;
   {
       Tcp4uLog (LOG4U_CALL, "listen on socket %d. %d pendind connections", ListenSock, nPendingConnection);
       Rc = listen (ListenSock, nPendingConnection);
-  }
+  } 
   if (Rc==SOCKET_ERROR)
   {
       Tcp4uLog (LOG4U_ERROR, "bind or listen on socket %d", WSAGetLastError (), ListenSock);

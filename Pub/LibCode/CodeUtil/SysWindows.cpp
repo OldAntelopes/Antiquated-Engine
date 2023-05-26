@@ -46,7 +46,7 @@ bool			bDeleteSubdirectories = true;
 	if(hFile != INVALID_HANDLE_VALUE)
 	{
 	    do
-		{
+		{ 
 			if(FileInformation.cFileName[0] != '.')
 			{
 				sprintf( strFilePath, "%s\\%s", szFolderName, FileInformation.cFileName );
@@ -209,7 +209,20 @@ char	acPath[MAX_PATH];
 	return(maszWritableFolderPath);
 #endif
 }
+ 
+void		SysGetUTCTime( SYS_LOCALTIME* pTime )
+{
+SYSTEMTIME	systime;
 
+	GetSystemTime( &systime );
+	pTime->wDay = systime.wDay;
+	pTime->wHour = systime.wHour;
+	pTime->wMinute = systime.wMinute;
+	pTime->wMonth = systime.wMonth;
+	pTime->wSecond = systime.wSecond;
+	pTime->wYear = systime.wYear;
+	pTime->wDayOfWeek = systime.wDayOfWeek;
+}
 
  //#define		MEM_BOUNDS_CHECK
 void		SysGetLocalTime( SYS_LOCALTIME* pTime )

@@ -124,7 +124,7 @@ MODEL_STATS*		pxModelStats;
 	EngineCameraUpdate();
 
 	EngineCameraSetViewAspectOverride( 1.0f );
-	EngineCameraSetProjection( A45, 0.1f, 1000.0f );
+	EngineCameraSetProjection( A45, fCamDist * 0.1f, fCamDist * 10000.0f );
 
 //	EngineSetMaterial( ENGINEMATERIAL* 
 	EngineSetTexture( 0, mhTexture );

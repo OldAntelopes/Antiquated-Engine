@@ -71,11 +71,11 @@ private:
 		ELEMENT_DOWNLOAD_ROOM_TEXTURE,
 	};
 
-	static void		ScriptHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName );
-	static void		ElementHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName );
+	static void		ScriptHTTPDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult );
+	static void		ElementHTTPDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult );
 
-	static void		ScriptServerDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName );
-	static void		ElementServerDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName );
+	static void		ScriptServerDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult );
+	static void		ElementServerDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult );
 
 	VECT		ParseGetVector3( char* pcParam );
 	VECT		ParseDegreesAngleVector3( char* pcParam );

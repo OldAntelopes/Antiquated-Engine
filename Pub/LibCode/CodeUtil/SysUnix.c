@@ -156,6 +156,23 @@ void		SysSleep( int millisecs )
 	usleep(millisecs * 1000);
 }
 
+void            SysGetUTCTime( SYS_LOCALTIME* pTime )
+{
+time_t xTime;
+struct tm* systime;
+
+	time( &xTime );
+	systime = gmtime( &xTime );
+     
+	pTime->wDay = systime->tm_wday;
+    pTime->wHour = systime->tm_hour;
+    pTime->wMinute = systime->tm_min;
+    pTime->wMonth = systime->tm_mon;
+    pTime->wSecond = systime->tm_sec;
+    pTime->wYear = systime->tm_year;
+	pTime->wDayOfWeek = systime->tm_wday;
+}
+
 void            SysGetLocalTime( SYS_LOCALTIME* pTime )
 {
 time_t xTime;

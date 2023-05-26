@@ -93,7 +93,7 @@ public:
 
 	HTMLImageTarget*		FindImage( char* szName );
 	void			RequestDownload( HTMLImageTarget* );
-	void		ImageDownloadCallback( int, long, const char* );
+	void		ImageDownloadCallback( int, long, const char*, int );
 	void		FreeAll( void );
 private:
 	HTMLImageTarget*		CreateNew( char* szName );
@@ -116,7 +116,7 @@ HTMLImageFactory::HTMLImageFactory()
 	ZeroMemory( m_apHTMLImageList, sizeof( HTMLImageTarget* ) * MAX_IMAGES_PER_PAGE );
 }
 
-void	HTMLImageFactory::ImageDownloadCallback( int nRet, long lParam, const char* szName )
+void	HTMLImageFactory::ImageDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult )
 {
 HTMLImageTarget*	pImage = (HTMLImageTarget*)( lParam );
 
@@ -230,9 +230,9 @@ HTMLImageTarget*	pImage = (HTMLImageTarget*)( lParam );
 	}
 }
 
-void HTMLImageDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void HTMLImageDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResult )
 {
-	m_sImageFactorySingleton.ImageDownloadCallback( nRet, lParam, szName );
+	m_sImageFactorySingleton.ImageDownloadCallback( nRet, lParam, szName, nHTTPResult );
 }
 
 
@@ -326,7 +326,7 @@ void	HTMLImageTarget::GetImageTexture( void  )
 		szCachedFile = m_sImageSessionCache.CheckForFileInSessionCache( m_szImageName );
 		if ( szCachedFile )
 		{
-			m_sImageFactorySingleton.ImageDownloadCallback( 1, (long)(this), szCachedFile );
+			m_sImageFactorySingleton.ImageDownloadCallback( 1, (long)(this), szCachedFile, 0 );
 		}
 		else
 		{

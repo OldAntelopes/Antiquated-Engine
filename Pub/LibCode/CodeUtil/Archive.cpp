@@ -371,6 +371,22 @@ ArchiveFileRef*		pFileRef = m_pArchiveFileReferences;
 
 //-------------------------------------------------------------- Accessing files within an archive
 
+volatile bool		mbArchiveFileMutex = false; 
+
+void	ArchiveFileListGetMutex( void )
+{
+	while( mbArchiveFileMutex == true )
+	{
+		SysSleep( 1 );
+	}
+
+	mbArchiveFileMutex = true;
+}
+
+void	ArchiveFileListReleaseMutex( void )
+{
+	mbArchiveFileMutex = false;
+}
 
 
 int		Archive::OpenFile( const char* szFilename )
@@ -395,8 +411,10 @@ ArchiveFile*		pArchiveFile;
 
 		if ( nHandle > 0 )
 		{
+			ArchiveFileListGetMutex();
 			pFileRef->SetNext( m_pArchiveFileReferences );
 			m_pArchiveFileReferences = pFileRef;
+			ArchiveFileListReleaseMutex();
 			return( nHandle );
 		}	
 		else
@@ -434,6 +452,8 @@ ArchiveFileRef*		pFileRef = GetFileRef( fileHandle );
 
 int		Archive::CloseFile( int fileHandle )
 {
+	ArchiveFileListGetMutex();
+
 ArchiveFileRef*		pFileRef = GetFileRef( fileHandle );
 ArchiveFileRef*		pNextRef = m_pArchiveFileReferences;
 ArchiveFileRef*		pLastRef = NULL;
@@ -455,13 +475,16 @@ ArchiveFileRef*		pLastRef = NULL;
 					pLastRef->SetNext( pNextRef->GetNext() );
 				}
 				delete pNextRef;
+				ArchiveFileListReleaseMutex();
 				return( 0 );
 			}
 			pLastRef = pNextRef;
 			pNextRef = pNextRef->GetNext();
 		}
+		ArchiveFileListReleaseMutex();
 		return( -2 );
 	}
+	ArchiveFileListReleaseMutex();
 	return( -1 );
 }
 

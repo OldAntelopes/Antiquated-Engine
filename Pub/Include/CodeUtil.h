@@ -100,7 +100,7 @@ typedef struct
 	float	a;
 } COLOUR;
 
-typedef	void(*fnFetchFileCallback)( FETCHFILE_RETURN_VAL, long lParam, const char* szLocalFilename );
+typedef	void(*fnFetchFileCallback)( int nFetchFileReturnVal, long lParam, const char* szLocalFilename, int nHTTPResultCode );
 
 
 extern BOOL		FetchFileGetProgress( const char* szFilename, FetchFileProgress* pOut );

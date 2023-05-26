@@ -121,7 +121,7 @@ void SceneMap::ParseDownloadedElement( const char* szName )
 	ParseLoadedScript();
 }
 
-void SceneMap::ElementHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void SceneMap::ElementHTTPDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResponseCode )
 {
 	if ( nRet == FETCHFILE_SUCCESS )
 	{
@@ -149,7 +149,7 @@ void SceneMap::ElementHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lPar
 }
 
 
-void SceneMap::ElementServerDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void SceneMap::ElementServerDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResponseCode )
 {
 	if ( nRet == FETCHFILE_SUCCESS )
 	{
@@ -661,7 +661,7 @@ void	SceneMap::SetCacheSubFolder( const char* szFolderName )
 
 }
 
-void SceneMap::ScriptHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void SceneMap::ScriptHTTPDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResponseCode )
 {
 	if ( nRet == FETCHFILE_SUCCESS )
 	{
@@ -679,7 +679,7 @@ void SceneMap::ScriptHTTPDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lPara
 	}
 }
 
-void SceneMap::ScriptServerDownloadCallback( FETCHFILE_RETURN_VAL nRet, long lParam, const char* szName )
+void SceneMap::ScriptServerDownloadCallback( int nRet, long lParam, const char* szName, int nHTTPResponseCode )
 {
 	if ( nRet == FETCHFILE_SUCCESS )
 	{
