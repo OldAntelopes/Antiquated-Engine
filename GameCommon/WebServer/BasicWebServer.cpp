@@ -20,12 +20,13 @@ BLOWFISH_KEY		mxBlowfishClientKey;
 //---------------------------------------------------------------------------
 int			BasicWebServerInit( int nPort )
 {
+int		nRet = TCPConnections::InitialiseTCPListener( nPort );
 
-	TCPConnections::InitialiseTCPListener( nPort );
-
-	DefaultPageRequestHandlerInit();
-
-	return( 1 );
+	if ( nRet >= 0 )
+	{
+		DefaultPageRequestHandlerInit();
+	}
+	return( nRet );
 }
 
 int		BasicWebServerUpdate( void )

@@ -92,7 +92,7 @@ void	TCPConnections::ShutdownTCP( void )
 	Tcp4uCleanup();
 }
 
-void	TCPConnections::InitialiseTCPListener( ushort uwPort )
+int	TCPConnections::InitialiseTCPListener( ushort uwPort )
 {
 int		ret;
 
@@ -103,10 +103,12 @@ int		ret;
 	{
 		printf("BasicWebServer TCP listen socket open on %d\n", uwPort );
 		m_hWebServerConnectionListenThread = SysCreateThread( WebServerTCPListenThread, NULL, 0, 0 );
+		return( 1 );
 	}
 	else
 	{
 		printf("ERROR: TCP listen socket bind failed on %d\n", uwPort );
+		return( -1 );
 	}
 }
 

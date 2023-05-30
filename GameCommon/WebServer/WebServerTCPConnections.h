@@ -7,7 +7,7 @@ typedef	int(*NetworkConnectionMessageReceiveHandler)( unsigned char* );
 class TCPConnections
 {
 public:
-	static void	InitialiseTCPListener( ushort uwPort );
+	static int	InitialiseTCPListener( ushort uwPort );
 
 	static void	Update( void );
 
