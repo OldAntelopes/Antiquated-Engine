@@ -215,7 +215,7 @@ void		EngineCameraSetProjectionOrtho( void )
 {
 D3DXMATRIX	Ortho2D;	
 
-	D3DXMatrixOrthoLH(&Ortho2D, (float)InterfaceGetWidth(), (float)InterfaceGetHeight(), 0.0f, 1000.0f);
+	D3DXMatrixOrthoLH(&Ortho2D, (float)InterfaceGetWidth(), (float)InterfaceGetHeight(), 0.00001f, 1000.0f);
 	EngineSetProjectionMatrix( &Ortho2D );
 }
 

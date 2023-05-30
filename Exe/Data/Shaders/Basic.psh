@@ -1,0 +1,33 @@
+
+//------------------------------------------------------
+// Basic pixel shader
+//  Doesnt do anything clever just copies the texture in to the out
+//  Primarly used for the postprocess blit to screen
+//------------------------------------------------------
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+
+sampler diffuseSampler: register(s0);
+
+
+//-------------------------------------
+// Standard material Pixel Shader
+//-------------------------------------
+PS_OUTPUT ps_main( float4 VertColor : COLOR0,
+		   float2 TexCoord : TEXCOORD0  )
+{
+    PS_OUTPUT Out;                             //create an output pixel
+
+	float4 texColor;
+
+	texColor = tex2D(diffuseSampler, TexCoord);
+	Out.Color = texColor * VertColor;
+//	Out.Color.x = 1.0;
+    return Out;  
+}
+

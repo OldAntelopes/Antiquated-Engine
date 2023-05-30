@@ -1,0 +1,43 @@
+// Pixel shader input structure
+struct PS_INPUT
+{
+	float2 t : TEXCOORD0;
+};
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+// Global values set in constant table by the code 
+texture Tex0 : register(s0);
+
+// Texture sampler mode
+sampler2D samplerDiffuse = sampler_state
+{
+	Texture = Tex0;
+	AddressU = Mirror;
+	AddressV = Mirror;
+	AddressW = Clamp;
+	MinFilter = Box;
+	MagFilter = Box;
+	MipFilter = Box;	
+};
+
+// Global values set in constant table by the code 
+float gThreshold : register(c12);
+
+
+//-------------------------------------
+// Highpass filter Pixel Shader
+//-------------------------------------
+PS_OUTPUT ps_main( PS_INPUT In )
+{
+	PS_OUTPUT Out;           
+
+    float4 Color = tex2D( samplerDiffuse, In.t );
+	Out.Color = saturate( (Color - gThreshold) / (1 - gThreshold) );
+    return Out;  
+}
+

@@ -23,14 +23,14 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position   : POSITION;
+	float4 VertCol : COLOR0;
     float2 TexCoord : TEXCOORD0;
     float3 View : TEXCOORD1;
 	float3 vNormal : TEXCOORD2;  
 	float4 vPosLight : TEXCOORD3;
-	float4	VertCol : TEXCOORD4;
-    float4 Position3D : TEXCOORD5;
-    float3  TangentWorldSpace : TEXCOORD6;
-    float3  BiTangentWorldSpace : TEXCOORD7;
+    float4 Position3D : TEXCOORD4;
+    float3  TangentWorldSpace : TEXCOORD5;
+    float3  BiTangentWorldSpace : TEXCOORD6;
 
 };
 

@@ -1,0 +1,50 @@
+texture Tex0 : register(s0);
+
+sampler2D input = sampler_state
+{
+	Texture = Tex0;
+	AddressU = Clamp;
+	AddressV = Clamp;
+	AddressW = Clamp;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;	
+};
+
+// Global variables
+float3 xScreenSize;
+float	fBlurRange = 5;
+
+float4		FullBlur( int range, float2 uv )
+{
+
+float2 pixelAspect = {1.0/xScreenSize.x, 1.0/xScreenSize.y};
+float4 Color = tex2D(input, uv);
+ int		count = 1;
+
+ int	start = (int)( range / 2);
+ int	i;
+ int	j;
+
+ [fastopt] for( i= 0; i <= range; ++i)
+ {
+	[fastopt] for( j=0; j <= range; ++j)
+	{	
+		 Color += ( tex2Dlod(input, float4(uv.x+(pixelAspect.x*(i-start)), uv.y+(pixelAspect.y*(j-start)), 0.0f, 1.0f) ) );
+		 count++;
+	}
+ }
+
+ Color /= count;
+
+ return( Color );
+}
+
+float4 ps_main(in float2 uv : TEXCOORD) : COLOR 
+{ 
+float colorIntensity = 1.0f;
+float intensity = 1.0f;
+
+ 
+ return FullBlur( (int)fBlurRange, uv ); 
+}

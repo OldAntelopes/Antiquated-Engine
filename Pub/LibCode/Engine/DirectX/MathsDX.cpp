@@ -194,7 +194,7 @@ DirectX::XMMATRIX	xmMatrix = DirectX::XMMatrixOrthographicLH( fWidth, fHeight, 0
 	
 	EngineDXMatrixExtract( &xmMatrix, pxOutMatrix );
 #else
-	D3DXMatrixOrthoLH(  (D3DXMATRIX*)pxOutMatrix, fWidth, fHeight, 0.0f, 1.0f);
+	D3DXMatrixOrthoLH(  (D3DXMATRIX*)pxOutMatrix, fWidth, fHeight, 0.0001f, 1.0f);
 #endif
 }
 

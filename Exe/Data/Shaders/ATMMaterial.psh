@@ -49,14 +49,14 @@ sampler specularMapSampler: register(s3);
 //-------------------------------------
 // Standard material Pixel Shader
 //-------------------------------------
-PS_OUTPUT ps_main(  float2 TexCoord : TEXCOORD0,
+PS_OUTPUT ps_main( float4  VertCol           : COLOR0,
+				   float2 TexCoord : TEXCOORD0,
 				   float3 View : TEXCOORD1,
 				   float3 vNormal : TEXCOORD2,
 				   float4  vPosLight         : TEXCOORD3,
-				   float4  VertCol           : TEXCOORD4,
-				   float4  PositionWS : TEXCOORD5,
-				   float3  TangentWorldSpace : TEXCOORD6,
-				   float3  BiTangentWorldSpace : TEXCOORD7   )
+				   float4  PositionWS : TEXCOORD4,
+				   float3  TangentWorldSpace : TEXCOORD5,
+				   float3  BiTangentWorldSpace : TEXCOORD6   )
 {
     PS_OUTPUT Out;                             //create an output pixel
 

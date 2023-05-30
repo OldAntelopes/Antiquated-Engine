@@ -1,0 +1,46 @@
+texture Tex0 : register(s0);
+
+sampler2D input = sampler_state
+{
+	Texture = Tex0;
+	AddressU = Clamp;
+	AddressV = Clamp;
+	AddressW = Clamp;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;	
+};
+
+// Pixel shader output structure
+struct PS_OUTPUT
+{
+    float4 Color   : COLOR0;
+};
+
+// Global variables  (Set up in PSConstantTable in code)
+float3 xScreenSize;
+
+PS_OUTPUT ps_main( in float2 uv : TEXCOORD0  )
+{
+PS_OUTPUT Out;                             //create an output pixel
+#define WEIGHT_COUNT 6
+
+float weight[WEIGHT_COUNT] = { 0.9, 0.85, 0.70, 0.50, 0.25, 0.10 };
+
+float colorIntensity = 1.0f;
+float intensity = 1.0f;
+// todo - feed in correct size..
+float2 pixelAspect = {1.0/xScreenSize.x, 1.0/xScreenSize.y};
+
+ float4 Color = tex2D(input, uv);
+  float mult = 1;
+ for(int i=0; i<WEIGHT_COUNT; i++)
+ {
+ Color += tex2D(input, float2(uv.x, uv.y-(intensity*pixelAspect.y*mult))) * weight[i];
+ Color += tex2D(input, float2(uv.x, uv.y+(intensity*pixelAspect.y*mult))) * weight[i];
+ mult = mult + 4;
+ }
+ Color /= WEIGHT_COUNT; 
+ Out.Color = Color * colorIntensity;
+ return Out;
+}

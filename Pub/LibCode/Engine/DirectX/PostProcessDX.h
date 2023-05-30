@@ -8,6 +8,7 @@ extern "C"
 #endif
 
 extern void		EnginePostProcessSetEnabled( BOOL bFlag );
+extern void		EnginePostProcessSetTestMode( BOOL bFlag );
 
 extern BOOL		EnginePostProcessStartScene( uint32 ulBackgroundCol );
 extern void		EnginePostProcessEndScene( void );

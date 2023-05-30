@@ -15,6 +15,7 @@ LPGRAPHICSPIXELSHADER			mpHighPassPixelShader = NULL;
 LPGRAPHICSPIXELSHADER			mpBlurHPixelShader = NULL;
 LPGRAPHICSPIXELSHADER			mpBlurVPixelShader = NULL;
 LPGRAPHICSPIXELSHADER			mpBlurFullPixelShader = NULL;
+LPGRAPHICSPIXELSHADER			mpBasicPixelShader = NULL;
 LPGRAPHICSVERTEXSHADER			mpBasicVertexShader = NULL;
 
 LPGRAPHICSCONSTANTBUFFER		mpHighPassPSConstantTable = NULL;
@@ -22,10 +23,13 @@ LPGRAPHICSCONSTANTBUFFER		mpBlurHPSConstantTable = NULL;
 LPGRAPHICSCONSTANTBUFFER		mpBlurVPSConstantTable = NULL;
 LPGRAPHICSCONSTANTBUFFER		mpBlurFullPSConstantTable = NULL;
 LPGRAPHICSCONSTANTBUFFER		mpBasicVSConstantTable = NULL;
+LPGRAPHICSCONSTANTBUFFER		mpBasicPSConstantTable = NULL;
+
 
 
 BOOL				mboPostProcessShowDebugBlurPassOutput = FALSE;
 BOOL				mboPostProcessEnabled = TRUE;
+BOOL				mboPostProcessTestModeEnabled = FALSE;
 BOOL				mboBloomPassEnabled = TRUE;
 TEXTURE_HANDLE		mhPostProcessRenderTarget = NOTFOUND;
 TEXTURE_HANDLE		mhPostProcessSmallRenderTarget = NOTFOUND;
@@ -54,7 +58,7 @@ int			nLoop;
 	/** First tri **/
 	pxVertexBuffer->position.x = 0.0f;
 	pxVertexBuffer->position.y = 0.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->tu = 0.0f;
 	pxVertexBuffer->tv = 0.0f;
@@ -62,7 +66,7 @@ int			nLoop;
 	pxVertexBuffer++;
 	pxVertexBuffer->position.x = (float)( width ) - 1.0f;
 	pxVertexBuffer->position.y = 0.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->tu = 1.0f;
 	pxVertexBuffer->tv = 0.0f;
@@ -70,7 +74,7 @@ int			nLoop;
 	pxVertexBuffer++;
 	pxVertexBuffer->position.x = 0.0f;
 	pxVertexBuffer->position.y = (float)( height ) - 1.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->tu = 0.0f;
 	pxVertexBuffer->tv = 1.0f;
@@ -80,7 +84,7 @@ int			nLoop;
 	// 2ND TRI
 	pxVertexBuffer->position.x = (float)( width ) - 1.0f;
 	pxVertexBuffer->position.y = 0.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->color    = ulCol;
 	pxVertexBuffer->tu = 1.0f;
@@ -88,7 +92,7 @@ int			nLoop;
 	pxVertexBuffer++;
 	pxVertexBuffer->position.x = (float)( width ) - 1.0f;
 	pxVertexBuffer->position.y = (float)( height ) - 1.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->color    = ulCol;
 	pxVertexBuffer->tu = 1.0f;
@@ -96,7 +100,7 @@ int			nLoop;
 	pxVertexBuffer++;
 	pxVertexBuffer->position.x = 0.0f;
 	pxVertexBuffer->position.y = (float)( height ) - 1.0f;
-	pxVertexBuffer->position.z = 0.0f;
+	pxVertexBuffer->position.z = 0.1f;
 	pxVertexBuffer->normal.z = 1.0f;
 	pxVertexBuffer->color    = ulCol;
 	pxVertexBuffer->tu = 0.0f;
@@ -117,6 +121,10 @@ int			nLoop;
 }
 
 
+void		EnginePostProcessSetTestMode( BOOL bFlag )
+{
+	mboPostProcessTestModeEnabled = bFlag;
+}
 
 void		EnginePostProcessSetEnabled( BOOL bFlag )
 {
@@ -230,7 +238,7 @@ void		EnginePostProcessDoBloomPass( void )
 	EngineRestoreRenderTarget();
 
 	EnginePostProcessSetOthorgonalView( InterfaceGetWidth(), InterfaceGetHeight() );
-	EngineSetPixelShader( NULL, NULL );
+	EngineSetPixelShader(mpBasicPixelShader, "Basic");
 	if ( mboPostProcessShowDebugBlurPassOutput )
 	{
 		// *** This stage renders the filtered blur view over the whole backbuffer 
@@ -317,10 +325,52 @@ int		nDebugIndicators = 0;
 #endif
 }
 
+void	EnginePostProcessEndSceneTestMode( void )
+{
+	EngineRestoreRenderTarget();  // Render target is now back buffer
+	EngineDefaultState();
+	EngineSetVertexShader(mpBasicVertexShader, "Basic");
+	EngineSetPixelShader(mpBasicPixelShader, "Basic");
+	EngineSetStandardMaterial();
+	EngineEnableLighting( FALSE );
+	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+	EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
+	EngineEnableCulling( 0 );
+	EnginePostProcessSetConstants();
+	EngineShadersStandardVertexDeclaration(0);
+	EngineEnableBlend( FALSE );
+	EngineEnableFog( 0 );
+	EngineEnableTextureAddressClamp( 1 );
+	EnginePostProcessSetOthorgonalView( InterfaceGetWidth(), InterfaceGetHeight() );
+	EngineSetPixelShader( NULL, NULL );
+	EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
+	if ( EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST ) == FALSE )
+	{
+#ifdef INCLUDE_DEBUG_INDICATORS
+		FEVideoOptionsSetDebugIndicator( DEBUGIND_VERTEXBUFFER_RENDERFAIL, 1 );
+#endif
+	}
+
+	EngineDefaultState();
+	EngineSetVertexShader(NULL, NULL);
+	EngineSetPixelShader(NULL, NULL);
+	EngineEnableBlend( TRUE );
+	EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
+	EngineEnableLighting( TRUE );
+	mpEngineDevice->SetVertexDeclaration( NULL );
+
+}
+
 void		EnginePostProcessEndScene( void )
 {
 	if ( mboPostProcessEnabled )
 	{
+		if ( mboPostProcessTestModeEnabled == TRUE )
+		{
+			EnginePostProcessEndSceneTestMode();
+			return;
+		}
+
 		// If we've got the textures turned off, we shouldnt do blurring
 		if ( msbEngineNoTexturesOverride ) 
 		{
@@ -351,6 +401,7 @@ void		EnginePostProcessEndScene( void )
 			}
 			EngineDefaultState();
 			EngineSetVertexShader(mpBasicVertexShader, "Basic");
+			EngineSetPixelShader(mpBasicPixelShader, "Basic");
 			EngineSetStandardMaterial();
 			EngineEnableLighting( FALSE );
 			EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
@@ -370,7 +421,7 @@ void		EnginePostProcessEndScene( void )
 			{
 				// ** This stage copies the game output directly onto the main back buffer
 				EnginePostProcessSetOthorgonalView( InterfaceGetWidth(), InterfaceGetHeight() );
-				EngineSetPixelShader( NULL, NULL );
+				EngineSetPixelShader(mpBasicPixelShader, "Basic");
 				EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 				if ( EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST ) == FALSE )
 				{
@@ -384,7 +435,7 @@ void		EnginePostProcessEndScene( void )
 			{
 				EngineRestoreRenderTarget();  // Render target is now back buffer
 				EnginePostProcessSetOthorgonalView( InterfaceGetWidth(), InterfaceGetHeight() );
-				EngineSetPixelShader( NULL, NULL );
+				EngineSetPixelShader(mpBasicPixelShader, "Basic");
 				EngineEnableBlend( FALSE );
 				EngineSetTextureNoDebugOverride( 0, mhPostProcessGrabScreenTexture );
 				// Copy texture copy to back buffer
@@ -393,6 +444,7 @@ void		EnginePostProcessEndScene( void )
 			}
 			EngineDefaultState();
 			EngineSetVertexShader(NULL, NULL);
+			EngineSetPixelShader(NULL, NULL);
 			EngineEnableBlend( TRUE );
 			EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
 			EngineEnableLighting( TRUE );
@@ -403,6 +455,16 @@ void		EnginePostProcessEndScene( void )
 		{
 //			InterfaceSetDrawRegion( 0, 0, InterfaceGetDrawRegionWidth(), InterfaceGetDrawRegionHeight() );
 		}
+	}
+	else
+	{
+		EngineDefaultState();
+		EngineSetVertexShader(NULL, NULL);
+		EngineSetPixelShader(NULL, NULL);
+		EngineEnableBlend( TRUE );
+		EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
+		EngineEnableLighting( TRUE );
+		mpEngineDevice->SetVertexDeclaration( NULL );
 	}
 	
 }
@@ -471,6 +533,7 @@ BOOL		EnginePostProcessInitGraphics( void )
 		mpBlurHPixelShader = EngineLoadPixelShader( "BlurH", &mpBlurHPSConstantTable, 0 );
 		mpBlurVPixelShader = EngineLoadPixelShader( "BlurV", &mpBlurVPSConstantTable, 0 );
 		mpBasicVertexShader = EngineLoadVertexShader("Basic", &mpBasicVSConstantTable, 0 );
+		mpBasicPixelShader = EngineLoadPixelShader( "Basic", &mpBasicPSConstantTable, 0 );
 		mpBlurFullPixelShader = EngineLoadPixelShader( "BlurFull", &mpBlurFullPSConstantTable, 0 );
 		if ( mpHighPassPixelShader == NULL )
 		{
@@ -498,6 +561,7 @@ void		EnginePostProcessFreeGraphics( void )
 	EngineReleaseConstantBuffer( &mpBlurHPSConstantTable );
 	EngineReleaseConstantBuffer( &mpBlurVPSConstantTable );
 	EngineReleaseConstantBuffer( &mpBasicVSConstantTable );
+	EngineReleaseConstantBuffer( &mpBasicPSConstantTable );
 	EngineReleaseConstantBuffer( &mpBlurFullPSConstantTable );
 	
 	
@@ -511,6 +575,8 @@ void		EnginePostProcessFreeGraphics( void )
 	mpBlurFullPixelShader = NULL;
 	SAFE_RELEASE( mpBasicVertexShader )
 	mpBasicVertexShader = NULL;
+	SAFE_RELEASE( mpBasicPixelShader )
+	mpBasicPixelShader = NULL;
 
 }
 
