@@ -271,7 +271,7 @@ int		nDebugIndicators = 0;
 
 	if ( mpHighPassPSConstantTable )
 	{
-		EngineShaderConstantsSetFloat( mpHighPassPSConstantTable, "gThreshold", mfHighpassThreshold );
+		EngineShaderConstantsSetFloat( mpHighPassPSConstantTable, "gxThreshold", mfHighpassThreshold );
 	}
 	else
 	{

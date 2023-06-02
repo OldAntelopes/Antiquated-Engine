@@ -3310,7 +3310,7 @@ int			nNewVertexIndex;
 		pxNormalBuffer =(VECT*)(  SystemMalloc( sizeof( VECT ) * pxModelData->xStats.nNumVertices ) );
 
 		pxVertexSource = pxModelData->pxVertexKeyframes;
-		if ( pxVertexSource = NULL )
+		if ( pxVertexSource == NULL )
 		{
 			return;
 		}

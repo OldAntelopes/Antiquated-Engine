@@ -1,8 +1,8 @@
-// Pixel shader input structure
-struct PS_INPUT
-{
-	float2 t : TEXCOORD0;
-};
+//-------------------------------------------------
+//  Highpass.psh
+//  Highpass filter to provide the bloom shader with areas to bloom on
+//  -----------------------------------------------
+
 
 // Pixel shader output structure
 struct PS_OUTPUT
@@ -26,18 +26,20 @@ sampler2D samplerDiffuse = sampler_state
 };
 
 // Global values set in constant table by the code 
-float gThreshold : register(c12);
+extern float gxThreshold : register(c1);
 
 
 //-------------------------------------
 // Highpass filter Pixel Shader
 //-------------------------------------
-PS_OUTPUT ps_main( PS_INPUT In )
+PS_OUTPUT ps_main( 	float4 VertColor : COLOR0,
+					float2 uv : TEXCOORD0 )
 {
 	PS_OUTPUT Out;           
 
-    float4 Color = tex2D( samplerDiffuse, In.t );
-	Out.Color = saturate( (Color - gThreshold) / (1 - gThreshold) );
+    float4 Color = tex2D( samplerDiffuse, uv );
+	float threshold = saturate( gxThreshold );
+	Out.Color = saturate( (Color - threshold) / (1 - threshold) );
     return Out;  
 }
 

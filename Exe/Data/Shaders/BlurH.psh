@@ -1,4 +1,3 @@
-texture Tex0 : register(s0);
 
 // Pixel shader output structure
 struct PS_OUTPUT
@@ -6,7 +5,10 @@ struct PS_OUTPUT
     float4 Color   : COLOR0;
 };
 
-sampler2D input = sampler_state
+
+texture Tex0 : register(s0);
+
+sampler2D diffuseSampler = sampler_state
 {
 	Texture = Tex0;
 	AddressU = Clamp;
@@ -31,12 +33,12 @@ PS_OUTPUT Out;                             //create an output pixel
 	float intensity = 1.0f;
 	float2 pixelAspect = {1.0/xScreenSize.x, 1.0/xScreenSize.y};
 
-    float4 Color = tex2D(input, uv);
+    float4 Color = tex2D(diffuseSampler, uv);
 	float mult = 1;
 	for(int i=0; i<WEIGHT_COUNT; i++)
 	{
-		Color += tex2D(input, float2(uv.x-(intensity*pixelAspect.x*mult), uv.y)) * weight[i];	
-		Color += tex2D(input, float2(uv.x+(intensity*pixelAspect.x*mult), uv.y)) * weight[i];
+		Color += tex2D(diffuseSampler, float2(uv.x-(intensity*pixelAspect.x*mult), uv.y)) * weight[i];	
+		Color += tex2D(diffuseSampler, float2(uv.x+(intensity*pixelAspect.x*mult), uv.y)) * weight[i];
 		mult = mult + 4;
 	}
 	Color /= WEIGHT_COUNT;

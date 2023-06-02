@@ -1609,6 +1609,7 @@ void	EngineDefaultState( void )
 	{
 		// TO DO
 		// this should set fog, lighting, ztest and everything as we'd 'normally' expect.
+		EngineResetColourMode();
 		EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
 		EngineEnableZWrite( TRUE );
 		EngineEnableZTest( TRUE );
@@ -1619,23 +1620,8 @@ void	EngineDefaultState( void )
 		EngineEnableFog( 0 );
 		EngineEnableBlend( 1 );
 		EngineEnableTextureAddressClamp( 1 );
-
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-		mpEngineDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 		mpEngineDevice->SetRenderState( D3DRS_ALPHAREF, 0x1 );
-		mpEngineDevice->SetRenderState( D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL );
-	    mpEngineDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL );
-		mpEngineDevice->SetRenderState(	D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1 );
-		mpEngineDevice->SetRenderState(	D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2 );
-		mpEngineDevice->SetRenderState( D3DRS_DITHERENABLE, TRUE );
-	    mpEngineDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-	    mpEngineDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
-		mpEngineDevice->SetFVF( D3DFVF_CUSTOMVERTEX );
 
 	}
 }
@@ -1644,6 +1630,13 @@ void	EngineInitDX( LPGRAPHICSDEVICE pDevice )
 {
 	mpEngineDevice = pDevice;
 	EngineDefaultState();
+
+	mpEngineDevice->SetRenderState( D3DRS_ALPHAREF, 0x1 );
+	mpEngineDevice->SetRenderState( D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL );
+	mpEngineDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL );
+	mpEngineDevice->SetRenderState(	D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1 );
+	mpEngineDevice->SetRenderState(	D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2 );
+	mpEngineDevice->SetRenderState( D3DRS_DITHERENABLE, TRUE );
 }
 
 
