@@ -411,6 +411,7 @@
 #define ID_EXPORT_THUMBNAIL             40164
 #define ID_SUBMODELS_WHEELMODE_WHEELS_YFORWARD_NOSTEER 40165
 #define IDM_SCALE_MATCH                 40166
+#define IDM_FIX_OLD_VEHICLE             40167
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -418,7 +419,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         40167
+#define _APS_NEXT_COMMAND_VALUE         40168
 #define _APS_NEXT_CONTROL_VALUE         1117
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

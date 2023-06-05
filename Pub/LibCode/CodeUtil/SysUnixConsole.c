@@ -4,6 +4,7 @@
 //  This file is the Unix console implementations of the functions defined in System.h
 //---------------------------------------------------------------
 #include <stdio.h>
+#include <errno.h>
 
 #include <StandardDef.h>
 #include "System.h"
@@ -75,10 +76,21 @@ void SysAddFilledListLine( void* pxParentWindow, void* pListIdent, int nValsQtt,
 
 int		SysRenameFile( const char* szSrc, const char* szDest )
 {
-	// TODO
-	rename( szSrc, szDest);
-	return( 1 );
+int			ret;
+
+	ret = rename( szSrc, szDest);
+	if ( ret == 0 )
+	{
+		return( 1 );
+	}
+	else
+	{
+		SysDebugPrint( "Error renaming file %s to %s", szSrc, szDest );
+		SysDebugPrint( strerror(errno) );
+	}
+	return( -1 );
 }
+
 int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 {
 	// TODO

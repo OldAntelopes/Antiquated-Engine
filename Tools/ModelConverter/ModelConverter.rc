@@ -1245,6 +1245,7 @@ BEGIN
             MENUITEM "Scale to 15m grid",           ID_SCALE_SCALETO15GRID
             MENUITEM "Match Model...",              IDM_SCALE_MATCH
         END
+        MENUITEM "Fix old TU vehicle",          IDM_FIX_OLD_VEHICLE
         MENUITEM SEPARATOR
         MENUITEM "S&tick To Floor",             ID_TOOLS_STICKTOFLOOR
         MENUITEM "&Centre horizontally",        ID_TOOLS_CENTREHORIZONTALLY

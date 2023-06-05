@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.35b"
+#define	MODELCONV_VERSIONSTRING		"2.36"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -4901,6 +4901,12 @@ void	ModelConvInvertSelection( void )
 	m_MainSceneObject.InvertSelection();
 }
 
+void	ModelFixOldVehicle()
+{
+	ModelConvScaleModelFree( m_MainSceneObject.GetModelHandle(), 2500.0f, 2500.0f, 2500.0f );
+	ModelConvRotate90( m_MainSceneObject.GetModelHandle() );
+	ModelConvSetWheelModeOption(6);
+}
 
 void	ModelConvSelectAllConnectedFaces( int nSelectedFaceNum )
 {
@@ -5347,6 +5353,9 @@ int	nVal;
 				break;				
 			case ID_RENDERING_CLEAROVERRIDETEXTURE:
 				ModelConvClearTexture();
+				break;
+			case IDM_FIX_OLD_VEHICLE:
+				ModelFixOldVehicle();
 				break;
 			case IDM_SELECT_TEXTURE:
 				ModelConvSelectTexture();
