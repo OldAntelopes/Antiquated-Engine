@@ -77,6 +77,7 @@ extern void		ModelScale( int nModelHandle, float fX, float fY, float fZ );
 extern void		ModelRotate( int nModelHandle, float fX, float fY, float fZ, BOOL bAffectSubModels );
 extern void		ModelMoveVerts( int nModelHandle, float fX, float fY, float fZ );
 extern int		ModelCreate( int nNumFaces, int nNumVerts, int nFlags );
+extern int		ModelCreateCombinedModel( int nModelHandle );
 extern void		ModelRecalcBounds( int nModelHandle );
 
 //--------------------------------------------------------------------------------------------

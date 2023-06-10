@@ -19,11 +19,12 @@ public:
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 
 	void	Init( uint32 ulEntityUID, int typeID, const VECT* pxPos, int nInitParam = 0 );
-	void	AddToWorld( void );
+	void	AddToWorld( float fAutoDeleteTime = -1.0f );
 	void	Update( float fDelta );
 	void	Render( void );
 	
 	void	SetGraphic( const char* szModelName, const char* szTextureName, int nInstanceNum );
+	void	SetAutoDeleteTime( float fSeconds ) { mfAutoDeleteTimer = fSeconds; }
 
 	uint32	GetEntityUID( void ) { return( mulEntityUID ); }
 
@@ -69,6 +70,7 @@ private:
 	
 	uint32		mulEntityUID;
 	int			mnEntityGraphicsNum;
+	float		mfAutoDeleteTimer;
 	VECT		mxPos;
 	VECT		mxRot;
 	VECT		mxVel;

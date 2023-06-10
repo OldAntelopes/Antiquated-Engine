@@ -31,6 +31,15 @@ PhysicsMotionComponent::PhysicsMotionComponent()
 	mhPhysicsObject = 0;
 }
 
+PhysicsMotionComponent::~PhysicsMotionComponent()
+{
+	if ( mhPhysicsObject != 0 )
+	{
+		PhysicsObjectRemove( mhPhysicsObject );
+	}
+
+}
+
 void	PhysicsMotionComponent::SetPhysicsSettings( const PhysicsMotionSettings* pxMotionSettings )
 {
 	if ( pxMotionSettings )
@@ -46,6 +55,7 @@ VECT	xPos = *GetEntity()->GetPos();
 VECT	xRot = *GetEntity()->GetRot();
 
 	mhPhysicsObject = PhysicsObjectAddPrimitive( (int)mMotionSettings.mCollisionShape, &xPos, &xRot, &mMotionSettings.mxCollisionSize, mMotionSettings.mfMass, mMotionSettings.mfLinearFriction );
+	PhysicsObjectSetVelocity( mhPhysicsObject, GetEntity()->GetVel() );
 }
 
 

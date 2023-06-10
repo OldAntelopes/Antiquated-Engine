@@ -25,6 +25,7 @@ class PhysicsMotionComponent : public Component
 {
 public:
 	PhysicsMotionComponent();
+	~PhysicsMotionComponent();
 
 	virtual const char*			GetComponentType( void ) { return( "PhysicsMotion" ); }
 	virtual eCompronentBehaviourTypes	GetBehaviourType( void ) { return( MOVEMENT_BEHAVIOUR_COMPONENT ); }

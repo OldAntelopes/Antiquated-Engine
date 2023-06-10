@@ -22,7 +22,7 @@ Entity::Entity()
 	mxOrientation.y = 0.0f;
 	mxOrientation.z = 0.0f;
 	mxOrientation.w = 1.0f;
-
+	mfAutoDeleteTimer = 0.0f;
 }
 
 Entity::~Entity()
@@ -71,10 +71,14 @@ Component*	pComponent = Component::Create( szComponentType );
 	return( pComponent );
 }
 
-void	Entity::AddToWorld( void )
+void	Entity::AddToWorld( float fAutoDeleteTime )
 {
 Component*		pComponents = mpComponentList;
 
+	if ( fAutoDeleteTime != -1.0f )
+	{
+		SetAutoDeleteTime( fAutoDeleteTime );
+	}
 	OnAddToWorld();
 
 	while( pComponents )
@@ -123,6 +127,14 @@ Component*		pComponents = mpComponentList;
 
 	OnUpdate( fDelta );
 
+	if ( mfAutoDeleteTimer > 0.0f )
+	{
+		mfAutoDeleteTimer -= fDelta;
+		if ( mfAutoDeleteTimer < 0.0f )
+		{
+			EntityManagerDeleteEntity( this );
+		}
+	}
 }
 
 Component*	Entity::GetNamedComponent( const char* szComponentType )

@@ -241,10 +241,10 @@ ATM_OLD_BASIC_CONTENTS	xContentsChunk;
 	return( 0 );
 
 }
-
+ 
 #ifndef CONSOLE_SERVER
-
 #ifndef SERVER
+
 /***************************************************************************
  * Function    : ModelExportChunkVerts
  * Params      :
@@ -3994,9 +3994,9 @@ MODEL_RENDER_DATA*		pxModelData;
 	if ( nHandle != NOTFOUND )
 	{
 		pxModelData = &maxModelRenderData[ nHandle ];
-
 		EngineCreateMesh( nNumFaces, nNumVerts, &pxModelData->pxBaseMesh, nFlags );
 
+		pxModelData->pMaterialData = NULL;
 		pxModelData->bModelType = ASSETTYPE_STATIC_MESH;
 		pxModelData->xGlobalProperties.bOpacity = 100;
 		pxModelData->xStats.nNumIndices = nNumFaces * 3;
@@ -4005,6 +4005,8 @@ MODEL_RENDER_DATA*		pxModelData;
 	}
 	return( nHandle );
 }
+
+
 
 /***************************************************************************
  * Function    : ModelLoad

@@ -726,21 +726,23 @@ int				nKeyframeNum;
 		pxModelData->xAnimationState.boIsPaused = FALSE;
 	}
 
+	// Changed Jun 23 - Used to pass the trigger func to sub models but that would result in the trigger getting called multiple times
+	//  when put on models with submodels, which is probably not the desired behaviour
 	if ( pxModelData->xLowLODAttachData.nModelHandle > 0 )
 	{
-		ModelSetAnimationImmediate( pxModelData->xLowLODAttachData.nModelHandle, nAnimationUse, nPriority, fnFunc, ulParam ); 
+		ModelSetAnimationImmediate( pxModelData->xLowLODAttachData.nModelHandle, nAnimationUse, nPriority, NULL, 0 ); 
 	}
 	if ( pxModelData->xMedLODAttachData.nModelHandle > 0 )
 	{
-		ModelSetAnimationImmediate( pxModelData->xMedLODAttachData.nModelHandle, nAnimationUse, nPriority, fnFunc, ulParam ); 
+		ModelSetAnimationImmediate( pxModelData->xMedLODAttachData.nModelHandle, nAnimationUse, nPriority, NULL, 0 ); 
 	}
 	if ( pxModelData->xHorizTurretData.nModelHandle > 0 )
 	{
-		ModelSetAnimationImmediate( pxModelData->xHorizTurretData.nModelHandle, nAnimationUse, nPriority, fnFunc, ulParam ); 
+		ModelSetAnimationImmediate( pxModelData->xHorizTurretData.nModelHandle, nAnimationUse, nPriority, NULL, 0 ); 
 	}
 	if ( pxModelData->xVertTurretData.nModelHandle > 0 )
 	{
-		ModelSetAnimationImmediate( pxModelData->xVertTurretData.nModelHandle, nAnimationUse, nPriority, fnFunc, ulParam ); 
+		ModelSetAnimationImmediate( pxModelData->xVertTurretData.nModelHandle, nAnimationUse, nPriority, NULL, 0 ); 
 	}
 	
 }
@@ -2010,6 +2012,134 @@ int		nLoop;
 	ModelRenderingPlatformInit();
 }
 
+int		ModelCreateAddTris( CUSTOMVERTEX** ppxVertsOut, ushort** ppuwIndicesOut, int nModelHandle, const VECT* pxPos, const VECT* pxRot, int nBaseVertCount )
+{
+CUSTOMVERTEX*		pxOutVertices = *ppxVertsOut;
+ushort*				puwOutIndices = *ppuwIndicesOut;
+CUSTOMVERTEX*		pxSourceVerts;
+ushort*				puwSourceIndices;
+int					nNumIndices;
+int					nLoop;
+ENGINEMATRIX		matRot;
+
+	puwSourceIndices = ModelLockIndexBuffer( nModelHandle );
+	pxSourceVerts = ModelLockVertexBuffer( nModelHandle );
+	
+	EngineSetMatrixFromRotations( pxRot, &matRot );
+	nNumIndices = ModelGetStats(nModelHandle)->nNumIndices;
+	for ( nLoop = 0; nLoop < nNumIndices; nLoop += 3)
+	{
+		// Create new tri indices
+		*puwOutIndices++ = nBaseVertCount++;
+		*puwOutIndices++ = nBaseVertCount++;
+		*puwOutIndices++ = nBaseVertCount++;
+
+		// Copy the vertex
+		*pxOutVertices = pxSourceVerts[puwSourceIndices[0]];
+		VectTransform( &pxOutVertices->position,&pxOutVertices->position, &matRot );
+		VectAdd( &pxOutVertices->position, pxPos, &pxOutVertices->position );
+		pxOutVertices++;
+		*pxOutVertices = pxSourceVerts[puwSourceIndices[1]];
+		VectTransform( &pxOutVertices->position,&pxOutVertices->position, &matRot );
+		VectAdd( &pxOutVertices->position, pxPos, &pxOutVertices->position );
+		pxOutVertices++;
+		*pxOutVertices = pxSourceVerts[puwSourceIndices[2]];
+		VectTransform( &pxOutVertices->position,&pxOutVertices->position, &matRot );
+		VectAdd( &pxOutVertices->position, pxPos, &pxOutVertices->position );
+		pxOutVertices++;
+		
+		puwSourceIndices += 3;
+	}
+
+	ModelUnlockIndexBuffer( nModelHandle );
+	ModelUnlockVertexBuffer( nModelHandle );
+
+	*ppxVertsOut = pxOutVertices;
+	*ppuwIndicesOut = puwOutIndices;
+	return( nBaseVertCount );
+}
+
+
+// ------------------------------------
+// ModelCreateCombinedModel
+//  Create a single model from one that has sub-models by combining them all into one single object
+int		ModelCreateCombinedModel( int nModelHandle )
+{
+	if ( nModelHandle != NOTFOUND )
+	{
+	MODEL_RENDER_DATA*		pxModelData;
+	int		nTotalNumVerts = 0;
+	int		hNewModel;
+
+		pxModelData = &maxModelRenderData[ nModelHandle ];
+		nTotalNumVerts = pxModelData->xStats.nNumIndices;
+/*
+		if ( pxModelData->xHorizTurretData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xHorizTurretData.nModelHandle)->nNumVertices;
+		}
+		if ( pxModelData->xVertTurretData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xVertTurretData.nModelHandle)->nNumVertices;
+		}
+*/	
+		if ( pxModelData->xWheel1AttachData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xWheel1AttachData.nModelHandle)->nNumIndices;
+		}
+		if ( pxModelData->xWheel2AttachData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xWheel2AttachData.nModelHandle)->nNumIndices;
+		}
+		if ( pxModelData->xWheel3AttachData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xWheel3AttachData.nModelHandle)->nNumIndices;
+		}
+		if ( pxModelData->xWheel4AttachData.nModelHandle > 0 )
+		{
+			nTotalNumVerts += ModelGetStats(pxModelData->xWheel4AttachData.nModelHandle)->nNumIndices;
+		}
+
+		hNewModel = ModelCreate( nTotalNumVerts / 3, nTotalNumVerts, 0 );
+		CUSTOMVERTEX*		pxOutVertices;
+		ushort*				puwOutIndices;
+		VECT			xPos = { 0.0f, 0.0f, 0.0f };
+		VECT			xRot = { 0.0f, 0.0f, 0.0f };
+		int					nNewVertCount = 0;
+		pxOutVertices = ModelLockVertexBuffer( hNewModel );
+		puwOutIndices = ModelLockIndexBuffer( hNewModel );
+
+		nNewVertCount = ModelCreateAddTris( &pxOutVertices, &puwOutIndices, nModelHandle, &xPos, &xRot, nNewVertCount );
+		if ( pxModelData->xWheel1AttachData.nModelHandle > 0 )
+		{
+			xPos = pxModelData->xWheel1AttachData.xRawOffset;
+			nNewVertCount = ModelCreateAddTris( &pxOutVertices, &puwOutIndices, pxModelData->xWheel1AttachData.nModelHandle, &xPos, &xRot, nNewVertCount );
+		}
+		if ( pxModelData->xWheel2AttachData.nModelHandle > 0 )
+		{
+			xPos = pxModelData->xWheel2AttachData.xRawOffset;
+			nNewVertCount = ModelCreateAddTris( &pxOutVertices, &puwOutIndices, pxModelData->xWheel2AttachData.nModelHandle, &xPos, &xRot, nNewVertCount );
+		}
+		if ( pxModelData->xWheel3AttachData.nModelHandle > 0 )
+		{
+			xPos = pxModelData->xWheel3AttachData.xRawOffset;
+			nNewVertCount = ModelCreateAddTris( &pxOutVertices, &puwOutIndices, pxModelData->xWheel3AttachData.nModelHandle, &xPos, &xRot, nNewVertCount );
+		}
+		if ( pxModelData->xWheel4AttachData.nModelHandle > 0 )
+		{
+			xPos = pxModelData->xWheel4AttachData.xRawOffset;
+			nNewVertCount = ModelCreateAddTris( &pxOutVertices, &puwOutIndices, pxModelData->xWheel4AttachData.nModelHandle, &xPos, &xRot, nNewVertCount );
+		}
+
+		ModelUnlockIndexBuffer( hNewModel );
+		ModelUnlockVertexBuffer( hNewModel );
+
+		ModelRecalcBounds( hNewModel );
+		return( hNewModel );
+	}
+	return( NOTFOUND );
+}
+
 
 //------------------------------------------------------------------
 // EngineGenerateLODs
@@ -2247,3 +2377,4 @@ int			nLODToUse = 0;
 
 	return( nNumPolysRendered );
 }
+

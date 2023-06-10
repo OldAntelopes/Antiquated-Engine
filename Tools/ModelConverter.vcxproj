@@ -64,7 +64,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Pub\Include;..\Pub\Include\DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_DEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DXERR_INCLUDED;CURL_STATICLIB;WIN32;_DEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -82,7 +82,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr9.lib;IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\ModelConverterD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

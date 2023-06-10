@@ -1544,7 +1544,7 @@ int		nCloneFlags;
 										   &mpD3DXMtrlLoadBuffer, NULL, &dwNumMaterials, 
 										   &pxTempMesh );
 		if( ret != D3D_OK )
-		{
+		{ 
 #ifdef DXERR_INCLUDED			
 			// removed for removal of dxerr9.lib - july 2017 - in transition to vs 2017
 			sprintf( acString, "Error reading .x model file :\n%s\n\nDirectX Error code (%08x) :\n\n%s\n%s\n", szFilename, ret, DXGetErrorString9(ret), DXGetErrorDescription9(ret) );	
