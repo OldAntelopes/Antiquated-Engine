@@ -157,6 +157,12 @@ VECT		xRotated2;
 	if ( nStaticModel == NOTFOUND ) return( FALSE );
 
 	pxStaticModel = &maxModelRenderData[ nStaticModel ];
+
+	if ( pxStaticModel->xCollisionAttachData.nModelHandle != NOTFOUND )
+	{
+		pxStaticModel = &maxModelRenderData[ pxStaticModel->xCollisionAttachData.nModelHandle ];
+	}
+
 	if ( pxStaticModel->pxBaseMesh == NULL ) return( FALSE );
 
 #ifdef DEBUG_COLLISION_TRIS

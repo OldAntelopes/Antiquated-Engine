@@ -338,6 +338,13 @@ D3DXMATRIX	matLightViewProj;
 				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)pxCamPos, 3 );
 			}
 
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gShadowStrength");
+			if ( handle )
+			{
+			float		fShadowStrength = (float)(EngineShadowMapGetStrength() );
+				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, fShadowStrength );
+			}
+
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gShadowMapSize");
 			if ( handle )
 			{

@@ -12,6 +12,7 @@
 
 BOOL	mbShadowMapHasLoadedShaders = FALSE;
 BOOL	msbShadowMapTexturesActive = FALSE;
+float		msfShadowStrength = 1.0f;
 
 LPGRAPHICSPIXELSHADER				mpShadowMapPass1PixelShader = NULL; 
 LPGRAPHICSVERTEXSHADER				mpShadowMapPass1VertexShader = NULL; 
@@ -32,12 +33,43 @@ float	mfShadowMapLightCamTargetDist = 45.0f;
 float	mfShadowMapLightNearPlane = 1.0f;
 float	mfShadowMapLightFarPlane = 100.0f;
 float	mfShadowMapLightFOVMod = 1.0f;
-int		mnShadowMapSize = DEFAULT_SHADOW_MAP_SIZE;
+int		mnShadowMapSize = DEFAULT_SHADOW_MAP_SIZE ;
 
+void		EngineShadowMapSetSizeOption( int nSizeOption )
+{
+int		nSize;
+
+	switch( nSizeOption )
+	{
+	case 0:
+	case 1:
+	default:
+		nSize = DEFAULT_SHADOW_MAP_SIZE;		// 2048
+		break;
+	case 2:
+		nSize = DEFAULT_SHADOW_MAP_SIZE * 2;		// 4096
+		break;
+	case 3:
+		nSize = DEFAULT_SHADOW_MAP_SIZE * 4;		// 8192
+		break;
+	case 4:
+		nSize = DEFAULT_SHADOW_MAP_SIZE / 2;		// 1024
+		break;
+	}
+
+	if ( nSize != mnShadowMapSize )
+	{
+		mnShadowMapSize = nSize;
+		if ( mbShadowMapHasLoadedShaders )
+		{
+			EngineShadowMapReleaseShaders();
+			EngineShadowMapLoadShaders();
+		}
+	}
+}
 
 void		EngineShadowMapInit( void )
 {
-
 }
 
 
@@ -68,6 +100,10 @@ void		EngineShadowMapReleaseShaders( void )
 	mbShadowMapHasLoadedShaders = FALSE;
 }
 
+float	EngineShadowMapGetStrength( void )
+{
+	return( msfShadowStrength );
+}
 
 
 void		EngineShadowMapGetLightAxes( VECT* pxLightPosOut, VECT* pxLightDirOut, VECT* pxLightUp )
@@ -79,8 +115,26 @@ VECT	xUp = { 0.0f, 0.0f, 1.0f };
 ENGINE_LIGHT		xPrimaryLight;
 VECT	xRight;
 
-	EngineGetPrimaryLight( &xPrimaryLight );
-		
+	EngineGetPrimaryLight( &xPrimaryLight );	
+	xPrimaryLight.Direction.z -= 0.02f;
+	if ( xPrimaryLight.Direction.z > -0.05f )
+	{
+	float	fRange = 0.05f - 0.001f;
+	float	fShadowStrength = xPrimaryLight.Direction.z + 0.001f;
+		fShadowStrength *= -1.0f / fRange;
+		fShadowStrength = FClamp( fShadowStrength, 0.0f, 1.0f );
+		msfShadowStrength = fShadowStrength;
+		if ( xPrimaryLight.Direction.z > -0.005f )
+		{
+			xPrimaryLight.Direction.z = -0.005f;
+		}
+	}
+	else
+	{
+		msfShadowStrength = 1.0f;
+	}
+	VectNormalize( &xPrimaryLight.Direction );
+
 	VectScale( &xLightPos, &xPrimaryLight.Direction, -mfShadowMapLightCamTargetDist );
 	VectAdd( &xLightPos, &xLightPos, &mxShadowMapCamTarget );
 
@@ -130,7 +184,9 @@ D3DXMATRIX	matProj;
 #else
 //	mfShadowMapLightFOVMod = 0.15f;
 //	D3DXMatrixPerspectiveFovLH( &matProj, fFOV * mfShadowMapLightFOVMod, 1.0f, mfShadowMapLightNearPlane, mfShadowMapLightFarPlane );
-	D3DXMatrixOrthoLH(&matProj, (float)mnShadowMapSize * mfShadowMapLightFOVMod, (float)mnShadowMapSize * mfShadowMapLightFOVMod, mfShadowMapLightNearPlane, mfShadowMapLightFarPlane );
+	int		nViewMod = 2048;
+//	int		nViewMod = mnShadowMapSize;
+	D3DXMatrixOrthoLH(&matProj, (float)nViewMod * mfShadowMapLightFOVMod, (float)nViewMod * mfShadowMapLightFOVMod, mfShadowMapLightNearPlane, mfShadowMapLightFarPlane );
 //	EngineSetProjectionMatrix( &Ortho2D);
 #endif
 	EngineMatrixMultiply( pxMatrix, (ENGINEMATRIX*)&matProj );

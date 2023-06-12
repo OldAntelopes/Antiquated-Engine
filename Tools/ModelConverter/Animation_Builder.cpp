@@ -586,7 +586,13 @@ void AnimationBuilderRebuildList( void )
 				xInsert.pszText = acString;
 				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
 			}
-
+			else
+			{
+				xInsert.iSubItem = 3; 
+				xInsert.pszText = "";
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );		
+			}
+			
 			if ( manKeyframeModelHandles[ nLoop ] != NOTFOUND )
 			{
 				xInsert.iSubItem = 4; 
@@ -641,6 +647,12 @@ void AnimationBuilderUpdateList( void )
 				xInsert.iSubItem = 3; 
 				xInsert.pszText = acString;
 				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );
+			}
+			else
+			{
+				xInsert.iSubItem = 3; 
+				xInsert.pszText = "";
+				SendDlgItemMessage( mhwndAnimationBuilderDialog, IDC_LIST1, LVM_SETITEM, 0, (LPARAM)&xInsert );		
 			}
 
 			if ( manKeyframeModelHandles[ nLoop ] != NOTFOUND )

@@ -630,6 +630,10 @@ const char*		pcRunner = szFilename + nNameLen - 1;
 			pcRunner++;
 			return( pcRunner );
 		}
+		else if ( *pcRunner == '/')
+		{
+			break;
+		}
 		pcRunner--;
 		nNameLen--;
 	}

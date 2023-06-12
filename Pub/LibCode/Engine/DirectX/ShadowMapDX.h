@@ -26,7 +26,9 @@ extern void		EngineShadowMapGetLightViewProjMatrix( ENGINEMATRIX* pxMatrix );
 
 extern void		EngineShadowMapSetWorldMatrix( const ENGINEMATRIX*	pxWorldMatrix );
 extern int		EngineShadowMapGetSize( void );
+extern float	EngineShadowMapGetStrength( void );
 
+extern void		EngineShadowMapSetSizeOption( int nSizeOption );
 
 #ifdef __cplusplus
 }
