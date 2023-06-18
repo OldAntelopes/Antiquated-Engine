@@ -172,6 +172,7 @@ extern BOOL	SysGetSaveFilenameDialog( char* szFileFilter, char* szTitle, char* s
 extern BOOL	SysBrowseForFolderDialog( const char* szTitle, const char* szRootPath, char* szOutFolderName, const char* szDefaultPath );
 extern void	SysAddFileExtensionIfNeeded( char* szFilename, const char* szExtension );
 extern const char*	SysGetFileExtension( const char* szFilename );		// Returns a pointer to the extension within szFilename
+extern void		SysURLStripParameters( const char* szURL, char* szURLOut );
 
 //-----------------------------------------------------------------------------
 

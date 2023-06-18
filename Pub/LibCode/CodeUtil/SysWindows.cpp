@@ -616,6 +616,23 @@ int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 	return( 1 );
 }
 
+void		SysURLStripParameters( const char* szURL, char* szURLOut )
+{
+int		nNameLen = strlen( szURL );
+char*		pcRunner = szURLOut + nNameLen - 1;
+
+	strcpy( szURLOut, szURL );
+	while( pcRunner > szURLOut )
+	{
+		if ( *pcRunner == '?' )
+		{
+			*pcRunner = 0;
+			return;
+		}
+		pcRunner--;
+	}
+}
+
 const char*	SysGetFileExtension( const char* szFilename )
 {
 int		nNameLen = strlen( szFilename );
