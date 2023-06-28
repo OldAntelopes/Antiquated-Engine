@@ -91,7 +91,7 @@ typedef struct
 
 	BYTE	bGlobalSpecularFlag;
 	BYTE	bDontClampUVs;
-	BYTE	bPad2;
+	BYTE	bMipBias;
 	BYTE	bNoFiltering;
 
 	float	fBounciness;

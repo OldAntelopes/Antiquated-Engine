@@ -143,6 +143,7 @@
 #define IDC_RADIO2                      1036
 #define IDC_EDIT26                      1036
 #define IDC_RESET_CAM_TO_SCENE          1036
+#define IDC_MIPBIAS                     1036
 #define IDC_X_TEXT                      1037
 #define IDC_RADIO3                      1037
 #define IDC_EDIT27                      1037

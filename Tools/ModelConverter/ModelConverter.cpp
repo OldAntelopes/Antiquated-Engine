@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.37"
+#define	MODELCONV_VERSIONSTRING		"2.38"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;

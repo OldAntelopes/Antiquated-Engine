@@ -519,6 +519,11 @@ void	ModelRenderMaterialRestoreStatesPostRender( MODEL_RENDER_DATA* pxModelData 
 		InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 1 );
 	}
 
+	if ( pxModelData->xGlobalProperties.bMipBias == 1 )
+	{
+		EngineSetMipBias( 0.0f );
+	}
+
 	if ( pxModelData->xGlobalProperties.bDontClampUVs == 1 )
 	{
 		EngineEnableTextureAddressClamp( 1 );
@@ -571,6 +576,11 @@ void	ModelRenderSetMaterialRenderStates( MODEL_RENDER_DATA* pxModelData )
 	else
 	{
 		InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 1 );
+	}
+
+	if ( pxModelData->xGlobalProperties.bMipBias == 1 )
+	{
+		EngineSetMipBias( -1.0f );
 	}
 
 	if ( pxModelData->xGlobalProperties.bDontClampUVs == 1 )

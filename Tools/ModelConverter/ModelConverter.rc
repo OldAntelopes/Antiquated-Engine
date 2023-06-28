@@ -204,39 +204,41 @@ STYLE DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Global Properties"
 FONT 8, "MS Shell Dlg"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,198,219,50,14
+    DEFPUSHBUTTON   "OK",IDOK,198,208,50,14
     RTEXT           "Blend Type",IDC_STATIC,19,23,39,9
     COMBOBOX        IDC_BLENDTYPE_COMBO,65,20,86,80,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     RTEXT           "Opacity",IDC_STATIC,158,23,36,9
     EDITTEXT        IDC_EDIT1,200,20,28,13,ES_AUTOHSCROLL
     CONTROL         "Show double-sided",IDC_DOUBLE_SIDED_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,13,146,83,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,13,122,83,12
     CONTROL         "Single Sprite",IDC_SINGLE_SPRITE_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,13,158,79,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,13,134,79,12
     CONTROL         "Don't clamp UVs (Allow tiling)",IDC_DONT_CLAMP_UVS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,158,115,12
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,134,115,12
     CONTROL         "Don't use filtering on texture",IDC_FILTERING,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,125,146,111,12
-    GROUPBOX        "Special Flags",IDC_STATIC,4,135,244,53
-    GROUPBOX        "Lighting && Shadows",IDC_STATIC,4,49,244,81
+                    BS_AUTOCHECKBOX | WS_TABSTOP,125,122,111,12
+    GROUPBOX        "Special Flags",IDC_STATIC,4,111,244,67
+    GROUPBOX        "Lighting && Shadows",IDC_STATIC,4,49,244,57
     GROUPBOX        "Semi-transparency",IDC_STATIC,4,7,244,36
     CONTROL         "Do not light this model",IDC_LIGHTING,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,17,60,95,12
-    GROUPBOX        "Collision Properties",IDC_STATIC,4,193,188,40
+    GROUPBOX        "Collision Properties",IDC_STATIC,4,182,188,40
     CONTROL         "Disable Collisions for this model",IDC_COLLISION_CHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,217,149,12
-    LTEXT           "Bounciness",IDC_STATIC,22,204,49,8
-    EDITTEXT        IDC_BOUNCINESS,78,203,58,12,ES_AUTOHSCROLL
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,206,149,12
+    LTEXT           "Bounciness",IDC_STATIC,22,193,49,8
+    EDITTEXT        IDC_BOUNCINESS,78,192,58,12,ES_AUTOHSCROLL
     CONTROL         "Do not clip with landscape (for large models only)",
                     IDC_LARGE_MODEL_CLIPPING,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,170,184,12
+                    WS_TABSTOP,13,161,184,12
     CONTROL         "No Shadows",IDC_NO_SHADOWS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,17,74,184,12
+                    WS_TABSTOP,17,74,98,12
     CONTROL         "Enable Shininess",IDC_NO_SHADOWS2,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,17,88,184,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,88,100,12
     LTEXT           "(More finegrained control of specular/shininess is available by assigning materials to your model)",
-                    IDC_STATIC,28,103,209,19
+                    IDC_STATIC,122,76,126,31
+    CONTROL         "Use Mip Bias",IDC_MIPBIAS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,148,79,12
 END
 
 IDD_SCALE_MODEL_DIALOG DIALOGEX 0, 0, 186, 199

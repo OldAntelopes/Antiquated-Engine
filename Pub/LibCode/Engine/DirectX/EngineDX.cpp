@@ -528,6 +528,10 @@ EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( n
 			pVertBuffContainer->nBufferPos += nNumVertsRequired;
 			return( (ENGINEBUFFERVERTEX*)( pVertBuffer ) );
 		}
+		else
+		{
+			return( NULL );
+		}
 	}
 	return( NULL );
 }
@@ -1231,9 +1235,18 @@ void	EngineSetTextureFiltering( int nMode )
 	case 1:
 		if ( InterfaceGetDeviceCaps( MAX_ANISTROPY ) > 0 )
 		{
+		int		nMaxAnistropy = InterfaceGetDeviceCaps( MAX_ANISTROPY );
+
+			if ( nMaxAnistropy > 8 )
+			{
+				nMaxAnistropy = 8;
+			}
 			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER,  D3DTEXF_ANISOTROPIC );	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);//D3DTEXF_ANISOTROPIC);	
+//			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	
+//			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);//D3DTEXF_ANISOTROPIC);	
+			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);	
+			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);//D3DTEXF_ANISOTROPIC);	
+			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, nMaxAnistropy );
 		}
 		else
 		{

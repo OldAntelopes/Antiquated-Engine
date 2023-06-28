@@ -54,6 +54,15 @@ int		nModelHandle = ModelConvGetCurrentModel();
 		{
 			SendDlgItemMessage( mhwndMaterialsDialog, IDC_DOUBLE_SIDED_CHECK, BM_SETCHECK, BST_UNCHECKED, 0 );
 		}
+		if ( pxModelData->xGlobalProperties.bMipBias == 1 )
+		{
+			SendDlgItemMessage( mhwndMaterialsDialog, IDC_MIPBIAS, BM_SETCHECK, BST_CHECKED, 0 );
+		}
+		else
+		{
+			SendDlgItemMessage( mhwndMaterialsDialog, IDC_MIPBIAS, BM_SETCHECK, BST_UNCHECKED, 0 );
+		}
+
 		if ( pxModelData->xGlobalProperties.bCollisionOverride == 1 )
 		{
 			SendDlgItemMessage( mhwndMaterialsDialog, IDC_COLLISION_CHECK, BM_SETCHECK, BST_CHECKED, 0 );
@@ -156,7 +165,7 @@ int		nModelHandle = ModelConvGetCurrentModel();
  * Function    : ModelConverterMaterialsDlgProc
  * Params      :
  * Returns     :
- * Description : Message handler for the "save changes" dialog box
+ * Description : Message handler for the "global properties" dialog box
  ***************************************************************************/
 LRESULT CALLBACK ModelConverterMaterialsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -248,7 +257,16 @@ float	fVal;
 						{
 							pxModelData->xGlobalProperties.bDontClampUVs = 0;
 						}
-					
+				
+						nVal = SendDlgItemMessage( mhwndMaterialsDialog, IDC_MIPBIAS, BM_GETCHECK, 0, 0 );
+						if ( nVal == BST_CHECKED )
+						{
+							pxModelData->xGlobalProperties.bMipBias = 1;
+						}
+						else
+						{
+							pxModelData->xGlobalProperties.bMipBias = 0;
+						}	
 						nVal = SendDlgItemMessage( mhwndMaterialsDialog, IDC_DOUBLE_SIDED_CHECK, BM_GETCHECK, 0, 0 );
 						if ( nVal == BST_CHECKED )
 						{
