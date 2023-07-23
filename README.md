@@ -25,7 +25,7 @@ In addition to the 2 sets of framework code there is:
 Preconditions
 -------------
 
-- For no particular reason, I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you may have some work to do to use anything other than the V120 toolchain
+- For obscure reasons relating to the functioning of edit and continue (i.e. its inability to do what i need it to do in later versions), I keep around a version of Visual Studio 2013 express, which is where most of the project & solution files will come from. They should generally be compatable with newer versions (I guess..) though you may have some work to do to use anything other than the V120 toolchain
 - Executables will get placed in the Exe folder which contains some required data files. When debugging you'll need to set your working directory there for things to be happy.
 - If you were to try to use any parts of this in an external project, you'd need to put **[path_to_antiquated_repo]\Pub\Include**  somewhere in your project's include path to keep things happy.
 
