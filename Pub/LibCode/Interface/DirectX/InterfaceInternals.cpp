@@ -143,9 +143,9 @@ INTERFACE_API void	InterfaceSetGlobalParam( INTF_DRAW_PARAM nParam, int nState )
 	case INTF_TEXTURE_FILTERING:
 		if ( nState == 0 ) InterfaceTurnOffTextureFiltering(); else InterfaceTurnOnTextureFiltering(nState);
 		break;
-	case INTF_ANISOTROPIC:
-		if ( nState == 0 ) mboAnistropic = FALSE; else mboAnistropic = TRUE;	
-		break;
+//	case INTF_ANISOTROPIC:
+//		if ( nState == 0 ) mboAnistropic = FALSE; else mboAnistropic = TRUE;	
+//		break;
 	case INTF_TEXTURERECT_LIMIT:
 		InterfaceTexturedOverlaysSetLimit( nState );
 		break;

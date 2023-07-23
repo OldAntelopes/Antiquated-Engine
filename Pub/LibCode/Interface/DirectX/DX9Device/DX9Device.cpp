@@ -28,7 +28,6 @@ LPGRAPHICSDEVICE       mpInterfaceD3DDevice = NULL; // Our rendering device
 LPGRAPHICS        mpD3D       = NULL; // Used to create the D3DDevice
 
 BOOL	mboMinPageSize = TRUE;
-BOOL	mboAnistropic = TRUE;
 BOOL	msbInterfaceGlobalTextureFilteringEnable = TRUE;
 
 int		mnRenderSurfaceWidth = 900;
@@ -340,21 +339,9 @@ void InterfaceTurnOnTextureFiltering( int nMode )
    
 	if ( !mboTextureFilteringCurrentState )
 	{
-		if ( ( mboAnistropic == TRUE ) &&
-			 ( InterfaceGetDeviceCaps( MAX_ANISTROPY ) >= 1 ) )
-		{
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC  );
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC  );
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );	
-	//		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_MIPFILTER, D3DTEXF_ANISOTROPIC);	
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 10 );
-		}
-		else
-		{ 
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
-			mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
-		}
+		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
+		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
+		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
 		mboTextureFilteringCurrentState = true;
 	}
 }

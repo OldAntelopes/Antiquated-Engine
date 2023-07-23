@@ -93,6 +93,7 @@ EngineVertBuffContainer*	m_spEngineVertBuffList = NULL;
 int							m_snNextVertBufferHandle = 1;
 EngineIndexBuffContainer*	m_spEngineIndexBuffList = NULL;
 int							m_snNextIndexBufferHandle = 1;
+BOOL						m_sbUseAnisotropicFiltering = TRUE;
 
 int		mnEngineStateAlphaTest = NOTFOUND;
 
@@ -1220,6 +1221,43 @@ void	EngineSetZBias( int Value )
 #endif
 }
 
+BOOL		EngineCanUseAnisotropic( void )
+{
+	if ( InterfaceGetDeviceCaps( MAX_ANISTROPY ) > 0 )
+	{
+		return( m_sbUseAnisotropicFiltering );
+	}
+	return( FALSE );
+}
+
+void	EngineEnableAnisotropicFiltering( BOOL bFlag )
+{
+	m_sbUseAnisotropicFiltering = bFlag;
+}
+
+void	EngineTextureSetBestFiltering( int nChannel, int nMaxAnisotropy )
+{
+	if ( EngineCanUseAnisotropic() == TRUE )
+	{
+	int		nAnistropyLevels = InterfaceGetDeviceCaps( MAX_ANISTROPY );
+
+		if ( nAnistropyLevels > nMaxAnisotropy )
+		{
+			nAnistropyLevels = nMaxAnisotropy;
+		}
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MIPFILTER,  D3DTEXF_ANISOTROPIC );	
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);	
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MAXANISOTROPY, nAnistropyLevels );
+	}
+	else
+	{
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MIPFILTER,  D3DTEXF_LINEAR);	
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	
+		mpEngineDevice->SetSamplerState( nChannel, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);	
+	}
+}
+
 void	EngineSetTextureFiltering( int nMode )
 {
 #ifdef TUD11
@@ -1233,27 +1271,7 @@ void	EngineSetTextureFiltering( int nMode )
 		mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT);	
 		break;
 	case 1:
-		if ( InterfaceGetDeviceCaps( MAX_ANISTROPY ) > 0 )
-		{
-		int		nMaxAnistropy = InterfaceGetDeviceCaps( MAX_ANISTROPY );
-
-			if ( nMaxAnistropy > 8 )
-			{
-				nMaxAnistropy = 8;
-			}
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER,  D3DTEXF_ANISOTROPIC );	
-//			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	
-//			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);//D3DTEXF_ANISOTROPIC);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);//D3DTEXF_ANISOTROPIC);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, nMaxAnistropy );
-		}
-		else
-		{
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER,  D3DTEXF_LINEAR);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	
-			mpEngineDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);	
-		}
+		EngineTextureSetBestFiltering( 0, 8 );
 		break;
 	case 2:
 		mpEngineDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER,  D3DTEXF_LINEAR);	

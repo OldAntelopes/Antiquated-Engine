@@ -919,9 +919,7 @@ void			EngineSetShadowMultitexture( BOOL bFlag )
 		if ( bFlag )
 		{
 			EngineSetTexture( 1, EngineShadowMapGetDepthMap() );
-			mpEngineDevice->SetSamplerState( 1, D3DSAMP_MIPFILTER, D3DTEXF_ANISOTROPIC);	
-			mpEngineDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);	
-			mpEngineDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);	
+			EngineTextureSetBestFiltering( 1, 4 );
 
 			mpEngineDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
 			mpEngineDevice->SetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE );

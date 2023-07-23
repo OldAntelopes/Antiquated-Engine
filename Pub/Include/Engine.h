@@ -130,6 +130,8 @@ extern	void	EngineEnableTextureAddressClamp( int nFlag );
 extern	void	EngineEnableWireframe( int nFlag );
 extern  void	EngineEnablePointFill( int nFlag );
 extern  void	EngineSetShadeMode( int nFlag );
+extern	void	EngineEnableAnisotropicFiltering( BOOL bFlag );
+extern BOOL		EngineCanUseAnisotropic( void );
 
 extern void		EngineSetViewport( int X, int Y, int W, int H );
 extern void		EngineRestoreViewport( void );
@@ -198,6 +200,7 @@ extern BOOL				EngineTextureIsFullyLoaded( TEXTURE_HANDLE );
 extern BOOL				EngineTextureDidLoadFail( TEXTURE_HANDLE );
 extern int				EngineTextureGetWidth( TEXTURE_HANDLE nTexHandle );
 extern int				EngineTextureGetHeight( TEXTURE_HANDLE nTexHandle );
+extern void				EngineTextureSetBestFiltering( int nChannel, int nMaxAnisotropy );
 
 extern TEXTURE_HANDLE	EngineLoadTextureFromFileInMem( byte* pbMem, int nMipMode, int* pnErrorFlag, int nMemSize, const char* szOptionalFilename );
 extern TEXTURE_HANDLE	EngineLoadTextureFromMem( byte* pbMem, int nMemSize, int width, int height, int format, int nMipMode, int* pnErrorFlag );
