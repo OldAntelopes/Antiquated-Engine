@@ -15,6 +15,7 @@ extern int		HTTPGet( const char *acFullURL, HTTPResponseHandler fnResponseHandle
 extern int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam );
 extern int		HTTPPostEx( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHandler fnResponseHandler, void* vpParam, int nTimeoutSecs );
 
+extern int		HTTPFetchFile( const char *acFullURL, const char* szLocalFilename, HTTPResponseHandler fnResponseHandler, void* vpParam );
 
 //-----------------------------------------------
 

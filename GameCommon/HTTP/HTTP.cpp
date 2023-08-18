@@ -165,7 +165,7 @@ int		HTTPPost( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponseHa
 	return( HTTPPostEx( acFullURL, pbBody, nBodyLen, fnResponseHandler, vpParam, 0 ) ); 
 }
 
-int		HTTPGetFile( const char *acFullURL, const char* szLocalFilename, HTTPResponseHandler fnResponseHandler, void* vpParam )
+int		HTTPFetchFile( const char *acFullURL, const char* szLocalFilename, HTTPResponseHandler fnResponseHandler, void* vpParam )
 {
 	if ( mbHTTPInitialised )
 	{
