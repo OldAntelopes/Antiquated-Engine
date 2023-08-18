@@ -359,7 +359,7 @@ struct servent far * lpServEnt;
 #endif  
   /* create socket */
   Tcp4uLog (LOG4U_CALL, "socket AF_INET, SOCK_STREAM");
-  ListenSock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  ListenSock = socket (AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_TCP);
   if (ListenSock==INVALID_SOCKET)
   {
       Tcp4uLog (LOG4U_ERROR, "socket");
