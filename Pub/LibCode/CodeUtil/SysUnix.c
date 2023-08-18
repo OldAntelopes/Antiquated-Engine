@@ -40,6 +40,47 @@ BOOL		SysFinite( float fVal )
 	return( FALSE );
 }
 
+
+void SysCopyFolderContents( const char* szSrcFolder, const char* szDestFolder )
+{
+DIR* dirp;
+struct dirent* dp = NULL;
+char	acString[256];
+char	acString2[256];
+BOOL boFinished = FALSE; 
+
+	dirp = opendir(szSrcFolder);
+	if (dirp != NULL)
+	{
+		dp = readdir(dirp);
+	}
+	
+	if (dp == NULL)
+	{
+		return;
+	}
+
+	while ( !boFinished )
+	{ 
+		if ( ( dp->d_name[0] != '.' ) &&
+			 ( dp->d_type != DT_DIR ) )
+		{
+			sprintf( acString, "%s/%s", szSrcFolder,  dp->d_name );
+			sprintf( acString2, "%s/%s", szDestFolder, dp->d_name );
+			SysCopyFile( acString, acString2, FALSE );
+		}
+	 
+	    dp = readdir(dirp);
+	    if (dp == NULL)
+		{
+		    boFinished = TRUE; 
+		}
+	}
+	closedir(dirp);
+
+}
+
+
 void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback callback )
 {
 DIR* dirp;

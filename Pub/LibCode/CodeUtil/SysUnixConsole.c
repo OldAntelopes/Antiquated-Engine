@@ -93,7 +93,57 @@ int			ret;
 
 int		SysCopyFile( const char* szSrc, const char* szDest, BOOL bFailIfExists )
 {
-	// TODO
+FILE*		pFileTo;
+FILE*		pFileFrom;
+char buf[4096];
+int		nRead = 0;
+int		nReadBlock = 0;
+int		nFileSize;
+ 
+	if ( bFailIfExists )
+	{
+		pFileTo = SysFileOpen( szDest, "rb" );
+		if ( pFileTo )
+		{
+			SysFileClose( pFileTo );
+			return( -1 );
+		}
+		SysFileClose( pFileTo );
+	}
+
+	pFileFrom = SysFileOpen( szSrc, "rb" );
+
+	if ( pFileFrom == NULL )
+	{
+        return -1;
+	}
+	else
+	{
+		pFileTo = SysFileOpen( szDest, "wb" );
+		if ( pFileTo == NULL )
+		{
+			return( -1 );
+		}
+
+		nFileSize = SysGetFileSize( pFileFrom );
+
+		while ( nRead < nFileSize )
+		{
+			nReadBlock = SysFileRead( buf, 1, 4096, pFileFrom );
+			if ( nReadBlock > 0 )
+			{
+				nRead += nReadBlock;
+				SysFileWrite( buf, 1, nReadBlock, pFileTo );
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	SysFileClose( pFileFrom );
+	SysFileClose( pFileTo );
 	return( 1 );
 }
 
