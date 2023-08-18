@@ -49,7 +49,7 @@ BOOL	bHasErrored = FALSE;
 		}
 		SysSleep( 10 );
 		
-	} while( bHasErrored == FALSE );
+	} while ( ( bHasErrored == FALSE ) && ( m_bWebServerNetworkThreadShutdown == FALSE ) );
 
 	return( 0 );
 }
@@ -86,7 +86,7 @@ void	TCPConnections::ShutdownTCP( void )
 	TcpAbort();
 
 	m_bWebServerNetworkThreadShutdown = TRUE;
-	SysSleep(10);
+	SysSleep(20);
 
 	TcpClose ( &m_WebServerListenSocket ); 
 	Tcp4uCleanup();
@@ -101,13 +101,13 @@ int		ret;
 	ret = TcpGetListenSocket (&m_WebServerListenSocket, NULL, &uwPort, 4);
 	if ( ret == TCP4U_SUCCESS )
 	{
-		printf("BasicWebServer TCP listen socket open on %d\n", uwPort );
+		SysDebugPrint("BasicWebServer TCP listen socket open on %d\n", uwPort );
 		m_hWebServerConnectionListenThread = SysCreateThread( WebServerTCPListenThread, NULL, 0, 0 );
 		return( 1 );
 	}
 	else
 	{
-		printf("ERROR: TCP listen socket bind failed on %d\n", uwPort );
+		SysDebugPrint("ERROR: TCP listen socket bind failed on %d\n", uwPort );
 		return( -1 );
 	}
 }
