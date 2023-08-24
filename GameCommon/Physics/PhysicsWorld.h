@@ -18,6 +18,9 @@ enum
 };
 
 
+extern BOOL		PhysicsWorldIsEnabled( void );
+extern void		PhysicsWorldSetEnabled( BOOL bFlag );
+
 extern void		PhysicsWorldInit( void );
 
 extern void		PhysicsWorldUpdate( float fDelta );

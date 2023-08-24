@@ -595,8 +595,12 @@ BOOL		PhysicsLandscapeGenerationInProgress( void )
 
 BOOL		PhysicsLandscapeGenerationComplete( void )
 {
-	if ( ( mhPhysicsBVHGenerationThread == 0 ) &&
-		 ( mpLandscapePhysicsObject != NULL ) )
+	if ( PhysicsWorldIsEnabled() == FALSE )
+	{
+		return( TRUE );
+	}
+	else if ( ( mhPhysicsBVHGenerationThread == 0 ) &&
+			  ( mpLandscapePhysicsObject != NULL ) )
 	{
 		return( TRUE );
 	}

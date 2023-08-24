@@ -128,6 +128,7 @@ btDefaultCollisionConfiguration*		mpCollisionConfiguration = NULL;
 btCollisionDispatcher*					mpDispatcher = NULL;
 btSequentialImpulseConstraintSolver*	mpSolver = NULL;
 btDiscreteDynamicsWorld*				mpDynamicsWorld = NULL;
+BOOL				msbPhysicsWorldEnabled = TRUE;
 
 
 //#define PHYSICS_DEBUG_DRAW
@@ -179,6 +180,15 @@ static bool myCustomMaterialCombinerCallback(
     return false;
 }
 
+BOOL		PhysicsWorldIsEnabled( void )
+{
+	return( msbPhysicsWorldEnabled );
+}
+
+void		PhysicsWorldSetEnabled( BOOL bFlag )
+{
+	msbPhysicsWorldEnabled = bFlag;
+}
 
 BOOL		PhysicsWorldIsDebugRenderEnabled( void )
 {
