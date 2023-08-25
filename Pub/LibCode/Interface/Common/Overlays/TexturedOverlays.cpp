@@ -28,7 +28,7 @@
 #define		MAX_TEX_OVERLAY_VERTICES			2048
 
 #define		MAX_DIFFERENT_TEXTURED_OVERLAYS		128
-#define		MAX_RECTS							8192
+#define		MAX_RECTS							12000
 
 /*** This structure is used to specify a shape in the Textured Overlays module ***/
 typedef struct
@@ -187,7 +187,7 @@ TEXTURED_RECT_DEF*	pxRet = NULL;
 			mpxNextFreeRect++;
 			if ( mpxNextFreeRect >= (mpxRectBuffer + (mnTexRectBufferSize-1)) )
 			{
-				PANIC_IF( TRUE, "Too many textured overlay shapes added.");
+//				PANIC_IF( TRUE, "Too many textured overlay shapes added.");
 				mpxNextFreeRect = NULL;
 			}
 		}
