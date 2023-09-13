@@ -77,14 +77,14 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\GameDev\Antiquated\Pub\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\Include;$(IncludePath)</IncludePath>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
     <TargetName>lib$(ProjectName)D</TargetName>
     <OutDir>$(ProjectDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\GameDev\Antiquated\Pub\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\Include;$(IncludePath)</IncludePath>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
     <OutDir>$(ProjectDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
