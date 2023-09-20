@@ -77,17 +77,18 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\Include;$(IncludePath)</IncludePath>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
     <TargetName>lib$(ProjectName)D</TargetName>
     <OutDir>$(ProjectDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\Include;$(IncludePath);</IncludePath>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/../libs/</RemoteOutRelDir>
     <OutDir>$(ProjectDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <SourcePath>$(ProjectDir)..\Include;</SourcePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\CodeUtil\Archive.cpp" />
@@ -112,6 +113,8 @@
     <ClCompile>
       <CLanguageStandard>gnu11</CLanguageStandard>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <AdditionalIncludeDirectories>%(ClCompile.AdditionalIncludeDirectories)$(ProjectDir)</AdditionalIncludeDirectories>
+      <Verbose>false</Verbose>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
