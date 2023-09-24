@@ -27,6 +27,7 @@ CFontDef*	mpFontDefs[MAX_FONTS_IN_GAME] = { NULL, NULL, NULL, NULL, NULL, NULL, 
 FLATVERTEX*			mpFontVertices = NULL;
 int					mnFontVertexIndex = 0;
 int					mnCurrentFontFlags = 0;
+float	mfCurrentFontGlobalScale = 1.0f;
 float	mfGiantFontScale = 2.0f;
 
 uint32		manFontColours[] =
@@ -495,7 +496,10 @@ void	InterfaceFontFree( int nFontNum )
 //------------------------------------------------------------------------------------------------
 
 
-
+void	InterfaceSetFontGlobalScale( float fScale )
+{
+	mfCurrentFontGlobalScale = fScale;
+}
 
 void InterfaceSetFontFlags( int nFlag )
 {
@@ -577,6 +581,7 @@ int		nLen;
 	maxTextBuffer[ mnPosInTextBuffer ].nAlign = ALIGN_LEFT;
 	maxTextBuffer[ mnPosInTextBuffer ].nLayer = 0;
 	maxTextBuffer[ mnPosInTextBuffer ].wFlag = (short)nFlag;
+	maxTextBuffer[ mnPosInTextBuffer ].fScale = mfCurrentFontGlobalScale;
 	maxTextBuffer[ mnPosInTextBuffer ].bFont = InterfaceGetFontNumFromColVal( ulCol, 0 );
 	mnPosInTextBuffer++;
 
@@ -627,6 +632,7 @@ int			nLen;
 	maxTextBuffer[ mnPosInTextBuffer ].xAlignRect = xAlignRect;
 	maxTextBuffer[ mnPosInTextBuffer ].nLayer = 0;
 	maxTextBuffer[ mnPosInTextBuffer ].wFlag = (short)mnCurrentFontFlags;
+	maxTextBuffer[ mnPosInTextBuffer ].fScale = mfCurrentFontGlobalScale;
 	maxTextBuffer[ mnPosInTextBuffer ].bFont = InterfaceGetFontNumFromColVal( ulCol, 0 );
 	mnPosInTextBuffer++;
 
@@ -971,6 +977,8 @@ RECT		xAlignRect;
 	pxText->xAlignRect = xAlignRect;
 	pxText->nLayer = nLayer;
 	pxText->wFlag = (short)(mnCurrentFontFlags);
+	pxText->fScale = mfCurrentFontGlobalScale;
+
 	pxText->bFont = (BYTE)( InterfaceGetFontNumFromColVal( ulCol, nFont ) );
 
 	mnPosInTextBuffer++;
@@ -1088,20 +1096,20 @@ FONT_UVCHAR		uvChar;
 
 
 
-float	FontGetCharUWidthAndScreenWidth( char cChar, int nFont, int nFlags, float* pfUWidth, int* pnScrWidth, int *pnAdvance )
+float	FontGetCharUWidthAndScreenWidth( char cChar, int nFont, int nFlags, float* pfUWidth, int* pnScrWidth, float *pfAdvance )
 {
 int		nFontTextureWidth = GetFontTextureWidth(nFont);
 float	fUWidth = GetFontUWidth( cChar, nFont );
-int		nScrWidth = 0;
+float	fScrWidth = 0.0f;
 float	fScreenScaling = 1.0f;
 
 	if ( fUWidth == 0 )
 	{
-		nScrWidth = 2;
+		fScrWidth = 2;
 	}
 	else
 	{
-		nScrWidth = (int)( fUWidth * nFontTextureWidth );
+		fScrWidth = fUWidth * nFontTextureWidth;
 	}
 
 	if ( nFlags & FONT_FLAG_SMALL )
@@ -1129,18 +1137,18 @@ float	fScreenScaling = 1.0f;
 		fScreenScaling = 1.25f;
 	}
 
-	nScrWidth = (int)( nScrWidth * fScreenScaling );
+	fScrWidth = fScrWidth * fScreenScaling;
 	
-	if ( pnAdvance )
+	if ( pfAdvance )
 	{
 		// If its bottom aligned its a JSON sepc font, with advance separate from scrwidth
 		if ( mpFontDefs[nFont]->IsBottomAligned() == TRUE )
 		{
-			*pnAdvance = (int)( GetFontAdvance( cChar, nFont ) * fScreenScaling );
+			*pfAdvance = GetFontAdvance( cChar, nFont ) * fScreenScaling;
 		}
 		else
 		{
-			*pnAdvance = nScrWidth;
+			*pfAdvance = fScrWidth;
 		}
 	}
 	if ( pfUWidth )
@@ -1149,7 +1157,7 @@ float	fScreenScaling = 1.0f;
 	}
 	if ( pnScrWidth )
 	{
-		*pnScrWidth = nScrWidth;
+		*pnScrWidth = (int)fScrWidth;
 	}
 
 	return( fScreenScaling );
@@ -1162,7 +1170,7 @@ float	fScreenScaling = 1.0f;
  * Returns     :
  * Description : 
  ***************************************************************************/
-int FontDrawChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag, float fScaleOverride )
+float FontDrawChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag, float fScaleOverride )
 {
 FLOATRECT	xScrRect;
 FLOATRECT	xTexRect;
@@ -1178,7 +1186,7 @@ BOOL			bIsBottomAlignedFont = FALSE;
 float		fScreenScaling;
 float		fAlignScale = 1.0f;
 CFontDef*		pFontDef = mpFontDefs[nFont];
-int			nAdvance = 0;
+float		fAdvance = 0.0f;
 
 	bHasUVChar = InterfaceFontLookupChar( nFont, cChar, &uvChar );
 	if ( pFontDef->IsBottomAligned() )
@@ -1208,7 +1216,7 @@ int			nAdvance = 0;
 		break;
 	}
 	 
-	fScreenScaling = FontGetCharUWidthAndScreenWidth( cChar, nFont, nFlag, &fCharUWidth, &nFontScreenWidth, &nAdvance );
+	fScreenScaling = FontGetCharUWidthAndScreenWidth( cChar, nFont, nFlag, &fCharUWidth, &nFontScreenWidth, &fAdvance ); 
 	fFontVHeight = GetFontVHeight(cChar,nFont);
 
 	if ( nFlag & FONT_FLAG_SMALL )
@@ -1254,9 +1262,9 @@ int			nAdvance = 0;
 
 	if ( fScaleOverride > 0.0f )
 	{
-		nFontScreenWidth = (int)( nFontScreenWidth * fScaleOverride );
-		nFontScreenHeight = (int)( nFontScreenHeight * fScaleOverride );
-		nAdvance = (int)( nAdvance * fScaleOverride );
+		nFontScreenWidth = (int)( (nFontScreenWidth * fScaleOverride) + 0.5f );
+		nFontScreenHeight = (int)( (nFontScreenHeight * fScaleOverride) + 0.5f );
+		fAdvance = fAdvance * fScaleOverride;
 	}
 	else
 	{
@@ -1293,56 +1301,36 @@ int			nAdvance = 0;
 	FLOATRECT	xScrRect2 = xScrRect;
 	float		fMainAlpha = (float)( ulCol >> 24 ) / 255.0f; 
 	uint32		ulShadowCol;
+	float		fShadowOffset = 2.0f * fScaleOverride;
 
 		if ( nFlag & FONT_FLAG_GIANT )
 		{
-			xScrRect2.x1 += 2.0f;
-			xScrRect2.y1 += 2.0f;
-			xScrRect2.x2 += 2.0f;
-			xScrRect2.y2 += 2.0f;
+			fShadowOffset = 2.0f * fScaleOverride;
 		}
 		else if ( nFlag & FONT_FLAG_ENORMOUS )
 		{
-			xScrRect2.x1 += 4.0f;
-			xScrRect2.y1 += 4.0f;
-			xScrRect2.x2 += 4.0f;
-			xScrRect2.y2 += 4.0f;
+			fShadowOffset = 4.0f * fScaleOverride;
 		}
 		else if ( nFlag & FONT_FLAG_MASSIVE )
 		{
-			xScrRect2.x1 += 3.0f;
-			xScrRect2.y1 += 3.0f;
-			xScrRect2.x2 += 3.0f;
-			xScrRect2.y2 += 3.0f;
+			fShadowOffset = 3.0f * fScaleOverride;
 		}
 		else if ( nFlag & FONT_FLAG_LARGE )
 		{
-			xScrRect2.x1 += 2.0f;
-			xScrRect2.y1 += 2.0f;
-			xScrRect2.x2 += 2.0f;
-			xScrRect2.y2 += 2.0f;
+			fShadowOffset = 2.0f * fScaleOverride;
 		}
 		else if ( nFlag & FONT_FLAG_SMALL )
 		{
-			xScrRect2.x1 += 1.0f;
-			xScrRect2.y1 += 1.0f;
-			xScrRect2.x2 += 1.0f;
-			xScrRect2.y2 += 1.0f;
+			fShadowOffset = 1.0f * fScaleOverride;
 		}
 		else if ( nFlag & FONT_FLAG_TINY )
 		{
-			xScrRect2.x1 += 1.0f;
-			xScrRect2.y1 += 1.0f;
-			xScrRect2.x2 += 1.0f;
-			xScrRect2.y2 += 1.0f;
+			fShadowOffset = 1.0f * fScaleOverride;
 		}
-		else
-		{
-			xScrRect2.x1 += 2.0f;
-			xScrRect2.y1 += 2.0f;
-			xScrRect2.x2 += 2.0f;
-			xScrRect2.y2 += 2.0f;
-		}
+		xScrRect2.x1 += fShadowOffset;
+		xScrRect2.y1 += fShadowOffset;
+		xScrRect2.x2 += fShadowOffset;
+		xScrRect2.y2 += fShadowOffset;
 
 		ulShadowCol = GetColWithModifiedAlpha( 0xA0000000, fMainAlpha );
 		AddCharVertices( &xScrRect2, &xTexRect, ulShadowCol, nFlag );
@@ -1358,10 +1346,10 @@ int			nAdvance = 0;
 	if ( ( cChar == 32 ) &&
 		 ( uvChar.advance > 0 ) )
 	{
-		return( (int)( (uvChar.advance * nFontTextureWidth) * fScreenScaling ) );
+		return( (uvChar.advance * nFontTextureWidth) * fScreenScaling );
 	}
 
-	return( (nAdvance + 1) - mpFontDefs[nFont]->mnFontOccupyWidthReduction );
+	return( (fAdvance + 1.0f) - mpFontDefs[nFont]->mnFontOccupyWidthReduction );
 
 }
 
@@ -1380,9 +1368,9 @@ int		nX;
 int		nChar;
 int		nCount;
 int		nFontScreenWidth = 0;
-int		nAdvance = 0;
+float	fAdvance = 0.0f;
 
-	FontGetCharUWidthAndScreenWidth( *pcString, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
+	FontGetCharUWidthAndScreenWidth( *pcString, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
 
 	nX = nFontScreenWidth + 1;
 	nCount = 0;
@@ -1392,7 +1380,7 @@ int		nAdvance = 0;
 		    ( nCount < 8192 ) )	// see MAX_CHARS_IN_EDIT_STRING
 	{
 		nChar = *(pcString);
-		FontGetCharUWidthAndScreenWidth( nChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
+		FontGetCharUWidthAndScreenWidth( nChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
 		nX += nFontScreenWidth + 1;
 	
 		pcString++;
@@ -1420,7 +1408,7 @@ int GetStringWidth( const char* pcString, int nFont )
 	BYTE	cChar;
 	int		nCount;
 	int		nFontScreenWidth = 0;
-	int		nAdvance = 0;
+	float		fAdvance = 0.0f;
 
 		nX = 0;
 		nCount = 0;
@@ -1474,14 +1462,14 @@ int GetStringWidth( const char* pcString, int nFont )
 					{
 						pcString = pcTagStart;
 						nCount = nTagStartCount;
-						FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
-						nX += (nAdvance + 1);
+						FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
+						nX += (int)(fAdvance + 1);
 					}
 				}
 				else
 				{
-					FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &nAdvance );
-					nX += (nAdvance + 1);
+					FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
+					nX += (int)(fAdvance + 1);
 				}
 				break;
 			}
@@ -1490,6 +1478,7 @@ int GetStringWidth( const char* pcString, int nFont )
 			nCount++;
 		}
 
+		nX = (int)( (nX * mfCurrentFontGlobalScale) + 0.5f );
 		return( nX );
 	}
 	else
@@ -1536,6 +1525,7 @@ int		nHeight = 0;
 		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) ) + 1;
 	}
 
+	nHeight = (int)( nHeight * mfCurrentFontGlobalScale );
 	return( nHeight );
 
 }
@@ -1574,7 +1564,7 @@ int		nStringWidth;
 		nLineSep = (int)( nLineSep * 1.25f );
 	}
 
-
+	nLineSep = (int)( nLineSep * mfCurrentFontGlobalScale );
 	nStringWidth = GetStringWidth( szString, font );
 
 	// If whole text fits on a single line
@@ -1649,46 +1639,47 @@ void	InterfaceSetControllerIconFunction( InterfaceControllerIconCallback fnContr
  ***************************************************************************/
 int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, uint32 ulCol, int nFont, int nFlag, float fTextScale )
 {
-int		nX;
+float	fX;
 int		nY;
 int		nWidth, nHeight;
-int		nSize;
+float	fSize;
 int		nCount;
 BYTE	cChar;
 
+	mfCurrentFontGlobalScale = fTextScale;
 	switch( nAlign )
 	{
 	case ALIGN_CENTRE:
 		nWidth = GetStringWidth( pcString, nFont );
 
-		nSize = pxAlignRect->right - pxAlignRect->left;
-		nSize /= 2;
-		nSize -= (nWidth / 2);
+		fSize = (float)( pxAlignRect->right - pxAlignRect->left );
+		fSize *= 0.5f;
+		fSize -= (nWidth * 0.5f);
 
-		nX = pxAlignRect->left + nSize;
+		fX = pxAlignRect->left + fSize;
 		break;
 	case ALIGN_RIGHT:
 		nWidth = GetStringWidth( pcString, nFont );
-		nX = pxAlignRect->right - nWidth;
+		fX = (float)( pxAlignRect->right - nWidth );
 		break;
 	case ALIGN_SCALED:
 		nWidth = GetStringWidth( pcString, nFont );
-		nWidth = (int)( nWidth * fTextScale );
+//		nWidth = (int)( nWidth * fTextScale );
 		nHeight = GetStringHeight( pcString, nFont );
-		nHeight = (int)( nHeight * fTextScale );
+//		nHeight = (int)( nHeight * fTextScale );
 
-		nX = pxAlignRect->left - (nWidth / 2);
+		fX = pxAlignRect->left - (nWidth * 0.5f);
 		pxAlignRect->top = pxAlignRect->top - (nHeight / 2);
 		break;
 
 	case ALIGN_LEFT:
 	default:
-		nX = pxAlignRect->left;
+		fX = (float)pxAlignRect->left;
 		break;
 	}
 
 	nY = pxAlignRect->top + mpFontDefs[nFont]->mnFontDrawOffsetY;
-	nX += mpFontDefs[nFont]->mnFontDrawOffsetX;
+	fX += mpFontDefs[nFont]->mnFontDrawOffsetX;
 
 	nCount = 0;
 	while ( ( *(pcString) != 0 ) &&
@@ -1716,20 +1707,21 @@ BYTE	cChar;
 				{
 				int		nOverlay = InterfaceCreateNewTexturedOverlay( 2, nIconTexture );
 
-					InterfaceTexturedRect( nOverlay, nX, nY - 2, nHeight, nHeight, 0xE0FFFFFF, 0.0f, 0.0f, 1.0f, 1.0f );
-					nX += nHeight;
+					InterfaceTexturedRect( nOverlay, (int)fX, nY - 2, nHeight, nHeight, 0xE0FFFFFF, 0.0f, 0.0f, 1.0f, 1.0f );
+					fX += nHeight;
 				}
 			}
 		}
 		else
 		{
-			nX += FontDrawChar( cChar, nX, nY, ulCol, nFont, nFlag, fTextScale );
+			fX += FontDrawChar( cChar, (int)fX, nY, ulCol, nFont, nFlag, fTextScale );
 		}
 		pcString++;
 		nCount++;
 	}
 
-	return( nX - pxAlignRect->left );
+	mfCurrentFontGlobalScale = 1.0f;
+	return( (int)fX - pxAlignRect->left );
 }
 
 

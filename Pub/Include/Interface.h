@@ -135,6 +135,7 @@ enum
 
 extern INTERFACE_API void	InterfaceSetFontFlags( int nFlag);
 extern INTERFACE_API void	InterfaceSetFontSize( int nFont, int nSize );
+extern INTERFACE_API void	InterfaceSetFontGlobalScale( float fScale );
 extern int		InterfaceTextGetHeightUsed( const char* szString, int nFont, int width );
 
 // ------------- Texture loading 

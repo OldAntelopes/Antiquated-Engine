@@ -136,13 +136,12 @@ typedef struct
 	int		nX;
 	int		nY;
 	uint32	nCol;
+	float	fScale;
+
 	char	acString[ MAX_CHARS_IN_STRING ];
 
-	union {
-		RECT	xAlignRect;
-		struct { float fScale, fPad1, fPad2, fPad3; };
-	};
-
+	RECT	xAlignRect;
+	
 	short	nAlign;
 	short	nLayer;
 	short	wFlag;

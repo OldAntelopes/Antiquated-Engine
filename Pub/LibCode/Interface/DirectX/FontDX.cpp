@@ -310,16 +310,12 @@ float	fTextScale;
 				{
 					ulCol = InterfaceGetARGBForColour( maxTextBuffer[ nLoop ].nCol );
 
+					fTextScale = maxTextBuffer[nLoop].fScale;
 					if ( ( maxTextBuffer[ nLoop ].nAlign == ALIGN_LEFT ) ||
 						 ( maxTextBuffer[ nLoop ].nAlign == ALIGN_SCALED ) )
 					{
 						xRect.left = maxTextBuffer[ nLoop ].nX;
 						xRect.top = maxTextBuffer[ nLoop ].nY;	
-
-						if ( maxTextBuffer[nLoop].nAlign == ALIGN_SCALED )
-						{
-							fTextScale = maxTextBuffer[nLoop].fScale;
-						}
 					}
 					else
 					{	
