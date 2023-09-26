@@ -455,6 +455,20 @@ BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffset
 	return( TRUE );
 }
 
+
+BOOL	InterfaceFontIsLoaded( int nFontNum )
+{
+	if ( nFontNum < MAX_FONTS_IN_GAME )
+	{
+		if ( mpFontDefs[nFontNum] )
+		{
+			return( TRUE );
+		}
+	}
+	return( FALSE );
+}
+
+
 BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
@@ -1086,7 +1100,7 @@ float GetFontVHeight( BYTE cChar, int nFont )
 {
 float	fV = 0.0f;
 FONT_UVCHAR		uvChar;
-
+	
 	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.h );
@@ -1646,6 +1660,11 @@ float	fSize;
 int		nCount;
 BYTE	cChar;
 
+	if ( nFont == 7 )
+	{
+	int		nBreak = 0;
+		nBreak++;
+	}
 	mfCurrentFontGlobalScale = fTextScale;
 	switch( nAlign )
 	{

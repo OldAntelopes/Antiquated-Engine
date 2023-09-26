@@ -279,6 +279,7 @@ typedef struct
 extern INTERFACE_API BOOL	InterfaceFontLookupChar( int nFontNum, char cChar, FONT_UVCHAR* pOut );
 extern INTERFACE_API BOOL	InterfaceFontSetAsCurrentTexture( int nFontNum );
 extern INTERFACE_API BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags );
+extern INTERFACE_API BOOL	InterfaceFontIsLoaded( int nFontNum );
 extern INTERFACE_API BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffsetY, int nOccupyWidthReduction, int nOccupyHeightReduction );
 extern INTERFACE_API void	InterfaceFontFree( int nFontNum );
 
