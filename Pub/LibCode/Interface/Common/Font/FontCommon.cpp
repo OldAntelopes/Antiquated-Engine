@@ -1477,13 +1477,13 @@ int GetStringWidth( const char* pcString, int nFont )
 						pcString = pcTagStart;
 						nCount = nTagStartCount;
 						FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
-						nX += (int)(fAdvance + 1);
+						nX += (int)(fAdvance + 1.5f);
 					}
 				}
 				else
 				{
 					FontGetCharUWidthAndScreenWidth( cChar, nFont, mnCurrentFontFlags, NULL, &nFontScreenWidth, &fAdvance );
-					nX += (int)(fAdvance + 1);
+					nX += (int)(fAdvance + 1.5f);
 				}
 				break;
 			}
