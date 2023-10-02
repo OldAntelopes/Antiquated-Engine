@@ -627,7 +627,7 @@ void		EnginePostProcessSetValue( const char* szName, float fValue )
 	else if ( stricmp( szName, "BLOOMTHRESHOLD" ) == 0 )
 	{
 		mfHighpassThreshold = fValue;
-		if ( mfHighpassThreshold >= 1.0f )
+		if ( mfHighpassThreshold > 1.0f )
 		{
 			mfHighpassThreshold = 0.99f;
 		}
