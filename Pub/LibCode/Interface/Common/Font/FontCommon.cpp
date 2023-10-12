@@ -1544,12 +1544,18 @@ int		nHeight = 0;
 
 }
 
-int		InterfaceTextBox( int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, BOOL bLeftAlign )
+int		InterfaceTextBox(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, BOOL bLeftAlign)
+{
+	return( InterfaceTextBoxMaxHeight(nLayer, nX, nY, szString, ulCol, font, nMaxWidth, -1, bLeftAlign) );
+}
+
+int	InterfaceTextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign)
 {
 char*	pcEndOfLine = (char*)szString;
 int		nLineSep = 13;
 int		nBaseY = nY;
 int		nStringWidth;
+int		nMaxY = NOTFOUND;
 
 	nLineSep = (int)( GetFontVHeight( 'A', font ) * GetFontTextureHeight(font)) + 1;
 
@@ -1580,6 +1586,11 @@ int		nStringWidth;
 
 	nLineSep = (int)( nLineSep * mfCurrentFontGlobalScale );
 	nStringWidth = GetStringWidth( szString, font );
+
+	if (nMaxHeight != NOTFOUND)
+	{
+		nMaxY = nY + nMaxHeight - nLineSep;
+	}
 
 	// If whole text fits on a single line
 	if ( nStringWidth < nMaxWidth )
@@ -1618,9 +1629,17 @@ int		nStringWidth;
 			}
 			else
 			{
+				// todo - if there is a maxY and this is the last line that will fit, 
+				// replace the last word of the text with '...' (if we can)
 				pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
 			}
 			nY += nLineSep;
+
+			if ( ( nMaxY != NOTFOUND) &&
+			 	 ( nY > nMaxY ) )
+			{
+				pcEndOfLine = NULL;
+			}
 		}
 	}
 	return( nY - nBaseY );
