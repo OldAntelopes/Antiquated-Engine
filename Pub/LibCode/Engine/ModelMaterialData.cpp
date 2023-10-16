@@ -236,6 +236,37 @@ void		ModelMaterialsEnableLighting( BOOL bLightingEnable )
 #endif
 }
 
+void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay )
+{
+	if ( mpNormalMapRenderPSConstantTable )
+	{
+	D3DXHANDLE handle; 
+
+		if ( bHasOverlay == TRUE )
+		{
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gHasNormalMap");
+			if ( handle )
+			{
+				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, 0.0f );
+			}
+
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gHasOverlay");
+			if ( handle )
+			{
+				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, 1.0f );
+			}
+		}
+		else
+		{
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gHasOverlay");
+			if ( handle )
+			{
+				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, 0.0f );
+			}
+		}
+	}
+}
+
 void		ModelMaterialsActivateNormalShader( BOOL bHasDiffuseMap, BOOL bHasNormalMap, BOOL bHasSpecularMap )
 {
 #ifdef TUD9

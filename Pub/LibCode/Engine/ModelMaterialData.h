@@ -142,6 +142,7 @@ extern void		ModelMaterialsDeactivateNormalShader( void );
 extern void		ModelMaterialsActivateNormalShader( BOOL bHasDiffuseMap, BOOL bHasNormalMap, BOOL bHasSpecularMap );
 extern void		ModelMaterialsNormalShaderUpdateWorldTransform( const ENGINEMATRIX* pMatWorld );
 extern void		ModelMaterialsNormalShaderUpdateZBias( float fZBias );
+extern void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay );
 
 extern void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATERIAL_COLOUR* pxAmbient, MATERIAL_COLOUR* pxSpecular, MATERIAL_COLOUR* pxEmissive, float fSpecularPower );
 extern void		ModelMaterialsEnableLighting( BOOL bLightingEnable );
