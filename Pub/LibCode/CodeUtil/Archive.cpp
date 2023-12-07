@@ -1065,8 +1065,8 @@ ManagedArchive*		pArchiveList = ArchiveFind( szArchiveLocalFilename );
 	{
 	Archive*		pNewArchive;
 	char			szActualFilePath[256];
-	FILE*			pFile = fopen( szArchiveLocalFilename, "rb" );
-	
+	FILE*			pFile;
+
 		ArchiveGetConvertedFilePath( szArchiveLocalFilename, szActualFilePath );
 
 		pFile = fopen( szActualFilePath, "rb" );
