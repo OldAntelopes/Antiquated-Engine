@@ -258,6 +258,8 @@
 #define IDC_OFFSETY                     1114
 #define IDC_OFFSETZ                     1115
 #define IDC_OFFSETCHECK                 1116
+#define IDC_DOUBLESIDED_MATERIAL		1117
+#define IDC_APPLYMATTOSELECTION			1118
 #define IDM_FILE_EXIT                   40001
 #define ID_FILE_IMPORT                  40002
 #define ID_FILE_SAVEAS                  40004
@@ -421,7 +423,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40168
-#define _APS_NEXT_CONTROL_VALUE         1117
+#define _APS_NEXT_CONTROL_VALUE         1119
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

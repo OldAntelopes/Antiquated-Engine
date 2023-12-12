@@ -110,6 +110,12 @@ typedef struct
 } TEXMATERIAL_CHUNKHEADER;
 
 
+typedef enum
+{
+	MATFLAGS_HASCUSTOMMATERIALPROPS = 0x1,
+	MATFLAGS_ISDOUBLESIDED = 0x2,
+} eMaterialFlags;
+
 typedef struct
 {
 	MATERIAL_COLOUR		diffuse;
@@ -120,7 +126,7 @@ typedef struct
 	BYTE	bAttrib;
 	BYTE	bNumTextures;
 	BYTE	bBlendType;
-	BYTE	bFlags;
+	BYTE	bMaterialFlags;
 
 	int		nSizeOfTextureFilename;
 	int		nSizeOfTextureData;
@@ -733,7 +739,15 @@ int			texchancount = 0;
 			pChunk->emissive = pModelMaterialData->GetColour( ModelMaterialData::EMISSIVE );
 			pChunk->fSpecularPower = pModelMaterialData->GetSpecularPower();
 			pChunk->bBlendType = (BYTE)pModelMaterialData->GetBlendType();
-			pChunk->bFlags = pModelMaterialData->HasActiveMaterialProperties();
+			pChunk->bMaterialFlags = 0;
+			if ( pModelMaterialData->HasActiveMaterialProperties() )
+			{
+				pChunk->bMaterialFlags |= MATFLAGS_HASCUSTOMMATERIALPROPS;
+			}
+			if ( pModelMaterialData->IsDoubledSided() )
+			{
+				pChunk->bMaterialFlags |= MATFLAGS_ISDOUBLESIDED;
+			}
 			pChunk->bNumTextures = texchancount;
 
 			for ( texchanloop = 0; texchanloop < MAX_NUM_TEX_CHANNELS; texchanloop++ )
@@ -2525,14 +2539,8 @@ int		nTexFiledataSize;
 				pMaterialData->SetColour( ModelMaterialData::EMISSIVE, &pChunk->emissive );
 				pMaterialData->SetSpecularPower( pChunk->fSpecularPower );
 				pMaterialData->SetBlendType( (ModelMaterialData::eBLEND_TYPES)pChunk->bBlendType );
-				if ( pChunk->bFlags == 0 )
-				{
-					pMaterialData->SetActiveMaterialProperties( false );
-				}
-				else
-				{
-					pMaterialData->SetActiveMaterialProperties( true );
-				}
+				pMaterialData->SetActiveMaterialProperties( (pChunk->bMaterialFlags & MATFLAGS_HASCUSTOMMATERIALPROPS) ? true : false );
+				pMaterialData->SetDoubleSided( (pChunk->bMaterialFlags & MATFLAGS_ISDOUBLESIDED) ? true : false );
 	//			pChunk->bNumTextures = 1;
 
 				// Add to the modeldata linked list of materials
@@ -2549,14 +2557,8 @@ int		nTexFiledataSize;
 				pMaterialData->SetColour( ModelMaterialData::EMISSIVE, &pChunk->emissive );
 				pMaterialData->SetSpecularPower( pChunk->fSpecularPower );
 				pMaterialData->SetBlendType( (ModelMaterialData::eBLEND_TYPES)pChunk->bBlendType );
-				if ( pChunk->bFlags == 0 )
-				{
-					pMaterialData->SetActiveMaterialProperties( false );
-				}
-				else
-				{
-					pMaterialData->SetActiveMaterialProperties( true );
-				}
+				pMaterialData->SetActiveMaterialProperties( (pChunk->bMaterialFlags & MATFLAGS_HASCUSTOMMATERIALPROPS) ? true : false );
+				pMaterialData->SetDoubleSided( (pChunk->bMaterialFlags & MATFLAGS_ISDOUBLESIDED) ? true : false );
 
 				for ( texchanloop = 0; texchanloop < MAX_NUM_TEX_CHANNELS; texchanloop++ )
 				{
