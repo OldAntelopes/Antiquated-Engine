@@ -543,6 +543,8 @@ BEGIN
     LTEXT           "Blend Type",IDC_STATIC,43,243,44,10
     COMBOBOX        IDC_BLENDTYPE_COMBO2,89,242,112,89,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Double-sided",IDC_DOUBLESIDED_MATERIAL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,208,245,80,8
     LTEXT           "Emissive Colour",IDC_STATIC,21,225,51,11
     EDITTEXT        IDC_EDIT25,97,222,32,12,ES_AUTOHSCROLL
     LTEXT           "R",IDC_STATIC,85,225,12,10
@@ -570,6 +572,8 @@ BEGIN
                     WS_DISABLED | WS_TABSTOP,83,103,10,8
     PUSHBUTTON      "Select all polys with this material",IDC_BUTTON8,7,265,
                     111,15
+    PUSHBUTTON      "Apply material to selection",IDC_APPLYMATTOSELECTION,125,265,
+                    111,15, WS_DISABLED
     LTEXT           "Is Clone",IDC_STATIC,153,33,30,10
     CONTROL         "Check4",IDC_CHECK14,"Button",BS_AUTOCHECKBOX | 
                     WS_DISABLED | WS_TABSTOP,162,46,10,8

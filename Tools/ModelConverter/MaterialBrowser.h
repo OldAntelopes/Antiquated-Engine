@@ -15,6 +15,7 @@ extern LRESULT CALLBACK MaterialBrowserDlgProc(HWND hDlg, UINT message, WPARAM w
 extern void	MaterialBrowserAddDefaultMaterials( void );
 extern void MaterialBrowserDeleteAllMaterials( void );
 
+extern void		MaterialBrowserOnFaceSelectionUpdated();
 
 
 #ifdef __cplusplus

@@ -77,7 +77,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.38"
+#define	MODELCONV_VERSIONSTRING		"2.39"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -1929,15 +1929,18 @@ void	ModelConvLeftMouseUp( int mouseX, int mouseY )
 					mouseStartY = swap;
 				}
 				m_MainSceneObject.SelectAllFacesInScreenRegion( mouseStartX, mouseStartY, mouseX-mouseStartX, mouseY-mouseStartY );
+				MaterialBrowserOnFaceSelectionUpdated();
 			}
 			else
 			{
 				m_MainSceneObject.SelectFaceAtScreenPoint( mouseX, mouseY );
+				MaterialBrowserOnFaceSelectionUpdated();
 			}
 		}
 		else
 		{
 			m_MainSceneObject.SelectFaceAtScreenPoint( mouseX, mouseY );
+			MaterialBrowserOnFaceSelectionUpdated();
 		}
 		break;	
 	case CONTROL_POLYSLICE:
@@ -2780,7 +2783,10 @@ char	acString[256];
 
 }
 
-
+void		ModelConvApplyMaterialToSelectedFaces( int nMaterialNum )
+{
+	m_MainSceneObject.ApplyMaterialToSelectedFaces( nMaterialNum );
+}
 
 /***************************************************************************
  * Function    : ModelConverterAssignMaterialDlgProc
@@ -2805,6 +2811,7 @@ short wNotifyCode;
 
 			for ( loop = 0; loop < pxModelData->xStats.nNumMaterials; loop++ )
 			{	
+				// TODO - Replace with material names
 				sprintf( acString, "Material %d", loop+1 );
 				SendDlgItemMessage( hDlg, IDC_COMBO1, CB_ADDSTRING, loop, (LPARAM)acString );
 			}
@@ -4851,6 +4858,11 @@ int		nAttribID = m_MainSceneObject.GetSelectionMaterial();
 	{
 		UVUnwrapWindowInit(&m_MainSceneObject, nAttribID, mhwndMainDialog );
 	}
+}
+
+int		ModelConvGetNumFacesSelected()
+{
+	return( m_MainSceneObject.GetNumFacesSelected() );
 }
 
 void	ModelConvSetPickerMode( int mode )

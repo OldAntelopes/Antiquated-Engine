@@ -493,6 +493,7 @@ int		loop;
 	m_szMaterialName = NULL;
 
 	m_BlendType = NONE;
+	m_bDoubleSided = false;
 	m_bMaterialPropertiesActive = false;
 	m_nCloneTextureMaterial = NOTFOUND;
 
@@ -596,6 +597,16 @@ int	ret = NO_CHANGES;
 	}
 #endif // tud9
 
+	if ( m_bDoubleSided )
+	{
+		EngineEnableCulling( 0 );
+		ret |= DOUBLESIDED_ACTIVATED;		
+	}
+	else
+	{
+		EngineEnableCulling( 1 );
+	}
+	
 	if ( m_bMaterialPropertiesActive )
 	{
 		if ( m_BlendType != NONE )

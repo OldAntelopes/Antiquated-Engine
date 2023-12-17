@@ -149,6 +149,10 @@ int		nPolyCount = 0;
 			{
 				EngineEnableSpecular( FALSE );
 			}
+			if ( ret & ModelMaterialData::DOUBLESIDED_ACTIVATED )
+			{
+				EngineEnableCulling( 1 );
+			}
 		}
 
 		pxModelData->pxBaseMesh->DrawSubset( 0 );

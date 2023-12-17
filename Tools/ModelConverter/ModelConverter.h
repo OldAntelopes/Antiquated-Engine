@@ -34,6 +34,8 @@ extern void		ModelConvOpenDialog( eSUBMODEL_LIST nSubModelNum );
 extern void		ModelConvSelectByMaterial( int attribID );
 extern void		ModelConvSetPickerMode( int mode );
 extern void		ModelConvSetLastUsedLoadPath( const char* szFile );
+extern int		ModelConvGetNumFacesSelected();
+extern void		ModelConvApplyMaterialToSelectedFaces( int nMaterialNum );
 
 extern void		ModelConvTextAdd( const char* szString, ... );
 extern void		ModelConvTextBoxSet( const char* szString, ... );

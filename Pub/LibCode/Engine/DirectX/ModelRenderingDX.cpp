@@ -1030,6 +1030,10 @@ ENGINEMATERIAL		xBaseMaterial;
 				{
 					ModelMaterialsDeactivateNormalShader();
 				}
+				if ( ret & ModelMaterialData::DOUBLESIDED_ACTIVATED )
+				{
+					EngineEnableCulling( 1 );
+				}
 
 			}
 		} // end material for loop

@@ -55,7 +55,8 @@ public:
 		MATERIAL_CHANGED = 0x2,
 		SPECULAR_ACTIVATED = 0x4,
 		NORMALMAP_ACTIVATED = 0x8,
-		SPECULARMAP_ACTIVATED = 0x8,
+		SPECULARMAP_ACTIVATED = 0x10,
+		DOUBLESIDED_ACTIVATED = 0x20,
 	};
 
 	typedef struct
@@ -77,6 +78,9 @@ public:
 
 	void	SetAttrib( int nAttrib ) { m_nAttrib = nAttrib; }
 	int		GetAttrib( void ) { return( m_nAttrib ); }
+
+	bool	IsDoubledSided( void ) { return( m_bDoubleSided ); }
+	void	SetDoubleSided( bool bFlag ) { m_bDoubleSided = bFlag; }
 
 	void	SetNext( ModelMaterialData* pNext ) { m_pNext = pNext; }
 	ModelMaterialData*		GetNext( void ) { return( m_pNext ); }
@@ -128,6 +132,7 @@ private:
 
 	MATERIAL_COLOUR		m_aColours[NUM_COLOUR_CHANNELS];
 	float				m_specularPower;
+	bool				m_bDoubleSided;
 };
 
 extern ModelMaterialData*		FindMaterialFromHandle( int nModelHandle, int nAttrib );

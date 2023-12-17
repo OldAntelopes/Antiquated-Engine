@@ -20,7 +20,7 @@
 #include "ModelConverter.h"
 
 void*	gpxMainWindow = NULL;
-HWND	mhwndMaterialBrowserDialog;
+HWND	mhwndMaterialBrowserDialog = NULL;
 int		mnMaterialBrowserCurrentAttrib = 0;
 
 
@@ -34,6 +34,9 @@ void	MaterialBrowserEnableMaterialPropertiesGroup( BOOL bFlag )
 	{
 		SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_GLOBAL_CHECK, BM_SETCHECK, BST_CHECKED, 0 );
 	}
+
+	EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_DOUBLESIDED_MATERIAL), bFlag );
+	
 	EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_EDIT3), bFlag );
 	EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_EDIT4), bFlag );
 	EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_EDIT14), bFlag );
@@ -126,6 +129,16 @@ char	acString[256];
 			SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_CHECK14, BM_SETCHECK, BST_UNCHECKED, 0 );
 		}
 
+		
+		if ( pMaterialData->IsDoubledSided() )
+		{
+			SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_DOUBLESIDED_MATERIAL, BM_SETCHECK, BST_CHECKED, 0 );
+		}
+		else
+		{	
+			SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_DOUBLESIDED_MATERIAL, BM_SETCHECK, BST_UNCHECKED, 0 );
+		}
+		
 		// Set blend type
 		SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_BLENDTYPE_COMBO2, CB_SETCURSEL, (int)pMaterialData->GetBlendType(), 0 );		
 		
@@ -191,6 +204,14 @@ char	acString[256];
 		MaterialBrowserEnableMaterialPropertiesGroup( FALSE );
 	}
 
+	if ( ModelConvGetNumFacesSelected() > 0 )
+	{
+		EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_APPLYMATTOSELECTION), true );
+	}
+	else
+	{
+		EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_APPLYMATTOSELECTION), false );
+	}
 }
  
 
@@ -336,6 +357,15 @@ float	fVal;
 		nVal = SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_BLENDTYPE_COMBO2, CB_GETCURSEL, 0, 0 );
 		pMaterialData->SetBlendType( (ModelMaterialData::eBLEND_TYPES)nVal );
 
+		if ( SendDlgItemMessage( mhwndMaterialBrowserDialog, IDC_DOUBLESIDED_MATERIAL, BM_GETCHECK, 0, 0 ) )
+		{
+			pMaterialData->SetDoubleSided( true );
+		}
+		else
+		{
+			pMaterialData->SetDoubleSided( false );
+		}
+
 		GetDlgItemText( mhwndMaterialBrowserDialog, IDC_EDIT17, acString, 256 );
 		col.fRed = (float)atof( acString );
 		GetDlgItemText( mhwndMaterialBrowserDialog, IDC_EDIT18, acString, 256 );
@@ -443,6 +473,22 @@ MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[ nModelHandle ];
 
 }
 
+
+void		MaterialBrowserOnFaceSelectionUpdated()
+{
+	if ( mhwndMaterialBrowserDialog != NULL )
+	{
+		if ( ModelConvGetNumFacesSelected() > 0 )
+		{
+			EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_APPLYMATTOSELECTION), true );
+		}
+		else
+		{
+			EnableWindow( GetDlgItem(mhwndMaterialBrowserDialog, IDC_APPLYMATTOSELECTION), false );
+		}
+	}
+}
+
 /***************************************************************************
  * Function    : MaterialBrowserDlgProc
  * Params      :
@@ -493,6 +539,10 @@ char		acCurrentDir[256];
 			case IDC_ADDNEWMATERIAL:
 				MaterialBrowserAddNewMaterial();
 				break;
+			case IDC_APPLYMATTOSELECTION:
+				nVal = SendDlgItemMessage( hDlg, IDC_COMBO1, CB_GETCURSEL, 0, 0 );
+				ModelConvApplyMaterialToSelectedFaces( nVal );
+				break;
 			case IDC_APPLY:
 				MaterialBrowserApplyChanges();
 				EnableWindow( GetDlgItem( mhwndMaterialBrowserDialog, IDC_APPLY ), FALSE );
@@ -538,6 +588,9 @@ char		acCurrentDir[256];
 				break;
 			case IDC_EXTRACT_DIFFUSE_TEX:
 				MaterialBrowserExtractTexture( 0 );
+				break;
+			case IDC_DOUBLESIDED_MATERIAL:
+				MaterialBrowserOnChangesMade();
 				break;
 			case IDC_CHANGE_DIFFUSE:
 				{
