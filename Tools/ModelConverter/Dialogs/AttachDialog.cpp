@@ -92,7 +92,7 @@ MODEL_RENDER_DATA*	pxModelData;
 			}
 			sprintf( acString, "%d", pxModelData->xWheel1AttachData.nAttachVertex );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT1, acString );
-			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xVertTurretData.nAttachVertex, 0));
+			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xWheel1AttachData.nAttachVertex, 0));
 
 			sprintf( acString, "%.4f", pxModelData->xWheel1AttachData.xAttachOffset.x );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT2, acString );
@@ -108,7 +108,7 @@ MODEL_RENDER_DATA*	pxModelData;
 			}
 			sprintf( acString, "%d", pxModelData->xWheel2AttachData.nAttachVertex );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT1, acString );
-			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xVertTurretData.nAttachVertex, 0));
+			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xWheel2AttachData.nAttachVertex, 0));
 
 			sprintf( acString, "%.4f", pxModelData->xWheel2AttachData.xAttachOffset.x );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT2, acString );
@@ -124,7 +124,7 @@ MODEL_RENDER_DATA*	pxModelData;
 			}
 			sprintf( acString, "%d", pxModelData->xWheel3AttachData.nAttachVertex );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT1, acString );
-			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xVertTurretData.nAttachVertex, 0));
+			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xWheel3AttachData.nAttachVertex, 0));
 
 			sprintf( acString, "%.4f", pxModelData->xWheel3AttachData.xAttachOffset.x );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT2, acString );
@@ -140,7 +140,7 @@ MODEL_RENDER_DATA*	pxModelData;
 			}
 			sprintf( acString, "%d", pxModelData->xWheel4AttachData.nAttachVertex );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT1, acString );
-			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xVertTurretData.nAttachVertex, 0));
+			SendDlgItemMessage (mhwndTurretAttachDlg, IDC_SPIN1, UDM_SETPOS, 0L,MAKELONG (pxModelData->xWheel4AttachData.nAttachVertex, 0));
 
 			sprintf( acString, "%.4f", pxModelData->xWheel4AttachData.xAttachOffset.x );
 			SetDlgItemText( mhwndTurretAttachDlg, IDC_EDIT2, acString );

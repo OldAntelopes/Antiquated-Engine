@@ -3292,6 +3292,21 @@ BOOL	ModelLoadUMAFile( MODEL_RENDER_DATA* pxModelData, const char* szFilename )
 }
 
 
+int		ModelLoadFindRemappedVertex( int nOldVertexNum, int nNumVertices, DWORD* pulVertexRemap )
+{
+int			nLoop;
+
+	for ( nLoop = 0; nLoop < nNumVertices; nLoop++ )
+	{
+		if ( pulVertexRemap[nLoop] == nOldVertexNum )
+		{
+			return( nLoop );
+		}
+	}
+	return( NOTFOUND );
+}
+
+
 void	ModelLoadVertexRemapCallback( void* pModelRenderData, void* pVertexRemapData )
 {
 MODEL_RENDER_DATA*		pxModelData = (MODEL_RENDER_DATA*)( pModelRenderData );
@@ -3321,7 +3336,7 @@ int			nNewVertexIndex;
 			for ( nLoop2 = 0; nLoop2 < pxModelData->xStats.nNumVertices; nLoop2++ )
 			{
 				nNewVertexIndex = pulVertexRemap[nLoop2];
-				pxVertexBuffer[nLoop2] = pxVertexSource[(nNewVertexIndex*pxModelData->xStats.nNumVertKeyframes)+nLoop];
+				pxVertexBuffer[nLoop2] = pxVertexSource[(nNewVertexIndex*pxModelData->xStats.nNumVertKeyframes)+nLoop];  // mm, does this work? should this be nLoop* numKeyframes)+nNewVertexIndex ?? 
 				if ( pxNormalSource )
 				{
 					pxNormalBuffer[nLoop2] = pxNormalSource[(nNewVertexIndex*pxModelData->xStats.nNumVertKeyframes)+nLoop];
@@ -3343,8 +3358,38 @@ int			nNewVertexIndex;
 		SystemFree( pxVertexBuffer );
 		SystemFree( pxNormalBuffer );
 	}
+
+	if ( pxModelData->xWheel1AttachData.nAttachVertex > 0 )
+	{
+		pxModelData->xWheel1AttachData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xWheel1AttachData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
+
+	if ( pxModelData->xWheel2AttachData.nAttachVertex > 0 )
+	{
+		pxModelData->xWheel2AttachData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xWheel2AttachData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
+
+	if ( pxModelData->xWheel3AttachData.nAttachVertex > 0 )
+	{
+		pxModelData->xWheel3AttachData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xWheel3AttachData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
+	 
+	if ( pxModelData->xWheel4AttachData.nAttachVertex > 0 )
+	{
+		pxModelData->xWheel4AttachData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xWheel4AttachData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	} 
+
+	if ( pxModelData->xHorizTurretData.nAttachVertex > 0 )
+	{
+		pxModelData->xHorizTurretData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xHorizTurretData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
+
+	if ( pxModelData->xVertTurretData.nAttachVertex > 0 )
+	{
+		pxModelData->xVertTurretData.nAttachVertex = ModelLoadFindRemappedVertex( pxModelData->xVertTurretData.nAttachVertex, pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
 /*
-	VECT*			pxVertexKeyframes;		// Stores the list of keyframes for a vertex-keyframe animation
+	VECT*			pxVertexKeyframes;		/ / Stores the list of keyframes for a vertex-keyframe animation
 	VECT*			pxNormalKeyframes;		// Stores the list of normal keyframes for a vertex-keyframe animation
 
 	MODEL_STATS		xStats;				// Details about the model such as the number of vertices and normals etc.
