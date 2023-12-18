@@ -534,6 +534,7 @@ char		acCurrentDir[256];
 			switch( LOWORD(wParam) )
 			{
 			case IDOK:
+				MaterialBrowserApplyChanges();
 				EndDialog(hDlg, LOWORD(wParam));
 				break;
 			case IDC_ADDNEWMATERIAL:
