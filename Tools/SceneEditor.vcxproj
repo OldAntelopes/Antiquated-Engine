@@ -25,7 +25,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'">
-    <OutDir>.\Exe\</OutDir>
+    <OutDir>..\Exe\</OutDir>
     <IntDir>.\Objs\SceneEditor___Win32_Tool_Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>SceneEditorD</TargetName>
@@ -85,7 +85,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>libcrypto.lib;libssl.lib;Ws2_32.lib;Wldap32.lib;IPHlpApi.Lib;CodeUtilD.lib;libfbxsdkD.lib;jpeglib.lib;zlib.lib;InterfaceD-DX9.lib;EngineToolD.lib;dxerr8.lib;libcurl.lib;comctl32.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;d3d9.lib;dxerr9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../Exe/SceneEditorD.exe</OutputFile>
+      <OutputFile>$(OutDir)SceneEditorD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../Pub/Libs;../Pub/Libs/DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
