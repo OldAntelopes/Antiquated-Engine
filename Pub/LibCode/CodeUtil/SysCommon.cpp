@@ -114,6 +114,7 @@ void				SysSetFrameDelta( float fDelta )
 	mfSysFrameDelta = fDelta;
 }
 
+// Returns time in seconds since 1-Jan-1970
 uint32	SysGetTimeLong(void )
 {
 uint32	ulCurrentTime = 0;
