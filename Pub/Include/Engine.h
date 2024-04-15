@@ -233,13 +233,16 @@ extern BOOL			EngineIsLoadingTextures( void );
 // Camera
 //-------------------------------------------------
 extern void		EngineCameraSetPos( float fX, float fY, float fZ );
+extern void		EngineCameraSetPosVect( const VECT* );
 extern VECT*	EngineCameraGetPos( void );
 extern void		EngineCameraSetDirection( float fX, float fY, float fZ );
+extern void		EngineCameraSetDirectionVect( const VECT* );
 extern VECT*	EngineCameraGetDirection( void );
 extern void		EngineCameraSetProjection( float fFOV, float fNearClip, float fFarClip );
 extern void		EngineCameraGetCurrentProjectionSettings( float* pfFOV, float* pfNearClip, float* pfFarClip );
 extern void		EngineCameraSetProjectionOrtho( void );
 extern void		EngineCameraSetOthorgonalView( int width, int height );
+
 
 extern void		EngineCameraSetUpVect( float fX, float fY, float fZ );
 extern VECT*	EngineCameraGetUpVect( void );

@@ -57,6 +57,12 @@ void EngineCameraSetDirection( float fX, float fY, float fZ )
 	VectNormalize( &mxEngineCamVect );
 }
 
+void		EngineCameraSetDirectionVect( const VECT* pxDir )
+{
+	mxEngineCamVect = *pxDir;
+	VectNormalize( &mxEngineCamVect );
+}
+
 void EngineCameraSetUpVect( float fX, float fY, float fZ )
 {
 	mxEngineCamUpVect.x = fX;
@@ -82,6 +88,12 @@ void	EngineCameraSetPos( float fX, float fY, float fZ )
 	mxEngineCamPos.y = fY;
 	mxEngineCamPos.z = fZ;
 }
+
+void		EngineCameraSetPosVect( const VECT* pxPos )
+{
+	mxEngineCamPos = *pxPos;
+}
+
 
 
 void		EngineCameraStoreCurrent( )

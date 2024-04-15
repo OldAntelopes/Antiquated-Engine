@@ -111,6 +111,7 @@ extern INTERFACE_API int	InterfaceTextBox( int nLayer, int nX, int nY, const cha
 extern INTERFACE_API int	InterfaceTextRect( int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight );
 extern INTERFACE_API int	InterfaceTextRectGetUsedWidth( const char* szString, int font, int nMaxWidth );
 extern INTERFACE_API int	InterfaceTextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign);
+extern INTERFACE_API int	InterfaceFormattedTextBox( int nLayer, int nX, int nY, int W, int H, int ulCol, int font, const char* szString );		// Text here can contain basic HTML tags
 
 extern INTERFACE_API int	InterfaceTextGetWidth( const char* pcString, int nFont );
 extern INTERFACE_API int	InterfaceTextGetHeight( const char* pcString, int nFont );
