@@ -3,7 +3,8 @@
 #define TEXTURED_OVERLAYS_H
 
 // TODO - this shouldnt be here
-#include "../../DirectX/InterfaceInternalsDX.h"
+#include "../../DirectX/InterfaceTypesDX.h"
+#include "../../Common/InterfaceModule.h"
 #include "Overlays.h"
 
 #define		MAX_TEX_OVERLAY_VERTICES			2048
@@ -69,7 +70,7 @@ enum
 	TEX_OVLY_SPRITE,
 };
 
-class TexturedOverlays 
+class TexturedOverlays : public InterfaceModule
 {
 public:
 	void		Initialise();

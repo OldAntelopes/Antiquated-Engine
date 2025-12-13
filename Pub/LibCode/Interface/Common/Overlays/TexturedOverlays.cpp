@@ -998,7 +998,7 @@ int		nLoop;
 
 #else
 		// Create the vertex buffer.
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
 													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
 													  &mpTexOverlayVertexBuffer1 ) ) )
 		{
@@ -1007,7 +1007,7 @@ int		nLoop;
 		}
 
 		// Create the vertex buffer.
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
 													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
 													  &mpTexOverlayVertexBuffer2 ) ) )
 		{

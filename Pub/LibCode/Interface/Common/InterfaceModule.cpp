@@ -9,7 +9,6 @@
 void	InterfaceInstance::InitialiseInstance()
 {
 	mpTexturedOverlays = new TexturedOverlays;
-	mpInterfaceInternals = new InterfaceInternalsDX;
 }
 
 InterfaceInstance*		InterfaceInstanceMain()

@@ -1,44 +1,8 @@
 #ifndef INTERFACE_INTERNALS_H
 #define INTERFACE_INTERNALS_H
 
-#ifdef TUD11
-#include <d3d11.h>
-#else
-#include "../../../Include/DirectX/d3dx9.h"
-#endif
-
-#ifdef __cplusplus
-extern "C"				// All interfaces use a C-linkage
-{
-#endif
-	
-#ifndef MIT_TYPES
-#define MIT_TYPES
-typedef unsigned short			ushort;
-typedef unsigned char			uchar;
-typedef unsigned int			uint;
-#endif
-
-#ifndef UINT32_DEFINED
-typedef unsigned __int32		uint32;
-#define UINT32_DEFINED
-#endif
-
-#ifdef TUD11
-typedef ID3D11Texture2D*		LPGRAPHICSTEXTURE;
-typedef ID3D11Texture2D*		LPGRAPHICSSURFACE;
-typedef ID3D11Buffer			IGRAPHICSVERTEXBUFFER;
-typedef ID3D11Device*			LPGRAPHICSDEVICE;
-#else
-typedef LPDIRECT3DDEVICE9		LPGRAPHICSDEVICE;
-typedef IDirect3DVertexBuffer9	IGRAPHICSVERTEXBUFFER;
-typedef LPDIRECT3DTEXTURE9		LPGRAPHICSTEXTURE;
-typedef D3DMATERIAL9			GRAPHICSMATERIAL;
-typedef IDirect3DSurface9		IGRAPHICSSURFACE;
-typedef D3DCAPS9				GRAPHICSCAPS;
-typedef void**					VERTEX_LOCKTYPE;
-typedef D3DADAPTER_IDENTIFIER9	GRAPHICSADAPTER_IDENTIFIER;
-#endif
+#include "InterfaceTypesDX.h"
+#include "../Common/InterfaceModule.h"
 
 extern LPGRAPHICSDEVICE        mpInterfaceD3DDevice; // Our rendering device
 
@@ -95,6 +59,16 @@ extern void					InterfaceSetD3DDevice( LPGRAPHICSDEVICE pDevice );
 }
 #endif
 
+class InterfaceInternalsDX : public InterfaceModule
+{
+public:
+	HRESULT				CreateVertexBuffer( unsigned int Length, unsigned int Usage, unsigned int FVF, IGRAPHICSVERTEXBUFFER** );
+	void				CreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* );
+	void				SetStreamSource( unsigned int StreamNumber, IGRAPHICSVERTEXBUFFER *pStreamData, unsigned int OffsetInBytes, unsigned int Stride );
+	HRESULT				CreateImageSurface( unsigned int width, unsigned int height, eInterfaceTextureFormat format, IGRAPHICSSURFACE** );
 
+	LPGRAPHICSTEXTURE	LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter );
+	LPGRAPHICSTEXTURE	LoadTextureFromArchive( const char* szFilename, int boReduceFilter, int boMipFilter, int nArchiveHandle );
+};
 
 #endif

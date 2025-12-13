@@ -4,7 +4,8 @@
 // TODO - this shouldnt be here
 #include "../DirectX/InterfaceInternalsDX.h"
 
-class  TexturedOverlays;
+class TexturedOverlays;
+class InterfaceInternals;
 
 class InterfaceInstance
 {
@@ -12,6 +13,7 @@ public:
 	void		InitialiseInstance();
 
 	TexturedOverlays*		mpTexturedOverlays;
+	InterfaceInternalsDX*	mpInterfaceInternals;
 
 	LPGRAPHICSDEVICE		mpInterfaceD3DDevice;
 
