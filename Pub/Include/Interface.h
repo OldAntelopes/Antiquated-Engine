@@ -543,6 +543,10 @@ enum // Preset colour enums for font draw
 }
 #endif
 
+class InterfaceInstance;
+
+extern InterfaceInstance* 		InterfaceInstanceMain();
+
 
 /*
  **********************************************

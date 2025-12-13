@@ -25,34 +25,35 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{72F4B279-4610-4D51-B31C-C0334DD5F1CC}</ProjectGuid>
     <RootNamespace>Interface</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX11|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OpenGL|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -191,7 +192,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Interface___Win32_Client_Debug/Interface.pch</PrecompiledHeaderOutputFile>
@@ -290,6 +290,7 @@
     <ClCompile Include="..\LibCode\Interface\Common\Canvas.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\cJSON.c" />
     <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceInstance.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.cpp">
@@ -376,7 +377,9 @@
     <CustomBuild Include="..\LibCode\Interface\DirectX\Image.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
+    <ClInclude Include="..\Include\InterfaceEx.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceInstance.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h" />
     <ClInclude Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
