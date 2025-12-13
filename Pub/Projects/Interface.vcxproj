@@ -291,6 +291,7 @@
     <ClCompile Include="..\LibCode\Interface\Common\cJSON.c" />
     <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceInstance.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceModule.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.cpp">
@@ -380,6 +381,7 @@
     <ClInclude Include="..\Include\InterfaceEx.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceInstance.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceModule.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h" />
     <ClInclude Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
@@ -447,6 +449,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <ClInclude Include="..\Include\Interface.h" />
+    <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceTypesDX.h" />
     <ClInclude Include="..\LibCode\Interface\OpenGL\FontGL.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DX9|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DX9|Win32'">true</ExcludedFromBuild>
