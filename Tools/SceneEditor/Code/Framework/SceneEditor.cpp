@@ -243,7 +243,7 @@ void		SceneEditorSelectNewElement( SceneMapElement* pSelected )
 			}
 			else
 			{
-				sprintf(szString,"Selected item:\r\nRegion - Type: None\r\n", pRegion->GetRegionType() );
+				sprintf(szString,"Selected item:\r\nRegion - Type: None\r\n" );
 			}
 			SetDlgItemText(mhwndMainDialog, IDC_DETAILS_TEXT, szString );
 

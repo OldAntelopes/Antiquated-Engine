@@ -29,7 +29,7 @@ void	Particle::SetGraphic( const char* szSpriteTextureName, float fGridScale, BO
 	mnParticleGraphicsNum = ParticleGraphicsCreate( szSpriteTextureName, fGridScale, bUseRotation, renderFlags );
 }
 	
-void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam )
+void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel )
 {
 	mType = typeID;
 	if ( pxPos )
@@ -41,6 +41,7 @@ void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ul
 		mxVel = *pxVel;
 	}
 	mulCol = ulCol;
+	mulParamChannel = ulInitParamChannel;
 	mfLongevity = fLongevity;
 	OnInit(nInitParam);
 }
@@ -75,12 +76,18 @@ void	Particle::DefaultRender( void )
 	SPRITE_GROUP		hSpriteGroup = ParticleGraphicsGetSpriteGroup( mnParticleGraphicsNum );
 	float	fScale = 1.0f;
 	uint32	ulCol;
-	float	fAlpha = 1.0f;
-	float	fHalfLife = mfLongevity * 0.5f;
+	float	fAlpha = GetAlphaOverride();
 
-		if ( mfTimeAlive > fHalfLife  )
-		{	
-			fAlpha = 1.0f - ( ( mfTimeAlive - fHalfLife) / fHalfLife );
+		if ( fAlpha < 0.0f )
+		{
+		float	fHalfLife = mfLongevity * 0.5f;
+			
+			fAlpha = 1.0f;
+		
+			if ( mfTimeAlive > fHalfLife  )
+			{	
+				fAlpha = 1.0f - ( ( mfTimeAlive - fHalfLife) / fHalfLife );
+			}
 		}
 
 		if ( fAlpha < 1.0f )

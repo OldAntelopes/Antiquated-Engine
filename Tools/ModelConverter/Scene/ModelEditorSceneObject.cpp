@@ -1470,6 +1470,7 @@ int		nPolys = 0;
 	EngineSetStandardMaterialWithSpecular(30.0f, 0.5f ); 
 	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
 	EngineSetTexture(0,mhTexture);
+	EngineEnableTextureAddressClamp(TRUE);
 
 	if ( mbRenderWireframe )
 	{
@@ -1485,15 +1486,6 @@ int		nPolys = 0;
 	{
 		nPolys = ModelRender( mnModelHandle, &mxPos, &mxRot, 0 );
 	}
-
- 
-	if ( ModelShadowsEnabled( mnModelHandle ) )
-	{
-		//-------------------------------------------------------------------
-		// TEMP - For testing only!!!!!!!!!!!!!!
-//		ShadowVolumeRenderModel( mnModelHandle, &mxPos, &mxRot, 0, 0 );
-		//-------------------------------------------------------------------
-	} 
 
 	EngineMatrixIdentity( &xMatrix );
 	EngineSetWorldMatrix( &xMatrix );

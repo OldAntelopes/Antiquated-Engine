@@ -10,7 +10,7 @@ extern "C"				// All interfaces use a C-linkage
 
 extern void	InterfaceWin32SetInitialWindowSize( int sizeX, int sizeY );
 
-extern void	InterfaceSetWindowStyle( bool bFullscreen );
+extern void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen );
 
 extern void	InterfaceSetWindowHasChanged( BOOL );
 

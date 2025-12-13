@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by ModelConverter.rc
 //
 #define IDC_APPLY                       2
@@ -35,12 +35,14 @@
 #define IDD_MATERIAL_BROWSER            127
 #define IDD_SUBMODEL_BROWSER            128
 #define IDD_MATERIAL_ASSIGN             129
+#define IDD_PRIMITIVE_CURVED_WALL       129
 #define IDD_UV_UNWRAP                   130
 #define IDD_MODEL_TO_SCENE_DIALOG       131
 #define IDD_ADDPRIMITIVE                132
 #define IDD_DIALOG2                     133
 #define IDD_BATCH_RESCALE               133
 #define IDD_CURVED_WALL                 134
+#define IDD_PRIMITIVES_DISC             135
 #define IDC_LIST1                       1000
 #define IDC_PROGRESS1                   1000
 #define IDC_EXPORT_SETTINGS             1003
@@ -258,8 +260,8 @@
 #define IDC_OFFSETY                     1114
 #define IDC_OFFSETZ                     1115
 #define IDC_OFFSETCHECK                 1116
-#define IDC_DOUBLESIDED_MATERIAL		1117
-#define IDC_APPLYMATTOSELECTION			1118
+#define IDC_DOUBLESIDED_MATERIAL        1117
+#define IDC_APPLYMATTOSELECTION         1118
 #define IDM_FILE_EXIT                   40001
 #define ID_FILE_IMPORT                  40002
 #define ID_FILE_SAVEAS                  40004
@@ -415,14 +417,15 @@
 #define ID_SUBMODELS_WHEELMODE_WHEELS_YFORWARD_NOSTEER 40165
 #define IDM_SCALE_MATCH                 40166
 #define IDM_FIX_OLD_VEHICLE             40167
+#define ID_SCENETOOLS_ADDPRIMITIVE_DISC 40168
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         40168
+#define _APS_NEXT_RESOURCE_VALUE        136
+#define _APS_NEXT_COMMAND_VALUE         40169
 #define _APS_NEXT_CONTROL_VALUE         1119
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -19,6 +19,8 @@ typedef unsigned char			uchar;
 typedef unsigned int			uint;
 #endif
 
+#define USE_D3DEX_INTERFACE
+
 #ifndef UINT32_DEFINED
 typedef unsigned __int32		uint32;
 #define UINT32_DEFINED
@@ -30,7 +32,11 @@ typedef ID3D11Texture2D*		LPGRAPHICSSURFACE;
 typedef ID3D11Buffer			IGRAPHICSVERTEXBUFFER;
 typedef ID3D11Device*			LPGRAPHICSDEVICE;
 #else
+#ifdef USE_D3DEX_INTERFACE
+typedef LPDIRECT3DDEVICE9EX		LPGRAPHICSDEVICE;
+#else
 typedef LPDIRECT3DDEVICE9		LPGRAPHICSDEVICE;
+#endif
 typedef IDirect3DVertexBuffer9	IGRAPHICSVERTEXBUFFER;
 typedef LPDIRECT3DTEXTURE9		LPGRAPHICSTEXTURE;
 typedef D3DMATERIAL9			GRAPHICSMATERIAL;
@@ -70,7 +76,7 @@ enum eInterfaceTextureFormat
 };
 
 extern HRESULT				InterfaceInternalDXCreateVertexBuffer( unsigned int Length, unsigned int Usage, unsigned int FVF, IGRAPHICSVERTEXBUFFER** );
-extern void					InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* );
+extern void					InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE*, BOOL bReadable );
 extern void					InterfaceInternalDXSetStreamSource( unsigned int StreamNumber, IGRAPHICSVERTEXBUFFER *pStreamData, unsigned int OffsetInBytes, unsigned int Stride );
 extern HRESULT				InterfaceInternalDXCreateImageSurface( unsigned int width, unsigned int height, eInterfaceTextureFormat format, IGRAPHICSSURFACE** );
 extern LPGRAPHICSTEXTURE	InterfaceLoadTextureFromArchiveDX( const char* szFilename, int boReduceFilter, int boMipFilter, int nArchiveHandle );

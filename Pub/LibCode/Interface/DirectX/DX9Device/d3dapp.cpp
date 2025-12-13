@@ -96,11 +96,19 @@ HRESULT CD3DApplication::InitD3DMinimal( HWND hwind )
 HRESULT hr;
 
     // Create the Direct3D object
+#ifdef USE_D3DEX_INTERFACE
+	Direct3DCreate9Ex( D3D_SDK_VERSION, &m_pD3D );
+#else
 	m_pD3D = Direct3DCreate9( D3D_SDK_VERSION );
+#endif
     if( m_pD3D == NULL )
 	{
 		// Try to start with the old vers
+#ifdef USE_D3DEX_INTERFACE
+		Direct3DCreate9Ex( D3D9b_SDK_VERSION, &m_pD3D );
+#else
 		m_pD3D = Direct3DCreate9( D3D9b_SDK_VERSION );
+#endif
 	    if( m_pD3D == NULL )
 		{
 			return DisplayErrorMsg( D3DAPPERR_NODIRECT3D, MSGERR_APPMUSTEXIT );
@@ -658,9 +666,14 @@ HRESULT CD3DApplication::Initialize3DEnvironment()
 	if ( m_pd3dDevice == NULL )
 	{
 	    // Create the device
-		hr = m_pD3D->CreateDevice( m_dwAdapter, pDeviceInfo->DeviceType,
-                               m_hWndFocus, pModeInfo->dwBehavior, &m_d3dpp,
+#ifdef USE_D3DEX_INTERFACE
+		hr = m_pD3D->CreateDeviceEx( m_dwAdapter, pDeviceInfo->DeviceType,
+                               m_hWndFocus, pModeInfo->dwBehavior, &m_d3dpp, NULL,
                                &m_pd3dDevice );
+#else
+		hr = m_pD3D->CreateDevice( m_dwAdapter, pDeviceInfo->DeviceType,
+                               m_hWndFocus, pModeInfo->dwBehavior, &m_d3dpp, &m_pd3dDevice );
+#endif
 	}
 	else
 	{		

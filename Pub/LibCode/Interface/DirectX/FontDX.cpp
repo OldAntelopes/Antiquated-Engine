@@ -35,6 +35,7 @@ void	CFontDef::SetTextureAsCurrent( void )
 void	CFontDef::LoadTexture( void )
 {
 LPGRAPHICSTEXTURE pxTempTexture;
+LPGRAPHICSTEXTURE pxFinalTexture;
 D3DLOCKED_RECT	xLockedRectDest;
 D3DLOCKED_RECT	xLockedRectSrc;
 D3DSURFACE_DESC		xSurface;
@@ -64,7 +65,7 @@ int			nFormat;
 	{
 		pxTempTexture = InterfaceLoadTextureDX( m_szTextureFilename, 0, 0xFF );
 		if ( pxTempTexture == NULL ) return;
-
+		
 		pxTempTexture->GetLevelDesc( 0, &xSurface );
 		if ( xSurface.Format != D3DFMT_A1R5G5B5 )
 		{
@@ -76,21 +77,21 @@ int			nFormat;
 		m_TextureSizeY = nHeight;
 		m_TextureSizeX = nWidth;
 		nFormat = D3DFMT_A8R8G8B8;
-		InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture );
+		InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture, TRUE );
 		if ( mpTexture == NULL )
 		{
 			nFormat = D3DFMT_A8R3G3B2;
-			InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture );
+			InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture, TRUE );
 		
 			if ( mpTexture == NULL )
 			{
 				nFormat = D3DFMT_A4R4G4B4;
-				InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture );
+				InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture, TRUE );
 			
 				if ( mpTexture == NULL )
 				{
 					nFormat = D3DFMT_A8;
-					InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture );
+					InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture, TRUE );
 			
 					if ( mpTexture == NULL )
 					{
@@ -167,6 +168,19 @@ int			nFormat;
 			mpTexture->UnlockRect( 0);
 		}
 		pxTempTexture->Release();
+
+		InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture, FALSE );
+			
+		IDirect3DSurface9*		pSourceSurface = NULL;
+		IDirect3DSurface9*		pDestSurface = NULL;
+			
+		mpTexture->GetSurfaceLevel( 0, &pSourceSurface );
+		pxFinalTexture->GetSurfaceLevel(0, &pDestSurface );
+		mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
+
+		mpTexture->Release();
+		mpTexture = pxFinalTexture;
+
 	}
 }
 
@@ -264,6 +278,24 @@ void InitialiseFontBuffersDX( void )
 
 
 
+void StringRenderBegin( void )
+{
+	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
+	EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
+	EngineEnableLighting( FALSE );
+	EngineEnableFog( FALSE );
+	EngineEnableCulling( 0 );
+	EngineEnableZTest( FALSE );
+	EngineEnableZWrite( FALSE );
+
+	if( FAILED( mpxCurrentFontVertexBuffer->Lock( 0, 0, (VERTEX_LOCKTYPE)&mpFontVertices, D3DLOCK_DISCARD ) ) )
+	{
+		PANIC_IF(TRUE,"Font vertex buffer lock failed" );
+        return;
+	}
+}
+
+
 /***************************************************************************
  * Function    : RenderStrings
  * Params      : Layer
@@ -277,33 +309,29 @@ uint32	ulCol;
 int		nFont;
 int		nFlag;
 float	fTextScale;
+bool	bHasBegunStringRender = false;
+bool	bHasStringsInThisLayer = false;
 
 	if ( !mpxCurrentFontVertexBuffer ) return;
-
-	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
-
-	EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
-	EngineEnableLighting( FALSE );
-	EngineEnableFog( FALSE );
-	EngineEnableCulling( 0 );
-	EngineEnableZTest( FALSE );
-	EngineEnableZWrite( FALSE );
-
-    if( FAILED( mpxCurrentFontVertexBuffer->Lock( 0, 0, (VERTEX_LOCKTYPE)&mpFontVertices, D3DLOCK_DISCARD ) ) )
-	{
-		PANIC_IF(TRUE,"Font vertex buffer lock failed" );
-        return;
-	}
 
 	xRect.right = 0;
 	xRect.bottom = 0;
 
 	for ( mnCurrentRenderFont = 0; 	mnCurrentRenderFont < 8; mnCurrentRenderFont++ )
 	{
+		bHasStringsInThisLayer = false;
+
 		for ( nLoop = 0; nLoop < mnPosInTextBuffer; nLoop++ )
 		{
 			if ( maxTextBuffer[ nLoop ].nLayer == nLayer )
 			{
+				bHasStringsInThisLayer = true;
+				if ( bHasBegunStringRender == false )
+				{
+					StringRenderBegin();
+					bHasBegunStringRender = true;
+				}
+
 				fTextScale = 0.0f;
 				nFont = maxTextBuffer[ nLoop ].bFont;
 				if ( nFont == mnCurrentRenderFont )
@@ -348,11 +376,18 @@ float	fTextScale;
 				}
 			}
 		}
-		DrawFontBufferDX();
+
+		if ( bHasStringsInThisLayer )
+		{
+			DrawFontBufferDX();
+		}
 	}
 
-	mpxCurrentFontVertexBuffer->Unlock();
-	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
+	if ( bHasBegunStringRender )
+	{
+		mpxCurrentFontVertexBuffer->Unlock();
+		InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
+	}
 
 }
 

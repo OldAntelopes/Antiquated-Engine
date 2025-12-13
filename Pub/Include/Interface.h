@@ -56,6 +56,7 @@ extern INTERFACE_API void	InterfaceInitWindow( const char* pcWindowTitle, void* 
 // First initialisation call - intialises the display device (e.g. Direct3d)
 extern INTERFACE_API void	InterfaceInitDisplayDevice( BOOL boMinRenderPageSize );
 
+
 extern INTERFACE_API void	InterfaceSetInitialSize( BOOL bFullscreen, int windowedWidth, int windowedHeight, BOOL bSmallFlag );
 
 // Second intialisation call - initialises this library (and loads up core textures)
@@ -65,6 +66,7 @@ extern INTERFACE_API void	InterfaceFreeAllD3D( void );
 extern INTERFACE_API void	InterfaceFree( void );
 
 extern BOOL					InterfaceIsOversized( void );
+
 
 /***************************************************
  ******  Interface - Main Update Functions  ********
@@ -196,6 +198,12 @@ extern INTERFACE_API void				InterfaceReleaseImage( IMAGEHANDLE );
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// For handling multiple interface devices
+typedef int		INTERFACE_DEVICE_HANDLE;
+
+extern INTERFACE_API INTERFACE_DEVICE_HANDLE	InterfaceAdditionalDisplayDevice( HWND hWindow );
+extern INTERFACE_API void	InterfaceSwitchDevice( INTERFACE_DEVICE_HANDLE hNewDevice );
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -360,13 +368,21 @@ extern INTERFACE_API HWND				InterfaceGetWindow( void );
 extern INTERFACE_API void				InterfaceSetWindow( HWND hwndMain );
 #endif
 
+#define USE_D3DEX_INTERFACE
+
 #ifdef DIRECT3D_VERSION		// Only include this if directX has been previously included
 #if (DIRECT3D_VERSION>=0x0900)
+#ifdef USE_D3DEX_INTERFACE
+typedef LPDIRECT3DDEVICE9EX		LPGRAPHICSDEVICE;
+typedef LPDIRECT3D9EX			LPGRAPHICS;
+#else
 typedef LPDIRECT3DDEVICE9		LPGRAPHICSDEVICE;
 typedef LPDIRECT3D9				LPGRAPHICS;
+#endif
 typedef LPDIRECT3DTEXTURE9		LPGRAPHICSTEXTURE;
 typedef IDirect3DSurface9		IGRAPHICSSURFACE;
-#else
+
+#else		// --- less than DX9 ! oldscool
 typedef LPDIRECT3DDEVICE8		LPGRAPHICSDEVICE;
 typedef LPDIRECT3D8				LPGRAPHICS;
 typedef LPDIRECT3DTEXTURE8		LPGRAPHICSTEXTURE;

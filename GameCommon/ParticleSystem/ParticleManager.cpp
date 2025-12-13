@@ -47,7 +47,7 @@ RegisteredParticleList*		pNewParticleRegistration = new RegisteredParticleList;
 
 
 
-Particle*		ParticleManagerAddParticle( const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam )
+Particle*		ParticleManagerAddParticle( const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel )
 {
 Particle*		pNewParticle = NULL;
 RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
@@ -58,7 +58,7 @@ RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
 		{
 			pNewParticle = pRegisteredParticleList->mfnParticleNew();
 
-			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam );
+			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel );
 
 			pNewParticle->SetNext( pRegisteredParticleList->mspActiveParticleList );
 			pRegisteredParticleList->mspActiveParticleList = pNewParticle;

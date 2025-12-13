@@ -1679,11 +1679,6 @@ float	fSize;
 int		nCount;
 BYTE	cChar;
 
-	if ( nFont == 7 )
-	{
-	int		nBreak = 0;
-		nBreak++;
-	}
 	mfCurrentFontGlobalScale = fTextScale;
 	switch( nAlign )
 	{

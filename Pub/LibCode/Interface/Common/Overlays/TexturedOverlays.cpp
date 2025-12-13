@@ -1434,7 +1434,7 @@ LPGRAPHICSTEXTURE	InterfaceGetBlankPlatformTexture( int nWidth, int nHeight, int
 {
 LPGRAPHICSTEXTURE	pxTexture;
 
-	InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &pxTexture );
+	InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &pxTexture, TRUE );
 	return( pxTexture );
 }
 

@@ -124,6 +124,9 @@
     <ClInclude Include="ModelConverter\Tools\VertexManipulate.h">
       <Filter>Tools</Filter>
     </ClInclude>
+    <ClInclude Include="ModelConverter\AddPrimitives\Disc.h">
+      <Filter>AddPrimitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\GameCommon\Util\cJSON.c" />
@@ -187,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="ModelConverter\Tools\VertexManipulate.cpp">
       <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelConverter\AddPrimitives\Disc.cpp">
+      <Filter>AddPrimitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

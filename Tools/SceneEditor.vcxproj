@@ -25,7 +25,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -84,7 +84,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcrypto.lib;libssl.lib;Ws2_32.lib;Wldap32.lib;IPHlpApi.Lib;CodeUtilD.lib;libfbxsdkD.lib;jpeglib.lib;zlib.lib;InterfaceD-DX9.lib;EngineToolD.lib;dxerr8.lib;libcurl.lib;comctl32.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;d3d9.lib;dxerr9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Wldap32.lib;IPHlpApi.Lib;CodeUtilD.lib;libfbxsdkD.lib;jpeglib.lib;zlib.lib;InterfaceD-DX9.lib;EngineToolD.lib;dxerr8.lib;comctl32.lib;d3dx9.lib;dxguid.lib;d3dxof.lib;d3d9.lib;dxerr9.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)SceneEditorD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../Pub/Libs;../Pub/Libs/DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

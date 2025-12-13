@@ -284,7 +284,10 @@ EngineVertBuffContainer*		pVertBuffContainer = new EngineVertBuffContainer;
 
 		pVertBuffContainer->m_nHandle = newHandle;
 		pVertBuffContainer->mszTrackingName = (char*)( malloc( strlen( szTrackingName ) + 1 ));
-		strcpy( pVertBuffContainer->mszTrackingName, szTrackingName );
+		if ( pVertBuffContainer->mszTrackingName )
+		{
+			strcpy( pVertBuffContainer->mszTrackingName, szTrackingName );
+		}
 		pVertBuffContainer->mpxNext = m_spEngineVertBuffList;
 		m_spEngineVertBuffList = pVertBuffContainer;
 
@@ -826,7 +829,7 @@ void	EngineSetVertexFormat( int nVertexFormat )
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineSetVertexFormat TBI" );
 #else
- 	if ( 1 ) // nVertexFormat != mnLastSetVertexFormat )
+ 	if ( nVertexFormat != mnLastSetVertexFormat )
 	{
 		mnLastSetVertexFormat = nVertexFormat;
 
@@ -1638,7 +1641,6 @@ void	EngineDefaultState( void )
 {
 	if ( mpEngineDevice )
 	{
-		// TO DO
 		// this should set fog, lighting, ztest and everything as we'd 'normally' expect.
 		EngineResetColourMode();
 		EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
@@ -1652,8 +1654,6 @@ void	EngineDefaultState( void )
 		EngineEnableBlend( 1 );
 		EngineEnableTextureAddressClamp( 1 );
 		mpEngineDevice->SetRenderState( D3DRS_ALPHAREF, 0x1 );
-
-
 	}
 }
 

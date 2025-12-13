@@ -179,6 +179,8 @@ btDefaultMotionState* pMotionState;
 btVector3	inertia(0, 0, 0);
 btQuaternion	rotationQuat( pxRot->x, pxRot->y, pxRot->z );
 
+	if ( mpDynamicsWorld == NULL ) return NOTFOUND;
+
 	pMotionState = new btDefaultMotionState(btTransform(rotationQuat, btVector3(pxPos->x, pxPos->y, pxPos->z)));
 
 	switch( type )

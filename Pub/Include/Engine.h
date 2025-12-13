@@ -466,10 +466,20 @@ extern void		EngineDebugNoTextures( BOOL );
 //-----------------------------------------
 #ifdef DIRECT3D_VERSION		// only include this if directx has been included already
 
+#ifndef USE_D3DEX_INTERFACE
+#define USE_D3DEX_INTERFACE
+#endif
+
+#ifdef USE_D3DEX_INTERFACE
+void	EngineInitDX( LPDIRECT3DDEVICE9EX );
+LPDIRECT3DDEVICE9EX		EngineGetDXDevice(void);
+#else
 void	EngineInitDX( LPDIRECT3DDEVICE9 );
+LPDIRECT3DDEVICE9		EngineGetDXDevice(void);
+#endif
+
 // Direct access to the directx texture - should only be used in special circumstances!
 LPDIRECT3DTEXTURE9		EngineGetTextureDirectDX( TEXTURE_HANDLE hTexture );
-LPDIRECT3DDEVICE9		EngineGetDXDevice(void);
 
 #endif // DIRECT3D_VERSION
 

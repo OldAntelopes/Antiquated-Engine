@@ -245,15 +245,15 @@ void	InterfaceWin32SetInitialWindowSize( int sizeX, int sizeY )
 }
 
 
-void	InterfaceSetWindowStyle( bool bFullscreen )
+void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
 {
-	if ( bFullscreen )
+	if ( bFullscreen ) 
 	{
-        SetWindowLong( mhwndInterfaceMain, GWL_STYLE, WS_POPUP|WS_SYSMENU|WS_VISIBLE );
+        SetWindowLong( hWindow, GWL_STYLE, WS_POPUP|WS_SYSMENU|WS_VISIBLE );
 	}
 	else
 	{
-        SetWindowLong( mhwndInterfaceMain, GWL_STYLE, mdwWindowStyle );
+        SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
 	}
 }
 

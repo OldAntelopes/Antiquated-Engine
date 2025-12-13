@@ -258,7 +258,7 @@ IDirect3DDevice9*	pD3DDevice = NULL;
 	}
 	else
 	{
-		InterfaceGetDXDeviceCreateParams( FALSE, &d3dpp );
+		InterfaceGetDXDeviceCreateParams( mOculusHWND, FALSE, &d3dpp );
 	}
 	hr = pD3D->CreateDevice( nNumAdapters-1, D3DDEVTYPE_HAL, mOculusHWND, flags, &d3dpp, &pD3DDevice );
 	int i = 0;

@@ -383,7 +383,7 @@ float	fBaseV = 0.005f;
 
 	if ( mhTrailVertexBuffer == NOTFOUND )
 	{
-		mhTrailVertexBuffer = EngineCreateVertexBuffer( MAX_TRAIL_VERTICES, 0 );
+		mhTrailVertexBuffer = EngineCreateVertexBuffer( MAX_TRAIL_VERTICES, 0, "Trail VB" );
 	    if( mhTrailVertexBuffer == NOTFOUND )
 	    {
 //			PANIC_IF( TRUE, "Couldnt create trail vertex buffer");

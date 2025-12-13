@@ -18,6 +18,8 @@ extern int		mnDesiredHeight;
 
 extern BOOL InterfaceShowFullscreenPanic( char* szErrorString );
 
+extern LPGRAPHICSDEVICE InterfaceCreateNewGraphicsDevice( HWND hWindow, BOOL boMinPageSize );
+
 
 #ifdef __cplusplus
 }

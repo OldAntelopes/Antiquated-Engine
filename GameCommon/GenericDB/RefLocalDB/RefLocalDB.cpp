@@ -10,7 +10,7 @@ void		RefLocalDBInit( const char* szDBName )
 {
 char	acDirString[256];
 int		nLoop;
-void*	pFile;
+FILE*	pFile;
 
 	// See if we can find the DB..
 	sprintf( acDirString, "DB\\%s\\%03d\\dbid.dat", szDBName, 0 );
@@ -57,7 +57,7 @@ void*	pFile;
 
 int		RefLocalDBRetrieve( const char* szDBName, u64 ulRecordUID, BYTE** ppbMemOut, int* pnMemSize )
 {
-void*	pFile;
+FILE*	pFile;
 char	acDBFilename[256];
 int		nFolderNum = (int)( ulRecordUID % REF_LOCAL_DB_NUM_FOLDERS );
 int		nFileSize;
@@ -82,7 +82,7 @@ BYTE*	pbMemBuffer;
 
 int		RefLocalDBStore( const char* szDBName, u64 ulRecordUID, BYTE* pbMem, int nMemSize )
 {
-void*	pFile;
+FILE*	pFile;
 char	acTempDBFilename[256];
 char	acDBFilename[256];
 int		nFolderNum = (int)( ulRecordUID % REF_LOCAL_DB_NUM_FOLDERS );

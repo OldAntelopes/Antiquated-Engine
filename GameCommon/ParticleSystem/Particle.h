@@ -16,8 +16,9 @@ public:
 	virtual void		OnRender( void ) {}
 
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
+	virtual float		GetAlphaOverride( void ) { return -1.0f; }
 
-	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0 );
+	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, uint32 ulInitParamChannel = 0 );
 	void	Update( float fDelta );
 	virtual void	Render( void );
 	
@@ -34,15 +35,18 @@ public:
 
 	void	SetSpriteScale( float fScale ) { mfSpriteScale = fScale; }
 	void	SetSpriteFrameNum( int nFrameNum ) { mnSpriteFrameNum = nFrameNum; }
+	void	SetParamChannel( uint32 nChannel ) { mulParamChannel = nChannel; }
 
 	int		GetParticleGraphicNum( void ) { return( mnParticleGraphicsNum ); }
 
 	int		GetTypeID( void ) { return( mType ); }
 	void	SetTypeID( int type ) { mType = type; }
 	
-	float	GetLongevity( void ) { return( mfLongevity ); }
-	float	GetTimeAlive( void ) { return( mfTimeAlive ); }
-	uint32	GetCol( void ) { return( mulCol ); }
+	float	GetLongevity( void ) const { return( mfLongevity ); }
+	float	GetTimeAlive( void ) const { return( mfTimeAlive ); }
+	float	GetSpriteScale( void ) const { return( mfSpriteScale ); }
+	uint32	GetCol( void ) const { return( mulCol ); }
+	uint32	GetParamChannel( void ) const { return( mulParamChannel ); }
 
 	void		SetNext( Particle* pNext ) { mpNext = pNext; }
 	Particle*	GetNext( void ) { return( mpNext ); }
@@ -60,6 +64,7 @@ private:
 	float		mfSpriteScale;
 	float		mfRot;
 	int			mnSpriteFrameNum;
+	uint32		mulParamChannel;
 
 	Particle*	mpNext;
 
@@ -102,7 +107,7 @@ public:
 
 	char*					mszParticleName;
 	ParticleNewFunction		mfnParticleNew;
-	Particle*					mspActiveParticleList;
+	Particle*				mspActiveParticleList;
 	int						mnParticleTypeID;
 
 	RegisteredParticleList*		mpNext;

@@ -364,7 +364,7 @@ void		InterfaceSetMaximumFrontBufferWidth( int nMaxWidth )
 	msnInterfaceMaxRenderPageWidth = nMaxWidth;
 }
 
-BOOL		InterfaceGetDXDeviceCreateParams( BOOL boMinPageSize, D3DPRESENT_PARAMETERS* pD3Dpp )
+BOOL		InterfaceGetDXDeviceCreateParams( HWND hWindow, BOOL boMinPageSize,  D3DPRESENT_PARAMETERS* pD3Dpp )
 {
 D3DDISPLAYMODE d3ddm;
 
@@ -381,15 +381,20 @@ D3DDISPLAYMODE d3ddm;
 		pD3Dpp->BackBufferWidth  = d3ddm.Width;
 		pD3Dpp->BackBufferHeight = d3ddm.Height;
 		// Set fullscreen-mode style
-		InterfaceSetWindowStyle( true );
+		InterfaceSetWindowStyle( hWindow, true );
 	}
 	else
 	{
 		// Set windowed-mode style
-		InterfaceSetWindowStyle( false );
+		InterfaceSetWindowStyle( hWindow, false );
 		pD3Dpp->Windowed = TRUE;
-		pD3Dpp->BackBufferWidth  = mnWindowWidth;
-		pD3Dpp->BackBufferHeight = mnWindowHeight;
+		
+		RECT	xRect;
+		GetClientRect( hWindow, &xRect );
+		int nWindowWidth = xRect.right - xRect.left;
+		int nWindowHeight = xRect.bottom - xRect.top;
+		pD3Dpp->BackBufferWidth  = nWindowWidth;
+		pD3Dpp->BackBufferHeight = nWindowHeight;
 
 		if ( boMinPageSize == TRUE )
 		{
@@ -485,7 +490,7 @@ D3DDISPLAYMODE d3ddm;
 	pD3Dpp->BackBufferFormat = d3ddm.Format;
 	pD3Dpp->EnableAutoDepthStencil = TRUE;
 	pD3Dpp->AutoDepthStencilFormat = D3DFMT_D24S8;
-	pD3Dpp->hDeviceWindow          = mhwndInterfaceMain;
+	pD3Dpp->hDeviceWindow          = hWindow;
 	if ( InterfaceGetOption(VSYNC) == 1 )
 	{
 		pD3Dpp->PresentationInterval = D3DPRESENT_INTERVAL_ONE;
@@ -535,6 +540,112 @@ D3DDISPLAYMODE d3ddm;
 	return( TRUE );
 }
 
+
+
+INTERFACE_API LPGRAPHICSDEVICE InterfaceCreateNewGraphicsDevice( HWND hWindow, BOOL boMinPageSize )
+{
+LPGRAPHICSDEVICE	pInterfaceD3DDevice = NULL;
+HRESULT		hr;
+D3DDISPLAYMODE d3ddm;
+bool		bFullScreenAntiAlias = false;
+
+	// Get the current desktop display mode, so we can set up a back
+	// buffer of the same format
+	if( FAILED( mpD3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm ) ) )
+	{
+		PANIC_IF(TRUE,"Couldn't get display mode" );
+		return( NULL );
+	}
+
+	// Set up the present parameters - This is generally what odd vid cards have a problem with
+	D3DPRESENT_PARAMETERS d3dpp;
+	ZeroMemory( &d3dpp, sizeof(d3dpp) );
+
+	InterfaceGetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp );
+
+	int		nAdapterToUse = D3DADAPTER_DEFAULT;
+
+#ifdef USE_D3DEX_INTERFACE
+	hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &pInterfaceD3DDevice );								  
+#else
+	hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &pInterfaceD3DDevice );								  
+#endif
+
+	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
+
+	if ( hr == D3DERR_OUTOFVIDEOMEMORY )
+	{
+		if ( mboDidLimitTo900ByX == true )
+		{
+			d3dpp.BackBufferWidth  = 800;
+			mnRenderSurfaceWidth  = d3dpp.BackBufferWidth;
+		}
+		if ( mboDidLimitTo900ByY == true )
+		{
+			d3dpp.BackBufferHeight = 600;
+			mnRenderSurfaceHeight = d3dpp.BackBufferHeight;
+		}
+
+#ifdef USE_D3DEX_INTERFACE
+		hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
+								  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+								  &d3dpp, NULL, &pInterfaceD3DDevice );
+#else
+		hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
+								  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+								  &d3dpp, &pInterfaceD3DDevice );
+#endif
+		if ( FAILED(hr) )
+		{
+			// Using 'Discard' can save us a bunch of vid mem apparently.. 
+			// so try to create the screen using this
+			d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+#ifdef USE_D3DEX_INTERFACE
+					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
+											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+											  &d3dpp, NULL, &pInterfaceD3DDevice );
+#else
+					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
+											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+											  &d3dpp, &pInterfaceD3DDevice );
+
+#endif
+		}
+	}
+
+	if( FAILED( hr ) )
+	{	
+		InterfaceSetWindowStyle( hWindow, false );
+		switch ( hr )
+		{
+		case D3DERR_OUTOFVIDEOMEMORY:
+			PANIC_IF(TRUE,"Not enough video memory to create D3D Device.\n You might be able to fix this by lowering your screen resolution in your desktop display properties." );
+			break;
+		case D3DERR_INVALIDCALL:
+			PANIC_IF(TRUE,"Invalid call for direct3d create device" );
+			break;
+		default:
+			PANIC_IF(TRUE,"Direct3D Create Device failed. There may be problems with your video card drivers or DirectX install.\n Adjusting the DirectX setup options on the Video Options menu may help." );
+			break;
+		}
+		return( NULL );
+	}
+
+	hr = pInterfaceD3DDevice->Reset( &d3dpp );
+
+	// Set standard render modes bit
+	pInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	pInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
+	pInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+	pInterfaceD3DDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, TRUE );
+	pInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,
+									 0, 1.0f, 0 );
+	pInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
+
+	return( pInterfaceD3DDevice );
+}
+
+
 /***************************************************************************
  * Function    : InterfaceInitD3D
  * Params      : 
@@ -548,12 +659,20 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 	{
 		if ( mpD3D == NULL )
 		{
+#ifdef USE_D3DEX_INTERFACE
+			Direct3DCreate9Ex( D3D_SDK_VERSION, &mpD3D );
+#else
 			mpD3D = Direct3DCreate9( D3D_SDK_VERSION );
+#endif
 			// Create the D3D object.
 			if( mpD3D == NULL )
 			{
 				// Fallback to 9.0b
-				mpD3D = Direct3DCreate9( D3D9b_SDK_VERSION );
+#ifdef USE_D3DEX_INTERFACE
+				Direct3DCreate9Ex( D3D9b_SDK_VERSION, &mpD3D  );
+#else
+				mpD3D = Direct3DCreate9( D3D9b_SDK_VERSION  );
+#endif
 				if( mpD3D == NULL )
 				{
 					PANIC_IF(TRUE,"Direct3D Create Failed. You may need to update your DirectX runtime and/or video card drivers for this game to work" );
@@ -577,12 +696,20 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 
 		if ( mpD3D == NULL )
 		{
+#ifdef USE_D3DEX_INTERFACE
+			Direct3DCreate9Ex( D3D_SDK_VERSION, &mpD3D );
+#else
 			mpD3D = Direct3DCreate9( D3D_SDK_VERSION );
+#endif
 			// Create the D3D object.
 			if( mpD3D == NULL )
 			{
 				// Fallback to 9.0b
+#ifdef USE_D3DEX_INTERFACE
+				Direct3DCreate9Ex( D3D9b_SDK_VERSION, &mpD3D );
+#else
 				mpD3D = Direct3DCreate9( D3D9b_SDK_VERSION );
+#endif
 				if( mpD3D == NULL )
 				{
 					PANIC_IF(TRUE,"Direct3D Create Failed. You may need to update your DirectX runtime and/or video card drivers for this game to work" );
@@ -603,14 +730,21 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 		D3DPRESENT_PARAMETERS d3dpp;
 		ZeroMemory( &d3dpp, sizeof(d3dpp) );
 
-		InterfaceGetDXDeviceCreateParams( boMinPageSize, &d3dpp );
+		InterfaceGetDXDeviceCreateParams( mhwndInterfaceMain, boMinPageSize, &d3dpp );
 
 		if ( mpInterfaceD3DDevice == NULL )
 		{
 		int		nAdapterToUse = D3DADAPTER_DEFAULT;
 
+//		D3DDISPLAYMODEEX*		pDisplayModeEx;
+
 //			hr = mpD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, mhwndInterfaceMain,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );
-			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );								  
+
+#ifdef USE_D3DEX_INTERFACE
+			hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &mpInterfaceD3DDevice );								  
+#else
+			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );								  
+#endif
 
 			d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
 
@@ -627,23 +761,36 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 					mnRenderSurfaceHeight = d3dpp.BackBufferHeight;
 				}
 
+#ifdef USE_D3DEX_INTERFACE
+				hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+										  &d3dpp, NULL, &mpInterfaceD3DDevice );
+#else
 				hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
-										  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 										  &d3dpp, &mpInterfaceD3DDevice );
+#endif
 				if ( FAILED(hr) )
 				{
 					// Using 'Discard' can save us a bunch of vid mem apparently.. 
 					// so try to create the screen using this
 					d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+#ifdef USE_D3DEX_INTERFACE
+					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
+											  &d3dpp, NULL, &mpInterfaceD3DDevice );
+#else
 					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
 											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 											  &d3dpp, &mpInterfaceD3DDevice );
+
+#endif
 				}
 			}
 
 			if( FAILED( hr ) )
 			{	
-				InterfaceSetWindowStyle( false );
+				InterfaceSetWindowStyle( mhwndInterfaceMain, false );
 				switch ( hr )
 				{
 				case D3DERR_OUTOFVIDEOMEMORY:
@@ -710,7 +857,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 				
 				PANIC_IF( TRUE, acErrorMsg );
 
-				InterfaceSetWindowStyle( false );
+				InterfaceSetWindowStyle( mhwndInterfaceMain, false );
 				InterfaceInitSmall();
 				return( NULL );
 			}		
@@ -856,11 +1003,6 @@ INTERFACE_API void InterfaceBeginRender( void)
 {
 	if ( mpInterfaceD3DDevice )
 	{
-		if ( mbIsInScene == true )
-		{
-		int		nBreak = 0;
-			nBreak++;
-		}
 	    // Begin the scene
 		mpInterfaceD3DDevice->BeginScene();
 	}

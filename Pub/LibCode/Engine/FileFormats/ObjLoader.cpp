@@ -19,6 +19,7 @@ public:
 		mszMaterialLibName = NULL;
 		mnMaterialNum = 0;
 		mpModelMaterialData = NULL;
+		mpNext = NULL;
 	}
 
 	void		InitObjMaterial( int nMaterialNum, const char* szName );
@@ -35,7 +36,10 @@ void	ObjMaterial::InitObjMaterial( int nMaterialNum, const char* szName )
 {
 	mnMaterialNum = nMaterialNum;
 	mszMaterialLibName = (char*)( malloc( strlen( szName ) + 1 ) );
-	strcpy( mszMaterialLibName, szName );
+	if ( mszMaterialLibName )
+	{
+		strcpy( mszMaterialLibName, szName );
+	}
 	mpModelMaterialData = new ModelMaterialData;
 	mpModelMaterialData->SetAttrib( nMaterialNum );
 
@@ -707,25 +711,28 @@ FILE*		pFile = fopen( szFilename, "rb" );
 	int		nFileSize = SysGetFileSize( pFile );
 	char*	pcMtlFileMem = (char*)( malloc( nFileSize + 1 ) );
 
-		fread( pcMtlFileMem, nFileSize, 1, pFile );
-		fclose( pFile );
-		pcMtlFileMem[nFileSize] = 0;
-
-		pxModelData->xStats.nNumMaterials = ModelLoadObjMtlLibParse( pcMtlFileMem, szObjFilePath );
-
-		if ( pxModelData->xStats.nNumMaterials > 0 )
+		if ( pcMtlFileMem )
 		{
-		ObjMaterial*	pObjMaterial = mpObjMaterialList;
+			fread( pcMtlFileMem, nFileSize, 1, pFile );
+			fclose( pFile );
+			pcMtlFileMem[nFileSize] = 0;
 
-			while( pObjMaterial )
+			pxModelData->xStats.nNumMaterials = ModelLoadObjMtlLibParse( pcMtlFileMem, szObjFilePath );
+
+			if ( pxModelData->xStats.nNumMaterials > 0 )
 			{
-				pObjMaterial->mpModelMaterialData->SetNext( pxModelData->pMaterialData );
-				pxModelData->pMaterialData = pObjMaterial->mpModelMaterialData;
-				pObjMaterial = pObjMaterial->mpNext;
-			}
-		}
+			ObjMaterial*	pObjMaterial = mpObjMaterialList;
 
-		free( pcMtlFileMem );
+				while( pObjMaterial )
+				{
+					pObjMaterial->mpModelMaterialData->SetNext( pxModelData->pMaterialData );
+					pxModelData->pMaterialData = pObjMaterial->mpModelMaterialData;
+					pObjMaterial = pObjMaterial->mpNext;
+				}
+			}
+
+			free( pcMtlFileMem );
+		}
 	}
 	
 }

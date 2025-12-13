@@ -363,8 +363,13 @@ extern const char*	ModelAnimationGetName( int nAnimID );
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef DIRECT3D_VERSION		// only include this stuff if directx has been included already // Hacky bits :)
 #if (DIRECT3D_VERSION>=0x0900)
-extern LPDIRECT3D9             g_pD3D       ;// Used to create the D3DDevice
-extern LPDIRECT3DDEVICE9       g_pd3dDevice; // Our rendering device
+#ifdef USE_D3DEX_INTERFACE
+extern LPDIRECT3D9EX             g_pD3D       ;// Used to create the D3DDevice
+extern LPDIRECT3DDEVICE9EX       g_pd3dDevice; // Our rendering device
+#else
+extern LPDIRECT3D9			     g_pD3D       ;// Used to create the D3DDevice
+extern LPDIRECT3DDEVICE9		 g_pd3dDevice; // Our rendering device
+#endif
 #else
 extern LPDIRECT3D8             g_pD3D       ;// Used to create the D3DDevice
 extern LPDIRECT3DDEVICE8       g_pd3dDevice; // Our rendering device

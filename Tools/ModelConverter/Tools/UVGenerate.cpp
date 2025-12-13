@@ -22,9 +22,9 @@ enum
 
 int			UVGenerateGetBoxSide( VECT* pxNormal )
 {
-float	fAbsX = fabs( pxNormal->x );
-float	fAbsY = fabs( pxNormal->y );
-float	fAbsZ = fabs( pxNormal->z );
+float	fAbsX = fabsf( pxNormal->x );
+float	fAbsY = fabsf( pxNormal->y );
+float	fAbsZ = fabsf( pxNormal->z );
 
 	if ( fAbsZ > fAbsX )
 	{
@@ -81,7 +81,8 @@ int		nBoxSide;
 float	fSideDistX;
 float	fSideDistY;
 VECT	xBoundSize;
-float	fU, fV;
+float	fU = 0.0f;
+float   fV = 0.0f;
 
 	if ( nModelHandle != NOTFOUND )
 	{

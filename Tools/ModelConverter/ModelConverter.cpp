@@ -35,6 +35,7 @@
 #include "Dialogs/AttachDialog.h"
 #include "AddPrimitives/AddPrimitives.h"
 #include "AddPrimitives/CurvedWall.h"
+#include "AddPrimitives/Disc.h"
 #include "Tools/RecalcNormals.h"
 #include "Tools/MeshManipulate.h"
 #include "Tools/ScaleModel.h"
@@ -4630,6 +4631,7 @@ int		nLoop;
 	EngineSetGameInterface( (EngineGameInterface*)&m_sEngineGameInterface );
 
 	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 1 );
+	InterfaceSetFilteringModes(0);
 
 	InterfaceInit( TRUE );
 	InterfaceNewFrame( 0 );
@@ -5720,6 +5722,10 @@ int	nVal;
 				break;
 			case ID_SCENETOOLS_CREATESCENEFROMMODEL:
 				DialogBox(ghInstance, (LPCTSTR)IDD_MODEL_TO_SCENE_DIALOG, NULL, (DLGPROC)ModelToSceneDlg );		
+				break;
+			case ID_SCENETOOLS_ADDPRIMITIVE_DISC:
+				AddDisc();
+				ModelConverterDisplayFrame( TRUE );
 				break;
 			case ID_SCENETOOLS_ADDPRIMITIVE_WALLCIRCLE:
 				AddCurvedWall();

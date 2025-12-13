@@ -17,13 +17,14 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -65,7 +66,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Pub\Include;..\Pub\Include\DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DXERR_INCLUDED;CURL_STATICLIB;WIN32;_DEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\Objs\ModelConverter___Win32_Tool_Debug\ModelConverter.pch</PrecompiledHeaderOutputFile>
@@ -82,7 +83,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dxerr9.lib;IPHlpApi.Lib;libfbxsdkD.lib;jpeglib.lib;CodeUtilD.lib;dxerr9.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr9.lib;IPHlpApi.Lib;libfbxsdkD.lib;CodeUtilD.lib;zlib.lib;dxguid.lib;d3dxof.lib;D3dx9.lib;d3d9.lib;InterfaceD-dx9.lib;EngineToolD.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;jpeglib.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Exe\ModelConverterD.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\Pub\Libs;..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -157,6 +158,7 @@
     <ClInclude Include="..\GameCommon\Util\cJSON.h" />
     <ClInclude Include="ModelConverter\AddPrimitives\AddPrimitives.h" />
     <ClInclude Include="ModelConverter\AddPrimitives\CurvedWall.h" />
+    <ClInclude Include="ModelConverter\AddPrimitives\Disc.h" />
     <ClInclude Include="ModelConverter\CombineMaterials.h" />
     <ClInclude Include="ModelConverter\Dialogs\AttachDialog.h" />
     <ClInclude Include="ModelConverter\Dialogs\CreateSceneFromModel.h" />
@@ -195,6 +197,7 @@
     <ClCompile Include="..\GameCommon\Util\cJSON.c" />
     <ClCompile Include="ModelConverter\AddPrimitives\AddPrimitives.cpp" />
     <ClCompile Include="ModelConverter\AddPrimitives\CurvedWall.cpp" />
+    <ClCompile Include="ModelConverter\AddPrimitives\Disc.cpp" />
     <ClCompile Include="ModelConverter\CombineMaterials.cpp" />
     <ClCompile Include="ModelConverter\Dialogs\AttachDialog.cpp" />
     <ClCompile Include="ModelConverter\Dialogs\CreateSceneFromModel.cpp" />

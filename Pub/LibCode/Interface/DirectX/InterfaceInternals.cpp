@@ -185,14 +185,25 @@ D3DFORMAT dx9Format;
 }
 #endif
 
-void	InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture )
+void	InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture, BOOL bReadable )
 {
 #ifdef TUD11
 	PANIC_IF( TRUE, "InterfaceInternalDXCreateTexture TBI" );
 #else
 	D3DFORMAT dx9Format = InterfaceInternalDX9GetFormat( format );
-
+	*ppTexture = NULL;
+#ifdef USE_D3DEX_INTERFACE
+	if ( bReadable )
+	{
+		mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_SYSTEMMEM, ppTexture, NULL );
+	}
+	else
+	{
+		mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_DEFAULT, ppTexture, NULL );
+	}
+#else
 	mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_MANAGED, ppTexture, NULL );
+#endif
 #endif
 
 }
@@ -403,7 +414,11 @@ int		nFormat = D3DFMT_R8G8B8;
 
 	InterfaceGetTextureLoadParams( szFilename, boReduceFilter, boMipFilter, &nFormat, &nFilter, &nMipFilter, &nMipLevels );
 
+#ifdef USE_D3DEX_INTERFACE
+	nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+#else
 	nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+#endif
 	if( FAILED( nRet ) )
 	{
 		pxTexture = NULL;
@@ -451,8 +466,15 @@ int		nFormat = D3DFMT_UNKNOWN;
 	sprintf(acString,"Loading texture %s\n", szFilename );
 	PrintConsoleCR(acString,COL_WARNING);
 */
+	
+	_D3DPOOL nPoolType = D3DPOOL_MANAGED;
+
+#ifdef USE_D3DEX_INTERFACE
+	nPoolType = D3DPOOL_SYSTEMMEM;
+#endif
+
 	nRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-										0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_MANAGED,nFilter, nMipFilter,
+										0,0,nMipLevels,0,(D3DFORMAT)nFormat, nPoolType,nFilter, nMipFilter,
 										0xFF0000FF, NULL, NULL,
 										&pxTexture );
 
@@ -460,11 +482,28 @@ int		nFormat = D3DFMT_UNKNOWN;
 	{
 	int		nNewRet = 0;
 
+		switch ( nRet )
+		{
+		case D3DERR_INVALIDCALL:
+			printf( "invalid call\n");
+			break;
+		case D3DERR_NOTAVAILABLE:
+			printf( "not available\n");
+			break;
+		case D3DERR_OUTOFVIDEOMEMORY:
+			printf( "out of vid mem\n");
+			break;
+		case D3DXERR_INVALIDDATA:
+			printf( "invalid data\n");
+			break;
+		case E_OUTOFMEMORY:
+			break;
+		}
 		// If 32 bit load failed, try to load em as 16 bit instead
 		if ( nFormat == D3DFMT_A8R8G8B8 )
 		{
 			nNewRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-											0,0,nMipLevels,0,D3DFMT_A1R5G5B5, D3DPOOL_MANAGED,nFilter, nMipFilter,
+											0,0,nMipLevels,0,D3DFMT_A1R5G5B5, nPoolType,nFilter, nMipFilter,
 											0xFF0000FF, NULL, NULL,
 											&pxTexture );
 			if( FAILED( nNewRet ) )
@@ -476,7 +515,7 @@ int		nFormat = D3DFMT_UNKNOWN;
 		else if ( nFormat == D3DFMT_A1R5G5B5 )
 		{
 			nNewRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-											0,0,nMipLevels,0,D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,nFilter, nMipFilter,
+											0,0,nMipLevels,0,D3DFMT_A8R8G8B8, nPoolType,nFilter, nMipFilter,
 											0xFF0000FF, NULL, NULL,
 											&pxTexture );
 			if( FAILED( nNewRet ) )

@@ -543,6 +543,9 @@ HTMLElement::HTMLElement()
 	m_nCursorX = 0;
 	m_nCursorY = 0;
 	m_nCurrentLineExtentY = 0;
+	mbPad3 = 0;
+	mbPad2 = 0;
+	m_xSpecifiedSize = m_xUnrestrictedSize;
 }
 
 HTMLElementList::HTMLElementList()
