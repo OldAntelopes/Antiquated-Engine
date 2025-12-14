@@ -398,9 +398,9 @@ IGRAPHICSSURFACE*		pxSurface = NULL;
 	if ( pxSurface != NULL ) 
 	{
 #ifdef TUD9
-		mpInterfaceD3DDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #else
-		mpInterfaceD3DDevice->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #endif
 		if ( pxBackBuffer == NULL )
 		{
@@ -413,23 +413,23 @@ IGRAPHICSSURFACE*		pxSurface = NULL;
 		switch ( nFlags )
 		{
 		case RENDER_TYPE_ALPHATEST:
-			xPoint.x = nX + mnInterfaceDrawX;
-			xPoint.y = nY + mnInterfaceDrawY;
-			mpInterfaceD3DDevice->GetDepthStencilSurface( &pxDepthBuffer );
+			xPoint.x = nX;//TODO + mnInterfaceDrawX;
+			xPoint.y = nY;//TODO + mnInterfaceDrawY;
+			mpLegacyInterfaceD3DDeviceSingleton->GetDepthStencilSurface( &pxDepthBuffer );
 				xRect.left = 0;
 				xRect.top = 0;
 				xRect.right = nWidth - 1;
 				xRect.bottom = nHeight - 1;
 				/** And finally copy the merged results back to the back buffer **/
-//				hr = mpInterfaceD3DDevice->CopyRects( pxSurface, &xRect, 1, pxDepthBuffer, &xPoint );
+//				hr = mpLegacyInterfaceD3DDeviceSingleton->CopyRects( pxSurface, &xRect, 1, pxDepthBuffer, &xPoint );
 			hr = D3DXLoadSurfaceFromSurface( pxDepthBuffer, NULL, NULL, pxSurface, NULL, NULL, 0, 0 );
 			pxDepthBuffer->Release();
 			PANIC_IF( hr != D3D_OK, "Depth write failed" );
 			break;
 		case RENDER_TYPE_NORMAL:
 		default:
-			xPoint.x = nX + mnInterfaceDrawX;
-			xPoint.y = nY + mnInterfaceDrawY;
+			xPoint.x = nX;//TODO + mnInterfaceDrawX;
+			xPoint.y = nY;//TODO + mnInterfaceDrawY;
  
 			pxSurface->GetDesc( &xSrcDesc );
 			xSrcRect.left = 0;
@@ -483,17 +483,17 @@ IGRAPHICSSURFACE*		pxSurface = NULL;
 				xDestRect.right = xPoint.x + nWidth - 1;
 				xDestRect.bottom = xPoint.y + nHeight - 1;
 
-				hr = mpInterfaceD3DDevice->StretchRect( pxSurface, &xRect, pxBackBuffer, &xDestRect, D3DTEXF_NONE );
+				hr = mpLegacyInterfaceD3DDeviceSingleton->StretchRect( pxSurface, &xRect, pxBackBuffer, &xDestRect, D3DTEXF_NONE );
 				if ( hr != D3D_OK )
 				{
-					hr = mpInterfaceD3DDevice->UpdateSurface( pxSurface, &xRect, pxBackBuffer, &xPoint );
+					hr = mpLegacyInterfaceD3DDeviceSingleton->UpdateSurface( pxSurface, &xRect, pxBackBuffer, &xPoint );
 					if ( hr != D3D_OK )
 					{
 						PANIC_IF( hr != D3D_OK, "Surface copy failed" );
 					}
 				}
 #else
-				hr = mpInterfaceD3DDevice->CopyRects( pxSurface, &xRect, 1, pxBackBuffer, &xPoint );
+				hr = mpLegacyInterfaceD3DDeviceSingleton->CopyRects( pxSurface, &xRect, 1, pxBackBuffer, &xPoint );
 #endif
 			}
 //			PANIC_IF( hr != D3D_OK, "Copy rects failed" );
@@ -526,9 +526,9 @@ D3DSURFACE_DESC		xDestDesc;
 	if ( pxSurface != NULL ) 
 	{
 #ifdef TUD9
-		mpInterfaceD3DDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #else
-		mpInterfaceD3DDevice->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #endif
 	
 		if ( pxBackBuffer == NULL )
@@ -542,23 +542,23 @@ D3DSURFACE_DESC		xDestDesc;
 		switch ( nFlags )
 		{
 		case RENDER_TYPE_ALPHATEST:
-			xPoint.x = nX + mnInterfaceDrawX;
-			xPoint.y = nY + mnInterfaceDrawY;
-			mpInterfaceD3DDevice->GetDepthStencilSurface( &pxDepthBuffer );
+			xPoint.x = nX;//TODO + mnInterfaceDrawX;
+			xPoint.y = nY;//TODO + mnInterfaceDrawY;
+			mpLegacyInterfaceD3DDeviceSingleton->GetDepthStencilSurface( &pxDepthBuffer );
 				xRect.left = 0;
 				xRect.top = 0;
 				xRect.right = nWidth - 1;
 				xRect.bottom = nHeight - 1;
 				/** And finally copy the merged results back to the back buffer **/
-//				hr = mpInterfaceD3DDevice->CopyRects( pxSurface, &xRect, 1, pxDepthBuffer, &xPoint );
+//				hr = mpLegacyInterfaceD3DDeviceSingleton->CopyRects( pxSurface, &xRect, 1, pxDepthBuffer, &xPoint );
 			hr = D3DXLoadSurfaceFromSurface( pxDepthBuffer, NULL, NULL, pxSurface, NULL, NULL, 0, 0 );
 			pxDepthBuffer->Release();
 			PANIC_IF( hr != D3D_OK, "Depth write failed" );
 			break;
 		case RENDER_TYPE_NORMAL:
 		default:
-			xPoint.x = nX + mnInterfaceDrawX;
-			xPoint.y = nY + mnInterfaceDrawY;
+			xPoint.x = nX;//TODO + mnInterfaceDrawX;
+			xPoint.y = nY;//TODO + mnInterfaceDrawY;
 
 			pxSurface->GetDesc( &xSrcDesc );
 			xSrcRect.left = 0;
@@ -600,21 +600,21 @@ D3DSURFACE_DESC		xDestDesc;
 				}
 				/** And finally copy the merged results back to the back buffer **/
 #ifdef TUD9
-				hr = mpInterfaceD3DDevice->UpdateSurface( pxSurface, &xRect, pxBackBuffer, &xPoint );
+				hr = mpLegacyInterfaceD3DDeviceSingleton->UpdateSurface( pxSurface, &xRect, pxBackBuffer, &xPoint );
 				if ( hr != D3D_OK )
 				{
 					xDestRect.left = xPoint.x;
 					xDestRect.top = xPoint.y;
 					xDestRect.right = xPoint.x + nWidth - 1;
 					xDestRect.bottom = xPoint.y + nHeight - 1;
-					hr = mpInterfaceD3DDevice->StretchRect( pxSurface, &xRect, pxBackBuffer, &xDestRect, D3DTEXF_POINT );
+					hr = mpLegacyInterfaceD3DDeviceSingleton->StretchRect( pxSurface, &xRect, pxBackBuffer, &xDestRect, D3DTEXF_POINT );
 					if ( hr != D3D_OK )
 					{
 						PANIC_IF( hr != D3D_OK, "Copy rects failed" );
 					}
 				}
 #else
-				hr = mpInterfaceD3DDevice->CopyRects( pxSurface, &xRect, 1, pxBackBuffer, &xPoint );
+				hr = mpLegacyInterfaceD3DDeviceSingleton->CopyRects( pxSurface, &xRect, 1, pxBackBuffer, &xPoint );
 #endif
 			}
 //			PANIC_IF( hr != D3D_OK, "Copy rects failed" );
@@ -668,11 +668,11 @@ void DrawPrimaryJpeg ( void )
 	POINT	xCopyDestPoint;
 
 #ifdef TUD9
-		mpInterfaceD3DDevice->GetDisplayMode( 0, &xDisplayMode );
-		mpInterfaceD3DDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetDisplayMode( 0, &xDisplayMode );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #else
-		mpInterfaceD3DDevice->GetDisplayMode( &xDisplayMode );
-		mpInterfaceD3DDevice->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetDisplayMode( &xDisplayMode );
+		mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 #endif
 		if ( pxBackBuffer == NULL )
 		{
@@ -692,27 +692,27 @@ void DrawPrimaryJpeg ( void )
 			xRect.bottom = xRect.top + mxJpegRect.bottom;
 
 #ifdef TUD9
-			mpInterfaceD3DDevice->UpdateSurface( pxBackBuffer, &xRect, mpxBackBufferCopySurface, &xCopyDestPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->UpdateSurface( pxBackBuffer, &xRect, mpxBackBufferCopySurface, &xCopyDestPoint );
 #else
-			mpInterfaceD3DDevice->CopyRects( pxBackBuffer, &xRect, 1, mpxBackBufferCopySurface, &xCopyDestPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->CopyRects( pxBackBuffer, &xRect, 1, mpxBackBufferCopySurface, &xCopyDestPoint );
 #endif
 			// Now copy (and merge) the jpeg with the copy from the back buffer 
 			CopySurfaces( mpxJpegSurface,mpxBackBufferCopySurface, &xCopyDestPoint, xDisplayMode.Format, mxJpegDraw.nFlags );
 
 			// And finally copy the merged results back to the back buffer 
 #ifdef TUD9
-			mpInterfaceD3DDevice->UpdateSurface( mpxBackBufferCopySurface, &mxJpegRect, pxBackBuffer, &mxJpegDraw.xPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->UpdateSurface( mpxBackBufferCopySurface, &mxJpegRect, pxBackBuffer, &mxJpegDraw.xPoint );
 #else
-			mpInterfaceD3DDevice->CopyRects( mpxBackBufferCopySurface, &mxJpegRect, 1, pxBackBuffer, &mxJpegDraw.xPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->CopyRects( mpxBackBufferCopySurface, &mxJpegRect, 1, pxBackBuffer, &mxJpegDraw.xPoint );
 #endif
 			break;
 		case RENDER_TYPE_NORMAL:
 		default:
 			/// And finally copy the merged results back to the back buffer 
 #ifdef TUD9
-			mpInterfaceD3DDevice->UpdateSurface( mpxBackBufferCopySurface, &mxJpegRect, pxBackBuffer, &mxJpegDraw.xPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->UpdateSurface( mpxBackBufferCopySurface, &mxJpegRect, pxBackBuffer, &mxJpegDraw.xPoint );
 #else
-			mpInterfaceD3DDevice->CopyRects( mpxBackBufferCopySurface, &mxJpegRect, 1, pxBackBuffer, &mxJpegDraw.xPoint );
+			mpLegacyInterfaceD3DDeviceSingleton->CopyRects( mpxBackBufferCopySurface, &mxJpegRect, 1, pxBackBuffer, &mxJpegDraw.xPoint );
 #endif
 			break;
 		}
@@ -748,8 +748,8 @@ void JpegGetDrawPoint( int* pnX, int *pnY )
 void ShowJpeg ( int nX, int nY, int nWidth, int nHeight, int nFlags )
 {
 
-	mxJpegDraw.xPoint.x = nX + mnInterfaceDrawX;
-	mxJpegDraw.xPoint.y = nY + mnInterfaceDrawY;
+	mxJpegDraw.xPoint.x = nX;//TODO + mnInterfaceDrawX;
+	mxJpegDraw.xPoint.y = nY;//TODO + mnInterfaceDrawY;
 
 	mxJpegDraw.boDisplayThisFrame = TRUE;
 
@@ -810,11 +810,11 @@ D3DDISPLAYMODE	xDisplayMode;
 LPGRAPHICSTEXTURE	pTexture = NULL;
 int		nRet;
 
-	mpInterfaceD3DDevice->GetDisplayMode( 0, &xDisplayMode );
+	mpLegacyInterfaceD3DDeviceSingleton->GetDisplayMode( 0, &xDisplayMode );
 //	
 
-	nRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename, nWidth, nHeight, 1, 0, xDisplayMode.Format, D3DPOOL_DEFAULT, D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0, NULL, NULL, &pTexture );
-//	nRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename, nWidth, nHeight, 1, 0, xDisplayMode.Format, D3DPOOL_SYSTEMMEM, D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0, NULL, NULL, &pTexture );
+	nRet = D3DXCreateTextureFromFileEx( mpLegacyInterfaceD3DDeviceSingleton, szFilename, nWidth, nHeight, 1, 0, xDisplayMode.Format, D3DPOOL_DEFAULT, D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0, NULL, NULL, &pTexture );
+//	nRet = D3DXCreateTextureFromFileEx( mpLegacyInterfaceD3DDeviceSingleton, szFilename, nWidth, nHeight, 1, 0, xDisplayMode.Format, D3DPOOL_SYSTEMMEM, D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0, NULL, NULL, &pTexture );
 	if( FAILED( nRet ) )
 	{
 		InterfaceTextureLoadError( nRet,szFilename );
@@ -836,7 +836,7 @@ int		nRet;
 D3DSURFACE_DESC		xDestDesc;
 IGRAPHICSSURFACE*		pxBackBuffer = NULL;
 
-	if ( mpInterfaceD3DDevice == NULL ) return( NULL );
+	if ( mpLegacyInterfaceD3DDeviceSingleton == NULL ) return( NULL );
 
 	if ( nWidth == 0 )
 	{
@@ -847,7 +847,7 @@ IGRAPHICSSURFACE*		pxBackBuffer = NULL;
 		nHeight = Info.Height;
 	}
 
-	mpInterfaceD3DDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+	mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 	if ( pxBackBuffer == NULL )
 	{
 		PANIC_IF( TRUE, "Couldnt get back buffer" );
@@ -855,7 +855,7 @@ IGRAPHICSSURFACE*		pxBackBuffer = NULL;
 	}
 	pxBackBuffer->GetDesc( &xDestDesc );
 
-	mpInterfaceD3DDevice->CreateOffscreenPlainSurface( nWidth, nHeight, xDestDesc.Format, D3DPOOL_DEFAULT, &pDestSurface, NULL); 
+	mpLegacyInterfaceD3DDeviceSingleton->CreateOffscreenPlainSurface( nWidth, nHeight, xDestDesc.Format, D3DPOOL_DEFAULT, &pDestSurface, NULL); 
 
 	if ( pDestSurface )
 	{
@@ -885,7 +885,7 @@ byte*	pbFileInMem;
 int		nFileHandle;
 int		nFileSize;
 
-	if ( mpInterfaceD3DDevice == NULL ) return( NULL );
+	if ( mpLegacyInterfaceD3DDeviceSingleton == NULL ) return( NULL );
 
 	nFileHandle = pArchive->OpenFile( szFilename );
 
@@ -909,7 +909,7 @@ int		nFileSize;
 				nHeight = Info.Height;
 			}
 
-			mpInterfaceD3DDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
+			mpLegacyInterfaceD3DDeviceSingleton->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pxBackBuffer );
 			if ( pxBackBuffer == NULL )
 			{
 				free( pbFileInMem );
@@ -918,7 +918,7 @@ int		nFileSize;
 			}
 			pxBackBuffer->GetDesc( &xDestDesc );
 			pxBackBuffer->Release();
-			mpInterfaceD3DDevice->CreateOffscreenPlainSurface( nWidth, nHeight, xDestDesc.Format, D3DPOOL_DEFAULT, &pDestSurface, NULL); 
+			mpLegacyInterfaceD3DDeviceSingleton->CreateOffscreenPlainSurface( nWidth, nHeight, xDestDesc.Format, D3DPOOL_DEFAULT, &pDestSurface, NULL); 
 
 			if ( pDestSurface )
 			{
@@ -954,7 +954,7 @@ int		nLoop;
 
 	mxJpegDraw.boDisplayThisFrame = FALSE;
 
-	if ( InterfaceIsSmall() || mpInterfaceD3DDevice == NULL )
+	if ( InterfaceIsSmall() || mpLegacyInterfaceD3DDeviceSingleton == NULL )
 	{
 		return;
 	}
@@ -1042,7 +1042,7 @@ int		nLoop;
 	mxJpegDraw.xPoint.x = 0;
 	mxJpegDraw.xPoint.y = 0;
 
-	mpInterfaceD3DDevice->GetDisplayMode( 0, &xDisplayMode );
+	mpLegacyInterfaceD3DDeviceSingleton->GetDisplayMode( 0, &xDisplayMode );
 
 	/** Copy it into the spare buffer (i.e change its format) **/
 	CopySurfaces( mpxJpegSurface, mpxBackBufferCopySurface, &mxJpegDraw.xPoint, xDisplayMode.Format, RENDER_TYPE_NORMAL );

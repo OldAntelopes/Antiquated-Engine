@@ -118,12 +118,24 @@ int		nDrawHowMany;
 #else
 	if ( nDrawHowMany > 0 )
 	{
-		EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
-		EngineEnableZTest( FALSE );
-		EngineEnableZWrite( FALSE );
-		EngineEnableLighting( FALSE );
-		EngineEnableBlend( TRUE );
-		EngineEnableFog( FALSE );
+		mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_FOGENABLE, 0 );//nFlag );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+	
+		//  Duplicating the state changes here so the engine knows whats what
+		//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+		if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+		{			
+			EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
+			EngineEnableLighting( FALSE );
+			EngineEnableFog( FALSE );
+			EngineEnableCulling( 0 );
+			EngineEnableZTest( FALSE );
+			EngineEnableZWrite( FALSE );
+		}
 
 		switch ( mnCurrentRenderType )
 		{
@@ -177,15 +189,25 @@ int		nDrawHowMany;
 
 		if ( maxOverlayData[ mnCurrentTexOverlayRenderTexture ].pTexture != NULL )
 		{
-			InterfaceSetTextureAsCurrentDirect( maxOverlayData[ mnCurrentTexOverlayRenderTexture ].pTexture );
-			EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+			mpInterfaceInstance->SetTextureAsCurrentDirect( maxOverlayData[ mnCurrentTexOverlayRenderTexture ].pTexture );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 		}
 		else
 		{
 			mpInterfaceD3DDevice->SetTexture( 0, NULL );
-			EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );	
+
+//			EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
 		}
-		InterfaceInternalDXSetStreamSource( 0, mpCurrentTexOverlayVertexBuffer, 0, sizeof(FLATVERTEX) );
+		mpInterfaceInstance->mpInterfaceInternals->SetStreamSource( 0, mpCurrentTexOverlayVertexBuffer, 0, sizeof(FLATVERTEX) );
 	    mpInterfaceD3DDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, nDrawHowMany );
 
 		switch ( mnCurrentRenderType )
@@ -667,10 +689,10 @@ TEXTURED_RECT_DEF* pxRectDef;
 		pxRectDef->fV2 = fUHeight;
 
 #ifndef USING_OPENGL
-		pxRectDef->nX += mnInterfaceDrawX;
-		pxRectDef->nY += mnInterfaceDrawY;
-		pxRectDef->nX2 += mnInterfaceDrawX;
-		pxRectDef->nY2 += mnInterfaceDrawY;
+		pxRectDef->nX += mpInterfaceInstance->GetDrawDimensions().x;
+		pxRectDef->nY += mpInterfaceInstance->GetDrawDimensions().y;
+		pxRectDef->nX2 += mpInterfaceInstance->GetDrawDimensions().x;
+		pxRectDef->nY2 += mpInterfaceInstance->GetDrawDimensions().y;
 #endif
 	}
 }
@@ -698,10 +720,10 @@ TEXTURED_RECT_DEF* pxRectDef;
 		pxRectDef->fV2 = fUHeight;
 
 #ifndef USING_OPENGL
-		pxRectDef->nX += mnInterfaceDrawX;
-		pxRectDef->nY += mnInterfaceDrawY;
-		pxRectDef->nX2 += mnInterfaceDrawX;
-		pxRectDef->nY2 += mnInterfaceDrawY;
+		pxRectDef->nX += mpInterfaceInstance->GetDrawDimensions().x;
+		pxRectDef->nY += mpInterfaceInstance->GetDrawDimensions().y;
+		pxRectDef->nX2 += mpInterfaceInstance->GetDrawDimensions().x;
+		pxRectDef->nY2 += mpInterfaceInstance->GetDrawDimensions().y;
 #endif
 	}
 }
@@ -797,10 +819,10 @@ int		nTexMod;
 					pxRectDef->nHeight = (int)( pxRectDef->nHeight * fScale);
 				}
 
-				pxRectDef->nX += mnInterfaceDrawX;
-				pxRectDef->nY += mnInterfaceDrawY;
-				pxRectDef->nX2 += mnInterfaceDrawX;
-				pxRectDef->nY2 += mnInterfaceDrawY;
+				pxRectDef->nX += mpInterfaceInstance->GetDrawDimensions().x;
+				pxRectDef->nY += mpInterfaceInstance->GetDrawDimensions().y;
+				pxRectDef->nX2 += mpInterfaceInstance->GetDrawDimensions().x;
+				pxRectDef->nY2 += mpInterfaceInstance->GetDrawDimensions().y;
 			}
 		}
 	}
@@ -1070,7 +1092,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 1, 1, FALSE );
+				maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureDX( szFilename, 1, 1, FALSE );
 			}
 			break;
 		case 1:			// Mipmaps
@@ -1080,7 +1102,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 0, 0, FALSE );
+				maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureDX( szFilename, 0, 0, FALSE );
 			}
 			break;
 		case 3:		// feck knows
@@ -1090,7 +1112,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 2, 0xFF, FALSE );
+				maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureDX( szFilename, 2, 0xFF, FALSE );
 			}
 			break;
 		}
@@ -1185,7 +1207,7 @@ INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture )
 
 void	InterfaceInstance::SetTextureAsCurrentDirect( void* pTexture )
 {
-	mpInterfaceD3DDevice->SetTexture( 0, (LPGRAPHICSTEXTURE)pTexture );
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetTexture( 0, (LPGRAPHICSTEXTURE)pTexture );
 }
 
 INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle )

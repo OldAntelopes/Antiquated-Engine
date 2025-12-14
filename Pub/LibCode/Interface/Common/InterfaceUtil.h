@@ -12,6 +12,9 @@ extern void		InterfaceUnpackCol( unsigned int ulARGBCol, float* pfRed, float* pf
 
 extern int		InterfaceGetTextureInternal( const char* szFilename, int nFlags, int nArchiveHandle );
 
+extern INTERFACE_API BOOL InterfaceIsZBufferLockable( void );
+extern INTERFACE_API void InterfaceSetZBufferLockable( BOOL );
+
 #ifdef __cplusplus
 }
 #endif

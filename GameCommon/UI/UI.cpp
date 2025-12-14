@@ -18,6 +18,8 @@ InterfaceInstance*	mpInterfaceInstance = NULL;
 
 short		mwUIPressX = 0;
 short		mwUIPressY = 0;
+int			mnUISetCursorX = NOTFOUND;
+int			mnUISetCursorY = NOTFOUND;
 
 int			mnUIButtonIDPressed = NOTFOUND;
 uint32		mulUIButtonIDPressedParam = 0;
@@ -159,6 +161,7 @@ void		UIInitialise( InterfaceInstance* pInterfaceInstance )
 	{
 		pInterfaceInstance = InterfaceInstanceMain();
 	}
+	mpInterfaceInstance = pInterfaceInstance;
 	UIButtonsInitialise();
 }
 
@@ -180,6 +183,25 @@ UIButtonHandlerList*		pNext;
 	UITextboxShutdown();
 }
 
+void		UIGetCurrentCursorPosition( int* pnX, int* pnY )
+{
+	if ( mnUISetCursorX == NOTFOUND )
+	{
+		PlatformGetCurrentCursorPosition( pnX, pnY );
+	}
+	else
+	{
+		*pnX = mnUISetCursorX;
+		*pnY = mnUISetCursorY;
+	}
+}
+
+void		UISetCurrentCursorPosition( int nX, int nY )
+{
+	mnUISetCursorX = nX;
+	mnUISetCursorY = nY;
+}
+
 
 void		UIPressIDSet( int nButtonID, uint32 ulParam )
 {
@@ -187,19 +209,20 @@ void		UIPressIDSet( int nButtonID, uint32 ulParam )
 	mulUIButtonIDPressedParam = ulParam;
 }
 
-void		UIHoverItem( int X, int Y, int W, int H )
+BOOL		UIHoverItem( int X, int Y, int W, int H )
 {
 int		hoverX, hoverY;
 
-	PlatformGetCurrentCursorPosition( &hoverX, &hoverY );
+	UIGetCurrentCursorPosition( &hoverX, &hoverY );
 	if ( ( hoverX > X ) &&
 		 ( hoverX < X + W ) &&
 		 ( hoverY > Y ) &&
 		 ( hoverY < Y + H ) )
 	{
 		PlatformSetMouseOverCursor( TRUE );
+		return( TRUE );
 	}
-
+	return( FALSE );
 }
 
 BOOL		UIIsPressed( int X, int Y, int W, int H )

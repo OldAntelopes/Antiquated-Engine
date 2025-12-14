@@ -135,6 +135,9 @@
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceModule.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceOptions.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceInternalsDX.h">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceTypesDX.h">
       <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceOptions.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

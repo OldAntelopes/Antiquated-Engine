@@ -10,12 +10,13 @@
 #include "../../Engine/DirectX/OculusDX.h"
 #include "../Common/InterfaceDevice.h"
 #include "../Common/InterfaceCommon.h"
+#include "../Common/InterfaceDevice.h"
 #include "Interface-Win32.h"
 
 // Some random, probably unused, defines
-#define		INITIAL_SCREEN_LEFT			20
+#define		INITIAL_SCREEN_LEFT			30
 #define		INITIAL_SCREEN_RIGHT		780
-#define		INITIAL_SCREEN_TOP			30
+#define		INITIAL_SCREEN_TOP			100
 #define		INITIAL_SCREEN_BOTTOM		600
 
 BOOL		mboHasWindowChanged = FALSE;

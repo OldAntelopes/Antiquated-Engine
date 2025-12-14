@@ -451,10 +451,10 @@ void		EnginePostProcessEndScene( void )
 			mpEngineDevice->SetVertexDeclaration( NULL );
 		}
 
-		if ( InterfaceGetDrawRegionWidth() != 0 )
-		{
+		//if ( InterfaceGetDrawRegionWidth() != 0 )
+//		{
 //			InterfaceSetDrawRegion( 0, 0, InterfaceGetDrawRegionWidth(), InterfaceGetDrawRegionHeight() );
-		}
+//		}
 	}
 	else
 	{

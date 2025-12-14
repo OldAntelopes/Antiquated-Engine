@@ -654,7 +654,7 @@ const char*		szWindowTitle = mszWindowName;
 
 WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowsMsgProc, 0L, 0L,
                   GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-                  "Herd", NULL };
+                  "GamesForMay Window", NULL };
 
 	// Create window
 	InterfaceInitWindow( szWindowTitle, (void*)&wc, bAllowResize );

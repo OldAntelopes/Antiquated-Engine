@@ -292,6 +292,7 @@
     <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceInstance.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceModule.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceOptions.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp" />
     <ClCompile Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.cpp">
@@ -382,6 +383,7 @@
     <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceInstance.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceModule.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceOptions.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h" />
     <ClInclude Include="..\LibCode\Interface\DirectX\DX11Device\DX11Device.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>

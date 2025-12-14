@@ -23,6 +23,7 @@
 //#include "D3DUtil.h"
 #include "DXUtil.h"
 
+#include "../../Common/InterfaceOptions.h"
 #include "../../TempInterfaceResourceList.h"
 //#include "D3DRes.h"
 

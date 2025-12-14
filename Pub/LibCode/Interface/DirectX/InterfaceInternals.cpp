@@ -25,18 +25,7 @@
 
 BOOL	mboInterfaceInitialised = FALSE;
 float	mfMipMapBias = -1.0f;//-0.25f;
-int		mnOptionTextureFiltering = TRUE;
-int		mnOptionBackBuffer = TRUE;
-int		mnOptionVsync = TRUE;
-int		mnOptionOldStartup = TRUE;
-int		mnOptionMinimumSurfaceRes = TRUE;
-int		mnOptionFogMode = 0;
-int		mnFullscreenAntialias = 0;
 
-int		mnInterfaceDrawWidth = 0;
-int		mnInterfaceDrawHeight = 0;
-int		mnInterfaceDrawX = 0;
-int		mnInterfaceDrawY = 0;
 #ifdef TUD11
 int		mnMinFilter = 0;
 int		mnMagFilter = 0;
@@ -256,7 +245,7 @@ D3DFORMAT dx9Format;
 		{
 		D3DDISPLAYMODE	xDisplayMode;
 	
-			mpInterfaceD3DDevice->GetDisplayMode( 0, &xDisplayMode );
+			mpLegacyInterfaceD3DDeviceSingleton->GetDisplayMode( 0, &xDisplayMode );
 			dx9Format = xDisplayMode.Format;
 		}
 		break;
@@ -401,38 +390,30 @@ HRESULT	InterfaceInternalDXCreateImageSurface( unsigned int width, unsigned int 
 #else
 	D3DFORMAT dx9Format = InterfaceInternalDX9GetFormat( format );
 
-	return( mpInterfaceD3DDevice->CreateOffscreenPlainSurface( width, height, dx9Format, D3DPOOL_DEFAULT, ppSurface, NULL ) );
+	return( mpLegacyInterfaceD3DDeviceSingleton->CreateOffscreenPlainSurface( width, height, dx9Format, D3DPOOL_DEFAULT, ppSurface, NULL ) );
 #endif
 }
 
 
 
 
-
 INTERFACE_API LPGRAPHICSDEVICE	InterfaceGetD3DDevice( void )
 {
-	return( mpInterfaceD3DDevice );
+	return( mpLegacyInterfaceD3DDeviceSingleton );
 } 
 
-int		InterfaceGetDrawRegionWidth( void )
-{
-	return(	mnInterfaceDrawWidth );
-
-}
-
-int		InterfaceGetDrawRegionHeight( void )
-{
-	return(	mnInterfaceDrawHeight );
-
-}
 	 
 INTERFACE_API void	InterfaceSetDrawRegion( int nX, int nY, int nWidth, int nHeight )
 {
-	mnInterfaceDrawX = nX;
-	mnInterfaceDrawY = nY;
+	InterfaceInstanceMain()->SetDrawRegion( nX, nY, nWidth, nHeight );
+}
 
-	mnInterfaceDrawWidth = nWidth;
-	mnInterfaceDrawHeight = nHeight;
+void		InterfaceInstance::SetDrawRegion( int nX, int nY, int nWidth, int nHeight )
+{
+	m_DrawRect.x = nX;
+	m_DrawRect.y = nY;
+	m_DrawRect.w = nWidth;
+	m_DrawRect.h = nHeight;
 }
 
 BOOL	mboDontShowAnyMoreLoadErrors = FALSE;
@@ -465,7 +446,7 @@ char	acString[512];
 		}
 		
 		if ( ( InterfaceIsFullscreen() == TRUE ) &&
-		     ( mpInterfaceD3DDevice != NULL ) )
+		     ( mpLegacyInterfaceD3DDeviceSingleton != NULL ) )
 		{
 			if ( InterfaceShowFullscreenPanic( acString ) == TRUE )
 			{
@@ -503,14 +484,14 @@ int		nFormat = D3DFMT_R8G8B8;
 #ifdef USE_D3DEX_INTERFACE
 	if ( bReadable )
 	{
-		nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_SYSTEMMEM, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+		nRet = D3DXCreateTextureFromFileInMemoryEx( mpLegacyInterfaceD3DDeviceSingleton, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_SYSTEMMEM, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 	}
 	else
 	{
-		nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+		nRet = D3DXCreateTextureFromFileInMemoryEx( mpLegacyInterfaceD3DDeviceSingleton, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 	}
 #else
-	nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+	nRet = D3DXCreateTextureFromFileInMemoryEx( mpLegacyInterfaceD3DDeviceSingleton, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 #endif
 	if( FAILED( nRet ) )
 	{
@@ -556,81 +537,7 @@ INTERFACE_API LPGRAPHICSTEXTURE InterfaceLoadTextureDX( const char* szFilename, 
 
 
 
-/***************************************************************************
- * Function    : InterfaceGetOption
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API int InterfaceGetOption( int nOptionNum )
-{
-	switch( nOptionNum )
-	{
-	case TEXTURE_FILTERING:
-		return( mnOptionTextureFiltering );
-		break;
-	case BACK_BUFFER:
-		return( mnOptionBackBuffer );
-		break;
-	case VSYNC:
-		return( mnOptionVsync );
-		break;
-	case OLD_STARTUP:
-		return( mnOptionOldStartup );
-		break;
-	case MINIMUM_SURFACE_RES:
-		return( mnOptionMinimumSurfaceRes );
-		break;
-	case FOG_MODE:
-		return( mnOptionFogMode );
-		break;
-	case FSAA:
-		return( mnFullscreenAntialias );
-		break;
-	}
 
-	return( 0 );
-}
-
-/***************************************************************************
- * Function    : InterfaceSetOption
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API void InterfaceSetOption( int nOptionNum, int nValue )
-{
-	if ( nOptionNum >= MAX_OPTIONS )
-	{
-		return;
-	}
-
-	switch( nOptionNum )
-	{
-	case TEXTURE_FILTERING:
-		mnOptionTextureFiltering = nValue;
-		break;
-	case BACK_BUFFER:
-		mnOptionBackBuffer = nValue;
-		break;
-	case VSYNC:
-		mnOptionVsync = nValue;
-		break;
-	case OLD_STARTUP:
-		mnOptionOldStartup = nValue;
-		break;
-	case MINIMUM_SURFACE_RES:
-		mnOptionMinimumSurfaceRes = nValue;
-		break;
-	case FOG_MODE:
-		mnOptionFogMode = nValue;
-		break;
-	case FSAA:
-		mnFullscreenAntialias = nValue;
-		break;
-	}
-
-}
 
 /***************************************************************************
  * Function    : InterfaceInit
@@ -661,7 +568,7 @@ INTERFACE_API void InterfaceInit( BOOL bUseDefaultFonts )
  * Returns     :
  * Description : 
  ***************************************************************************/
-void InterfaceBeginScene( void )
+void  InterfaceBeginScene( void )
 {
 	LockOverlays();
 }
@@ -694,22 +601,22 @@ INTERFACE_API void InterfaceDrawAllElements( void )
  void InterfaceInstance::DrawAllElements( void )
 {
 	mpTexturedOverlays->Render( 0 );
-	RenderOverlays( 0 );
+	mpOverlays->Render( 0 );
 	mpFontSystem->RenderStrings( 0 );
 
 	DrawPrimaryJpeg();
 	DrawBufferedJpegs(0);
 	mpTexturedOverlays->Render( 1 );
-	RenderOverlays( 1 );
+	mpOverlays->Render( 1 );
 	mpFontSystem->RenderStrings( 1 );
 	DrawBufferedJpegs(1);
 
 	mpTexturedOverlays->Render( 2 );
-	RenderOverlays( 2 );
+	mpOverlays->Render( 2 );
 	DrawBufferedJpegs( 2 );
 	mpFontSystem->RenderStrings( 2 );
 
-	RenderOverlays( 3 );
+	mpOverlays->Render( 3 );
 	mpFontSystem->RenderStrings( 3 );
 
 	// Clear buffered interface items
@@ -731,9 +638,9 @@ INTERFACE_API void InterfaceDrawAllElements( void )
  ***************************************************************************/
 INTERFACE_API void InterfaceDrawNoMatrix( void )
 {
-	if (!mpInterfaceD3DDevice) return;
+	if (!mpLegacyInterfaceD3DDeviceSingleton) return;
 
-	mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	mpLegacyInterfaceD3DDeviceSingleton->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	InterfaceDrawAllElements();
 }
 
@@ -793,7 +700,7 @@ float pixelHeight = (float)nScreenHeight;//InterfaceGetHeight();
 
 INTERFACE_API void	InterfaceDrawUI( float fScreenAngle )
 {
-	if (!mpInterfaceD3DDevice) return;
+	if (!mpLegacyInterfaceD3DDeviceSingleton) return;
 
 	if ( InterfaceIsVRMode() == TRUE )
 	{
@@ -844,7 +751,7 @@ INTERFACE_API void	InterfaceDrawUI( float fScreenAngle )
 		EngineSetProjectionMatrix( &Ortho2D);
 	//------------
 	}
-	mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	mpLegacyInterfaceD3DDeviceSingleton->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
 	InterfaceDrawAllElements();
 }
@@ -862,30 +769,30 @@ INTERFACE_API void InterfaceDraw( void )
  ***************************************************************************/
 void InterfaceInstance::Draw( void )
 {
-	if (!mpInterfaceD3DDevice) return;
+	if (!mpInterfaceInternals->mpInterfaceD3DDevice) return;
 
 //------------
 	D3DXMATRIX Ortho2D;	
 	ENGINEMATRIX xMatrix;
 	
-	D3DXMatrixOrthoLH(&Ortho2D, (float)InterfaceGetWidth(), (float)InterfaceGetHeight(), 0.0f, 1.0f);
+	D3DXMatrixOrthoLH(&Ortho2D, (float)GetWidth(), (float)GetHeight(), 0.0f, 1.0f);
 	EngineMatrixIdentity(&xMatrix);
 
-	mpInterfaceD3DDevice->SetTransform( D3DTS_VIEW, (D3DXMATRIX*) &xMatrix );
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetTransform( D3DTS_VIEW, (D3DXMATRIX*) &xMatrix );
 	xMatrix._22 = -1.0f;
-	xMatrix._41 = (float)( InterfaceGetWidth() ) * -0.5f;
-	xMatrix._42 = (float)( InterfaceGetHeight() ) * 0.5f;
-	mpInterfaceD3DDevice->SetTransform( D3DTS_WORLD, (D3DXMATRIX*) &xMatrix );
-	mpInterfaceD3DDevice->SetTransform( D3DTS_PROJECTION, (D3DXMATRIX*)&Ortho2D );
+	xMatrix._41 = (float)( GetWidth() ) * -0.5f;
+	xMatrix._42 = (float)( GetHeight() ) * 0.5f;
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetTransform( D3DTS_WORLD, (D3DXMATRIX*) &xMatrix );
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetTransform( D3DTS_PROJECTION, (D3DXMATRIX*)&Ortho2D );
 //------------
 
-	mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
 	DrawAllElements();
 
 	// Reset the blend mode as it may have been left in a funky state..
-	mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	mpInterfaceD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 }
 
@@ -904,7 +811,7 @@ void InterfaceInstance::FreeAll( void )
 {
 	if ( mboInterfaceInitialised == TRUE )
 	{
-		mpInterfaceD3DDevice->SetTexture(0, NULL);
+		mpInterfaceInternals->mpInterfaceD3DDevice->SetTexture(0, NULL);
 
 		InterfaceImagesFree();
 		ClearBufferedJpegs();
@@ -922,7 +829,7 @@ INTERFACE_API void InterfaceReleaseForDeviceReset( void )
 
 void InterfaceInstance::ReleaseForDeviceReset( void )
 {
-	mpInterfaceD3DDevice->SetTexture(0, NULL);
+	mpInterfaceInternals->mpInterfaceD3DDevice->SetTexture(0, NULL);
 	InterfaceImagesFree();
 	ClearBufferedJpegs();
 	mpFontSystem->FreeResources( FALSE );

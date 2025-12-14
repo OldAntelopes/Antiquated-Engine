@@ -133,9 +133,9 @@ private:
 	VertexBuffer*		mpTexOverlayVertexBuffer2; // Buffer to hold vertices
 
 #else
-	IGRAPHICSVERTEXBUFFER*		mpCurrentTexOverlayVertexBuffer; // Buffer to hold vertices
-	IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer1; // Buffer to hold vertices
-	IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer2; // Buffer to hold vertices
+	IGRAPHICSVERTEXBUFFER*		mpCurrentTexOverlayVertexBuffer = NULL; // Buffer to hold vertices
+	IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer1 = NULL; // Buffer to hold vertices
+	IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer2 = NULL; // Buffer to hold vertices
 #endif
 
 	int			mnNextTexOverlayVertex = 0;

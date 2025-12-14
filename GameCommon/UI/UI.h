@@ -80,7 +80,10 @@ extern void		UIOnInterfaceDraw( void );
 
 extern void		UIPressIDSet( int nButtonID, uint32 ulParam );
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
-extern void		UIHoverItem( int X, int Y, int W, int H );
+extern BOOL		UIHoverItem( int X, int Y, int W, int H );
+
+extern void		UIGetCurrentCursorPosition( int* pnX, int* pnY );
+extern void		UISetCurrentCursorPosition( int nX, int nY );
 
 InterfaceInstance*		UIInterfaceInstance();
 

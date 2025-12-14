@@ -9,11 +9,14 @@
 #include <Engine.h>
 
 #include "../../Win32/Interface-Win32.h"
-#include "../../Common/InterfaceDevice.h"
 #include "../../Common/InterfaceCommon.h"
 #include "../../Common/InterfaceInstance.h"
+#include "../../Common/InterfaceOptions.h"
+#include "../../Common/InterfaceUtil.h"
+#include "../../Common/InterfaceDevice.h"
 #include "../../../Engine/DirectX/OculusDX.h"
 #include "../../../Engine/DirectX/EngineDX.h"
+#include "../InterfaceInternalsDX.h"
 #include "DX9Device.h"
 
 extern "C"
@@ -24,22 +27,18 @@ extern "C"
 #include "d3dapp.h"
 
 
-LPGRAPHICSDEVICE       mpInterfaceD3DDevice = NULL; // Our rendering device
+LPGRAPHICSDEVICE       mpLegacyInterfaceD3DDeviceSingleton = NULL; // Our rendering device
 
 LPGRAPHICS        mpD3D       = NULL; // Used to create the D3DDevice
 
 BOOL	mboMinPageSize = TRUE;
 BOOL	msbInterfaceGlobalTextureFilteringEnable = TRUE;
 
-int		mnRenderSurfaceWidth = 900;
-int		mnRenderSurfaceHeight = 700;  
 
 u64		mullInterfaceLastPresentTick = 0;
 
 BOOL	mboCurrentlyFullscreen = FALSE;
-BOOL	mboZBufferLockable = TRUE;
-bool	mboDidLimitTo900ByX = false;
-bool	mboDidLimitTo900ByY = false;
+
 float	mfInterfaceFPS = 0.0f;
 
 //#ifndef STANDALONE
@@ -54,15 +53,6 @@ INTERFACE_API LPGRAPHICS	InterfaceGetD3D( void )
 	return( mpD3D );
 }
 
-INTERFACE_API BOOL InterfaceIsZBufferLockable( void )
-{
-	return( mboZBufferLockable);
-}
-
-INTERFACE_API void InterfaceSetZBufferLockable( BOOL boFlag )
-{
-	mboZBufferLockable = boFlag;
-}
 
 
 
@@ -92,43 +82,62 @@ INTERFACE_API void OnSetInitialSize( BOOL boFullScreen, int nFullScreenSizeX, in
  ***************************************************************************/
 INTERFACE_API int InterfaceGetWidth( void )
 {
-	if ( mnInterfaceDrawWidth != 0 )
-	{
-		return( mnInterfaceDrawWidth );
-	}
-	return( mnRenderSurfaceWidth );
+	return( InterfaceInstanceMain()->GetWidth() );
 }
-
-INTERFACE_API int InterfaceGetCentreX( void )
-{
-	if ( mnInterfaceDrawWidth != 0 )
-	{
-		return( mnInterfaceDrawWidth / 2 );
-	}
-	return( mnRenderSurfaceWidth / 2 );
-}
-
-INTERFACE_API int InterfaceGetCentreY( void )
-{
-	if ( mnInterfaceDrawHeight != 0 )
-	{
-		return( mnInterfaceDrawHeight / 2 );
-	}
-	return( mnRenderSurfaceHeight / 2 );
-}
-
 
 /***************************************************************************
  * Function    : InterfaceGetHeight
  ***************************************************************************/
 INTERFACE_API int InterfaceGetHeight( void )
 {
-	if ( mnInterfaceDrawHeight != 0 )
+	return( InterfaceInstanceMain()->GetHeight() );
+}
+INTERFACE_API int InterfaceGetCentreX( void )
+{
+	return( InterfaceInstanceMain()->GetCentreX() );
+}
+INTERFACE_API int InterfaceGetCentreY( void )
+{
+	return( InterfaceInstanceMain()->GetCentreY() );
+}
+
+int InterfaceInstance::GetHeight( void )
+{
+	if ( m_DrawRect.h != 0 )
 	{
-		return( mnInterfaceDrawHeight );
+		return( m_DrawRect.h );
 	}
 	return( mnRenderSurfaceHeight );
 }
+
+int		InterfaceInstance::GetWidth( void )
+{
+	if ( m_DrawRect.w != 0 )
+	{
+		return( m_DrawRect.w );
+	}
+	return( mnRenderSurfaceWidth );
+}
+
+int InterfaceInstance::GetCentreX( void )
+{
+	if ( m_DrawRect.w != 0 )
+	{
+		return( m_DrawRect.w / 2 );
+	}
+	return( mnRenderSurfaceWidth / 2 );
+}
+
+int InterfaceInstance::GetCentreY( void )
+{
+	if ( m_DrawRect.h != 0 )
+	{
+		return( m_DrawRect.h / 2 );
+	}
+	return( mnRenderSurfaceHeight / 2 );
+}
+
+
 
 
 
@@ -301,10 +310,10 @@ void InterfaceTurnOffTextureFiltering( void )
 {
 	if ( mboTextureFilteringCurrentState )
 	{
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
 		mboTextureFilteringCurrentState = false;
 	}
 }
@@ -325,14 +334,14 @@ void InterfaceTurnOnTextureFiltering( int nMode )
 		}
 	}
 
-	if (! mpInterfaceD3DDevice)
+	if (! mpLegacyInterfaceD3DDeviceSingleton)
 		return;
    
 	if ( !mboTextureFilteringCurrentState )
 	{
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
-		mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
+		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
 		mboTextureFilteringCurrentState = true;
 	}
 }
@@ -355,7 +364,7 @@ void		InterfaceSetMaximumFrontBufferWidth( int nMaxWidth )
 	msnInterfaceMaxRenderPageWidth = nMaxWidth;
 }
 
-BOOL		InterfaceGetDXDeviceCreateParams( HWND hWindow, BOOL boMinPageSize,  D3DPRESENT_PARAMETERS* pD3Dpp )
+BOOL		InterfaceInternalsDX::GetDXDeviceCreateParams( HWND hWindow, BOOL boMinPageSize,  D3DPRESENT_PARAMETERS* pD3Dpp )
 {
 D3DDISPLAYMODE d3ddm;
 
@@ -386,20 +395,6 @@ D3DDISPLAYMODE d3ddm;
 		int nWindowHeight = xRect.bottom - xRect.top;
 		pD3Dpp->BackBufferWidth  = nWindowWidth;
 		pD3Dpp->BackBufferHeight = nWindowHeight;
-
-		if ( boMinPageSize == TRUE )
-		{
-			if ( pD3Dpp->BackBufferWidth < 900 )
-			{
-				pD3Dpp->BackBufferWidth  = 900;
-				mboDidLimitTo900ByX = true;
-			}
-			if ( pD3Dpp->BackBufferHeight < 700 )
-			{
-				pD3Dpp->BackBufferHeight = 700;
-				mboDidLimitTo900ByY = true;
-			}
-		}
 	}
 
 	if ( msnInterfaceMaxRenderPageWidth != 0 )
@@ -410,19 +405,6 @@ D3DDISPLAYMODE d3ddm;
 
 			 pD3Dpp->BackBufferWidth = msnInterfaceMaxRenderPageWidth;
 			 pD3Dpp->BackBufferHeight = (uint32)( pD3Dpp->BackBufferHeight / fAdjust );
-			if ( boMinPageSize == TRUE )
-			{
-				if ( pD3Dpp->BackBufferWidth < 900 )
-				{
-					pD3Dpp->BackBufferWidth  = 900;
-					mboDidLimitTo900ByX = true;
-				}
-				if ( pD3Dpp->BackBufferHeight < 700 )
-				{
-					pD3Dpp->BackBufferHeight = 700;
-					mboDidLimitTo900ByY = true;
-				}
-			}
 		}
 
 		// If Fullscreen.. find a suitable display mode that best matches the requested format
@@ -459,10 +441,9 @@ D3DDISPLAYMODE d3ddm;
 		}
 	}
 
-	mnRenderSurfaceWidth  = pD3Dpp->BackBufferWidth;
-	mnRenderSurfaceHeight = pD3Dpp->BackBufferHeight;
+	mpInterfaceInstance->SetRenderSurfaceSize( pD3Dpp->BackBufferWidth, pD3Dpp->BackBufferHeight );
 
-	mboZBufferLockable = FALSE;
+	InterfaceSetZBufferLockable( FALSE );
 
 	// Apply full-scene antialias if available and on in options
 	if ( InterfaceGetOption( FSAA ) == 1 )
@@ -533,118 +514,15 @@ D3DDISPLAYMODE d3ddm;
 
 
 
-LPGRAPHICSDEVICE InterfaceCreateNewGraphicsDevice( HWND hWindow, BOOL boMinPageSize )
-{
-LPGRAPHICSDEVICE	pInterfaceD3DDevice = NULL;
-HRESULT		hr;
-D3DDISPLAYMODE d3ddm;
-bool		bFullScreenAntiAlias = false;
-
-	// Get the current desktop display mode, so we can set up a back
-	// buffer of the same format
-	if( FAILED( mpD3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm ) ) )
-	{
-		PANIC_IF(TRUE,"Couldn't get display mode" );
-		return( NULL );
-	}
-
-	// Set up the present parameters - This is generally what odd vid cards have a problem with
-	D3DPRESENT_PARAMETERS d3dpp;
-	ZeroMemory( &d3dpp, sizeof(d3dpp) );
-
-	InterfaceGetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp );
-
-	int		nAdapterToUse = D3DADAPTER_DEFAULT;
-
-#ifdef USE_D3DEX_INTERFACE
-	hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &pInterfaceD3DDevice );								  
-#else
-	hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &pInterfaceD3DDevice );								  
-#endif
-
-	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
-
-	if ( hr == D3DERR_OUTOFVIDEOMEMORY )
-	{
-		if ( mboDidLimitTo900ByX == true )
-		{
-			d3dpp.BackBufferWidth  = 800;
-			mnRenderSurfaceWidth  = d3dpp.BackBufferWidth;
-		}
-		if ( mboDidLimitTo900ByY == true )
-		{
-			d3dpp.BackBufferHeight = 600;
-			mnRenderSurfaceHeight = d3dpp.BackBufferHeight;
-		}
-
-#ifdef USE_D3DEX_INTERFACE
-		hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
-								  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-								  &d3dpp, NULL, &pInterfaceD3DDevice );
-#else
-		hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
-								  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-								  &d3dpp, &pInterfaceD3DDevice );
-#endif
-		if ( FAILED(hr) )
-		{
-			// Using 'Discard' can save us a bunch of vid mem apparently.. 
-			// so try to create the screen using this
-			d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-#ifdef USE_D3DEX_INTERFACE
-					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
-											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-											  &d3dpp, NULL, &pInterfaceD3DDevice );
-#else
-					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
-											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-											  &d3dpp, &pInterfaceD3DDevice );
-
-#endif
-		}
-	}
-
-	if( FAILED( hr ) )
-	{	
-		InterfaceSetWindowStyle( hWindow, false );
-		switch ( hr )
-		{
-		case D3DERR_OUTOFVIDEOMEMORY:
-			PANIC_IF(TRUE,"Not enough video memory to create D3D Device.\n You might be able to fix this by lowering your screen resolution in your desktop display properties." );
-			break;
-		case D3DERR_INVALIDCALL:
-			PANIC_IF(TRUE,"Invalid call for direct3d create device" );
-			break;
-		default:
-			PANIC_IF(TRUE,"Direct3D Create Device failed. There may be problems with your video card drivers or DirectX install.\n Adjusting the DirectX setup options on the Video Options menu may help." );
-			break;
-		}
-		return( NULL );
-	}
-
-	hr = pInterfaceD3DDevice->Reset( &d3dpp );
-
-	// Set standard render modes bit
-	pInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-	pInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-	pInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-	pInterfaceD3DDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, TRUE );
-	pInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,
-									 0, 1.0f, 0 );
-	pInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
-
-	return( pInterfaceD3DDevice );
-}
 
 
 /***************************************************************************
- * Function    : InterfaceInitD3D
- * Params      : 
- * Returns     :
- * Description : 
+ * Function    : InterfaceInstance::InitD3D
  ***************************************************************************/
 void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 {
+LPGRAPHICSDEVICE	pNewGraphicsDevice;
+
 	mhWindow = hWindow;
 	if ( InterfaceIsVRMode() == TRUE )
 //		 ( EngineHasOculus() == TRUE ) )
@@ -672,7 +550,7 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 				}
 			}
 
-			mpInterfaceD3DDevice = (LPGRAPHICSDEVICE) OculusInitD3DDevice( mpD3D );
+			pNewGraphicsDevice = (LPGRAPHICSDEVICE) OculusInitD3DDevice( mpD3D );
 		}
 	}
 	else
@@ -722,45 +600,35 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 		D3DPRESENT_PARAMETERS d3dpp;
 		ZeroMemory( &d3dpp, sizeof(d3dpp) );
 
-		InterfaceGetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp );
+		mpInterfaceInternals->GetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp );
 
-		if ( mpInterfaceD3DDevice == NULL )
+		pNewGraphicsDevice = mpInterfaceInternals->mpInterfaceD3DDevice;
+		if ( pNewGraphicsDevice == NULL )
 		{
 		int		nAdapterToUse = D3DADAPTER_DEFAULT;
 
 //		D3DDISPLAYMODEEX*		pDisplayModeEx;
 
-//			hr = mpD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWindow,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );
+//			hr = mpD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWindow,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pNewGraphicsDevice );
 
 #ifdef USE_D3DEX_INTERFACE
-			hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &mpInterfaceD3DDevice );								  
+			hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &pNewGraphicsDevice );								  
 #else
-			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );								  
+			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &pNewGraphicsDevice );								  
 #endif
 
 			d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
 
 			if ( hr == D3DERR_OUTOFVIDEOMEMORY )
 			{
-				if ( mboDidLimitTo900ByX == true )
-				{
-					d3dpp.BackBufferWidth  = 800;
-					mnRenderSurfaceWidth  = d3dpp.BackBufferWidth;
-				}
-				if ( mboDidLimitTo900ByY == true )
-				{
-					d3dpp.BackBufferHeight = 600;
-					mnRenderSurfaceHeight = d3dpp.BackBufferHeight;
-				}
-
 #ifdef USE_D3DEX_INTERFACE
 				hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-										  &d3dpp, NULL, &mpInterfaceD3DDevice );
+										  &d3dpp, NULL, &pNewGraphicsDevice );
 #else
 				hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-										  &d3dpp, &mpInterfaceD3DDevice );
+										  &d3dpp, &pNewGraphicsDevice );
 #endif
 				if ( FAILED(hr) )
 				{
@@ -770,11 +638,11 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 #ifdef USE_D3DEX_INTERFACE
 					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-											  &d3dpp, NULL, &mpInterfaceD3DDevice );
+											  &d3dpp, NULL, &pNewGraphicsDevice );
 #else
 					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
-											  &d3dpp, &mpInterfaceD3DDevice );
+											  &d3dpp, &pNewGraphicsDevice );
 
 #endif
 				}
@@ -797,16 +665,16 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 				}
 				return;
 			}
-			hr = mpInterfaceD3DDevice->Reset( &d3dpp );
+			hr = pNewGraphicsDevice->Reset( &d3dpp );
 		}
 		else
 		{	
 			// Clear the backbuffer and the zbuffer
-			mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,0, 1.0f, 0 );
-			mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
+			pNewGraphicsDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,0, 1.0f, 0 );
+			pNewGraphicsDevice->Present( NULL, NULL, NULL, NULL );
 		
-			mboZBufferLockable = TRUE;
-			hr = mpInterfaceD3DDevice->Reset( &d3dpp );
+			InterfaceSetZBufferLockable( TRUE );
+			hr = pNewGraphicsDevice->Reset( &d3dpp );
 
 			if( FAILED( hr ) )
 			{
@@ -866,7 +734,7 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 
 		mboCurrentlyFullscreen = mboFullScreen;
 
-		if ( mpInterfaceD3DDevice != NULL )
+		if ( pNewGraphicsDevice != NULL )
 		{
 		float	fBias = 0.0f;
 	/*	D3DCAPS8	d3dCaps;
@@ -874,41 +742,41 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 			mpInterfaceD3DDevice->GetDeviceCaps( &d3dCaps );
 	*/
 			// Set standard render modes bit
-			mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-			mpInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-			mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+			pNewGraphicsDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+			pNewGraphicsDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
+			pNewGraphicsDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 			if ( bFullScreenAntiAlias )
 			{
-				mpInterfaceD3DDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, TRUE );
+				pNewGraphicsDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, TRUE );
 			}
 			InterfaceSetWindowHasChanged( FALSE );
 
-			mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,
+			pNewGraphicsDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,
 									 0, 1.0f, 0 );
-			mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
+			pNewGraphicsDevice->Present( NULL, NULL, NULL, NULL );
 
 			fBias = mfMipMapBias;
-			mpInterfaceD3DDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fBias)));
+			pNewGraphicsDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fBias)));
 
 			D3DXMATRIX matTrans;
 			D3DXMatrixIdentity( &matTrans );
 			// Set-up the matrix for the desired transformation.
-			mpInterfaceD3DDevice->SetTransform( D3DTS_TEXTURE0, &matTrans );
-			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
+			pNewGraphicsDevice->SetTransform( D3DTS_TEXTURE0, &matTrans );
+			pNewGraphicsDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 		}
 
 		if ( EngineGetDXDevice() == NULL )
 		{
-			EngineInitDX( mpInterfaceD3DDevice );
+			EngineInitDX( pNewGraphicsDevice );
 		}
 		InterfaceSetStandardMaterial();
 	}
-	SetDevice( mpInterfaceD3DDevice );
+	SetDevice( pNewGraphicsDevice );
 
 #ifdef TUD9
-	if ( mpInterfaceD3DDevice )
+	if ( pNewGraphicsDevice )
 	{
-		mpInterfaceD3DDevice->GetDeviceCaps( &md3dCaps );
+		pNewGraphicsDevice->GetDeviceCaps( &md3dCaps );
 		mbCapsIsSet = TRUE;
 	}
 #endif
@@ -919,7 +787,7 @@ void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 INTERFACE_API void				InterfaceInitDisplayDevice( BOOL boMinRenderPageSize )
 {
 	InterfaceInstanceMain()->InitD3D( mhwndInterfaceMain, boMinRenderPageSize );
-	mpInterfaceD3DDevice = InterfaceInstanceMain()->mpInterfaceD3DDevice;
+	mpLegacyInterfaceD3DDeviceSingleton = InterfaceInstanceMain()->mpInterfaceInternals->mpInterfaceD3DDevice;
 }
 
 
@@ -937,13 +805,13 @@ uint32	mulRefCount;
 INTERFACE_API void InterfaceFreeAllD3D( void )
 {
 //uint32	ulRefCount;
-    if( mpInterfaceD3DDevice != NULL )
+    if( mpLegacyInterfaceD3DDeviceSingleton != NULL )
 	{
-		mpInterfaceD3DDevice->SetTexture(0, NULL);
-		mpInterfaceD3DDevice->SetTexture(1, NULL);
-		mpInterfaceD3DDevice->EvictManagedResources();
-		mulRefCount = mpInterfaceD3DDevice->Release();
-		mpInterfaceD3DDevice = NULL;
+		mpLegacyInterfaceD3DDeviceSingleton->SetTexture(0, NULL);
+		mpLegacyInterfaceD3DDeviceSingleton->SetTexture(1, NULL);
+		mpLegacyInterfaceD3DDeviceSingleton->EvictManagedResources();
+		mulRefCount = mpLegacyInterfaceD3DDeviceSingleton->Release();
+		mpLegacyInterfaceD3DDeviceSingleton = NULL;
 //#ifndef STANDALONE
 		mcd3dUtilApp.m_pd3dDevice = NULL;
 //endif
@@ -990,10 +858,10 @@ INTERFACE_API void InterfaceEndRender( void)
  ***************************************************************************/
 void InterfaceInstance::EndRender( void)
 {
-	if ( mpInterfaceD3DDevice )
+	if ( mpInterfaceInternals->mpInterfaceD3DDevice )
 	{
 	    // End the scene
-		mpInterfaceD3DDevice->EndScene();
+		mpInterfaceInternals->mpInterfaceD3DDevice->EndScene();
 	}
 	mbIsInScene = false;
 
@@ -1012,10 +880,10 @@ INTERFACE_API void InterfaceBeginRender( void)
  ***************************************************************************/
 void InterfaceInstance::BeginRender( void)
 {
-	if ( mpInterfaceD3DDevice )
+	if ( mpInterfaceInternals->mpInterfaceD3DDevice )
 	{
 	    // Begin the scene
-		mpInterfaceD3DDevice->BeginScene();
+		mpInterfaceInternals->mpInterfaceD3DDevice->BeginScene();
 	}
 	mbIsInScene = true;
  } 
@@ -1065,12 +933,12 @@ BOOL	boIsSmall = InterfaceIsSmall();
 			InterfaceReleaseForDeviceReset();
 			InitD3D( mhWindow, mboMinPageSize);
 
-			if ( mpInterfaceD3DDevice != NULL )
+			if ( mpInterfaceInternals->mpInterfaceD3DDevice != NULL )
 			{
 				// Clear the backbuffer and the zbuffer
 				xColor = (D3DCOLOR)( ulCol );
-				mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
-				mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
+				mpInterfaceInternals->mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
+				mpInterfaceInternals->mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
 			}
 			else
 			{
@@ -1081,11 +949,11 @@ BOOL	boIsSmall = InterfaceIsSmall();
 			UpdateWindow( mhWindow );
 			SetCursor( LoadCursor(NULL, IDC_ARROW) );
 
-			if ( mpInterfaceD3DDevice != NULL )
+			if ( mpInterfaceInternals->mpInterfaceD3DDevice != NULL )
 			{
 				// Clear the backbuffer and the zbuffer
 				xColor = (D3DCOLOR)( ulCol );
-				mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
+				mpInterfaceInternals->mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
 			}
 			// Indicate that we have changed the interface
 
@@ -1098,13 +966,13 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		}
 	}
 
-	if ( mpInterfaceD3DDevice != NULL )
+	if ( mpInterfaceInternals->mpInterfaceD3DDevice != NULL )
 	{
 	HRESULT	ret;
 		
 		// Clear the backbuffer and the zbuffer
 		xColor = (D3DCOLOR)( ulCol );
-		ret = mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
+		ret = mpInterfaceInternals->mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
 	}
 	return( 0 );
 	
@@ -1139,13 +1007,13 @@ void InterfaceInstance::Present( void )
 {
 HRESULT	hr;
 
-	if ( mpInterfaceD3DDevice )
+	if ( mpInterfaceInternals->mpInterfaceD3DDevice )
 	{
-		hr = mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
+		hr = mpInterfaceInternals->mpInterfaceD3DDevice->Present( NULL, NULL, NULL, NULL );
 		// Show the results
 		if ( hr == D3DERR_DEVICELOST )
 		{
-			if ( mpInterfaceD3DDevice->TestCooperativeLevel() != D3DERR_DEVICELOST )
+			if ( mpInterfaceInternals->mpInterfaceD3DDevice->TestCooperativeLevel() != D3DERR_DEVICELOST )
 			{
 				InterfaceSetWindowHasChanged( TRUE );
 			}

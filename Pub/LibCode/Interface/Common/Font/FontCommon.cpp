@@ -612,8 +612,8 @@ int		nLen;
 	memcpy( pcTextBuffer, szString, nLen );
 	pcTextBuffer[nLen] = 0;
 
-	maxTextBuffer[ mnPosInTextBuffer ].nX = nX + mnInterfaceDrawX;
-	maxTextBuffer[ mnPosInTextBuffer ].nY = nY + mnInterfaceDrawY;
+	maxTextBuffer[ mnPosInTextBuffer ].nX = nX + mpInterfaceInstance->GetDrawDimensions().x;
+	maxTextBuffer[ mnPosInTextBuffer ].nY = nY + mpInterfaceInstance->GetDrawDimensions().y;
 	maxTextBuffer[ mnPosInTextBuffer ].nCol = ulCol;
 	maxTextBuffer[ mnPosInTextBuffer ].nAlign = ALIGN_LEFT;
 	maxTextBuffer[ mnPosInTextBuffer ].nLayer = 0;
@@ -646,9 +646,9 @@ int			nLen;
 		return;
 	}
 
-	xAlignRect.top = nY + mnInterfaceDrawY;
-	xAlignRect.left = nX1 + mnInterfaceDrawX;
-	xAlignRect.right = nX2 + mnInterfaceDrawX;
+	xAlignRect.top = nY + mpInterfaceInstance->GetDrawDimensions().y;
+	xAlignRect.left = nX1 + mpInterfaceInstance->GetDrawDimensions().x;
+	xAlignRect.right = nX2 + mpInterfaceInstance->GetDrawDimensions().x;
 
 	pcTextBuffer = maxTextBuffer[ mnPosInTextBuffer ].acString;
 	nLen = strlen( szString ) + 1;
@@ -831,7 +831,7 @@ int		nPreBackstepPos;
 
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
-	InterfaceInstanceMain()->mpFontSystem->Text( nLayer, nX, nY, szString, ulCol, nFont );
+	InterfaceInstanceMain()->Text( nLayer, nX, nY, szString, ulCol, nFont );
 }
 
 void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
@@ -986,11 +986,13 @@ char*	pcTextBuffer;
 
 /***************************************************************************
  * Function    : InterfaceTextRight
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
 void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
+{
+	InterfaceInstanceMain()->TextRight( nLayer, nX, nY, szString, ulCol, nFont );
+}
+
+void FontSystem::TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 TEXT_BUFFER*		pxText;
 char*	pcTextBuffer;
@@ -1004,9 +1006,9 @@ RECT		xAlignRect;
 
 	pxText = &maxTextBuffer[ mnPosInTextBuffer ];
 
-	xAlignRect.top = nY + mnInterfaceDrawY;
+	xAlignRect.top = nY + mpInterfaceInstance->GetDrawDimensions().y;
 	xAlignRect.left = 0;
-	xAlignRect.right = nX + mnInterfaceDrawX;
+	xAlignRect.right = nX + mpInterfaceInstance->GetDrawDimensions().x;
 
 	pcTextBuffer = pxText->acString;
 

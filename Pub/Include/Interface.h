@@ -395,20 +395,6 @@ extern void		PanicImpl( const char* szErrorString );
 
 
 /********************************************************
- ************	   Options Functions     ****************
- **													   **
- ** These routines are used to set & get video options **
- ********************************************************/
-extern INTERFACE_API int InterfaceGetOption( int );
-extern INTERFACE_API void InterfaceSetOption( int, int );
-
-extern INTERFACE_API BOOL InterfaceIsZBufferLockable( void );
-extern INTERFACE_API void InterfaceSetZBufferLockable( BOOL );
-
-extern INTERFACE_API void InterfaceSetMipMapBias( float );
-extern INTERFACE_API void InterfaceSetFilteringModes( int );
-
-/********************************************************
  ************** Other Functions  ************************
  **													   **
  ** Various old misc stuff that probably should be	   **
@@ -419,24 +405,6 @@ extern INTERFACE_API int GetStringWidth( const char* pcString, int nFont );
 extern INTERFACE_API int GetStringHeight( const char* pcString, int nFont );
 extern INTERFACE_API void InterfaceEnableTextureFiltering( BOOL bFlag );
 
-// These are values for the game vid-options dialog. Also can be accessed through InterfaceGetOptions / InterfaceSetOptions
-enum
-{
-	TEXTURE_FILTERING = 0,
-	BACK_BUFFER,
-	VSYNC,
-	OLD_STARTUP,
-	MINIMUM_SURFACE_RES,
-	FOG_MODE,
-	FSAA,
-	MAX_OPTIONS,
-};
-
-
-#ifdef WINUSERAPI	// Only include this if winuser.h has been previously included
-extern INTERFACE_API void InterfaceInitVidOptions( HINSTANCE hInst, HWND hDialogWind ); 
-extern INTERFACE_API INT_PTR CALLBACK InterfaceVidOptionsDlgProc( HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam );
-#endif
 
 typedef struct
 {

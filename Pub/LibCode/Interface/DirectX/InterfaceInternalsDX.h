@@ -9,12 +9,8 @@ extern "C"
 {
 #endif
 
-extern LPGRAPHICSDEVICE        mpInterfaceD3DDevice; // Our rendering device
+extern LPGRAPHICSDEVICE        mpLegacyInterfaceD3DDeviceSingleton; // Our rendering device
 
-extern int		mnInterfaceDrawWidth;
-extern int		mnInterfaceDrawHeight;
-extern int		mnInterfaceDrawX;
-extern int		mnInterfaceDrawY;
 extern float	mfMipMapBias;
 extern int		mnMinFilter;
 extern int		mnMagFilter;
@@ -49,7 +45,6 @@ extern IGRAPHICSSURFACE*	LoadJpegDirectArchive( const char* szFilename, int nWid
 
 extern void					InterfaceDXSetInitialSize( BOOL boFullScreen, int nFullScreenSizeX, int nFullScreenSizeY , BOOL boSmallFlag );
 
-//extern BOOL					InterfaceGetDXDeviceCreateParams( BOOL boMinPageSize, D3DPRESENT_PARAMETERS* pD3Dpp );
 
 extern LPGRAPHICSTEXTURE	InterfaceLoadTextureDXFromFileInMem( const char* szFilename, byte* pbMem, int nMemSize, int boReduceFilter, int boMipFilter, BOOL bReadable );
 
@@ -74,6 +69,9 @@ public:
 
 	LPGRAPHICSTEXTURE	LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter, BOOL bReadable );
 	LPGRAPHICSTEXTURE	LoadTextureFromArchive( const char* szFilename, int boReduceFilter, int boMipFilter, int nArchiveHandle );
+
+	BOOL				GetDXDeviceCreateParams( HWND hWindow, BOOL boMinPageSize,  D3DPRESENT_PARAMETERS* pD3Dpp );
+
 };
 
 #endif

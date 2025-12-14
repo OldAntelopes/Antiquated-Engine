@@ -10,9 +10,6 @@ extern "C"				// All interfaces use a C-linkage
 extern BOOL		InterfaceIsVRMode( void );
 
 
-extern int		mnInterfaceDrawX;
-extern int		mnInterfaceDrawY;
-
 
 
 

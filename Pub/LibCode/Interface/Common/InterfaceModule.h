@@ -9,10 +9,15 @@ class InterfaceInstance;
 class InterfaceModule
 {
 public:
-	void		InitialiseModule( LPGRAPHICSDEVICE pDevice, InterfaceInstance* pInstance )
+	void	InitialiseModule( InterfaceInstance* pInstance )
+	{
+		mpInterfaceInstance = pInstance;
+		mpInterfaceD3DDevice = NULL;
+	}
+	
+	void		SetGraphicsDevice( LPGRAPHICSDEVICE pDevice )
 	{
 		mpInterfaceD3DDevice = pDevice;
-		mpInterfaceInstance = pInstance;
 	}
 
 	LPGRAPHICSDEVICE		mpInterfaceD3DDevice;

@@ -193,6 +193,7 @@ public:
 	
 	void	Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
 	void	TextCentre( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont );
+	void	TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
 
 	void	RenderStrings( int nLayer );
 	void	ClearStrings( void );

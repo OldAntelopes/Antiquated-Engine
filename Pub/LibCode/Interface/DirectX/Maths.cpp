@@ -7,6 +7,7 @@
 #include <StandardDef.h>
 #include <Interface.h>
 
+#include "../Common/InterfaceUtil.h"
 #include "Maths.h"
 
 #ifdef TUD9
@@ -93,7 +94,7 @@ ushort				uwDepth = 0xFFFF;
 		xLockRect.top = nY;
 		xLockRect.bottom = nY + 1;
 	
-		mpInterfaceD3DDevice->GetDepthStencilSurface( &pZBuffer );
+		mpLegacyInterfaceD3DDeviceSingleton->GetDepthStencilSurface( &pZBuffer );
 	
 		if ( pZBuffer->LockRect( &xSurfaceRect, &xLockRect, D3DLOCK_READONLY ) == D3D_OK )
 		{
@@ -130,9 +131,9 @@ D3DXVECTOR3	xVect;
 	xVect.y = 0.0f;
 	xVect.z = 0.0f;
 
-	mpInterfaceD3DDevice->GetTransform( D3DTS_PROJECTION, &matProj );
-	mpInterfaceD3DDevice->GetTransform( D3DTS_VIEW, &matView );
-	mpInterfaceD3DDevice->GetTransform( D3DTS_WORLD, &matWorld );
+	mpLegacyInterfaceD3DDeviceSingleton->GetTransform( D3DTS_PROJECTION, &matProj );
+	mpLegacyInterfaceD3DDeviceSingleton->GetTransform( D3DTS_VIEW, &matView );
+	mpLegacyInterfaceD3DDeviceSingleton->GetTransform( D3DTS_WORLD, &matWorld );
 	
 	D3DXVec3Project( &xVect, (D3DXVECTOR3*)( pxWorldCoord ), NULL, &matProj, &matView, &matWorld );
 

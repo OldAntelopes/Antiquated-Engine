@@ -13,10 +13,6 @@ extern void		InterfaceUnpackCol( unsigned int ulARGBCol, float* pfRed, float* pf
 
 typedef glTexture*		LPGRAPHICSTEXTURE;
 
-extern int		mnInterfaceDrawX;
-extern int		mnInterfaceDrawY;
-
-
 #ifdef __cplusplus
 }
 #endif

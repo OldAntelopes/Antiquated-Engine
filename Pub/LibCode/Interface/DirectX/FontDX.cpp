@@ -172,7 +172,7 @@ int			nFormat;
 		pxFinalTexture->GetSurfaceLevel(0, &pDestSurface );
 		
 		// TODO
-		pInterfaceInstance->mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
+		pInterfaceInstance->mpInterfaceInternals->mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
 
 		mpTexture->Release();
 		mpTexture = pxFinalTexture;
