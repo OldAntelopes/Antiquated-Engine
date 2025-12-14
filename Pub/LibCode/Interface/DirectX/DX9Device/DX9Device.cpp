@@ -533,7 +533,7 @@ D3DDISPLAYMODE d3ddm;
 
 
 
-INTERFACE_API LPGRAPHICSDEVICE InterfaceCreateNewGraphicsDevice( HWND hWindow, BOOL boMinPageSize )
+LPGRAPHICSDEVICE InterfaceCreateNewGraphicsDevice( HWND hWindow, BOOL boMinPageSize )
 {
 LPGRAPHICSDEVICE	pInterfaceD3DDevice = NULL;
 HRESULT		hr;
@@ -643,8 +643,9 @@ bool		bFullScreenAntiAlias = false;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
+void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize )
 {
+	mhWindow = hWindow;
 	if ( InterfaceIsVRMode() == TRUE )
 //		 ( EngineHasOculus() == TRUE ) )
 	{
@@ -721,7 +722,7 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 		D3DPRESENT_PARAMETERS d3dpp;
 		ZeroMemory( &d3dpp, sizeof(d3dpp) );
 
-		InterfaceGetDXDeviceCreateParams( mhwndInterfaceMain, boMinPageSize, &d3dpp );
+		InterfaceGetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp );
 
 		if ( mpInterfaceD3DDevice == NULL )
 		{
@@ -729,12 +730,12 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 
 //		D3DDISPLAYMODEEX*		pDisplayModeEx;
 
-//			hr = mpD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, mhwndInterfaceMain,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );
+//			hr = mpD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWindow,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );
 
 #ifdef USE_D3DEX_INTERFACE
-			hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &mpInterfaceD3DDevice );								  
+			hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, NULL, &mpInterfaceD3DDevice );								  
 #else
-			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );								  
+			hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &mpInterfaceD3DDevice );								  
 #endif
 
 			d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
@@ -753,11 +754,11 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 				}
 
 #ifdef USE_D3DEX_INTERFACE
-				hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+				hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 										  &d3dpp, NULL, &mpInterfaceD3DDevice );
 #else
-				hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+				hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 										  D3DCREATE_HARDWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 										  &d3dpp, &mpInterfaceD3DDevice );
 #endif
@@ -767,11 +768,11 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 					// so try to create the screen using this
 					d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 #ifdef USE_D3DEX_INTERFACE
-					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+					hr = mpD3D->CreateDeviceEx( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 											  &d3dpp, NULL, &mpInterfaceD3DDevice );
 #else
-					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, mhwndInterfaceMain,
+					hr = mpD3D->CreateDevice( nAdapterToUse, D3DDEVTYPE_HAL, hWindow,
 											  D3DCREATE_SOFTWARE_VERTEXPROCESSING/*|D3DCREATE_MULTITHREADED*/,
 											  &d3dpp, &mpInterfaceD3DDevice );
 
@@ -781,7 +782,7 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 
 			if( FAILED( hr ) )
 			{	
-				InterfaceSetWindowStyle( mhwndInterfaceMain, false );
+				InterfaceSetWindowStyle( hWindow, false );
 				switch ( hr )
 				{
 				case D3DERR_OUTOFVIDEOMEMORY:
@@ -847,7 +848,7 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 				
 				PANIC_IF( TRUE, acErrorMsg );
 
-				InterfaceSetWindowStyle( mhwndInterfaceMain, false );
+				InterfaceSetWindowStyle( hWindow, false );
 				InterfaceInitSmall();
 				return;
 			}		
@@ -857,7 +858,7 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 		if( ( mboFullScreen == FALSE ) &&
 			( mboCurrentlyFullscreen == TRUE ) )
 		{	
-			SetWindowPos( mhwndInterfaceMain, HWND_NOTOPMOST,
+			SetWindowPos( hWindow, HWND_NOTOPMOST,
 							mnWindowLeft, mnWindowTop,
 							mnWindowWidth, mnWindowHeight,
 							SWP_SHOWWINDOW );
@@ -896,7 +897,10 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 		}
 
-		EngineInitDX( mpInterfaceD3DDevice );
+		if ( EngineGetDXDevice() == NULL )
+		{
+			EngineInitDX( mpInterfaceD3DDevice );
+		}
 		InterfaceSetStandardMaterial();
 	}
 	SetDevice( mpInterfaceD3DDevice );
@@ -914,7 +918,7 @@ void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 
 INTERFACE_API void				InterfaceInitDisplayDevice( BOOL boMinRenderPageSize )
 {
-	InterfaceInstanceMain()->InitD3D( boMinRenderPageSize );
+	InterfaceInstanceMain()->InitD3D( mhwndInterfaceMain, boMinRenderPageSize );
 	mpInterfaceD3DDevice = InterfaceInstanceMain()->mpInterfaceD3DDevice;
 }
 
@@ -973,15 +977,18 @@ HWND	hWnd;
 
 
 
-bool	mbIsInScene = false;
-
 /***************************************************************************
  * Function    : InterfaceEndRender
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
 INTERFACE_API void InterfaceEndRender( void)
+{
+	InterfaceInstanceMain()->EndRender();
+
+}
+/***************************************************************************
+ * Function    : InterfaceEndRender
+ ***************************************************************************/
+void InterfaceInstance::EndRender( void)
 {
 	if ( mpInterfaceD3DDevice )
 	{
@@ -992,14 +999,18 @@ INTERFACE_API void InterfaceEndRender( void)
 
 } 
 
+/***************************************************************************
+ * Function    : InterfaceBeginRender
+ ***************************************************************************/
+INTERFACE_API void InterfaceBeginRender( void)
+{
+	InterfaceInstanceMain()->BeginRender();
+}
 
 /***************************************************************************
  * Function    : InterfaceBeginRender
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceBeginRender( void)
+void InterfaceInstance::BeginRender( void)
 {
 	if ( mpInterfaceD3DDevice )
 	{
@@ -1010,6 +1021,12 @@ INTERFACE_API void InterfaceBeginRender( void)
  } 
 
 INTERFACE_API BOOL	InterfaceIsInRender( void )
+{
+	return( InterfaceInstanceMain()->IsInRender() );
+}
+
+
+BOOL	InterfaceInstance::IsInRender( void )
 {
 	if ( mbIsInScene == true )
 	{
@@ -1046,7 +1063,7 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		if ( InterfaceDoesNeedChanging() == TRUE )
 		{
 			InterfaceReleaseForDeviceReset();
-			InitD3D(mboMinPageSize);
+			InitD3D( mhWindow, mboMinPageSize);
 
 			if ( mpInterfaceD3DDevice != NULL )
 			{
@@ -1060,8 +1077,8 @@ BOOL	boIsSmall = InterfaceIsSmall();
 				// Return a quit code
 				return( -1 );
 			}
-			ShowWindow( mhwndInterfaceMain, SW_SHOW );
-			UpdateWindow( mhwndInterfaceMain );
+			ShowWindow( mhWindow, SW_SHOW );
+			UpdateWindow( mhWindow );
 			SetCursor( LoadCursor(NULL, IDC_ARROW) );
 
 			if ( mpInterfaceD3DDevice != NULL )
@@ -1118,6 +1135,12 @@ int		mnInterfaceNextFrameTimeStore = 0;
  * Description : DX9 Implementation
  ***************************************************************************/
 INTERFACE_API void InterfacePresent( void )
+{
+	InterfaceInstanceMain()->Present();
+
+}
+
+void InterfaceInstance::Present( void )
 {
 HRESULT	hr;
 

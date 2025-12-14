@@ -191,9 +191,13 @@ class FontSystem : public InterfaceModule
 public:
 	BOOL	LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags );
 	void	InitialiseFontBuffers( void );
+	HRESULT	InitialiseFonts( BOOL bUseDefaultFonts );
+	
+	void	Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
 
 private:
 	void	InitialiseFontBuffersDX( void );
+	void	AddFontString( int nX, int nY, const char* szString, uint32 ulCol, int nFlag );
 
 };
 

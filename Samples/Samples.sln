@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00_HelloWorld", "00_HelloWorld.vcxproj", "{89619E02-B991-480E-97E6-D379026EA7D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_BasicInterface", "01_BasicInterface.vcxproj", "{97097347-2E69-45AB-8AEF-8A2D147CF7BB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_BasicEngine", "02_BasicEngine.vcxproj", "{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Interface", "..\Pub\Projects\Interface.vcxproj", "{72F4B279-4610-4D51-B31C-C0334DD5F1CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,22 @@ Global
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Debug|Win32.Build.0 = Release|Win32
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.ActiveCfg = Release|Win32
 		{92DD1C5D-A13C-435A-BA8A-E3CA01BA9EF6}.Tool Release|Win32.Build.0 = Release|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug DX11|Win32.ActiveCfg = Debug DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug DX11|Win32.Build.0 = Debug DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug GL|Win32.ActiveCfg = Debug DX11|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug GL|Win32.Build.0 = Debug DX11|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug OpenGL|Win32.ActiveCfg = Debug OpenGL|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Debug OpenGL|Win32.Build.0 = Debug OpenGL|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Release DX9|Win32.ActiveCfg = Release DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Release DX9|Win32.Build.0 = Release DX9|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Release OpenGL|Win32.ActiveCfg = Release OpenGL|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Release OpenGL|Win32.Build.0 = Release OpenGL|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Tool Debug|Win32.ActiveCfg = Debug DX11|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Tool Debug|Win32.Build.0 = Debug DX11|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Tool Release|Win32.ActiveCfg = Debug DX11|Win32
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC}.Tool Release|Win32.Build.0 = Debug DX11|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

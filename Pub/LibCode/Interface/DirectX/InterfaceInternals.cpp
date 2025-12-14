@@ -827,14 +827,18 @@ INTERFACE_API void	InterfaceDrawUI( float fScreenAngle )
 	InterfaceDrawAllElements();
 }
 
+/***************************************************************************
+ * Function    : InterfaceDraw
+ ***************************************************************************/
+INTERFACE_API void InterfaceDraw( void )
+{
+	InterfaceInstanceMain()->Draw();
+}
 
 /***************************************************************************
  * Function    : InterfaceDraw
- * Params      : 
- * Returns     :
- * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceDraw( void )
+void InterfaceInstance::Draw( void )
 {
 	if (!mpInterfaceD3DDevice) return;
 

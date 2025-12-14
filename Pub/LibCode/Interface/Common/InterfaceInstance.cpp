@@ -3,15 +3,32 @@
 
 #include "Interface.h"
 
+#include "../DirectX/Image.h"
 #include "Overlays/TexturedOverlays.h"
 #include "../Common/Font/FontCommon.h"
 #include "InterfaceInstance.h"
 
-void	InterfaceInstance::InitialiseInstance()
+InterfaceInstance::InterfaceInstance()
 {
 	mpTexturedOverlays = new TexturedOverlays;
 	mpInterfaceInternals = new InterfaceInternalsDX;
 	mpFontSystem = new FontSystem;
+}
+
+void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
+{
+	if ( mboInterfaceInitialised == FALSE )
+	{
+		InterfaceSetIsUsingDefaultFonts( bUseDefaultFonts );
+		mpFontSystem->InitialiseFonts( bUseDefaultFonts );
+		InitialiseOverlays();
+
+		InitTexturedOverlays();
+
+		InterfaceImagesInit();
+	}
+
+	mboInterfaceInitialised = TRUE;
 }
 
 void	InterfaceInstance::SetDevice( LPGRAPHICSDEVICE pDevice )
@@ -29,7 +46,6 @@ static BOOL			ms_bHasInitialisedMainInstance = FALSE;
 
 	if ( !ms_bHasInitialisedMainInstance )
 	{
-		ms_MainSingletonInstance.InitialiseInstance();
 		ms_bHasInitialisedMainInstance = TRUE;
 	}
 	return( &ms_MainSingletonInstance );

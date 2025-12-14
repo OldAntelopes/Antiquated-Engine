@@ -4,17 +4,30 @@
 // TODO - this shouldnt be here
 #include "../DirectX/InterfaceTypesDX.h"
 
+#include "InterfaceModule.h"
+#include "../Common/Overlays/Overlays.h"
+#include "../Common/Font/FontCommon.h"
+
 class TexturedOverlays;
-class InterfaceInternals;
+class InterfaceInternalsDX;
 class FontSystem;
 
 class InterfaceInstance
 {
 public:
-	void		InitialiseInstance();
+	InterfaceInstance();
 
-	void		InitD3D( BOOL bMinBackBufferSize );
+	void		InitD3D( HWND hWindow, BOOL bMinBackBufferSize );
+
+	void		InitialiseInstance( BOOL bUseDefaultFonts );
+
 	int			NewFrame( uint32 ulCol );
+	void		BeginRender( void);
+	void		Draw( void );
+	void		EndRender( void);
+	void		Present( void );
+
+	BOOL		IsInRender( void );
 
 	TexturedOverlays*		mpTexturedOverlays;
 	FontSystem*				mpFontSystem;
@@ -24,6 +37,9 @@ public:
 protected:
 	void		SetDevice( LPGRAPHICSDEVICE pDevice );
 
+	BOOL	mboInterfaceInitialised = FALSE;
+	bool	mbIsInScene = false;
+	HWND	mhWindow;
 
 };
 

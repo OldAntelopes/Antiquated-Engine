@@ -570,11 +570,8 @@ int		InterfaceGetFontNumFromColVal( uint32 ulCol, int nFont )
 
 /***************************************************************************
  * Function    : AddFontString
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-void AddFontString( int nX, int nY, const char* szString, uint32 ulCol, int nFlag )
+void FontSystem::AddFontString( int nX, int nY, const char* szString, uint32 ulCol, int nFlag )
 {
 char*	pcTextBuffer;
 int		nLen;
@@ -816,10 +813,13 @@ int		nPreBackstepPos;
 	return( (char*)szString + nLoop );
 }
 
-
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
+	InterfaceInstanceMain()->mpFontSystem->Text( nLayer, nX, nY, szString, ulCol, nFont );
+}
 
+void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
+{
 	if ( ( InterfaceIsSmall() == TRUE ) ||
 		 ( ShouldAddString( szString ) == FALSE ) )
 	{
@@ -1798,11 +1798,17 @@ void InitialiseFontBuffers( void )
 
 /***************************************************************************
  * Function    : InitialiseFont
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
 HRESULT InitialiseFont( BOOL bUseDefaultFonts )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->InitialiseFonts( bUseDefaultFonts ) );
+}
+
+
+/***************************************************************************
+ * Function    : InitialiseFont
+ ***************************************************************************/
+HRESULT FontSystem::InitialiseFonts( BOOL bUseDefaultFonts )
 {
 	InitialiseFontBuffers();
 
