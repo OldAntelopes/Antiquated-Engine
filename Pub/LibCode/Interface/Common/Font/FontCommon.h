@@ -46,7 +46,7 @@ public:
 	{
 		strcpy( m_szTextureFilename, szTextureFilename );
 	}
-	void 	LoadTexture( void );
+	void 	LoadTexture( InterfaceInstance* pInterfaceInstance );
 
 
 	void	LookupChar( BYTE cChar, FONT_UVCHAR* pOut )
@@ -186,5 +186,15 @@ extern void	FontDefFreeAll( void );
 }
 #endif
 
+class FontSystem : public InterfaceModule
+{
+public:
+	BOOL	LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags );
+	void	InitialiseFontBuffers( void );
+
+private:
+	void	InitialiseFontBuffersDX( void );
+
+};
 
 #endif

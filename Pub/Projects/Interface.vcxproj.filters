@@ -129,6 +129,12 @@
     <ClCompile Include="..\LibCode\Interface\DirectX\Console\Overlays.cpp">
       <Filter>DirectX\Console</Filter>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceInstance.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\InterfaceModule.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceInternalsDX.h">
@@ -184,6 +190,18 @@
     </ClInclude>
     <ClInclude Include="..\LibCode\Interface\Common\Overlays\TexturedOverlays.h">
       <Filter>Common\Overlays</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\InterfaceEx.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceInstance.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\InterfaceModule.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\DirectX\InterfaceTypesDX.h">
+      <Filter>DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

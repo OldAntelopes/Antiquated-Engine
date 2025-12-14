@@ -7,6 +7,7 @@
 #include <Interface.h>
 #include <Engine.h>
 
+#include "../Common/InterfaceInstance.h"
 #include "../Common/Overlays/Overlays.h"
 #include "../Common/Font/FontCommon.h"
 #include "FontDX.h"
@@ -32,7 +33,7 @@ void	CFontDef::SetTextureAsCurrent( void )
 // The image is expected to be a greyscale. This load function uses the brightness
 // of the image to generate an alpha map used for blending the font
 //---------------------------------------------------------------
-void	CFontDef::LoadTexture( void )
+void	CFontDef::LoadTexture( InterfaceInstance* pInterfaceInstance  )
 {
 LPGRAPHICSTEXTURE pxTempTexture;
 LPGRAPHICSTEXTURE pxFinalTexture;
@@ -55,7 +56,7 @@ int			nFormat;
 
 	if ( 0 )	// dont use alpha textures
 	{
-		mpTexture = InterfaceLoadTextureDX( m_szTextureFilename, 0, 0 );
+		mpTexture = pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0 );
 		mpTexture->GetLevelDesc( 0, &xSurface );
 
 		m_TextureSizeY = xSurface.Height;
@@ -63,7 +64,7 @@ int			nFormat;
 	}
 	else
 	{
-		pxTempTexture = InterfaceLoadTextureDX( m_szTextureFilename, 0, 0xFF );
+		pxTempTexture =  pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0xFF );
 		if ( pxTempTexture == NULL ) return;
 		
 		pxTempTexture->GetLevelDesc( 0, &xSurface );
@@ -77,21 +78,21 @@ int			nFormat;
 		m_TextureSizeY = nHeight;
 		m_TextureSizeX = nWidth;
 		nFormat = D3DFMT_A8R8G8B8;
-		InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture, TRUE );
+		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture );
 		if ( mpTexture == NULL )
 		{
 			nFormat = D3DFMT_A8R3G3B2;
-			InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture, TRUE );
+			pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture );
 		
 			if ( mpTexture == NULL )
 			{
 				nFormat = D3DFMT_A4R4G4B4;
-				InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture, TRUE );
+				pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture );
 			
 				if ( mpTexture == NULL )
 				{
 					nFormat = D3DFMT_A8;
-					InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture, TRUE );
+					pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture );
 			
 					if ( mpTexture == NULL )
 					{
@@ -169,14 +170,16 @@ int			nFormat;
 		}
 		pxTempTexture->Release();
 
-		InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture, FALSE );
+		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture );
 			
 		IDirect3DSurface9*		pSourceSurface = NULL;
 		IDirect3DSurface9*		pDestSurface = NULL;
 			
 		mpTexture->GetSurfaceLevel( 0, &pSourceSurface );
 		pxFinalTexture->GetSurfaceLevel(0, &pDestSurface );
-		mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
+		
+		// TODO
+		pInterfaceInstance->mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
 
 		mpTexture->Release();
 		mpTexture = pxFinalTexture;
@@ -261,7 +264,8 @@ int				nDrawHowMany;
 }
 
 
-void InitialiseFontBuffersDX( void )
+
+void FontSystem::InitialiseFontBuffersDX( void )
 {
 	if ( mpxFontVertexBuffer1 == NULL )
 	{

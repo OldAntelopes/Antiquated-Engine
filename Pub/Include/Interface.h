@@ -368,30 +368,7 @@ extern INTERFACE_API HWND				InterfaceGetWindow( void );
 extern INTERFACE_API void				InterfaceSetWindow( HWND hwndMain );
 #endif
 
-#define USE_D3DEX_INTERFACE
 
-#ifdef DIRECT3D_VERSION		// Only include this if directX has been previously included
-#if (DIRECT3D_VERSION>=0x0900)
-#ifdef USE_D3DEX_INTERFACE
-typedef LPDIRECT3DDEVICE9EX		LPGRAPHICSDEVICE;
-typedef LPDIRECT3D9EX			LPGRAPHICS;
-#else
-typedef LPDIRECT3DDEVICE9		LPGRAPHICSDEVICE;
-typedef LPDIRECT3D9				LPGRAPHICS;
-#endif
-typedef LPDIRECT3DTEXTURE9		LPGRAPHICSTEXTURE;
-typedef IDirect3DSurface9		IGRAPHICSSURFACE;
-
-#else		// --- less than DX9 ! oldscool
-typedef LPDIRECT3DDEVICE8		LPGRAPHICSDEVICE;
-typedef LPDIRECT3D8				LPGRAPHICS;
-typedef LPDIRECT3DTEXTURE8		LPGRAPHICSTEXTURE;
-#endif
-
-extern INTERFACE_API LPGRAPHICSDEVICE	InterfaceInitD3D( BOOL boMinRenderPageSize );
-extern INTERFACE_API LPGRAPHICSDEVICE	InterfaceGetD3DDevice( void );
-extern INTERFACE_API LPGRAPHICS		InterfaceGetD3D( void );
-#endif
 //-----------------------------------------------------------------------------------------------------------------------------------
 
 extern INTERFACE_API void	InterfaceSetVRMode( BOOL bVRModeActive );
@@ -558,6 +535,28 @@ enum // Preset colour enums for font draw
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef DIRECT3D_VERSION		// Only include this if directX has been previously included
+#include "../LibCode/Interface/DirectX/InterfaceTypesDX.h"
+
+#ifdef __cplusplus
+extern "C"				// All interfaces use a C-linkage
+{
+#endif
+
+extern INTERFACE_API LPGRAPHICSDEVICE	InterfaceInitD3D( BOOL boMinRenderPageSize );
+extern INTERFACE_API LPGRAPHICSDEVICE	InterfaceGetD3DDevice( void );
+extern INTERFACE_API LPGRAPHICS		InterfaceGetD3D( void );
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif		// ifdef DIRECT3D_VERSION
+
+class InterfaceInstance;
+
+extern InterfaceInstance* 		InterfaceInstanceMain();
 
 
 /*

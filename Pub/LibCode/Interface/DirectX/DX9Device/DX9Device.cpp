@@ -11,6 +11,7 @@
 #include "../../Win32/Interface-Win32.h"
 #include "../../Common/InterfaceDevice.h"
 #include "../../Common/InterfaceCommon.h"
+#include "../../Common/InterfaceInstance.h"
 #include "../../../Engine/DirectX/OculusDX.h"
 #include "../../../Engine/DirectX/EngineDX.h"
 #include "DX9Device.h"
@@ -194,18 +195,6 @@ GRAPHICSCAPS	md3dCaps;
 BOOL			mbCapsIsSet = FALSE;
 #endif
 
-INTERFACE_API void				InterfaceSetD3DDevice( LPGRAPHICSDEVICE pDevice )
-{
-	mpInterfaceD3DDevice = pDevice;
-
-#ifdef TUD9
-	if ( pDevice )
-	{
-		mpInterfaceD3DDevice->GetDeviceCaps( &md3dCaps );
-		mbCapsIsSet = TRUE;
-	}
-#endif
-}
 
 int		InterfaceGetDeviceCaps( int Type )
 {
@@ -237,6 +226,8 @@ int		InterfaceGetDeviceCaps( int Type )
  ***************************************************************************/
 INTERFACE_API void InterfaceInitSmall( void )
 {
+/*
+
 	if ( InterfaceIsSmall() == FALSE )
 	{
 		InterfaceSetSmall( TRUE );
@@ -271,7 +262,7 @@ INTERFACE_API void InterfaceInitSmall( void )
 		InterfaceSetSmall( FALSE );
 		InterfaceSetWindowHasChanged( TRUE );
 	}
-
+*/
 }
 
 INTERFACE_API void InterfaceSetStandardMaterial( void )
@@ -652,7 +643,7 @@ bool		bFullScreenAntiAlias = false;
  * Returns     :
  * Description : 
  ***************************************************************************/
-INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
+void	 InterfaceInstance::InitD3D( BOOL boMinPageSize )
 {
 	if ( InterfaceIsVRMode() == TRUE )
 //		 ( EngineHasOculus() == TRUE ) )
@@ -676,7 +667,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 				if( mpD3D == NULL )
 				{
 					PANIC_IF(TRUE,"Direct3D Create Failed. You may need to update your DirectX runtime and/or video card drivers for this game to work" );
-					return( NULL );
+					return;
 				}
 			}
 
@@ -713,7 +704,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 				if( mpD3D == NULL )
 				{
 					PANIC_IF(TRUE,"Direct3D Create Failed. You may need to update your DirectX runtime and/or video card drivers for this game to work" );
-					return( NULL );
+					return;
 				}
 			}
 		}
@@ -723,7 +714,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 		if( FAILED( mpD3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm ) ) )
 		{
 			PANIC_IF(TRUE,"Couldn't get display mode" );
-			return( NULL );
+			return;
 		}
 
 		// Set up the present parameters - This is generally what odd vid cards have a problem with
@@ -803,10 +794,9 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 					PANIC_IF(TRUE,"Direct3D Create Device failed. There may be problems with your video card drivers or DirectX install.\n Adjusting the DirectX setup options on the Video Options menu may help." );
 					break;
 				}
-				return( NULL );
+				return;
 			}
 			hr = mpInterfaceD3DDevice->Reset( &d3dpp );
-			InterfaceSetD3DDevice(mpInterfaceD3DDevice);
 		}
 		else
 		{	
@@ -859,7 +849,7 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 
 				InterfaceSetWindowStyle( mhwndInterfaceMain, false );
 				InterfaceInitSmall();
-				return( NULL );
+				return;
 			}		
 		}
 
@@ -909,13 +899,23 @@ INTERFACE_API LPGRAPHICSDEVICE InterfaceInitD3D( BOOL boMinPageSize )
 		EngineInitDX( mpInterfaceD3DDevice );
 		InterfaceSetStandardMaterial();
 	}
-    return( mpInterfaceD3DDevice );
+	SetDevice( mpInterfaceD3DDevice );
+
+#ifdef TUD9
+	if ( mpInterfaceD3DDevice )
+	{
+		mpInterfaceD3DDevice->GetDeviceCaps( &md3dCaps );
+		mbCapsIsSet = TRUE;
+	}
+#endif
+//    return( mpInterfaceD3DDevice );
 }
 
 
 INTERFACE_API void				InterfaceInitDisplayDevice( BOOL boMinRenderPageSize )
 {
-	InterfaceInitD3D( boMinRenderPageSize );
+	InterfaceInstanceMain()->InitD3D( boMinRenderPageSize );
+	mpInterfaceD3DDevice = InterfaceInstanceMain()->mpInterfaceD3DDevice;
 }
 
 
@@ -1027,11 +1027,13 @@ void		InterfaceSetIsUsingDefaultFonts( BOOL bUsingDefaultFonts )
 
 /***************************************************************************
  * Function    : InterfaceNewFrame
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
 INTERFACE_API int InterfaceNewFrame( uint32 ulCol )
+{
+	return( InterfaceInstanceMain()->NewFrame( ulCol ) );
+}
+
+int InterfaceInstance::NewFrame( uint32 ulCol )
 {
 D3DCOLOR xColor;
 BOOL	boSmallQuit = FALSE;
@@ -1044,7 +1046,7 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		if ( InterfaceDoesNeedChanging() == TRUE )
 		{
 			InterfaceReleaseForDeviceReset();
-			InterfaceSetD3DDevice( InterfaceInitD3D(mboMinPageSize) );
+			InitD3D(mboMinPageSize);
 
 			if ( mpInterfaceD3DDevice != NULL )
 			{

@@ -8,6 +8,7 @@
 #include <StandardDef.h>
 #include <Interface.h>
 
+#include "../InterfaceInstance.h"
 #include "../Overlays/Overlays.h"
 #include "../InterfaceCommon.h"
 #include "FontCommon.h"
@@ -468,8 +469,7 @@ BOOL	InterfaceFontIsLoaded( int nFontNum )
 	return( FALSE );
 }
 
-
-BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
+BOOL	FontSystem::LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
 	{
@@ -480,7 +480,9 @@ BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* p
 		}
 		mpFontDefs[nFontNum] = new CFontDef;
 		mpFontDefs[nFontNum]->SetTextureFileName( pcImageFileName );
-		mpFontDefs[nFontNum]->LoadTexture();
+
+		// TEMP - REMOVE
+		mpFontDefs[nFontNum]->LoadTexture( mpInterfaceInstance );
 		mpFontDefs[nFontNum]->Initialise( pcLayoutFile );
 		if ( ulFlags & 1 )
 		{
@@ -493,6 +495,12 @@ BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* p
 		return( TRUE );
 	}
 	return( FALSE );
+
+}
+
+BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->LoadFont( nFontNum, pcImageFileName, pcLayoutFile, ulFlags ) );
 }
 
 void	InterfaceFontFree( int nFontNum )
@@ -1772,7 +1780,7 @@ void ClearStrings( void )
 }
 
 
-void InitialiseFontBuffers( void )
+void	FontSystem::InitialiseFontBuffers( void )
 {
 #ifdef TUD9
 	InitialiseFontBuffersDX();
@@ -1781,6 +1789,11 @@ void InitialiseFontBuffers( void )
 	InitialiseFontBuffersGL();
 #endif
 
+}
+
+void InitialiseFontBuffers( void )
+{
+	InterfaceInstanceMain()->mpFontSystem->InitialiseFontBuffers();
 }
 
 /***************************************************************************

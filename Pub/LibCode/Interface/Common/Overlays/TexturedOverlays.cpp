@@ -18,107 +18,13 @@
 #include <EngineMaths.h>
 
 #include "../InterfaceUtil.h"
+#include "../InterfaceInstance.h"
+
 #include "Overlays.h"
 #include "TexturedOverlays.h"
 
-//------------------------------------------------------------------------------------------------------------
 
 
-
-#define		MAX_TEX_OVERLAY_VERTICES			2048
-
-#define		MAX_DIFFERENT_TEXTURED_OVERLAYS		128
-#define		MAX_RECTS							12000
-
-/*** This structure is used to specify a shape in the Textured Overlays module ***/
-typedef struct
-{
-	BYTE	nType;
-	BYTE	bPad;
-	short	 nX;
-	short	 nY;
-	short	nWidth;
-	short	nHeight;
-	short	nX2;
-	short	nY2;
-
-	uint32	ulCol;
-	float	fU1;
-	float	fU2;
-	union {	float	fU3;	float fRot; };
-	float	fV1;
-	float	fV2;
-	union { float	fV3;	uint32 ulCol2; };
-
-	void*	pNext;
-
-} TEXTURED_RECT_DEF;
- 
-
-#define		MAX_INTERNAL_TEXTURES_LOADED		256
-
-
-typedef struct
-{
-	LPGRAPHICSTEXTURE		pTexture;
-	char					acFilename[128];
-	uint32					ulLastTouched;
-	int						nRefCount;
-
-} INTERNAL_TEXTURES;
-
-typedef struct
-{
-	int						nLayerNum;
-	INTF_RENDER_TYPES		nRenderType;
-	LPGRAPHICSTEXTURE		pTexture;
-	TEXTURED_RECT_DEF*		pxRectsInOverlay;
-	int						hEngineTexture;
-
-} OVERLAY_DATA;
-
-BOOL		mboInterfaceTexturesFirstInitialise = TRUE;
-
-INTERNAL_TEXTURES	maxInternalTextures[MAX_INTERNAL_TEXTURES_LOADED];
-OVERLAY_DATA		maxOverlayData[MAX_DIFFERENT_TEXTURED_OVERLAYS];
-
-
-/*** These enum lists define settings for the Textured Overlays module **/
-enum
-{
-	TEX_OVLY_NONE = 0,
-	TEX_OVLY_RECT,
-	TEX_OVLY_TRI,
-	TEX_OVLY_SPRITE,
-};
-
-
-
-TEXTURED_RECT_DEF*		mpxRectBuffer = NULL;
-TEXTURED_RECT_DEF*		mpxNextFreeRect = NULL;
-
-int				mnTexRectBufferSize = 0;
-int				mnTexRectMaxBufferSize = MAX_RECTS;
-
-#ifdef USING_OPENGL
-VertexBuffer*		mpCurrentTexOverlayVertexBuffer; // Buffer to hold vertices
-VertexBuffer*		mpTexOverlayVertexBuffer1; // Buffer to hold vertices
-VertexBuffer*		mpTexOverlayVertexBuffer2; // Buffer to hold vertices
-
-#else
-IGRAPHICSVERTEXBUFFER*		mpCurrentTexOverlayVertexBuffer; // Buffer to hold vertices
-IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer1; // Buffer to hold vertices
-IGRAPHICSVERTEXBUFFER*		mpTexOverlayVertexBuffer2; // Buffer to hold vertices
-#endif
-
-int			mnNextTexOverlayVertex = 0;
-
-int			mnNumActiveTexOverlays = 0;
-int			mnCurrentTexOverlayRenderTexture = 0;
-
-int		mnCurrentRenderType = 0;
-
-//------------------------------------------------------------------------------------------------------------
 void		InterfaceRotateVectAboutZ( VECT* pVec, float fAngle )
 {
 ENGINEMATRIX	xMatRotZ;
@@ -156,23 +62,27 @@ VECT*	pOut = pVec;
     }
 }
 
-INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture )
+//------------------------------------------------------------------------------------------------------------
+
+void TexturedOverlays::SetRenderType( int nOverlayNum, INTF_RENDER_TYPES nRenderType )
 {
-	mpInterfaceD3DDevice->SetTexture( 0, (LPGRAPHICSTEXTURE)pTexture );
+	if ( nOverlayNum >= 0 )
+	{
+		maxOverlayData[ nOverlayNum ].nRenderType = nRenderType;
+	}
 }
 
-INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle )
+
+void	TexturedOverlays::SetTextureAsCurrent( int nTextureHandle )
 {
 	nTextureHandle %= MAX_INTERNAL_TEXTURES_LOADED;
 	if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
 	{
 		mpInterfaceD3DDevice->SetTexture( 0, maxInternalTextures[ nTextureHandle ].pTexture );
 	}
-
 }
 
-
-TEXTURED_RECT_DEF*	TexOverlayGetNextRect( int nOverlayNum )
+TEXTURED_RECT_DEF*	TexturedOverlays::GetNextRect( int nOverlayNum )
 {
 TEXTURED_RECT_DEF*	pxRet = NULL;
 
@@ -195,27 +105,7 @@ TEXTURED_RECT_DEF*	pxRet = NULL;
 	return( pxRet );
 }
 
-/***************************************************************************
- * Function    : InterfaceOverlayRenderType
- * Params      :
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API void InterfaceOverlayRenderType( int nOverlayNum, INTF_RENDER_TYPES nRenderType )
-{
-	if ( nOverlayNum >= 0 )
-	{
-		maxOverlayData[ nOverlayNum ].nRenderType = nRenderType;
-	}
-}
-
-/***************************************************************************
- * Function    : RenderTexOverlays
- * Params      :
- * Returns     :
- * Description : 
- ***************************************************************************/
-void RenderTexOverlays( void )
+void TexturedOverlays::FlushTexOverlayBuffer( void )
 {
 int		nDrawHowMany;
 
@@ -319,10 +209,7 @@ int		nDrawHowMany;
 	{
 		mpCurrentTexOverlayVertexBuffer = mpTexOverlayVertexBuffer1;
 	} 
-
-
 } 
-
 
 
 
@@ -332,14 +219,14 @@ int		nDrawHowMany;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void AddTexturedTriVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
+void TexturedOverlays::AddTexturedTriVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
 {
 FLATVERTEX*		pVertices;
 
 	if ( mnNextTexOverlayVertex >= ( MAX_TEX_OVERLAY_VERTICES - 6 ) )
 	{
 		mpCurrentTexOverlayVertexBuffer->Unlock();
-		RenderTexOverlays();
+		FlushTexOverlayBuffer();
 #ifdef USING_OPENGL
 		*ppVertices = mpCurrentTexOverlayVertexBuffer->Lock();
 #else
@@ -385,14 +272,14 @@ FLATVERTEX*		pVertices;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void AddTexturedRectVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
+void TexturedOverlays::AddTexturedRectVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
 {
 FLATVERTEX*		pVertices;
 
 	if ( mnNextTexOverlayVertex >= ( MAX_TEX_OVERLAY_VERTICES - 6 ) )
 	{
 		mpCurrentTexOverlayVertexBuffer->Unlock();
-		RenderTexOverlays();
+		FlushTexOverlayBuffer();
 #ifdef USING_OPENGL
 		*ppVertices = mpCurrentTexOverlayVertexBuffer->Lock();
 #else
@@ -489,7 +376,7 @@ FLATVERTEX*		pVertices;
 }
 
 
-void AddSpriteVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
+void TexturedOverlays::AddSpriteVertices( FLATVERTEX** ppVertices, TEXTURED_RECT_DEF* pxRectDef )
 {
 FLATVERTEX*		pVertices;
 VECT			xVect;
@@ -497,7 +384,7 @@ VECT			xVect;
 	if ( mnNextTexOverlayVertex >= ( MAX_TEX_OVERLAY_VERTICES - 6 ) )
 	{
 		mpCurrentTexOverlayVertexBuffer->Unlock();
-		RenderTexOverlays();
+		FlushTexOverlayBuffer();
 #ifdef USING_OPENGL
 		*ppVertices = mpCurrentTexOverlayVertexBuffer->Lock();
 		if( *ppVertices == NULL )
@@ -604,13 +491,7 @@ VECT			xVect;
 	mnNextTexOverlayVertex += 6;
 }
 
-/***************************************************************************
- * Function    : DrawTexturedOverlays
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-void DrawTexturedOverlays( int nLayer )
+void TexturedOverlays::Render( int nLayer )
 {
 int		nLoop;
 TEXTURED_RECT_DEF*	pxRectDefinition;
@@ -659,7 +540,7 @@ FLATVERTEX*	pVertices;
 #else
 				mpCurrentTexOverlayVertexBuffer->Unlock();
 #endif
-				RenderTexOverlays();
+				FlushTexOverlayBuffer();
 		
 				maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
 				if ( maxOverlayData[ nLoop ].hEngineTexture > 0 )
@@ -677,16 +558,7 @@ FLATVERTEX*	pVertices;
 	mnNumActiveTexOverlays = 0;
 }
 
-
-
-
-/***************************************************************************
- * Function    : TexturedOverlayCreate
- * Params      : The texture that will be used for all rectangles on this overlay
- * Returns     : The number of the overlay for which all rectangles will use this texture
- * Description : See what feckin happens when i fill in this bit?
- ***************************************************************************/
-int	TexturedOverlayCreate( int nLayer, TEXTURE_HANDLE hTexture )
+int	TexturedOverlays::CreateOverlay( int nLayer, TEXTURE_HANDLE hTexture )
 {
 int	nRet;
 
@@ -713,8 +585,22 @@ int	nRet;
 	return( nRet );
 }
 
+int	TexturedOverlays::CreateBlankTexture( int nWidth, int nHeight, int Mode)
+{
+int		nHandle;
 
-int	TexturedOverlayCreateDirect( int nLayer, void* pTexture, int hEngineTexture )
+	nHandle = GetNewInternalTextureHandle();
+
+	if ( nHandle != NOTFOUND )
+	{
+		mpInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &maxInternalTextures[ nHandle ].pTexture );
+		maxInternalTextures[ nHandle ].nRefCount = 1;
+		strcpy( maxInternalTextures[ nHandle ].acFilename, "gentex" );
+	}
+	return( nHandle );
+}
+
+int	TexturedOverlays::CreateOverlayDirect( int nLayer, void* pTexture, int hEngineTexture )
 {
 int	nRet;
 
@@ -735,18 +621,11 @@ int	nRet;
 
 }
 
-
-/***************************************************************************
- * Function    : InterfaceTexturedTri
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, uint32 ulCol )
+void TexturedOverlays::AddTri( int nOverlayNum, int* pnVerts, float* pfUVs, uint32 ulCol )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
-	pxRectDef = TexOverlayGetNextRect( nOverlayNum );
+	pxRectDef = GetNextRect( nOverlayNum );
 	if ( pxRectDef != NULL )
 	{
 		pxRectDef->nType = TEX_OVLY_TRI;
@@ -764,23 +643,15 @@ TEXTURED_RECT_DEF* pxRectDef;
 		pxRectDef->fU3 = pfUVs[4];
 		pxRectDef->fV3 = pfUVs[5];
 	}
-
 }
 
-
-/***************************************************************************
- * Function    : InterfaceTexturedRect
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fUWidth, float fUHeight )
+void TexturedOverlays::AddRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fUWidth, float fUHeight )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
 	if ( nOverlayNum < 0 ) return;
 
-	pxRectDef = TexOverlayGetNextRect( nOverlayNum );
+	pxRectDef = GetNextRect( nOverlayNum );
 	if ( pxRectDef != NULL )
 	{
 		pxRectDef->nType = TEX_OVLY_RECT;
@@ -804,13 +675,14 @@ TEXTURED_RECT_DEF* pxRectDef;
 	}
 }
 
-INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fUWidth, float fUHeight )
+
+void	TexturedOverlays::AddRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fUWidth, float fUHeight )
 {
 TEXTURED_RECT_DEF* pxRectDef;
 
 	if ( nOverlayNum < 0 ) return;
 
-	pxRectDef = TexOverlayGetNextRect( nOverlayNum );
+	pxRectDef = GetNextRect( nOverlayNum );
 	if ( pxRectDef != NULL )
 	{
 		pxRectDef->nType = TEX_OVLY_RECT;
@@ -835,13 +707,41 @@ TEXTURED_RECT_DEF* pxRectDef;
 }
 
 
-/***************************************************************************
- * Function    : InterfaceDrawSprite
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotAngle, float fScale )
+int  TexturedOverlays::GetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags )
+{
+int		nHandle;
+
+	nHandle = GetNewInternalTextureHandle();
+
+	if ( nHandle != NOTFOUND )
+	{
+		if ( (nFlags & 0x1) == 0 )
+		{
+			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 1, 1 );
+		}
+		else
+		{
+			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 0, 0 );
+		}
+
+		// Load failed
+		if ( !maxInternalTextures[ nHandle ].pTexture )
+		{
+			return( NOTFOUND );
+		}
+		maxInternalTextures[ nHandle ].ulLastTouched = GetTickCount();
+		maxInternalTextures[ nHandle ].nRefCount = 1;
+
+		if ( strlen( szFilename ) < 127 ) 
+		{
+			strcpy( maxInternalTextures[ nHandle ].acFilename, szFilename );
+		}
+	}
+
+	return( nHandle );
+}
+
+void TexturedOverlays::AddSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotAngle, float fScale )
 {
 #ifdef USING_OPENGL
 		// TODO!!
@@ -856,7 +756,7 @@ int		nTexMod;
 		int		nTexW;
 		int		nTexH;
 
-			pxRectDef = TexOverlayGetNextRect( nOverlayNum );
+			pxRectDef = GetNextRect( nOverlayNum );
 			if ( pxRectDef != NULL )
 			{
 			D3DSURFACE_DESC		xSurface;
@@ -907,128 +807,54 @@ int		nTexMod;
 #endif
 }
 
-/***************************************************************************
- * Function    : InitTextRectLists
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-void FreeTextRectLists( void )
+void TexturedOverlays::ReleaseTexture( int nTextureHandle )
 {
-int		nLoop;
-
-	if ( mpxRectBuffer != NULL )
+	if ( nTextureHandle != NOTFOUND )
 	{
-		free( mpxRectBuffer );
-		mpxRectBuffer = NULL;
-	}
-	for ( nLoop = 0; nLoop <MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
-	{
-		maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
-	}
-	mpxNextFreeRect = NULL;
-
-}
-
-
-/***************************************************************************
- * Function    : InitTextRectLists
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-void InitTextRectLists( void )
-{
-int		nLoop;
-
-	if ( mpxRectBuffer != NULL )
-	{
-		free( mpxRectBuffer );
-	}
-
-	mpxRectBuffer = (TEXTURED_RECT_DEF*)( malloc( mnTexRectMaxBufferSize * sizeof(TEXTURED_RECT_DEF) ) );
-	if ( mpxRectBuffer != NULL )
-	{
-		mnTexRectBufferSize = mnTexRectMaxBufferSize;
-		ZeroMemory( mpxRectBuffer, mnTexRectMaxBufferSize * sizeof(TEXTURED_RECT_DEF) );
-		for ( nLoop = 0; nLoop < MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
-		{
-			maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
-		}
-		mpxNextFreeRect = mpxRectBuffer;
-	}
-	else
-	{
-#ifndef USING_OPENGL
-		PANIC_IF( TRUE,"Couldnt allocate memory for textured overlay buffer" );
-#endif
-	}
-}
-
-/***************************************************************************
- * Function    : InitTexturedOverlays
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-void InitTexturedOverlays( void )
-{
-int		nLoop;
-
-	if ( mboInterfaceTexturesFirstInitialise == TRUE )
-	{
-		ZeroMemory( maxInternalTextures, sizeof( INTERNAL_TEXTURES ) * MAX_INTERNAL_TEXTURES_LOADED );
-		mboInterfaceTexturesFirstInitialise = FALSE;
-	}
-
-	mnNumActiveTexOverlays = 0;
-
-	for ( nLoop = 0; nLoop < MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
-	{
-		maxOverlayData[nLoop].pTexture = NULL;
-		maxOverlayData[nLoop].hEngineTexture = NOTFOUND;
-	}
-	InitTextRectLists();
-
-	if ( mpTexOverlayVertexBuffer1 == NULL )
-	{
+		nTextureHandle %= MAX_INTERNAL_TEXTURES_LOADED;
 #ifdef USING_OPENGL
-		// TODO 
-		VertexBufferCreate( MAX_TEX_OVERLAY_VERTICES, &mpTexOverlayVertexBuffer1 );
-		VertexBufferCreate( MAX_TEX_OVERLAY_VERTICES, &mpTexOverlayVertexBuffer2 );
+			// TODO 
 
 #else
-		// Create the vertex buffer.
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
-													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
-													  &mpTexOverlayVertexBuffer1 ) ) )
-		{
-			PANIC_IF( TRUE, "Couldnt create Textured Overlay Vertex buffer");
-			return;
+		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
+		{ 
+			if ( maxInternalTextures[ nTextureHandle ].nRefCount > 1 )
+			{
+				maxInternalTextures[ nTextureHandle ].nRefCount--;
+			}
+			else
+			{
+				maxInternalTextures[ nTextureHandle ].pTexture->Release();
+				maxInternalTextures[ nTextureHandle ].pTexture = NULL;
+				maxInternalTextures[ nTextureHandle ].acFilename[0] = 0;
+				maxInternalTextures[ nTextureHandle ].ulLastTouched = 0;
+				maxInternalTextures[ nTextureHandle ].nRefCount = 0;
+			}
 		}
-
-		// Create the vertex buffer.
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
-													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
-													  &mpTexOverlayVertexBuffer2 ) ) )
-		{
-			PANIC_IF( TRUE, "Couldnt create Textured Overlay Vertex buffer");
-			return;
-		}
-#endif
 	}
-
-	mpCurrentTexOverlayVertexBuffer = mpTexOverlayVertexBuffer1;
+#endif
 }
 
+int	TexturedOverlays::GetTextureSize( int nTextureHandle, int* pnW, int* pnH )
+{
+	*pnW = 0;
+	*pnH = 0;
+	if ( nTextureHandle != NOTFOUND )
+	{
+	D3DSURFACE_DESC		xSurface;
 
-/***************************************************************************
- * Function    : FreeTexturedOverlays
- * Params      : 
- * Returns     :
- * Description : 
- ***************************************************************************/
-void FreeTexturedOverlays( void )
+		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
+		{
+			maxInternalTextures[ nTextureHandle ].pTexture->GetLevelDesc( 0, &xSurface );
+			*pnW = xSurface.Width;
+			*pnH = xSurface.Height;
+			return( 1 );
+		}
+	}
+	return( 0 );
+}
+
+void TexturedOverlays::Shutdown( void )
 {
 int	nLoop;
 #ifdef USING_OPENGL
@@ -1057,137 +883,59 @@ int	nLoop;
 
 }
 
-int		InterfaceGetNewInternalTextureHandle( void )
+
+/***************************************************************************
+ * Function    : FreeTextRectLists
+  ***************************************************************************/
+void TexturedOverlays::FreeTextRectLists( void )
 {
-int		nLoop = 0;
-	
-	do
+int		nLoop;
+
+	if ( mpxRectBuffer != NULL )
 	{
-		if ( maxInternalTextures[ nLoop ].pTexture == NULL )
+		free( mpxRectBuffer );
+		mpxRectBuffer = NULL;
+	}
+	for ( nLoop = 0; nLoop <MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
+	{
+		maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
+	}
+	mpxNextFreeRect = NULL;
+
+}
+
+/***************************************************************************
+ * Function    : InitTextRectLists
+ ***************************************************************************/
+void TexturedOverlays::InitTextRectLists( void )
+{
+int		nLoop;
+
+	if ( mpxRectBuffer != NULL )
+	{
+		free( mpxRectBuffer );
+	}
+
+	mpxRectBuffer = (TEXTURED_RECT_DEF*)( malloc( mnTexRectMaxBufferSize * sizeof(TEXTURED_RECT_DEF) ) );
+	if ( mpxRectBuffer != NULL )
+	{
+		mnTexRectBufferSize = mnTexRectMaxBufferSize;
+		ZeroMemory( mpxRectBuffer, mnTexRectMaxBufferSize * sizeof(TEXTURED_RECT_DEF) );
+		for ( nLoop = 0; nLoop < MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
 		{
-			return( nLoop );
+			maxOverlayData[ nLoop ].pxRectsInOverlay = NULL;
 		}
-		nLoop++;
-	} while ( nLoop < MAX_INTERNAL_TEXTURES_LOADED );
-
-	return( NOTFOUND );
-}
-
-void	InterfaceTexturedOverlaysSetLimit( int nState )
-{
-	if ( ( nState > 0 ) &&
-		 ( nState != mnTexRectMaxBufferSize ) )
-	{
-		mnTexRectMaxBufferSize = nState;
-		InitTextRectLists();
+		mpxNextFreeRect = mpxRectBuffer;
 	}
-}
-
-INTERFACE_API int  InterfaceCreateUntexturedOverlay( int nLayer )
-{
-	return( TexturedOverlayCreate( nLayer, NOTFOUND ) );
-}
-
-
-
-INTERFACE_API int  InterfaceCreateNewTexturedOverlay( int nLayer, int nTextureHandle )
-{
-	if ( nTextureHandle != NOTFOUND )
+	else
 	{
-		nTextureHandle %= MAX_INTERNAL_TEXTURES_LOADED;
-//		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
-//		{
-			return( TexturedOverlayCreate( nLayer, nTextureHandle ) );
-//		}
-	}
-	return( NOTFOUND );
-}
-
-INTERFACE_API void InterfaceReleaseTexture( int nTextureHandle )
-{
-
-	if ( nTextureHandle != NOTFOUND )
-	{
-		nTextureHandle %= MAX_INTERNAL_TEXTURES_LOADED;
-#ifdef USING_OPENGL
-			// TODO 
-
-#else
-		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
-		{ 
-			if ( maxInternalTextures[ nTextureHandle ].nRefCount > 1 )
-			{
-				maxInternalTextures[ nTextureHandle ].nRefCount--;
-			}
-			else
-			{
-				maxInternalTextures[ nTextureHandle ].pTexture->Release();
-				maxInternalTextures[ nTextureHandle ].pTexture = NULL;
-				maxInternalTextures[ nTextureHandle ].acFilename[0] = 0;
-				maxInternalTextures[ nTextureHandle ].ulLastTouched = 0;
-				maxInternalTextures[ nTextureHandle ].nRefCount = 0;
-			}
-		}
-	}
-#endif
-}
-
-
 #ifndef USING_OPENGL
-INTERFACE_API int	InterfaceGetTextureSize( int nTextureHandle, int* pnW, int* pnH )
-{
-	*pnW = 0;
-	*pnH = 0;
-	if ( nTextureHandle != NOTFOUND )
-	{
-	D3DSURFACE_DESC		xSurface;
-
-		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
-		{
-			maxInternalTextures[ nTextureHandle ].pTexture->GetLevelDesc( 0, &xSurface );
-			*pnW = xSurface.Width;
-			*pnH = xSurface.Height;
-			return( 1 );
-		}
+		PANIC_IF( TRUE,"Couldnt allocate memory for textured overlay buffer" );
+#endif
 	}
-	return( 0 );
 }
 
-INTERFACE_API int  InterfaceGetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags )
-{
-int		nHandle;
-
-	nHandle = InterfaceGetNewInternalTextureHandle();
-
-	if ( nHandle != NOTFOUND )
-	{
-		if ( (nFlags & 0x1) == 0 )
-		{
-			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 1, 1 );
-		}
-		else
-		{
-			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 0, 0 );
-		}
-
-		// Load failed
-		if ( !maxInternalTextures[ nHandle ].pTexture )
-		{
-			return( NOTFOUND );
-		}
-		maxInternalTextures[ nHandle ].ulLastTouched = GetTickCount();
-		maxInternalTextures[ nHandle ].nRefCount = 1;
-
-		if ( strlen( szFilename ) < 127 ) 
-		{
-			strcpy( maxInternalTextures[ nHandle ].acFilename, szFilename );
-		}
-	}
-
-	return( nHandle );
-}
-
-void	InterfaceExportTexture( int nTextureHandle, const char* szFilename, int nMode )
+void	TexturedOverlays::ExportTexture( int nTextureHandle, const char* szFilename, int nMode )
 {
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineExportTexture TBI" );
@@ -1215,8 +963,184 @@ HRESULT		ret;
 
 }
 
+void TexturedOverlays::Initialise( void )
+{
+int		nLoop;
 
-INTERFACE_API BYTE*	InterfaceLockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags )
+	if ( mboInterfaceTexturesFirstInitialise == TRUE )
+	{
+		ZeroMemory( maxInternalTextures, sizeof( INTERNAL_TEXTURES ) * MAX_INTERNAL_TEXTURES_LOADED );
+		mboInterfaceTexturesFirstInitialise = FALSE;
+	}
+
+	mnNumActiveTexOverlays = 0;
+
+	for ( nLoop = 0; nLoop < MAX_DIFFERENT_TEXTURED_OVERLAYS; nLoop++ )
+	{
+		maxOverlayData[nLoop].pTexture = NULL;
+		maxOverlayData[nLoop].hEngineTexture = NOTFOUND;
+	}
+	InitTextRectLists();
+
+	if ( mpTexOverlayVertexBuffer1 == NULL )
+	{
+#ifdef USING_OPENGL
+		// TODO 
+		VertexBufferCreate( MAX_TEX_OVERLAY_VERTICES, &mpTexOverlayVertexBuffer1 );
+		VertexBufferCreate( MAX_TEX_OVERLAY_VERTICES, &mpTexOverlayVertexBuffer2 );
+
+#else
+		// Create the vertex buffer.
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
+													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
+													  &mpTexOverlayVertexBuffer1 ) ) )
+		{
+			PANIC_IF( TRUE, "Couldnt create Textured Overlay Vertex buffer");
+			return;
+		}
+
+		// Create the vertex buffer.
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( MAX_TEX_OVERLAY_VERTICES * sizeof(FLATVERTEX),
+													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
+													  &mpTexOverlayVertexBuffer2 ) ) )
+		{
+			PANIC_IF( TRUE, "Couldnt create Textured Overlay Vertex buffer");
+			return;
+		}
+#endif
+	}
+
+	mpCurrentTexOverlayVertexBuffer = mpTexOverlayVertexBuffer1;
+}
+
+
+void	TexturedOverlays::UnlockTexture( int nTextureHandle )
+{
+	if ( nTextureHandle >= 0 )
+	{
+		if ( maxInternalTextures[ nTextureHandle ].pTexture )
+		{
+			maxInternalTextures[ nTextureHandle ].pTexture->UnlockRect( 0 );
+		}
+	}
+}
+
+int		TexturedOverlays::GetNewInternalTextureHandle( void )
+{
+int		nLoop = 0;
+	
+	do
+	{
+		if ( maxInternalTextures[ nLoop ].pTexture == NULL )
+		{
+			return( nLoop );
+		}
+		nLoop++;
+	} while ( nLoop < MAX_INTERNAL_TEXTURES_LOADED );
+
+	return( NOTFOUND );
+}
+
+int TexturedOverlays::GetTextureInternal( const char* szFilename, int nFlags, int nArchiveHandle )
+{
+int		nHandle;
+
+	// Look for this filename if its already loaded
+	nHandle = FindTexture( szFilename );
+	if ( nHandle >= 0 )
+	{
+		// If found, add a reference to this texture
+		maxInternalTextures[ nHandle ].nRefCount++;
+		return( nHandle );
+	}
+
+	nHandle = GetNewInternalTextureHandle();
+
+	if ( nHandle != NOTFOUND )
+	{
+		switch( nFlags )
+		{
+		case 0:			// No mipping
+		case 2:			// Used when a texture needs to be lockable
+		case 4:			// Used when a texture needs to be lockable
+		default:
+			if ( nArchiveHandle > 0 )
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 1, 1, nArchiveHandle );
+			}
+			else
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 1, 1 );
+			}
+			break;
+		case 1:			// Mipmaps
+			if ( nArchiveHandle > 0 )
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 0, 0, nArchiveHandle );
+			}
+			else
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 0, 0 );
+			}
+			break;
+		case 3:		// feck knows
+			if ( nArchiveHandle > 0 )
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 2, 0xFF, nArchiveHandle );
+			}
+			else
+			{
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 2, 0xFF );
+			}
+			break;
+		}
+
+		// Load failed
+		if ( !maxInternalTextures[ nHandle ].pTexture )
+		{
+			return( NOTFOUND );
+		}
+		maxInternalTextures[ nHandle ].nRefCount = 1;
+		maxInternalTextures[ nHandle ].ulLastTouched = GetTickCount();
+
+		if ( strlen( szFilename ) < 127 ) 
+		{
+			strcpy( maxInternalTextures[ nHandle ].acFilename, szFilename );
+		}
+	}
+
+	return( nHandle );
+}
+
+void	TexturedOverlays::SetLimit( int nState )
+{
+	if ( ( nState > 0 ) &&
+		 ( nState != mnTexRectMaxBufferSize ) )
+	{
+		mnTexRectMaxBufferSize = nState;
+		InitTextRectLists();
+	}
+}
+
+int			TexturedOverlays::FindTexture( const char* szFilename )
+{
+int		nLoop = 0;
+
+	do
+	{
+		if ( maxInternalTextures[ nLoop ].pTexture != NULL )
+		{
+			if ( _strnicmp( maxInternalTextures[ nLoop ].acFilename, szFilename, 127 ) == 0 )
+			{
+				return( nLoop );
+			}
+		}
+		nLoop++;
+	} while ( nLoop < MAX_INTERNAL_TEXTURES_LOADED );
+	return( NOTFOUND );
+}
+
+BYTE*	TexturedOverlays::LockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags )
 {
 BYTE*	pbImageData = NULL;
 
@@ -1248,6 +1172,169 @@ BYTE*	pbImageData = NULL;
 	}
 	return( pbImageData );
 }
+
+
+//------------------------------------------------------------------------------------------------------------
+// C INTERFACE
+//------------------------------------------------------------------------------------------------------------
+
+INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture )
+{
+	mpInterfaceD3DDevice->SetTexture( 0, (LPGRAPHICSTEXTURE)pTexture );
+}
+
+INTERFACE_API void	InterfaceSetTextureAsCurrent( int nTextureHandle )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->SetTextureAsCurrent( nTextureHandle );
+}
+
+
+
+
+/***************************************************************************
+ * Function    : InterfaceOverlayRenderType
+  ***************************************************************************/
+INTERFACE_API void InterfaceOverlayRenderType( int nOverlayNum, INTF_RENDER_TYPES nRenderType )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->SetRenderType( nOverlayNum, nRenderType );
+}
+
+
+
+
+/***************************************************************************
+ * Function    : DrawTexturedOverlays
+  ***************************************************************************/
+void DrawTexturedOverlays( int nLayer )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->Render( nLayer );
+}
+
+
+/***************************************************************************
+ * Function    : TexturedOverlayCreate
+ * Params      : The texture that will be used for all rectangles on this overlay
+ * Returns     : The number of the overlay for which all rectangles will use this texture
+ * Description : See what feckin happens when i fill in this bit?
+ ***************************************************************************/
+int	TexturedOverlayCreate( int nLayer, TEXTURE_HANDLE hTexture )
+{
+	return( InterfaceInstanceMain()->mpTexturedOverlays->CreateOverlay( nLayer, hTexture ) );
+}
+
+
+int	TexturedOverlayCreateDirect( int nLayer, void* pTexture, int hEngineTexture )
+{
+	return( InterfaceInstanceMain()->mpTexturedOverlays->CreateOverlayDirect( nLayer, pTexture, hEngineTexture ) );
+}
+
+
+/***************************************************************************
+ * Function    : InterfaceTexturedTri
+ ***************************************************************************/
+INTERFACE_API void InterfaceTexturedTri( int nOverlayNum, int* pnVerts, float* pfUVs, uint32 ulCol )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->AddTri( nOverlayNum, pnVerts, pfUVs, ulCol );
+}
+
+/***************************************************************************
+ * Function    : InterfaceTexturedRect
+ ***************************************************************************/
+INTERFACE_API void InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fUWidth, float fUHeight )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->AddRect( nOverlayNum, nX, nY, nWidth, nHeight, ulCol, fU, fV, fUWidth, fUHeight );
+}
+
+INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fUWidth, float fUHeight )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->AddRectShaded( nOverlayNum, nX, nY, nWidth, nHeight, ulCol, ulCol2, fU, fV, fUWidth, fUHeight );
+}
+
+/***************************************************************************
+ * Function    : InterfaceSprite
+ ***************************************************************************/
+INTERFACE_API void InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotAngle, float fScale )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->AddSprite( nOverlayNum, nX, nY, fTexGrid, nTexGridNum, ulCol, fRotAngle, fScale );
+}
+
+
+
+/***************************************************************************
+ * Function    : InitTexturedOverlays
+ ***************************************************************************/
+void InitTexturedOverlays( void )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->Initialise();
+}
+
+
+
+/***************************************************************************
+ * Function    : FreeTexturedOverlays
+ ***************************************************************************/
+void FreeTexturedOverlays( void )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->Shutdown();
+}
+
+void	InterfaceTexturedOverlaysSetLimit( int nState )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->SetLimit( nState );
+}
+
+
+INTERFACE_API int  InterfaceCreateUntexturedOverlay( int nLayer )
+{
+	return( TexturedOverlayCreate( nLayer, NOTFOUND ) );
+}
+
+
+
+INTERFACE_API int  InterfaceCreateNewTexturedOverlay( int nLayer, int nTextureHandle )
+{
+	if ( nTextureHandle != NOTFOUND )
+	{
+		nTextureHandle %= MAX_INTERNAL_TEXTURES_LOADED;
+//		if ( maxInternalTextures[ nTextureHandle ].pTexture != NULL )
+//		{
+			return( TexturedOverlayCreate( nLayer, nTextureHandle ) );
+//		}
+	}
+	return( NOTFOUND );
+}
+
+INTERFACE_API void InterfaceReleaseTexture( int nTextureHandle )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->ReleaseTexture( nTextureHandle );
+}
+
+
+
+#ifndef USING_OPENGL
+INTERFACE_API int	InterfaceGetTextureSize( int nTextureHandle, int* pnW, int* pnH )
+{
+	return( InterfaceInstanceMain()->mpTexturedOverlays->GetTextureSize( nTextureHandle, pnW, pnH ));
+}
+
+
+INTERFACE_API int  InterfaceGetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags )
+{
+	return( InterfaceInstanceMain()->mpTexturedOverlays->GetTextureFromFileInMem( szFilename, pbMem, nMemSize, nFlags ) );
+}
+
+void	InterfaceExportTexture( int nTextureHandle, const char* szFilename, int nMode )
+{
+	InterfaceInstanceMain()->mpTexturedOverlays->ExportTexture( nTextureHandle, szFilename, nMode );
+}
+
+
+INTERFACE_API BYTE*	InterfaceLockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags )
+{
+	return( InterfaceInstanceMain()->mpTexturedOverlays->LockTexture( nTextureHandle, pnPitch, pnFormat, nFlags ) );	
+}
+
+
 
 INTERFACE_API void	InterfaceTextureGetColourAtPoint( byte* pbLockedTextureData, int nPitch, int nFormat, int x, int y, float* pfRed, float* pfGreen, float* pfBlue, float* pfAlpha )
 {
@@ -1322,106 +1409,23 @@ ushort	uwColVal;
 
 }
 
-
 INTERFACE_API void	InterfaceUnlockTexture( int nTextureHandle )
 {
-	if ( nTextureHandle >= 0 )
-	{
-		if ( maxInternalTextures[ nTextureHandle ].pTexture )
-		{
-			maxInternalTextures[ nTextureHandle ].pTexture->UnlockRect( 0 );
-		}
-	}
+	InterfaceInstanceMain()->mpTexturedOverlays->UnlockTexture( nTextureHandle);
 }
+
 
 int			InterfaceFindTexture( const char* szFilename )
 {
-int		nLoop = 0;
-
-	do
-	{
-		if ( maxInternalTextures[ nLoop ].pTexture != NULL )
-		{
-			if ( _strnicmp( maxInternalTextures[ nLoop ].acFilename, szFilename, 127 ) == 0 )
-			{
-				return( nLoop );
-			}
-		}
-		nLoop++;
-	} while ( nLoop < MAX_INTERNAL_TEXTURES_LOADED );
-	return( NOTFOUND );
+	return( InterfaceInstanceMain()->mpTexturedOverlays->FindTexture( szFilename ) );
 }
+
 
 INTERFACE_API int InterfaceGetTextureInternal( const char* szFilename, int nFlags, int nArchiveHandle )
 {
-int		nHandle;
-
-	// Look for this filename if its already loaded
-	nHandle = InterfaceFindTexture( szFilename );
-	if ( nHandle >= 0 )
-	{
-		// If found, add a reference to this texture
-		maxInternalTextures[ nHandle ].nRefCount++;
-		return( nHandle );
-	}
-
-	nHandle = InterfaceGetNewInternalTextureHandle();
-
-	if ( nHandle != NOTFOUND )
-	{
-		switch( nFlags )
-		{
-		case 0:			// No mipping
-		case 2:			// Used when a texture needs to be lockable
-		case 4:			// Used when a texture needs to be lockable
-		default:
-			if ( nArchiveHandle > 0 )
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 1, 1, nArchiveHandle );
-			}
-			else
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 1, 1 );
-			}
-			break;
-		case 1:			// Mipmaps
-			if ( nArchiveHandle > 0 )
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 0, 0, nArchiveHandle );
-			}
-			else
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 0, 0 );
-			}
-			break;
-		case 3:		// feck knows
-			if ( nArchiveHandle > 0 )
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureFromArchiveDX( szFilename, 2, 0xFF, nArchiveHandle );
-			}
-			else
-			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 2, 0xFF );
-			}
-			break;
-		}
-
-		// Load failed
-		if ( !maxInternalTextures[ nHandle ].pTexture )
-		{
-			return( NOTFOUND );
-		}
-		maxInternalTextures[ nHandle ].nRefCount = 1;
-		maxInternalTextures[ nHandle ].ulLastTouched = GetTickCount();
-
-		if ( strlen( szFilename ) < 127 ) 
-		{
-			strcpy( maxInternalTextures[ nHandle ].acFilename, szFilename );
-		}
-	}
-
-	return( nHandle );
+	return( InterfaceInstanceMain()->mpTexturedOverlays->GetTextureInternal( szFilename, nFlags, nArchiveHandle ));
 }
+
 
 
 INTERFACE_API int InterfaceGetTexture( const char* szFilename, int nFlags )
@@ -1430,30 +1434,11 @@ INTERFACE_API int InterfaceGetTexture( const char* szFilename, int nFlags )
 }
 
 
-LPGRAPHICSTEXTURE	InterfaceGetBlankPlatformTexture( int nWidth, int nHeight, int Mode, int* pnPitch )
-{
-LPGRAPHICSTEXTURE	pxTexture;
-
-	InterfaceInternalDXCreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &pxTexture, TRUE );
-	return( pxTexture );
-}
-
-
 int	InterfaceCreateBlankTexture( int nWidth, int nHeight, int Mode)
 {
-int		nHandle;
-int		nPitch;
-
-	nHandle = InterfaceGetNewInternalTextureHandle();
-
-	if ( nHandle != NOTFOUND )
-	{
-		maxInternalTextures[ nHandle ].pTexture = InterfaceGetBlankPlatformTexture( nWidth, nHeight, Mode, &nPitch );
-		maxInternalTextures[ nHandle ].nRefCount = 1;
-		strcpy( maxInternalTextures[ nHandle ].acFilename, "gentex" );
-	}
-	return( nHandle );
+	return( InterfaceInstanceMain()->mpTexturedOverlays->CreateBlankTexture( nWidth, nHeight, Mode ) );
 }
+
 #endif	// non-GL stuff above  (GL does it in OpenGL/InterfaceTextureManager)
 
 

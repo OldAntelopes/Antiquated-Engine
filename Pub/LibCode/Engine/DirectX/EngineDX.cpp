@@ -743,7 +743,7 @@ EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( n
 
 		if ( nPrimsToDraw > 0 )
 		{
-//			EngineSetVertexFormat( VERTEX_FORMAT_NORMAL );
+			EngineSetVertexFormat( VERTEX_FORMAT_NORMAL );
 			ret = mpEngineDevice->SetStreamSource( 0, pVertBuffContainer->pxVertexBuffer, 0, sizeof(CUSTOMVERTEX) );
 			ret = mpEngineDevice->DrawPrimitive( primType, 0, nPrimsToDraw );
 			return( TRUE );

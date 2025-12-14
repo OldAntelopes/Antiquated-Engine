@@ -16,6 +16,8 @@
 
 #include "Engine.h"
 
+#define USE_D3DEX_INTERFACE
+
 #ifdef TUD11
 typedef ID3D11Buffer			IGRAPHICSVERTEXBUFFER;
 typedef ID3D11Buffer			IGRAPHICSINDEXBUFFER;

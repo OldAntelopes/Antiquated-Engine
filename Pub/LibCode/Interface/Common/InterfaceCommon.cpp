@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-
+#include <math.h>
 #include <StandardDef.h>
 #include <Interface.h>
 
@@ -12,6 +12,8 @@
 int		mnDesiredWidth = 1024;
 int		mnDesiredHeight = 768;
 BOOL	mboInterfaceVRMode = FALSE;
+
+
 
 uint32		ColourPack( int R, int G, int B, int A )
 {
