@@ -176,6 +176,7 @@ void		UIButtonsShutdown( void )
 
 void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha )
 {
+InterfaceInstance*		pInterfaceInstance = UIInterfaceInstance();
 #ifdef BASIC_RENDER
 int		nTextSize;
 int		nTextOffsetY;
@@ -215,6 +216,7 @@ BOOL	bEnabled = TRUE;
 	}
 
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
+	
 	InterfaceTextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, szText, ulTextCol, 0 ); 
 	InterfaceSetFontFlags( 0 );
 #endif

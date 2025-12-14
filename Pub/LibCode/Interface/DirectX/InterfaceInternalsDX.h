@@ -51,7 +51,7 @@ extern void					InterfaceDXSetInitialSize( BOOL boFullScreen, int nFullScreenSiz
 
 //extern BOOL					InterfaceGetDXDeviceCreateParams( BOOL boMinPageSize, D3DPRESENT_PARAMETERS* pD3Dpp );
 
-extern LPGRAPHICSTEXTURE	InterfaceLoadTextureDXFromFileInMem( const char* szFilename, byte* pbMem, int nMemSize, int boReduceFilter, int boMipFilter );
+extern LPGRAPHICSTEXTURE	InterfaceLoadTextureDXFromFileInMem( const char* szFilename, byte* pbMem, int nMemSize, int boReduceFilter, int boMipFilter, BOOL bReadable );
 
 extern IGRAPHICSSURFACE*	LoadJpegDirect( const char* szFilename, int nWidth, int nHeight, int );
 extern void					DrawJpegDirect( int nLayer, IGRAPHICSSURFACE* pxSurface, int nX, int nY, int nWidth, int nHeight, int nFlags );
@@ -68,11 +68,11 @@ class InterfaceInternalsDX : public InterfaceModule
 {
 public:
 	HRESULT				CreateVertexBuffer( unsigned int Length, unsigned int Usage, unsigned int FVF, IGRAPHICSVERTEXBUFFER** );
-	void				CreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* );
+	void				CreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE*, BOOL bReadable );
 	void				SetStreamSource( unsigned int StreamNumber, IGRAPHICSVERTEXBUFFER *pStreamData, unsigned int OffsetInBytes, unsigned int Stride );
 	HRESULT				CreateImageSurface( unsigned int width, unsigned int height, eInterfaceTextureFormat format, IGRAPHICSSURFACE** );
 
-	LPGRAPHICSTEXTURE	LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter );
+	LPGRAPHICSTEXTURE	LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter, BOOL bReadable );
 	LPGRAPHICSTEXTURE	LoadTextureFromArchive( const char* szFilename, int boReduceFilter, int boMipFilter, int nArchiveHandle );
 };
 

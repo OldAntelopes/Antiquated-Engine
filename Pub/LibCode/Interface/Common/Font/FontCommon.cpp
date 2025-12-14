@@ -23,13 +23,6 @@
 TEXT_BUFFER			maxTextBuffer[ MAX_STRINGS_IN_BUFFER ];
 int		mnPosInTextBuffer = 0;
 
-CFontDef*	mpFontDefs[MAX_FONTS_IN_GAME] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-
-FLATVERTEX*			mpFontVertices = NULL;
-int					mnFontVertexIndex = 0;
-int					mnCurrentFontFlags = 0;
-float	mfCurrentFontGlobalScale = 1.0f;
-float	mfGiantFontScale = 2.0f;
 
 uint32		manFontColours[] =
 {
@@ -98,15 +91,16 @@ uint32		manFontColours[] =
 	0xE8F04020,			/* COL_F4_WARNING */
 };
 
+int		mnCurrentFontFlags = 0;
+float	mfCurrentFontGlobalScale = 1.0f;
+float	mfGiantFontScale = 2.0f;
+
 
 
 /***************************************************************************
  * Function    : AddCharVertices
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-void AddCharVertices( FLOATRECT* pxScrRect, FLOATRECT* pxTexRect, uint32 ulCol, int nFlag )
+void FontSystem::AddCharVertices( FLOATRECT* pxScrRect, FLOATRECT* pxTexRect, uint32 ulCol, int nFlag )
 {
 float	fItalicOffset = 0.0f;
 
@@ -371,19 +365,8 @@ float	fTextureSizeX;
 
 
 
-void	FontDefFreeAllGraphics( void )
-{
-int		nLoop;
-	for ( nLoop = 0; nLoop < MAX_FONTS_IN_GAME; nLoop++ )
-	{
-		if ( mpFontDefs[nLoop] )
-		{
-			mpFontDefs[nLoop]->FreeTexture();
-		}
-	}
-}
 
-void	FontDefFreeAll( void )
+void	FontSystem::FontDefFreeAll( void )
 {
 int		nLoop;
 	for ( nLoop = 0; nLoop < MAX_FONTS_IN_GAME; nLoop++ )
@@ -399,6 +382,12 @@ int		nLoop;
 
 BOOL	InterfaceFontIsFixedWidth( int nFontNum )
 {
+	return( InterfaceInstanceMain()->mpFontSystem->IsFontFixedWidth(nFontNum));
+}
+
+
+BOOL	FontSystem::IsFontFixedWidth( int nFontNum )
+{
 	if ( ( nFontNum < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFontNum] ) )
 	{
@@ -409,6 +398,11 @@ BOOL	InterfaceFontIsFixedWidth( int nFontNum )
 }
 
 BOOL	InterfaceFontIsFilteringOn( int nFontNum )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->IsFontFilteringOn(nFontNum) );
+}
+
+BOOL	FontSystem::IsFontFilteringOn( int nFontNum )
 {
 	if ( ( nFontNum < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFontNum] ) )
@@ -421,16 +415,26 @@ BOOL	InterfaceFontIsFilteringOn( int nFontNum )
 
 BOOL	InterfaceFontSetAsCurrentTexture( int nFontNum )
 {
+	return( InterfaceInstanceMain()->mpFontSystem->FontSetAsCurrentTexture( nFontNum ) );
+}
+
+BOOL	FontSystem::FontSetAsCurrentTexture( int nFontNum )
+{
 	if ( ( nFontNum < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFontNum] ) )
 	{
-		mpFontDefs[nFontNum]->SetTextureAsCurrent();
+		mpFontDefs[nFontNum]->SetTextureAsCurrent( mpInterfaceInstance );
 		return( TRUE );
 	}
 	return( FALSE );
 }
 
 BOOL	InterfaceFontLookupChar( int nFontNum, char cChar, FONT_UVCHAR* pOut )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->FontLookupChar( nFontNum, cChar, pOut ) );
+}
+
+BOOL	FontSystem::FontLookupChar( int nFontNum, char cChar, FONT_UVCHAR* pOut )
 {
 	if ( ( nFontNum < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFontNum] ) )
@@ -442,6 +446,11 @@ BOOL	InterfaceFontLookupChar( int nFontNum, char cChar, FONT_UVCHAR* pOut )
 }
 
 BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffsetY, int nOccupyWidthReduction, int nOccupyHeightReduction )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->FontSetFixedOffsets( nFontNum, nPosOffsetX, nPosOffsetY, nOccupyWidthReduction, nOccupyHeightReduction ) );
+}
+
+BOOL	FontSystem::FontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffsetY, int nOccupyWidthReduction, int nOccupyHeightReduction )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
 	{
@@ -456,8 +465,12 @@ BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffset
 	return( TRUE );
 }
 
-
 BOOL	InterfaceFontIsLoaded( int nFontNum )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->IsFontLoaded( nFontNum ) );
+}
+
+BOOL	FontSystem::IsFontLoaded( int nFontNum )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
 	{
@@ -504,6 +517,11 @@ BOOL	InterfaceFontLoad( int nFontNum, const char* pcImageFileName, const char* p
 }
 
 void	InterfaceFontFree( int nFontNum )
+{
+	InterfaceInstanceMain()->mpFontSystem->FreeFont( nFontNum );
+}
+
+void	FontSystem::FreeFont( int nFontNum )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )
 	{
@@ -615,10 +633,8 @@ int		nLen;
 
 /***************************************************************************
  * Function    : AddFontStringCenter
- * Params      :
- * Description : 
  ***************************************************************************/
-void AddFontStringCenter( int nY, int nX1, int nX2, const char* szString, uint32 ulCol )
+void FontSystem::AddFontStringCenter( int nY, int nX1, int nX2, const char* szString, uint32 ulCol )
 {
 char*	pcTextBuffer;
 RECT		xAlignRect;
@@ -836,14 +852,18 @@ void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 
 
 
 
-
 /***************************************************************************
- * Function    : AddFontStringCenterLayer
- * Params      :
- * Returns     :
- * Description : 
+ * Function    : InterfaceTextCenter
  ***************************************************************************/
 INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont )
+{
+	InterfaceInstanceMain()->mpFontSystem->TextCentre( nLayer, nX1, nX2, nY, szString, ulCol, nFont );
+}
+
+/***************************************************************************
+ * Function    : TextCentre
+ ***************************************************************************/
+void FontSystem::TextCentre( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 	if ( InterfaceIsSmall() == TRUE )
 	{
@@ -1020,11 +1040,11 @@ RECT		xAlignRect;
  * Returns     :
  * Description : 
  ***************************************************************************/
-float GetFontU( BYTE cChar, int nFont )
+float FontSystem::GetFontU( BYTE cChar, int nFont )
 {
 FONT_UVCHAR		uvChar;
 
-	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
+	if ( FontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.u );
 	}
@@ -1032,10 +1052,10 @@ FONT_UVCHAR		uvChar;
 	return( 0.0f );
 }
 
-float GetFontAdvance( BYTE cChar, int nFont )
+float FontSystem::GetFontAdvance( BYTE cChar, int nFont )
 {
 FONT_UVCHAR		uvChar;
-	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
+	if ( FontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.advance * mpFontDefs[nFont]->GetTextureSizeX() );
 	}
@@ -1048,15 +1068,12 @@ FONT_UVCHAR		uvChar;
 
 /***************************************************************************
  * Function    : GetFontUWidth
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-float GetFontUWidth( BYTE cChar, int nFont )
+float FontSystem::GetFontUWidth( BYTE cChar, int nFont )
 {
 FONT_UVCHAR		uvChar;
 
-	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
+	if ( FontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.w );
 	}
@@ -1066,7 +1083,7 @@ FONT_UVCHAR		uvChar;
 
 
 
-int GetFontTextureHeight( int nFont )
+int FontSystem::GetFontTextureHeight( int nFont )
 {
 	if ( ( nFont < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFont] ) )
@@ -1076,7 +1093,7 @@ int GetFontTextureHeight( int nFont )
 	return( 256 );
 }
 
-int GetFontTextureWidth( int nFont )
+int FontSystem::GetFontTextureWidth( int nFont )
 {
 	if ( ( nFont < MAX_FONTS_IN_GAME ) &&
 		 ( mpFontDefs[nFont] ) )
@@ -1092,24 +1109,24 @@ int GetFontTextureWidth( int nFont )
  * Returns     :
  * Description : 
  ***************************************************************************/
-float GetFontV( BYTE cChar, int nFont )
+float FontSystem::GetFontV( BYTE cChar, int nFont )
 {
 float	fV = 0.0f;
 FONT_UVCHAR		uvChar;
 
-	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
+	if ( FontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.v );
 	}
 	return( fV );
 
 }
-float GetFontVHeight( BYTE cChar, int nFont )
+float FontSystem::GetFontVHeight( BYTE cChar, int nFont )
 {
 float	fV = 0.0f;
 FONT_UVCHAR		uvChar;
 	
-	if ( InterfaceFontLookupChar( nFont, cChar, &uvChar ) == TRUE )
+	if ( FontLookupChar( nFont, cChar, &uvChar ) == TRUE )
 	{
 		return( uvChar.h );
 	}
@@ -1118,7 +1135,7 @@ FONT_UVCHAR		uvChar;
 
 
 
-float	FontGetCharUWidthAndScreenWidth( char cChar, int nFont, int nFlags, float* pfUWidth, int* pnScrWidth, float *pfAdvance )
+float	FontSystem::FontGetCharUWidthAndScreenWidth( char cChar, int nFont, int nFlags, float* pfUWidth, int* pnScrWidth, float *pfAdvance )
 {
 int		nFontTextureWidth = GetFontTextureWidth(nFont);
 float	fUWidth = GetFontUWidth( cChar, nFont );
@@ -1188,11 +1205,8 @@ float	fScreenScaling = 1.0f;
 
 /***************************************************************************
  * Function    : FontDrawChar
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-float FontDrawChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag, float fScaleOverride )
+float FontSystem::FontDrawChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag, float fScaleOverride )
 {
 FLOATRECT	xScrRect;
 FLOATRECT	xTexRect;
@@ -1210,7 +1224,7 @@ float		fAlignScale = 1.0f;
 CFontDef*		pFontDef = mpFontDefs[nFont];
 float		fAdvance = 0.0f;
 
-	bHasUVChar = InterfaceFontLookupChar( nFont, cChar, &uvChar );
+	bHasUVChar = FontLookupChar( nFont, cChar, &uvChar );
 	if ( pFontDef->IsBottomAligned() )
 	{
 		bIsBottomAlignedFont = TRUE;
@@ -1219,7 +1233,7 @@ float		fAdvance = 0.0f;
 	switch( cChar )
 	{
 	case '\t':
-		if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
+		if ( IsFontFixedWidth( nFont ) == TRUE )
 		{
 			return( 4*10 );
 		}
@@ -1359,7 +1373,7 @@ float		fAdvance = 0.0f;
 	}
 	AddCharVertices( &xScrRect, &xTexRect, ulCol, nFlag );
 
-	if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
+	if ( IsFontFixedWidth( nFont ) == TRUE )
 	{
 		return( 10 );
 	}
@@ -1378,13 +1392,18 @@ float		fAdvance = 0.0f;
 
 
 
+int ChopTextWidth( char* pcString, int nWidth, int nFont )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->ChopTextWidth( pcString, nWidth, nFont ) );
+}
+
 /***************************************************************************
  * Function    : ChopTextWidth
  * Params      : String, pixel width, colour
  * Returns     : Number of chars that will fit in the screen width passed
  * Description : 
  ***************************************************************************/
-int ChopTextWidth( char* pcString, int nWidth, int nFont )
+int FontSystem::ChopTextWidth( char* pcString, int nWidth, int nFont )
 {
 int		nX;
 int		nChar;
@@ -1414,15 +1433,18 @@ float	fAdvance = 0.0f;
 }
 
 
-
+/***************************************************************************
+ * Function    : GetStringWidth
+ ***************************************************************************/
+int GetStringWidth( const char* pcString, int nFont )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->GetStringWidth( pcString, nFont ) );
+}
 
 /***************************************************************************
  * Function    : GetStringWidth
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-int GetStringWidth( const char* pcString, int nFont )
+int FontSystem::GetStringWidth( const char* pcString, int nFont )
 {
 	if ( pcString )
 	{
@@ -1442,7 +1464,7 @@ int GetStringWidth( const char* pcString, int nFont )
 			switch ( cChar )
 			{
 			case '\t':
-				if ( InterfaceFontIsFixedWidth( nFont ) == TRUE )
+				if ( IsFontFixedWidth( nFont ) == TRUE )
 				{
 					nX += ( 4*10 );
 				}
@@ -1509,8 +1531,13 @@ int GetStringWidth( const char* pcString, int nFont )
 	}
 }
 
-
 int GetStringHeight( const char* pcString, int nFont )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->GetStringWidth( pcString, nFont ) );
+}
+
+
+int FontSystem::GetStringHeight( const char* pcString, int nFont )
 {
 int		nChar;
 int		nHeight = 0;
@@ -1558,6 +1585,11 @@ int		InterfaceTextBox(int nLayer, int nX, int nY, const char* szString, int ulCo
 }
 
 int	InterfaceTextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign)
+{
+	return ( InterfaceInstanceMain()->mpFontSystem->TextBoxMaxHeight( nLayer, nX, nY, szString, ulCol, font, nMaxWidth, nMaxHeight, bLeftAlign ) );
+}
+
+int	FontSystem::TextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign)
 {
 char*	pcEndOfLine = (char*)szString;
 int		nLineSep = 13;
@@ -1674,11 +1706,8 @@ void	InterfaceSetControllerIconFunction( InterfaceControllerIconCallback fnContr
 
 /***************************************************************************
  * Function    : FontDrawText
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-int FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, uint32 ulCol, int nFont, int nFlag, float fTextScale )
+int FontSystem::FontDrawText( char* pcString, RECT* pxAlignRect, int nAlign, uint32 ulCol, int nFont, int nFlag, float fTextScale )
 {
 float	fX;
 int		nY;
@@ -1773,7 +1802,7 @@ BYTE	cChar;
  * Returns     :
  * Description : 
  ***************************************************************************/
-void ClearStrings( void )
+void FontSystem::ClearStrings( void )
 {
 	mnPosInTextBuffer = 0;
 
@@ -1815,15 +1844,15 @@ HRESULT FontSystem::InitialiseFonts( BOOL bUseDefaultFonts )
 	if ( bUseDefaultFonts )
 	{
 		// load a default font using the fontrast generated stuff
-		InterfaceFontLoad( 0, "Data/Fonts/sansserif-8b000.bmp", "Data/Fonts/sansserif-8b.txt", 0 );
+		LoadFont( 0, "Data/Fonts/sansserif-8b000.bmp", "Data/Fonts/sansserif-8b.txt", 0 );
 	//	InterfaceFontLoad( 0, "Data/Textures/Font/arialbold000.bmp", "Data/Textures/Font/arialbold.txt", 0 );
-		InterfaceFontLoad( 1, "Data/Fonts/arialboldlarge000.bmp", "Data/Fonts/arialboldlarge.txt", 0 );
+		LoadFont( 1, "Data/Fonts/arialboldlarge000.bmp", "Data/Fonts/arialboldlarge.txt", 0 );
 	//	InterfaceFontLoad( 2, "Data/Textures/Font/space1000.bmp", "Data/Textures/Font/space1.txt", 0 );
-		InterfaceFontLoad( 2, "Data/Fonts/nina-10b000.bmp", "Data/Fonts/nina-10b.txt", 0 );
+		LoadFont( 2, "Data/Fonts/nina-10b000.bmp", "Data/Fonts/nina-10b.txt", 0 );
 	//	InterfaceFontLoad( 3, "Data/Textures/Font/space2000.bmp", "Data/Textures/Font/space2.txt", 0 );
 	//	InterfaceFontLoad( 3, "Data/Textures/Font/mssansserif-12000.bmp", "Data/Textures/Font/mssansserif-12.txt", 0 );
-		InterfaceFontLoad( 3, "Data/Fonts/franklingothic-8b000.bmp", "Data/Fonts/franklingothic-8b.txt", 0 );
-		InterfaceFontLoad( 4, "Data/Fonts/TitilliumWeb64-01.png", "Data/Fonts/TitilliumWeb64-01.json", 0 );
+		LoadFont( 3, "Data/Fonts/franklingothic-8b000.bmp", "Data/Fonts/franklingothic-8b.txt", 0 );
+		LoadFont( 4, "Data/Fonts/TitilliumWeb64-01.png", "Data/Fonts/TitilliumWeb64-01.json", 0 );
 	}
 
 	return( 0 );

@@ -12,18 +12,11 @@
 #include "../Common/Font/FontCommon.h"
 #include "FontDX.h"
 
-int							mnCurrentRenderFont = 0;
 
 
-
-IGRAPHICSVERTEXBUFFER*		mpxFontVertexBuffer1 = NULL;
-IGRAPHICSVERTEXBUFFER*		mpxFontVertexBuffer2 = NULL;
-IGRAPHICSVERTEXBUFFER*		mpxCurrentFontVertexBuffer = NULL;
-
-
-void	CFontDef::SetTextureAsCurrent( void )
+void	CFontDef::SetTextureAsCurrent( InterfaceInstance* pInstance )
 {
-	InterfaceSetTextureAsCurrentDirect( mpTexture );
+	pInstance->SetTextureAsCurrentDirect( mpTexture );
 }
 
 
@@ -56,7 +49,7 @@ int			nFormat;
 
 	if ( 0 )	// dont use alpha textures
 	{
-		mpTexture = pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0 );
+		mpTexture = pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0, TRUE );
 		mpTexture->GetLevelDesc( 0, &xSurface );
 
 		m_TextureSizeY = xSurface.Height;
@@ -64,7 +57,7 @@ int			nFormat;
 	}
 	else
 	{
-		pxTempTexture =  pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0xFF );
+		pxTempTexture =  pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0xFF, TRUE );
 		if ( pxTempTexture == NULL ) return;
 		
 		pxTempTexture->GetLevelDesc( 0, &xSurface );
@@ -78,21 +71,21 @@ int			nFormat;
 		m_TextureSizeY = nHeight;
 		m_TextureSizeX = nWidth;
 		nFormat = D3DFMT_A8R8G8B8;
-		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture );
+		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &mpTexture, TRUE );
 		if ( mpTexture == NULL )
 		{
 			nFormat = D3DFMT_A8R3G3B2;
-			pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture );
+			pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R3G3B2, &mpTexture, TRUE );
 		
 			if ( mpTexture == NULL )
 			{
 				nFormat = D3DFMT_A4R4G4B4;
-				pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture );
+				pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A4R4G4B4, &mpTexture, TRUE );
 			
 				if ( mpTexture == NULL )
 				{
 					nFormat = D3DFMT_A8;
-					pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture );
+					pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8, &mpTexture, TRUE );
 			
 					if ( mpTexture == NULL )
 					{
@@ -170,7 +163,7 @@ int			nFormat;
 		}
 		pxTempTexture->Release();
 
-		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture );
+		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture, FALSE );
 			
 		IDirect3DSurface9*		pSourceSurface = NULL;
 		IDirect3DSurface9*		pDestSurface = NULL;
@@ -195,11 +188,8 @@ int			nFormat;
 
 /***************************************************************************
  * Function    : DrawFontBufferDX
- * Params      :
- * Returns     :
- * Description : 
  ***************************************************************************/
-void DrawFontBufferDX( void )
+void FontSystem::DrawFontBufferDX( void )
 {
 int				nDrawHowMany;
 
@@ -209,28 +199,49 @@ int				nDrawHowMany;
 	{
 		mpxCurrentFontVertexBuffer->Unlock();
 	
-		if ( InterfaceFontSetAsCurrentTexture( mnCurrentRenderFont ) == TRUE )
+		if ( FontSetAsCurrentTexture( mnCurrentRenderFont ) == TRUE )
 		{
-			EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
-
-			EngineEnableAlphaTest( 1 );
-			EngineEnableBlend( TRUE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+			mpInterfaceD3DDevice->SetRenderState( D3DRS_ALPHATESTENABLE, 1 );
+			mpInterfaceD3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 			mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			mpInterfaceD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+			//  Duplicating the state changes here so the engine knows whats what
+			//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+			if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+			{
+				EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+				EngineEnableAlphaTest( 1 );
+				EngineEnableBlend( TRUE );
+			}
 		}
 		else
 		{
-			InterfaceFontSetAsCurrentTexture( mnCurrentRenderFont );
+			FontSetAsCurrentTexture( mnCurrentRenderFont );
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 			mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
 			EngineResetColourMode();
-			EngineEnableAlphaTest( 0 );
-			EngineEnableBlend( TRUE );
+			mpInterfaceD3DDevice->SetRenderState( D3DRS_ALPHATESTENABLE, 1 );
+			mpInterfaceD3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 			mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			mpInterfaceD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+
+			//  Duplicating the state changes here so the engine knows whats what
+			//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+			if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+			{			
+				EngineEnableAlphaTest( 0 );
+				EngineEnableBlend( TRUE );
+			}
 		}
 
 		if ( InterfaceFontIsFilteringOn( mnCurrentRenderFont ) == TRUE )
@@ -242,7 +253,7 @@ int				nDrawHowMany;
 			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
 		}
 
-		InterfaceInternalDXSetStreamSource( 0, mpxCurrentFontVertexBuffer, 0, sizeof(FLATVERTEX) );
+		mpInterfaceInstance->mpInterfaceInternals->SetStreamSource( 0, mpxCurrentFontVertexBuffer, 0, sizeof(FLATVERTEX) );
 		mpInterfaceD3DDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, nDrawHowMany );
 
 /*		if ( mpxCurrentFontVertexBuffer == mpxFontVertexBuffer1 )
@@ -269,7 +280,7 @@ void FontSystem::InitialiseFontBuffersDX( void )
 {
 	if ( mpxFontVertexBuffer1 == NULL )
 	{
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( SIZE_OF_FONT_VERTEX_BUFFER * sizeof(FLATVERTEX),
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( SIZE_OF_FONT_VERTEX_BUFFER * sizeof(FLATVERTEX),
 													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
 													  &mpxFontVertexBuffer1 ) ) )
 		{
@@ -282,15 +293,27 @@ void FontSystem::InitialiseFontBuffersDX( void )
 
 
 
-void StringRenderBegin( void )
+void FontSystem::StringRenderBegin( void )
 {
 	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
-	EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
-	EngineEnableLighting( FALSE );
-	EngineEnableFog( FALSE );
-	EngineEnableCulling( 0 );
-	EngineEnableZTest( FALSE );
-	EngineEnableZWrite( FALSE );
+	mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
+	mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+	mpInterfaceD3DDevice->SetRenderState( D3DRS_FOGENABLE, 0 );//nFlag );
+	mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+    mpInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
+    mpInterfaceD3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+	
+	//  Duplicating the state changes here so the engine knows whats what
+	//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+	if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+	{			
+		EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
+		EngineEnableLighting( FALSE );
+		EngineEnableFog( FALSE );
+		EngineEnableCulling( 0 );
+		EngineEnableZTest( FALSE );
+		EngineEnableZWrite( FALSE );
+	}
 
 	if( FAILED( mpxCurrentFontVertexBuffer->Lock( 0, 0, (VERTEX_LOCKTYPE)&mpFontVertices, D3DLOCK_DISCARD ) ) )
 	{
@@ -305,7 +328,7 @@ void StringRenderBegin( void )
  * Params      : Layer
  * Description : Whacks out primitives for all the text added during the rendering frame
  ***************************************************************************/
-void RenderStrings( int nLayer )
+void FontSystem::RenderStrings( int nLayer )
 {
 int		nLoop;
 RECT	xRect;
@@ -398,12 +421,9 @@ bool	bHasStringsInThisLayer = false;
 
 
 /***************************************************************************
- * Function    : FreeFont
- * Params      :
- * Returns     :
- * Description : 
+ * Function    : FreeResources
  ***************************************************************************/
-void FreeFont( BOOL bFreeEverything )
+void FontSystem::FreeResources( BOOL bFreeEverything )
 {
     if( mpxFontVertexBuffer1 != NULL )
 	{

@@ -593,7 +593,7 @@ int		nHandle;
 
 	if ( nHandle != NOTFOUND )
 	{
-		mpInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &maxInternalTextures[ nHandle ].pTexture );
+		mpInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &maxInternalTextures[ nHandle ].pTexture, TRUE );
 		maxInternalTextures[ nHandle ].nRefCount = 1;
 		strcpy( maxInternalTextures[ nHandle ].acFilename, "gentex" );
 	}
@@ -717,11 +717,11 @@ int		nHandle;
 	{
 		if ( (nFlags & 0x1) == 0 )
 		{
-			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 1, 1 );
+			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 1, 1, FALSE );
 		}
 		else
 		{
-			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 0, 0 );
+			maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDXFromFileInMem( szFilename, pbMem, nMemSize, 0, 0, FALSE );
 		}
 
 		// Load failed
@@ -1070,7 +1070,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 1, 1 );
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 1, 1, FALSE );
 			}
 			break;
 		case 1:			// Mipmaps
@@ -1080,7 +1080,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 0, 0 );
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 0, 0, FALSE );
 			}
 			break;
 		case 3:		// feck knows
@@ -1090,7 +1090,7 @@ int		nHandle;
 			}
 			else
 			{
-				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 2, 0xFF );
+				maxInternalTextures[ nHandle ].pTexture = InterfaceLoadTextureDX( szFilename, 2, 0xFF, FALSE );
 			}
 			break;
 		}
@@ -1179,6 +1179,11 @@ BYTE*	pbImageData = NULL;
 //------------------------------------------------------------------------------------------------------------
 
 INTERFACE_API void	InterfaceSetTextureAsCurrentDirect( void* pTexture )
+{
+	InterfaceInstanceMain()->SetTextureAsCurrentDirect( pTexture );
+}
+
+void	InterfaceInstance::SetTextureAsCurrentDirect( void* pTexture )
 {
 	mpInterfaceD3DDevice->SetTexture( 0, (LPGRAPHICSTEXTURE)pTexture );
 }

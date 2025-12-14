@@ -1,12 +1,7 @@
 #ifndef GAMECOMMON_UI_H
 #define GAMECOMMON_UI_H
 
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+class InterfaceInstance;
 
 // ---------- Reserved buttonIDs
 enum
@@ -67,7 +62,7 @@ extern void			UITextBoxDestroy( int nHandle );
 
 //----------------------------------------------------------------------------
 //---------------------- UI Operational Functions -----------------------------
-extern void		UIInitialise( void );
+extern void		UIInitialise( InterfaceInstance* pInterfaceInstance = NULL );
 extern void		UIUpdate( float fDelta );
 extern void		UIShutdown( void );
 
@@ -87,11 +82,7 @@ extern void		UIPressIDSet( int nButtonID, uint32 ulParam );
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
 extern void		UIHoverItem( int X, int Y, int W, int H );
 
-#ifdef __cplusplus
-}
-#endif
-
-
+InterfaceInstance*		UIInterfaceInstance();
 
 
 #endif

@@ -1105,11 +1105,6 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		// Clear the backbuffer and the zbuffer
 		xColor = (D3DCOLOR)( ulCol );
 		ret = mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
-		if ( ret != D3D_OK )
-		{
-		int	nBreak = 0;
-			nBreak++;
-		}
 	}
 	return( 0 );
 	

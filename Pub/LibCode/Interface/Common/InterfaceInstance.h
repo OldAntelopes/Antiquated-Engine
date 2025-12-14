@@ -2,7 +2,7 @@
 #define INTERFACE_INSTANCE_H
 
 // TODO - this shouldnt be here
-#include "../DirectX/InterfaceTypesDX.h"
+#include "../DirectX/InterfaceTypesDX.h"		// Temp - only for LPGRAPHICSDEVICE 
 
 #include "InterfaceModule.h"
 #include "../Common/Overlays/Overlays.h"
@@ -28,12 +28,21 @@ public:
 	void		Present( void );
 
 	BOOL		IsInRender( void );
+	void		FreeAll( void );
+	void		ReleaseForDeviceReset( void );
+	void		RestorePostDeviceReset( void );
+
+	void		SetTextureAsCurrentDirect( void* pTexture );
 
 	TexturedOverlays*		mpTexturedOverlays;
 	FontSystem*				mpFontSystem;
 	InterfaceInternalsDX*	mpInterfaceInternals;
 
+	// TODO - Move this into InterfaceInternals and make sure all systems only refer to this vers
+		// (So we can remove the DX.h headers from this file)
 	LPGRAPHICSDEVICE		mpInterfaceD3DDevice;
+
+	void		DrawAllElements( void );
 protected:
 	void		SetDevice( LPGRAPHICSDEVICE pDevice );
 

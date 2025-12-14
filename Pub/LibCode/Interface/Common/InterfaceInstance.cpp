@@ -23,7 +23,7 @@ void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
 		mpFontSystem->InitialiseFonts( bUseDefaultFonts );
 		InitialiseOverlays();
 
-		InitTexturedOverlays();
+		mpTexturedOverlays->Initialise();
 
 		InterfaceImagesInit();
 	}

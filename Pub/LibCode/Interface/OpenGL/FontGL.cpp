@@ -113,7 +113,7 @@ int				nTriLoop;
  * Params      : Layer
  * Description : Whacks out primitives for all the text added during the rendering frame
  ***************************************************************************/
-void RenderStrings( int nLayer )
+void FontSystem::RenderStrings( int nLayer )
 {
 int		nLoop;
 RECT	xRect;

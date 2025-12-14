@@ -451,7 +451,7 @@ extern INTERFACE_API WINDOW_DIMENSIONS InterfaceGetWindowDimensions( void );
 // Old version of the texture overlay sys that used explicit references to direct3d textures
 #ifdef DIRECT3D_VERSION
 extern INTERFACE_API int	CreateTexturedOverlay( LPDIRECT3DTEXTURE9 );
-extern INTERFACE_API IDirect3DTexture9* InterfaceLoadTextureDX( const char* szFilename, int, int );
+extern INTERFACE_API IDirect3DTexture9* InterfaceLoadTextureDX( const char* szFilename, int, int , BOOL );
 #endif
 
 

@@ -1,8 +1,11 @@
+#include "DirectX/d3dx9.h"
 
 #include "StandardDef.h"
 #include "Interface.h"
 
+#include "../../../Antiquated/Pub/LibCode/Interface/Common/InterfaceInstance.h"
 #include "../Platform/Platform.h"
+
 
 #include "UISlider.h"
 #include "UIScrollablePage.h"
@@ -10,6 +13,8 @@
 #include "UIButton.h"
 #include "UIDropdown.h"
 #include "UI.h"
+
+InterfaceInstance*	mpInterfaceInstance = NULL;
 
 short		mwUIPressX = 0;
 short		mwUIPressY = 0;
@@ -143,9 +148,17 @@ BOOL	bRet = FALSE;
 	return( bRet );
 }
 
-
-void		UIInitialise( void )
+InterfaceInstance*		UIInterfaceInstance()
 {
+	return( mpInterfaceInstance );
+}
+
+void		UIInitialise( InterfaceInstance* pInterfaceInstance )
+{
+	if ( pInterfaceInstance == NULL )
+	{
+		pInterfaceInstance = InterfaceInstanceMain();
+	}
 	UIButtonsInitialise();
 }
 

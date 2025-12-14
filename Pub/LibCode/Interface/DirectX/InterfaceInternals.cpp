@@ -265,7 +265,7 @@ D3DFORMAT dx9Format;
 }
 #endif
 
-LPGRAPHICSTEXTURE InterfaceInternalsDX::LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter )
+LPGRAPHICSTEXTURE InterfaceInternalsDX::LoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter, BOOL bReadable )
 {
 int	nRet = 0;
 LPGRAPHICSTEXTURE	pxTexture = NULL;
@@ -273,6 +273,12 @@ int		nFilter = D3DX_FILTER_NONE;
 int		nMipFilter = D3DX_FILTER_NONE;
 int		nMipLevels = 1;
 int		nFormat = D3DFMT_UNKNOWN;
+_D3DPOOL pool = D3DPOOL_DEFAULT;
+
+	if ( bReadable )
+	{
+		pool = D3DPOOL_SYSTEMMEM;
+	}
 
 	InterfaceGetTextureLoadParams( szFilename, boReduceFilter, boMipFilter, &nFormat, &nFilter, &nMipFilter, &nMipLevels );
 /*	char	acString[256];
@@ -280,7 +286,7 @@ int		nFormat = D3DFMT_UNKNOWN;
 	PrintConsoleCR(acString,COL_WARNING);
 */
 	nRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-										0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT,nFilter, nMipFilter,
+										0,0,nMipLevels,0,(D3DFORMAT)nFormat, pool,nFilter, nMipFilter,
 										0xFF0000FF, NULL, NULL,
 										&pxTexture );
 
@@ -292,7 +298,7 @@ int		nFormat = D3DFMT_UNKNOWN;
 		if ( nFormat == D3DFMT_A8R8G8B8 )
 		{
 			nNewRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-											0,0,nMipLevels,0,D3DFMT_A1R5G5B5, D3DPOOL_DEFAULT,nFilter, nMipFilter,
+											0,0,nMipLevels,0,D3DFMT_A1R5G5B5, pool,nFilter, nMipFilter,
 											0xFF0000FF, NULL, NULL,
 											&pxTexture );
 			if( FAILED( nNewRet ) )
@@ -304,7 +310,7 @@ int		nFormat = D3DFMT_UNKNOWN;
 		else if ( nFormat == D3DFMT_A1R5G5B5 )
 		{
 			nNewRet = D3DXCreateTextureFromFileEx( mpInterfaceD3DDevice, szFilename,
-											0,0,nMipLevels,0,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,nFilter, nMipFilter,
+											0,0,nMipLevels,0,D3DFMT_A8R8G8B8, pool,nFilter, nMipFilter,
 											0xFF0000FF, NULL, NULL,
 											&pxTexture );
 			if( FAILED( nNewRet ) )
@@ -335,7 +341,7 @@ HRESULT			InterfaceInternalsDX::CreateVertexBuffer(  unsigned int Length, unsign
 #endif
 }
 
-void	InterfaceInternalsDX::CreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture )
+void	InterfaceInternalsDX::CreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture, BOOL bReadable )
 {
 #ifdef TUD11
 	PANIC_IF( TRUE, "InterfaceInternalDXCreateTexture TBI" );
@@ -343,7 +349,14 @@ void	InterfaceInternalsDX::CreateTexture( int width, int height, int levels, int
 	D3DFORMAT dx9Format = InterfaceInternalDX9GetFormat( format );
 	*ppTexture = NULL;
 #ifdef USE_D3DEX_INTERFACE
-	mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_DEFAULT, ppTexture, NULL );
+	if ( bReadable )
+	{
+		mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_SYSTEMMEM, ppTexture, NULL );
+	}
+	else
+	{
+		mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_DEFAULT, ppTexture, NULL );
+	}
 #else
 	mpInterfaceD3DDevice->CreateTexture( width, height, levels, mode, dx9Format, D3DPOOL_MANAGED, ppTexture, NULL );
 #endif
@@ -363,9 +376,9 @@ void	InterfaceInternalsDX::SetStreamSource( unsigned int StreamNumber, IGRAPHICS
 
 //	LPGRAPHICSTEXTURE	LoadTextureFromArchive( const char* szFilename, int boReduceFilter, int boMipFilter, int nArchiveHandle );
 
-void	InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture )
+void	InterfaceInternalDXCreateTexture( int width, int height, int levels, int mode, eInterfaceTextureFormat format, LPGRAPHICSTEXTURE* ppTexture, BOOL bReadable )
 {
-	InterfaceInstanceMain()->mpInterfaceInternals->CreateTexture( width, height, levels, mode, format, ppTexture );
+	InterfaceInstanceMain()->mpInterfaceInternals->CreateTexture( width, height, levels, mode, format, ppTexture, bReadable );
 }
 
 
@@ -476,7 +489,7 @@ char	acString[512];
 
 
 
-INTERFACE_API LPGRAPHICSTEXTURE InterfaceLoadTextureDXFromFileInMem( const char* szFilename, byte* pbMem, int nMemSize, int boReduceFilter, int boMipFilter )
+INTERFACE_API LPGRAPHICSTEXTURE InterfaceLoadTextureDXFromFileInMem( const char* szFilename, byte* pbMem, int nMemSize, int boReduceFilter, int boMipFilter, BOOL bReadable )
 {
 int	nRet;
 LPGRAPHICSTEXTURE	pxTexture = NULL;
@@ -488,7 +501,14 @@ int		nFormat = D3DFMT_R8G8B8;
 	InterfaceGetTextureLoadParams( szFilename, boReduceFilter, boMipFilter, &nFormat, &nFilter, &nMipFilter, &nMipLevels );
 
 #ifdef USE_D3DEX_INTERFACE
-	nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+	if ( bReadable )
+	{
+		nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_SYSTEMMEM, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+	}
+	else
+	{
+		nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_DEFAULT, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+	}
 #else
 	nRet = D3DXCreateTextureFromFileInMemoryEx( mpInterfaceD3DDevice, pbMem, nMemSize,0,0,nMipLevels,0,(D3DFORMAT)nFormat, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 #endif
@@ -519,15 +539,15 @@ int		nFileSize;
 			pArchive->ReadFile( nFileHandle, pbFileInMem, nFileSize );
 			pArchive->CloseFile( nFileHandle );
 
-			return( InterfaceLoadTextureDXFromFileInMem( szFilename, pbFileInMem, nFileSize, boReduceFilter, boMipFilter ) );
+			return( InterfaceLoadTextureDXFromFileInMem( szFilename, pbFileInMem, nFileSize, boReduceFilter, boMipFilter, FALSE ) );
 		}
 	}
 	return( NULL );
 }
 
-INTERFACE_API LPGRAPHICSTEXTURE InterfaceLoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter )
+INTERFACE_API LPGRAPHICSTEXTURE InterfaceLoadTextureDX( const char* szFilename, int boReduceFilter, int boMipFilter, BOOL bReadable )
 {
-	return( InterfaceInstanceMain()->mpInterfaceInternals->LoadTextureDX( szFilename, boReduceFilter, boMipFilter));
+	return( InterfaceInstanceMain()->mpInterfaceInternals->LoadTextureDX( szFilename, boReduceFilter, boMipFilter, bReadable));
 }
 
 
@@ -665,33 +685,35 @@ void InterfaceEndScene( void )
 
 /***************************************************************************
  * Function    : InterfaceDrawAllElements
- * Params      : 
- * Returns     :
- * Description : 
  ***************************************************************************/
 INTERFACE_API void InterfaceDrawAllElements( void )
 {
-	DrawTexturedOverlays(0);
+	InterfaceInstanceMain()->DrawAllElements();
+
+}
+ void InterfaceInstance::DrawAllElements( void )
+{
+	mpTexturedOverlays->Render( 0 );
 	RenderOverlays( 0 );
-	RenderStrings( 0 );
+	mpFontSystem->RenderStrings( 0 );
 
 	DrawPrimaryJpeg();
 	DrawBufferedJpegs(0);
-	DrawTexturedOverlays(1);
+	mpTexturedOverlays->Render( 1 );
 	RenderOverlays( 1 );
-	RenderStrings( 1 );
+	mpFontSystem->RenderStrings( 1 );
 	DrawBufferedJpegs(1);
 
-	DrawTexturedOverlays(2);
+	mpTexturedOverlays->Render( 2 );
 	RenderOverlays( 2 );
 	DrawBufferedJpegs( 2 );
-	RenderStrings( 2 );
+	mpFontSystem->RenderStrings( 2 );
 
 	RenderOverlays( 3 );
-	RenderStrings( 3 );
+	mpFontSystem->RenderStrings( 3 );
 
 	// Clear buffered interface items
-	ClearStrings();
+	mpFontSystem->ClearStrings();
 
 	if ( mfnInterfaceOnDrawCallback )
 	{
@@ -849,17 +871,17 @@ void InterfaceInstance::Draw( void )
 	D3DXMatrixOrthoLH(&Ortho2D, (float)InterfaceGetWidth(), (float)InterfaceGetHeight(), 0.0f, 1.0f);
 	EngineMatrixIdentity(&xMatrix);
 
-	EngineSetViewMatrix( &xMatrix);
+	mpInterfaceD3DDevice->SetTransform( D3DTS_VIEW, (D3DXMATRIX*) &xMatrix );
 	xMatrix._22 = -1.0f;
 	xMatrix._41 = (float)( InterfaceGetWidth() ) * -0.5f;
 	xMatrix._42 = (float)( InterfaceGetHeight() ) * 0.5f;
-	EngineSetWorldMatrix( &xMatrix );
-	EngineSetProjectionMatrix( &Ortho2D);
+	mpInterfaceD3DDevice->SetTransform( D3DTS_WORLD, (D3DXMATRIX*) &xMatrix );
+	mpInterfaceD3DDevice->SetTransform( D3DTS_PROJECTION, (D3DXMATRIX*)&Ortho2D );
 //------------
 
 	mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
-	InterfaceDrawAllElements();
+	DrawAllElements();
 
 	// Reset the blend mode as it may have been left in a funky state..
 	mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -869,13 +891,16 @@ void InterfaceInstance::Draw( void )
 
 
 
+INTERFACE_API void InterfaceFree( void )
+{
+	InterfaceInstanceMain()->FreeAll();
+}
+
+
 /***************************************************************************
  * Function    : InterfaceFree
- * Params      : 
- * Returns     :
- * Description : 
  ***************************************************************************/
-INTERFACE_API void InterfaceFree( void )
+void InterfaceInstance::FreeAll( void )
 {
 	if ( mboInterfaceInitialised == TRUE )
 	{
@@ -883,7 +908,7 @@ INTERFACE_API void InterfaceFree( void )
 
 		InterfaceImagesFree();
 		ClearBufferedJpegs();
-		FreeFont( TRUE );
+		mpFontSystem->FreeResources( TRUE );
 		FreeTexturedOverlays();
 		FreeOverlays();
 		mboInterfaceInitialised = FALSE;
@@ -892,17 +917,27 @@ INTERFACE_API void InterfaceFree( void )
 
 INTERFACE_API void InterfaceReleaseForDeviceReset( void )
 {
+	InterfaceInstanceMain()->ReleaseForDeviceReset();
+}
+
+void InterfaceInstance::ReleaseForDeviceReset( void )
+{
 	mpInterfaceD3DDevice->SetTexture(0, NULL);
 	InterfaceImagesFree();
 	ClearBufferedJpegs();
-	FreeFont( FALSE );
+	mpFontSystem->FreeResources( FALSE );
 	FreeTexturedOverlays();
 	FreeOverlays();
 }
 
 INTERFACE_API void InterfaceRestorePostDeviceReset( void )
 {
-	InitialiseFontBuffers();
+	InterfaceInstanceMain()->RestorePostDeviceReset();
+}
+
+void InterfaceInstance::RestorePostDeviceReset( void )
+{
+	mpFontSystem->InitialiseFontBuffers();
 	InitialiseOverlays();
 	InitTexturedOverlays();
 	InterfaceImagesInit();

@@ -51,7 +51,6 @@ typedef struct
 extern HRESULT InitialiseFont( void );
 extern void FreeFont( void );
 extern void AddFontStringAlign( char* szString, int, int, RECT* );
-extern void RenderStrings( int );
 extern void ClearStrings( void );
 
 extern float GetFontU( BYTE cChar, int nFont );
