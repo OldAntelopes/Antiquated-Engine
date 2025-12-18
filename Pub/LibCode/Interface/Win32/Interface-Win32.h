@@ -18,8 +18,6 @@ extern HWND						mhwndInterfaceMain;
 
 extern int		mnWindowLeft;
 extern int		mnWindowTop;
-extern int		mnWindowWidth;
-extern int		mnWindowHeight;
 extern BOOL		mboFullScreen;
 
 #ifdef __cplusplus

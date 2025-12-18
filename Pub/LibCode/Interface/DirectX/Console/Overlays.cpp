@@ -453,25 +453,25 @@ float	R, G, B, A;
 		InterfaceLine( nLayer, nX + nWidth, nY, nX + nWidth, nY + nHeight + 1, ulColLo, ulColLo );
 		InterfaceLine( nLayer, nX - 1, nY + nHeight, nX + nWidth + 1, nY + nHeight, ulColLo, ulColLo );
 	*/
-		InterfaceRect( nLayer, nX + nWidth - 2, nY - 1, 3, nHeight + 2, ulColLo2 );
-		InterfaceRect( nLayer, nX - 2, nY + nHeight - 1, nWidth + 3, 3, ulColLo2 );
+		Rect( nLayer, nX + nWidth - 2, nY - 1, 3, nHeight + 2, ulColLo2 );
+		Rect( nLayer, nX - 2, nY + nHeight - 1, nWidth + 3, 3, ulColLo2 );
 
-		InterfaceRect( nLayer, nX - 2, nY - 1, nWidth + 2, 1, ulColLo2 );
-		InterfaceRect( nLayer, nX - 1, nY, nWidth + 1, 1, ulColHi );
-		InterfaceRect( nLayer, nX, nY + 1, nWidth, 1, ulColLo3 );
-		InterfaceRect( nLayer, nX - 2, nY - 1, 1, nHeight + 2, ulColLo2 );
-		InterfaceRect( nLayer, nX - 1, nY, 1, nHeight + 1, ulColHi );
-		InterfaceRect( nLayer, nX, nY + 1, 1, nHeight - 1, ulColLo3 );
+		Rect( nLayer, nX - 2, nY - 1, nWidth + 2, 1, ulColLo2 );
+		Rect( nLayer, nX - 1, nY, nWidth + 1, 1, ulColHi );
+		Rect( nLayer, nX, nY + 1, nWidth, 1, ulColLo3 );
+		Rect( nLayer, nX - 2, nY - 1, 1, nHeight + 2, ulColLo2 );
+		Rect( nLayer, nX - 1, nY, 1, nHeight + 1, ulColHi );
+		Rect( nLayer, nX, nY + 1, 1, nHeight - 1, ulColLo3 );
 
-		InterfaceRect( nLayer, nX + nWidth - 1, nY, 1, nHeight + 1, ulColLo );
-		InterfaceRect( nLayer, nX - 1, nY + nHeight, nWidth + 1, 1, ulColLo );
+		Rect( nLayer, nX + nWidth - 1, nY, 1, nHeight + 1, ulColLo );
+		Rect( nLayer, nX - 1, nY + nHeight, nWidth + 1, 1, ulColLo );
 	}
 	else
 	{
-		InterfaceRect( nLayer, nX - 1, nY, nWidth + 1, 1, ulColHi );
-		InterfaceRect( nLayer, nX - 1, nY, 1, nHeight + 1, ulColHi );
-		InterfaceRect( nLayer, nX + nWidth - 1, nY, 1, nHeight + 1, ulColHi );
-		InterfaceRect( nLayer, nX - 1, nY + nHeight, nWidth + 1, 1, ulColHi );
+		Rect( nLayer, nX - 1, nY, nWidth + 1, 1, ulColHi );
+		Rect( nLayer, nX - 1, nY, 1, nHeight + 1, ulColHi );
+		Rect( nLayer, nX + nWidth - 1, nY, 1, nHeight + 1, ulColHi );
+		Rect( nLayer, nX - 1, nY + nHeight, nWidth + 1, 1, ulColHi );
 	}
 }
 
@@ -492,39 +492,39 @@ void Overlays::ShadedBox( int nLayer, int nX, int nY, int nWidth, int nHeight, i
 		{
 		case 0:
 		default:
-			InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
-			InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
+			Rect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
+			Rect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
 
-			InterfaceRect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
-			InterfaceRect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
+			Rect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
+			Rect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
 			break;
 		case 1:
-			InterfaceRect( 1, nX, nY, nWidth, nHeight, 0x70000000 );
-			InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
-			InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
+			Rect( 1, nX, nY, nWidth, nHeight, 0x70000000 );
+			Rect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
+			Rect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
 
-			InterfaceRect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
-			InterfaceRect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
+			Rect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
+			Rect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
 			break;
 		case 2:
-			InterfaceRect( 1, nX, nY, nWidth, nHeight, 0x70404040 );
-			InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x60B0B0B0 );
-			InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x60B0B0B0 );
+			Rect( 1, nX, nY, nWidth, nHeight, 0x70404040 );
+			Rect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x60B0B0B0 );
+			Rect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x60B0B0B0 );
 
-			InterfaceRect( 1, nX, nY - 2, nWidth, 2, 0x60101010 );
-			InterfaceRect( 1, nX, nY + nHeight, nWidth, 2, 0x60101010 );
+			Rect( 1, nX, nY - 2, nWidth, 2, 0x60101010 );
+			Rect( 1, nX, nY + nHeight, nWidth, 2, 0x60101010 );
 			break;
 		}
 	}
 	else 
 	{
-		InterfaceRect( 1, nX, nY, nWidth, nHeight, (uint32)(nStyle) );
+		Rect( 1, nX, nY, nWidth, nHeight, (uint32)(nStyle) );
 
-		InterfaceRect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
-		InterfaceRect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
+		Rect( 1, nX - 2, nY - 2, 2, nHeight + 4, 0x404080CF );
+		Rect( 1, nX + nWidth, nY - 2, 2, nHeight + 4, 0x404080CF );
 
-		InterfaceRect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
-		InterfaceRect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
+		Rect( 1, nX, nY - 2, nWidth, 2, 0x404080CF );
+		Rect( 1, nX, nY + nHeight, nWidth, 2, 0x404080CF );
 	}
 
 }
@@ -562,16 +562,31 @@ int				nDrawHowMany;
 	
 	if ( nDrawHowMany > 0 )
 	{
-		EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
-		EngineEnableLighting( FALSE );
 		mpInterfaceD3DDevice->SetTexture( 0, NULL );
-		EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
-		// Enable alpha testing (skips pixels with less than a certain alpha.)
-		EngineEnableFog( FALSE );
-		EngineEnableZTest( FALSE );
-		EngineEnableZWrite( FALSE );
-		EngineEnableAlphaTest( 0 );
-		EngineEnableBlend( TRUE );
+		mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_FOGENABLE, 0 );//nFlag );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );	
+
+		//  Duplicating the state changes here so the engine knows whats what
+		//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+		if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+		{			
+			EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
+			EngineEnableLighting( FALSE );
+			EngineEnableFog( FALSE );
+			EngineEnableCulling( 0 );
+			EngineEnableZTest( FALSE );
+			EngineEnableZWrite( FALSE );
+			EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
+		}
+
 		if ( mbAdditiveOverlays )
 		{
 			mpInterfaceD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -588,7 +603,7 @@ int				nDrawHowMany;
 			pxContainer->mpxVertexBuffer->Unlock();
 			pxContainer->mboBufferIsLocked = FALSE;
 		}
-		InterfaceInternalDXSetStreamSource( 0, pxContainer->mpxVertexBuffer, 0, sizeof(FLATVERTEX) );
+		mpInterfaceInstance->mpInterfaceInternals->SetStreamSource( 0, pxContainer->mpxVertexBuffer, 0, sizeof(FLATVERTEX) );
 		mpInterfaceD3DDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, nDrawHowMany );
 		pxContainer->mnNextOverlayVertex = 0;
 	}
@@ -615,7 +630,7 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 		if ( pxContainer->mpxVertexBuffer == NULL )
 		{
 			// Create the vertex buffer.
-			if( FAILED( InterfaceInternalDXCreateVertexBuffer( NUM_OVERLAY_VERTICES * sizeof(FLATVERTEX),
+			if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( NUM_OVERLAY_VERTICES * sizeof(FLATVERTEX),
 													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
 													  &pxContainer->mpxVertexBuffer ) ) )
 			{
@@ -628,7 +643,7 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 	if ( mpxOverlaysLineVertexBuffer == NULL )
 	{
 		// Create the vertex buffer.
-		if( FAILED( InterfaceInternalDXCreateVertexBuffer( LINE_VERTEX_BUFFER_SIZE * sizeof(FLATVERTEX),
+		if( FAILED( mpInterfaceInstance->mpInterfaceInternals->CreateVertexBuffer( LINE_VERTEX_BUFFER_SIZE * sizeof(FLATVERTEX),
 													  D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_FLATVERTEX,
 													  &mpxOverlaysLineVertexBuffer ) ) )
 		{

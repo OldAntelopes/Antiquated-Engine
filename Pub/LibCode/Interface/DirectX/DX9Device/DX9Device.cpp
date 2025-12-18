@@ -304,47 +304,47 @@ INTERFACE_API void InterfaceSetStandardMaterial( void )
 	EngineSetMaterial(&mxStandardMat);
 }
 
-bool	mboTextureFilteringCurrentState = false;
-
-void InterfaceTurnOffTextureFiltering( void )
-{
-	if ( mboTextureFilteringCurrentState )
-	{
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
-		mboTextureFilteringCurrentState = false;
-	}
-}
-
 void InterfaceEnableTextureFiltering( BOOL bFlag )
 {
 	msbInterfaceGlobalTextureFilteringEnable = bFlag;
 }
 
+void InterfaceTurnOffTextureFiltering( void )
+{
+	InterfaceInstanceMain()->EnableTextureFiltering( FALSE );
+}
+
 void InterfaceTurnOnTextureFiltering( int nMode )
 {
-	// Turning on normally.. may be overriden by graphic options
-	if ( nMode == 1 )
+	InterfaceInstanceMain()->EnableTextureFiltering( TRUE );
+}
+
+void InterfaceInstance::EnableTextureFiltering( BOOL bFlag )
+{
+	if ( mboTextureFilteringCurrentState != bFlag )
 	{
-		if ( msbInterfaceGlobalTextureFilteringEnable == FALSE )
+		if ( bFlag == FALSE )
 		{
-			return;
+			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
+			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
+			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
+			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
 		}
+		else
+		{
+			if ( msbInterfaceGlobalTextureFilteringEnable != FALSE )
+			{
+				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
+				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
+				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
+			}	
+		}
+		mboTextureFilteringCurrentState = bFlag;
 	}
 
-	if (! mpLegacyInterfaceD3DDeviceSingleton)
-		return;
-   
-	if ( !mboTextureFilteringCurrentState )
-	{
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
-		mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
-		mboTextureFilteringCurrentState = true;
-	}
 }
+
+
 
 BOOL TestDepth(D3DFORMAT fmt, D3DDISPLAYMODE d3ddm)
 {

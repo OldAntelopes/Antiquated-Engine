@@ -11,6 +11,7 @@ enum
 };
 
 typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam );
+typedef	void(*UIHoldHandler)( int nButtonID, uint32 ulParam, BOOL bIsHeld, BOOL bFirstPress );
 
 typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
 
@@ -18,6 +19,7 @@ typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam
 //-------------------------------------- UIButton
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
+extern void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler );
 
 extern void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam );
 extern BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam );
@@ -52,6 +54,13 @@ extern void		UIDropdownSetValueChangeCallback( int nHandle, fnValueChangeCallbac
 extern void		UIDropdownReset( int nHandle );
 extern void		UIDropdownDestroy( int nHandle );
 
+//---------------------------------------- UIListBox
+extern int		UIListBoxCreate( BOOL bContentsDraggable = FALSE );
+extern int		UIListBoxAddElement( int nHandle, const char* szElementName, uint32 ulElementParam );
+extern void		UIListBoxRender( int nHandle, int ScreenX, int ScreenY, int ScreenW, int ScreenH, int nFullH, float fAlpha );
+extern int		UIListBoxGetSelection( int nHandle, char* szElementNameOut, uint32* pulElementParamOut );
+extern int		UIListBoxGetNumElements( int nHandle );
+
 //---------------------------------------- UITextBox
 extern int			UITextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen );
 extern void			UITextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
@@ -78,6 +87,7 @@ extern void		UIOnInterfaceDraw( void );
 //-----------------------------------------------------------------
 // UI Internal
 
+extern void		UIHoverIDSet( int nButtonID, uint32 ulParam );
 extern void		UIPressIDSet( int nButtonID, uint32 ulParam );
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
 extern BOOL		UIHoverItem( int X, int Y, int W, int H );

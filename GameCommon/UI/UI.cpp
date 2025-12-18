@@ -1,5 +1,6 @@
 #include "DirectX/d3dx9.h"
 
+#include <map>
 #include "StandardDef.h"
 #include "Interface.h"
 
@@ -10,6 +11,7 @@
 #include "UISlider.h"
 #include "UIScrollablePage.h"
 #include "UITextBox.h"
+#include "UIListBox.h"
 #include "UIButton.h"
 #include "UIDropdown.h"
 #include "UI.h"
@@ -23,40 +25,23 @@ int			mnUISetCursorY = NOTFOUND;
 
 int			mnUIButtonIDPressed = NOTFOUND;
 uint32		mulUIButtonIDPressedParam = 0;
+int			mnUIButtonIDHovered = NOTFOUND;
+uint32		mulUIButtonIDHoveredParam = 0;
 
-class UIButtonHandlerList
+int			mnUIButtonIDHeld = NOTFOUND;
+uint32		mulUIButtonIDHeldParam = 0;
+
+std::map<int, UIButtonHandler>	msButtonHandlerList;
+std::map<int, UIHoldHandler>	msHoldHandlerList;
+
+void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler )
 {
-public:
-	int						mnButtonID;
-	UIButtonHandler			mpfnButtonHandler;
-	
-	UIButtonHandlerList*	mpNext;
-
-};
-
-UIButtonHandlerList*	mpButtonHandlerList = NULL;
-
+	msHoldHandlerList[nButtonID] = fnHoldHandler;
+}
 
 void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler )
 {
-UIButtonHandlerList*		pHandlerList = mpButtonHandlerList;
-
-	while( pHandlerList )
-	{
-		if ( pHandlerList->mnButtonID == nButtonID )
-		{
-			pHandlerList->mpfnButtonHandler = fnButtonHandler;
-			return;
-		}
-		pHandlerList = pHandlerList->mpNext;
-	}
-
-	pHandlerList = new UIButtonHandlerList;
-	pHandlerList->mpNext = mpButtonHandlerList;
-	mpButtonHandlerList = pHandlerList;
-
-	pHandlerList->mnButtonID = nButtonID;
-	pHandlerList->mpfnButtonHandler = fnButtonHandler;
+	msButtonHandlerList[nButtonID] = fnButtonHandler;
 }
 
 
@@ -73,11 +58,21 @@ void		UIOnInterfaceDraw( void )
 void		UIUpdate( float fDelta )
 {
 	mnUIButtonIDPressed = NOTFOUND;
+	mnUIButtonIDHovered = NOTFOUND;
 	UITextBoxNewFrame();
 	UIButtonsNewFrame();
 	UIDropdownNewFrame();
 
 	UIScrollablePageUpdate( fDelta );
+
+	if ( mnUIButtonIDHeld != NOTFOUND )
+	{
+		if ( msHoldHandlerList[mnUIButtonIDHeld])
+		{			
+			msHoldHandlerList[mnUIButtonIDHeld]( mnUIButtonIDHeld, mulUIButtonIDHeldParam, TRUE, FALSE );
+		}
+	}
+
 }
 
 
@@ -89,12 +84,24 @@ BOOL		UIOnZoom( float fZoomAmount )
 
 BOOL		UIOnPress( int X, int Y )
 {
-	if ( UISliderOnPress( X, Y ) == FALSE )
+	if ( ( UISliderOnPress( X, Y ) == FALSE ) &&
+		 ( UIListBoxOnPress( X, Y ) == FALSE ) )
+
 	{
 		mwUIPressX = X;
 		mwUIPressY = Y;
 
 		UIDropdownOnPress( X, Y );
+
+		if ( mnUIButtonIDHovered != NOTFOUND )
+		{
+			if ( msHoldHandlerList[mnUIButtonIDHovered] )
+			{			
+				msHoldHandlerList[mnUIButtonIDHovered]( mnUIButtonIDHovered, mulUIButtonIDHoveredParam, TRUE, TRUE );
+				mnUIButtonIDHeld = mnUIButtonIDHovered;
+				mulUIButtonIDHeldParam = mulUIButtonIDHoveredParam;
+			}
+		}
 	}
 	
 	UIScrollablePageOnPress( X, Y );
@@ -114,23 +121,28 @@ BOOL	bRet = FALSE;
 		{
 			if ( mnUIButtonIDPressed != NOTFOUND )
 			{
-			UIButtonHandlerList*		pHandlerList = mpButtonHandlerList;
+				if ( msButtonHandlerList[mnUIButtonIDPressed] )
+				{			
+					// If we press another button, we should cancel any text box edits in progress first..
+					UITextBoxEndCurrentEdit();
 
-				while( pHandlerList )
-				{
-					if ( pHandlerList->mnButtonID == mnUIButtonIDPressed )
-					{
-						// If we press another button, we should cancel any text box edits in progress first..
-						UITextBoxEndCurrentEdit();
-
-						pHandlerList->mpfnButtonHandler( mnUIButtonIDPressed, mulUIButtonIDPressedParam );
-						break;
-					}
-					pHandlerList = pHandlerList->mpNext;
+					msButtonHandlerList[mnUIButtonIDPressed]( mnUIButtonIDPressed, mulUIButtonIDPressedParam );
 				}
-
+				else if ( msHoldHandlerList[mnUIButtonIDPressed])
+				{			
+					msHoldHandlerList[mnUIButtonIDPressed]( mnUIButtonIDPressed, mulUIButtonIDPressedParam, FALSE, FALSE );
+				}
 				 mnUIButtonIDPressed = NOTFOUND;
 				 bRet = TRUE;
+			}
+			else if ( mnUIButtonIDHeld != NOTFOUND )
+			{
+				if ( msHoldHandlerList[mnUIButtonIDHeld])
+				{			
+					msHoldHandlerList[mnUIButtonIDHeld]( mnUIButtonIDHeld, mulUIButtonIDHeldParam, FALSE, FALSE );
+				}
+				mnUIButtonIDHeld = NOTFOUND;
+				bRet = TRUE;		
 			}
 		}
 		else
@@ -167,17 +179,7 @@ void		UIInitialise( InterfaceInstance* pInterfaceInstance )
 
 void		UIShutdown( void )
 {
-UIButtonHandlerList*		pHandlerList = mpButtonHandlerList;
-UIButtonHandlerList*		pNext;
-
-	while( pHandlerList )
-	{
-		pNext = pHandlerList->mpNext;
-		delete pHandlerList;
-		pHandlerList = pNext;
-	}
-
-	mpButtonHandlerList = NULL;
+	// TODO - Cleanup msButtonHandlerList
 
 	UIButtonsShutdown();
 	UITextboxShutdown();
@@ -200,6 +202,13 @@ void		UISetCurrentCursorPosition( int nX, int nY )
 {
 	mnUISetCursorX = nX;
 	mnUISetCursorY = nY;
+}
+
+
+void		UIHoverIDSet( int nButtonID, uint32 ulParam )
+{
+	mnUIButtonIDHovered = nButtonID;
+	mulUIButtonIDHoveredParam = ulParam;
 }
 
 

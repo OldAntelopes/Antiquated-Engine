@@ -23,9 +23,9 @@ public:
 	//-----------------------------------------------------------------------
 
 	// Font
-	void	Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
-	void	TextCentre( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont );
-	void	TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
+	void	Text( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* szString, ...  );
+	void	TextCentre( int nLayer, int nX1, int nY, uint32 ulCol, int nFont, const char* szString, ... );
+	void	TextRight( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* szString, ... );
 
 	int		GetStringWidth( const char* pcString, int nFont );
 	int		GetStringHeight( const char* pcString, int nFont );
@@ -37,6 +37,11 @@ public:
 	// Textured Overlays
 	int			CreateNewTexturedOverlay( int nLayer, int nTextureHandle );
 	void		TexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fU2, float fV2 );
+
+	// Overlays
+	void	Rect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol);
+	void	ShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 );
+	void	Triangle( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 );
 
 	//------------------------------------------------------------------
 	void		InitD3D( HWND hWindow, BOOL bMinBackBufferSize );
@@ -60,7 +65,13 @@ public:
 	int			GetCentreY( void );
 
 	void		SetTextureAsCurrentDirect( void* pTexture );
-	
+	void		EnableTextureFiltering( BOOL bFlag );
+	void		InitWindow( const char* pcString, void* pVoidWinClass, BOOL bAllowResize );
+	int			GetWindowWidth();
+	int			GetWindowHeight();
+	void		SetInitialWindowSize( int sizeX, int sizeY );
+	void		SetWindowSize( BOOL boFullScreen, int nWidth, int nHeight, BOOL boAdjust );
+
 	const InterfaceRECT&		GetDrawDimensions() const { return( m_DrawRect );} 
 	void		SetDrawRegion( int nX, int nY, int nWidth, int nHeight );
 	void		SetRenderSurfaceSize( int W, int H ) { mnRenderSurfaceWidth = W; mnRenderSurfaceHeight = H; }
@@ -83,6 +94,9 @@ protected:
 	InterfaceRECT		m_DrawRect;
 	int		mnRenderSurfaceWidth = 900;
 	int		mnRenderSurfaceHeight = 700;  
+	BOOL	mboTextureFilteringCurrentState = FALSE;
+	int		mnWindowWidth = 700;
+	int		mnWindowHeight = 600;
 
 };
 

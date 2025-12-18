@@ -406,16 +406,6 @@ extern INTERFACE_API int GetStringHeight( const char* pcString, int nFont );
 extern INTERFACE_API void InterfaceEnableTextureFiltering( BOOL bFlag );
 
 
-typedef struct
-{
-	long	left;
-    long    top;
-    long    right;
-    long	bottom;
-} WINDOW_DIMENSIONS;
-
-extern INTERFACE_API WINDOW_DIMENSIONS InterfaceGetWindowDimensions( void );
-
 // Old version of the texture overlay sys that used explicit references to direct3d textures
 #ifdef DIRECT3D_VERSION
 extern INTERFACE_API int	CreateTexturedOverlay( LPDIRECT3DTEXTURE9 );

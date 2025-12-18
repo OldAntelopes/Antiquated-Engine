@@ -10,6 +10,7 @@
 #include "../../Engine/DirectX/OculusDX.h"
 #include "../Common/InterfaceDevice.h"
 #include "../Common/InterfaceCommon.h"
+#include "../Common/InterfaceInstance.h"
 #include "../Common/InterfaceDevice.h"
 #include "Interface-Win32.h"
 
@@ -29,8 +30,6 @@ DWORD		mdwWindowStyle;
 
 int		mnWindowLeft = 50;
 int		mnWindowTop = 50;
-int		mnWindowWidth = 700;
-int		mnWindowHeight = 600;
 
 BOOL	mboMessageBoxActive = FALSE;
 BOOL					mboDontShowAnyMoreWarnings = FALSE;
@@ -113,11 +112,15 @@ void	InterfaceSetWindowHasChanged( BOOL bFlag )
 	mboHasWindowChanged = bFlag;
 }
 
+INTERFACE_API void InterfaceInitWindow( const char* pcString, void* pVoidWinClass, BOOL bAllowResize )
+{
+	InterfaceInstanceMain()->InitWindow( pcString, pVoidWinClass, bAllowResize );
+}
 
 //---------------------------------------------------------------------------
 // Function    : InterfaceInitWindow
 //---------------------------------------------------------------------------
-INTERFACE_API void InterfaceInitWindow( const char* pcString, void* pVoidWinClass, BOOL bAllowResize )
+void InterfaceInstance::InitWindow( const char* pcString, void* pVoidWinClass, BOOL bAllowResize )
 {
 HWND hWnd = 0;
 
@@ -183,29 +186,25 @@ INTERFACE_API void InterfaceSetWindow( HWND hwndMain )
  ***************************************************************************/
 INTERFACE_API int InterfaceGetWindowWidth( void )
 {
-	return( mnWindowWidth );
+	return( InterfaceInstanceMain()->GetWindowWidth() );
 }
+
 /***************************************************************************
  * Function    : InterfaceGetHeight
  ***************************************************************************/
 INTERFACE_API int InterfaceGetWindowHeight( void )
 {
-	return( mnWindowHeight );
+	return( InterfaceInstanceMain()->GetWindowHeight() );
 }
 
-/***************************************************************************
- * Function    : InterfaceGetWindowDimensions
- ***************************************************************************/
-INTERFACE_API WINDOW_DIMENSIONS InterfaceGetWindowDimensions( void )
+int		InterfaceInstance::GetWindowWidth()
 {
-WINDOW_DIMENSIONS	xWindowRect;
+	return( mnWindowWidth );
+}
 
-	xWindowRect.left = mnWindowLeft;
-	xWindowRect.top = mnWindowTop;
-	xWindowRect.right = mnWindowLeft + mnWindowWidth;
-	xWindowRect.bottom = mnWindowTop + mnWindowHeight;
-
-	return( xWindowRect );
+int		InterfaceInstance::GetWindowHeight()
+{
+	return( mnWindowHeight );
 }
 
 
@@ -221,8 +220,12 @@ INTERFACE_API void InterfaceSetWindowPosition( int nLeft, int nTop )
 	mnWindowTop = nTop;
 }
 
-
 void	InterfaceWin32SetInitialWindowSize( int sizeX, int sizeY )
+{
+	InterfaceInstanceMain()->SetInitialWindowSize( sizeX, sizeY );
+}
+
+void	InterfaceInstance::SetInitialWindowSize( int sizeX, int sizeY )
 {
 	mnWindowLeft = INITIAL_SCREEN_LEFT;
 	mnWindowTop = INITIAL_SCREEN_TOP;
@@ -258,11 +261,6 @@ void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
 	}
 }
 
-void		InterfaceInternalGetWindowSize( int* pnWidth, int* pnHeight )
-{
-	*pnWidth = mnWindowWidth;
-	*pnHeight = mnWindowHeight;
-}
 
 /***************************************************************************
  * Function    : InterfaceIsFullscreen
@@ -280,6 +278,11 @@ INTERFACE_API BOOL InterfaceIsFullscreen ( void )
  * Description : 
  ***************************************************************************/
 INTERFACE_API void InterfaceSetWindowSize( BOOL boFullScreen, int nWidth, int nHeight, BOOL boAdjust )
+{
+	InterfaceInstanceMain()->SetWindowSize( boFullScreen, nWidth, nHeight, boAdjust );
+}
+
+void	InterfaceInstance::SetWindowSize( BOOL boFullScreen, int nWidth, int nHeight, BOOL boAdjust )
 {
 	mboHasWindowChanged = TRUE;
 	mboFullScreen = boFullScreen;
@@ -304,7 +307,5 @@ INTERFACE_API void InterfaceSetWindowSize( BOOL boFullScreen, int nWidth, int nH
 	}
 
 	OnSetWindowSize( boFullScreen, mnWindowWidth, mnWindowHeight );
-
-
 }
 //------------------------------------------------------------------------

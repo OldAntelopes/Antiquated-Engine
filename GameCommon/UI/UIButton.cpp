@@ -155,9 +155,9 @@ float	fAlphaVal = m_fGlobalAlpha * fAlpha;
 		ulTextCol = GetColWithModifiedAlpha( 0x90F0E0C0, fAlphaVal );
 	}
 
-	nTextY = Y + ( ( H - nTextH ) / 2 );
+	nTextY = Y + ( ( H - (nTextH-1) ) / 2 );
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
-	pInterface->TextCentre( 1, X, X + W, nTextY, szText, ulTextCol, 1 );
+	pInterface->TextCentre( 1, X + (W/2) + 1, nTextY, ulTextCol, 1, szText );
 	InterfaceSetFontFlags( 0 );
 
 }
@@ -258,13 +258,12 @@ void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, cons
 
 BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam )
 {
-	UIHoverItem( nX, nY, nWidth, nHeight );
+BOOL	bIsHovered = UIHoverItem( nX, nY, nWidth, nHeight );
 
 	if ( UIIsPressed( nX, nY, nWidth, nHeight ) == TRUE )
 	{
 		UIPressIDSet( nButtonID, ulParam );
-		return( TRUE );
 	}
-	return( FALSE );
+	return( bIsHovered );
 }
 

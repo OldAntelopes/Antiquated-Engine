@@ -163,7 +163,7 @@ int			nFormat;
 		}
 		pxTempTexture->Release();
 
-		pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture, FALSE );
+		pInterfaceInstance->mpInterfaceInternals->CreateTexture( m_TextureSizeX, m_TextureSizeY, 1, 0,(eInterfaceTextureFormat)nFormat, &pxFinalTexture, FALSE );
 			
 		IDirect3DSurface9*		pSourceSurface = NULL;
 		IDirect3DSurface9*		pDestSurface = NULL;
@@ -246,11 +246,13 @@ int				nDrawHowMany;
 
 		if ( InterfaceFontIsFilteringOn( mnCurrentRenderFont ) == TRUE )
 		{
-			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
+			mpInterfaceInstance->EnableTextureFiltering( TRUE );
+//			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
 		}
 		else
 		{
-			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
+			mpInterfaceInstance->EnableTextureFiltering( FALSE );
+//			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
 		}
 
 		mpInterfaceInstance->mpInterfaceInternals->SetStreamSource( 0, mpxCurrentFontVertexBuffer, 0, sizeof(FLATVERTEX) );
@@ -295,7 +297,8 @@ void FontSystem::InitialiseFontBuffersDX( void )
 
 void FontSystem::StringRenderBegin( void )
 {
-	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
+	mpInterfaceInstance->EnableTextureFiltering( TRUE );
+//	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
 	mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
 	mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
 	mpInterfaceD3DDevice->SetRenderState( D3DRS_FOGENABLE, 0 );//nFlag );
@@ -413,7 +416,8 @@ bool	bHasStringsInThisLayer = false;
 	if ( bHasBegunStringRender )
 	{
 		mpxCurrentFontVertexBuffer->Unlock();
-		InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
+		mpInterfaceInstance->EnableTextureFiltering( FALSE );
+//		InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 0 );
 	}
 
 }

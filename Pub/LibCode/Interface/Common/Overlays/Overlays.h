@@ -27,14 +27,14 @@ typedef struct
 #define		LINE_VERTEX_BUFFER_SIZE			65536
 #define		MAX_NUM_OVERLAY_LAYERS			4
 
-typedef struct
+struct OVERLAY_VERTEX_BUFFER_CONTAINER
 {
-	IGRAPHICSVERTEXBUFFER*		mpxVertexBuffer;
-	int							mnNextOverlayVertex;
-	BOOL						mboBufferIsLocked;
-	FLATVERTEX*					mpOverlayVertices;
+	IGRAPHICSVERTEXBUFFER*		mpxVertexBuffer = NULL;
+	int							mnNextOverlayVertex = 0;
+	BOOL						mboBufferIsLocked = FALSE;
+	FLATVERTEX*					mpOverlayVertices = NULL;
 
-} OVERLAY_VERTEX_BUFFER_CONTAINER;
+} ;
 
 
 class Overlays : public InterfaceModule

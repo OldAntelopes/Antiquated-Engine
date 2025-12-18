@@ -39,7 +39,7 @@ public:
 	}
 	~CFontDef()
 	{
-		FreeTexture();
+		FreeTexture( NULL );
 	}
 	void 	Initialise( const char* szDefName );
 
@@ -57,10 +57,11 @@ public:
 	int		GetTextureSizeX( void ) { return m_TextureSizeX; }
 	int		GetTextureSizeY( void ) { return m_TextureSizeY; }
 
-	void	FreeTexture( void )
+	void	FreeTexture( InterfaceInstance* pInterface )
 	{
 		if ( mhTexture != NOTFOUND )
 		{
+			// todo - FIX THIS.. NEEDS TO know the interface instance
 			InterfaceReleaseTexture( mhTexture );
 			mhTexture = NOTFOUND;
 		}

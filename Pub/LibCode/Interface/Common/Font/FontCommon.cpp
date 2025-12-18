@@ -831,7 +831,7 @@ int		nPreBackstepPos;
 
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
-	InterfaceInstanceMain()->Text( nLayer, nX, nY, szString, ulCol, nFont );
+	InterfaceInstanceMain()->Text( nLayer, nX, nY, ulCol, nFont, szString );
 }
 
 void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
@@ -989,7 +989,7 @@ char*	pcTextBuffer;
  ***************************************************************************/
 void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
-	InterfaceInstanceMain()->TextRight( nLayer, nX, nY, szString, ulCol, nFont );
+	InterfaceInstanceMain()->TextRight( nLayer, nX, nY, ulCol, nFont, szString );
 }
 
 void FontSystem::TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
@@ -1288,15 +1288,17 @@ float		fAdvance = 0.0f;
 	}
 	nFontScreenHeight = (int)( fFontVHeight * fTextureHeightScale);
 
-	xTexRect.x1 = GetFontU( cChar, nFont );
+	xTexRect.x1 = GetFontU( cChar, nFont ) + 0.0005f;
 	xTexRect.x2 = xTexRect.x1 + fCharUWidth;
 	if ( xTexRect.x2 < xTexRect.x1 )
 	{
 		xTexRect.x2 = 1.0f;
 	}
 
-	xTexRect.y1 = GetFontV( cChar, nFont );
+	xTexRect.y1 = GetFontV( cChar, nFont ) + 0.0005f;
 	xTexRect.y2 = xTexRect.y1 + fFontVHeight;
+
+	fScaleOverride = 0.0f;
 
 	if ( fScaleOverride > 0.0f )
 	{
@@ -1535,7 +1537,7 @@ int FontSystem::GetStringWidth( const char* pcString, int nFont )
 
 int GetStringHeight( const char* pcString, int nFont )
 {
-	return( InterfaceInstanceMain()->mpFontSystem->GetStringWidth( pcString, nFont ) );
+	return( InterfaceInstanceMain()->mpFontSystem->GetStringHeight( pcString, nFont ) );
 }
 
 

@@ -20,12 +20,14 @@
 
 // -------- Forward declarations of gameside C functions
 
+// TODO - Have these passed in on init rather than assumed like this..
 extern void		MainInitialise( void );
 extern void		MainUpdate( void );
 extern void		MainShutdown( void );
 
 extern void		MainOnPress( int X, int Y );
 extern void		MainOnRelease( int X, int Y );
+extern void		MainOnReleaseRightButton( int X, int Y );
 
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -535,6 +537,15 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		mwMouseX = LOWORD(lParam);
 		mwMouseY = HIWORD(lParam);
 		MainOnPress( mwMouseX, mwMouseY );
+		break;
+	case WM_RBUTTONUP:
+		{
+		uint32	ulExtraInfo = GetMessageExtraInfo();
+			mwMouseX = LOWORD(lParam);
+			mwMouseY = HIWORD(lParam);
+
+			MainOnReleaseRightButton( mwMouseX, mwMouseY );
+		}
 		break;
 	case WM_LBUTTONUP:
 		{
