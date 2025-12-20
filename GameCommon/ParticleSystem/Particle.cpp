@@ -60,6 +60,10 @@ void	Particle::Update( float fDelta )
 	
 		VectScale( &xVelThisFrame, &mxVel, fDelta );
 		VectAdd( &mxPos, &mxPos, &xVelThisFrame );
+
+		mfRot += mfRotSpeed * fDelta;
+		if ( mfRot > A180 ) mfRot -= A360;
+		if ( mfRot < -A180 ) mfRot += A360;
 	}
 	else
 	{
@@ -95,12 +99,12 @@ void	Particle::DefaultRender( void )
 			if ( fAlpha > 0.0f )
 			{
 				ulCol = GetColWithModifiedAlpha( mulCol, fAlpha );
-				Sprites3DAddSprite( hSpriteGroup, GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0 );
+				Sprites3DAddSpriteRot( hSpriteGroup, GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot() );
 			}
 		}
 		else
 		{
-			Sprites3DAddSprite( hSpriteGroup, GetPos(), mfSpriteScale, mulCol, mnSpriteFrameNum, 0 );
+			Sprites3DAddSpriteRot( hSpriteGroup, GetPos(), mfSpriteScale, mulCol, mnSpriteFrameNum, 0, GetRot() );
 		}
 	}
 }

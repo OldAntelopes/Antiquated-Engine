@@ -14,7 +14,8 @@ class UIXTextBox;
 class UIXText;
 class UIXCollapsableSection;
 class UIXDropdown;
-
+class UIXShape;
+class UIXCustomRender;
 
 enum 
 {
@@ -53,6 +54,8 @@ struct UIXRECT
 	int w;
 	int h;
 };
+
+typedef	UIXRECT(*fnCustomRenderCallback)( InterfaceInstance* pInterface, UIXRECT rect, uint32 ulUserParam1, uint32 ulUserParam2 );
 
 class UIXObject
 {
@@ -103,8 +106,11 @@ public:
 	static UIXListBox*					AddListBox( UIXObject* pxContainer, UIXRECT xRect );
 	static UIXSlider*					AddSlider( UIXObject* pxContainer, UIXRECT xRect, UIX_SLIDER_MODE mode = VALUE, uint32 ulUserParam = 0, float fMin = 0.0f, float fMax = 1.0f, float fInitial = 0.0f, float fMinStep = 0.1f  );
 	static UIXDropdown*					AddDropdown( UIXObject* pxContainer, UIXRECT xRect );
-	static UIXText*						AddText( UIXObject* pxContainer, UIXRECT xRect, const char* szTitle, uint32 ulCol = 0xc0c0c0c0, int font = 0, UIX_TEXT_FLAGS fontFlags = NONE );
+	static UIXText*						AddText( UIXObject* pxContainer, UIXRECT xRect, uint32 ulCol = 0xc0c0c0c0, int font = 0, UIX_TEXT_FLAGS fontFlags = NONE,  const char* szTitle = NULL, ... );
+	static UIXShape*					AddShape( UIXObject* pxContainer, UIXRECT xRect, int mode = 0, BOOL bBlocks = FALSE, uint32 ulCol1 = 0xC0C0C0C0, uint32 ulCol2 = 0xC0C0C0C0 );
+	static UIXCustomRender*				AddCustomRender( UIXObject* pxContainer, UIXRECT xRect, fnCustomRenderCallback renderFunc, uint32 ulUserParam1 = 0, uint32 ulUserParam2 = 0  );
 
+	static void							DeleteObject( UIXObject* pObject );
 protected:
 	static std::map<uint32, UIXObject*>		msComponentIDMap;
 private:

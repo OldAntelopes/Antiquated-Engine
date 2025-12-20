@@ -28,7 +28,9 @@ UIXRECT		localRect = GetDisplayRect();
 	}
 	// TODO - Use mFontFlags if set
 	// TODO - Make this TextLimitWidth
-	displayRect.h = 0;//pInterface->GetStringHeight( mText.c_str(), mFont );
+
+	displayRect.h = 0;//
+	displayRect.y = localRect.y + pInterface->GetStringHeight( mText.c_str(), mFont );		// displayRect.y returns the lowest point we drew to
 	return displayRect;
 }
 

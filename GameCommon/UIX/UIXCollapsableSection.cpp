@@ -26,11 +26,13 @@ int	W = displayRect.w;
 int	H = displayRect.h;
 uint32		ulCol = 0x90303030;
 int		headerH = 20;
+int		nHeaderOffsetX = 0;
 
 	switch( mMode )
 	{
 	case 1:
 		ulCol = 0x90303040;
+		nHeaderOffsetX = 20;
 		break;
 	default:
 		break;
@@ -40,17 +42,19 @@ int		headerH = 20;
 				
 	UIButtonRegion( UIX_COLLAPSABLE_SECTION_HEADER, X, Y, W, H, GetID() );
 
-	pInterface->Text( 1, X + 20, Y + 4, 0xd0d0d0d0, 3, mTitle.c_str() );
+	pInterface->Text( 1, X + 20 + nHeaderOffsetX, Y + 4, 0xd0d0d0d0, 3, mTitle.c_str() );
 
 	if ( !mbIsCollapsed )
 	{
-		pInterface->Triangle( 1, X + 4, Y + 8, X + 12, Y + 8, X + 8, Y + 16, 0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0 );	
+		pInterface->Triangle( 1, X + 4 + nHeaderOffsetX, Y + 8, X + 12 + nHeaderOffsetX, Y + 8, X + 8 + nHeaderOffsetX, Y + 16, 0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0 );	
 	}
 	else
 	{
-		pInterface->Triangle( 1, X + 4, Y + 6, X + 10, Y + 10, X + 4, Y + 14, 0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0 );	
+		pInterface->Triangle( 1, X + 4 + nHeaderOffsetX, Y + 6, X + 10 + nHeaderOffsetX, Y + 10, X + 4 + nHeaderOffsetX, Y + 14, 0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0 );	
 	}
 
 	displayRect.h = headerH + 1;
+	displayRect.y = headerH + 1;		// displayRect.y returns the lowest point we drew to
+
 	return displayRect;
 }

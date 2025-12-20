@@ -97,7 +97,9 @@ UIXRECT		localRect = GetDisplayRect();
 		break;
 	}
 	
-	displayRect.h = 0;//localRect.h;
+	displayRect.h = 0;
+	displayRect.y = localRect.y + localRect.h + 1;		// displayRect.y returns the lowest point we drew to
+
 	return( displayRect );
 }
 

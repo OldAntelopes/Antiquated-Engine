@@ -24,15 +24,32 @@ int		nDrawHowMany;
 
 	if ( nDrawHowMany > 0 )
 	{
-		EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
-		EngineEnableLighting( FALSE );
-		EngineSetTexture( 0, NOTFOUND );
-		EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
-		EngineEnableFog( FALSE );
-		EngineEnableZTest( FALSE );
-		EngineEnableZWrite( FALSE );
-		EngineResetColourMode();
-		EngineEnableAlphaTest( 0 );
+		mpInterfaceD3DDevice->SetTexture( 0, NULL );
+		mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_FOGENABLE, 0 );//nFlag );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+		mpInterfaceD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );	
+
+		//  Duplicating the state changes here so the engine knows whats what
+		//		((TODO) Should probably work out a cleaner way of handling this for multiple devices)
+		if ( mpInterfaceD3DDevice == EngineGetDXDevice() )
+		{			
+			EngineSetVertexFormat( VERTEX_FORMAT_FLATVERTEX );
+			EngineEnableLighting( FALSE );
+			EngineEnableFog( FALSE );
+			EngineEnableCulling( 0 );
+			EngineEnableZTest( FALSE );
+			EngineEnableZWrite( FALSE );
+			EngineSetColourMode( 0, COLOUR_MODE_DIFFUSE_ONLY );
+		}
+
+		// TODO.. Set properly
 		if ( mboRenderLineAlpha == TRUE )
 		{
 			EngineEnableBlend( TRUE );
@@ -42,7 +59,7 @@ int		nDrawHowMany;
 		{
 			EngineEnableBlend( FALSE );
 		}
-		InterfaceInternalDXSetStreamSource( 0, mpxOverlaysLineVertexBuffer, 0, sizeof(FLATVERTEX) );
+		mpInterfaceInstance->mpInterfaceInternals->SetStreamSource( 0, mpxOverlaysLineVertexBuffer, 0, sizeof(FLATVERTEX) );
 		mpInterfaceD3DDevice->DrawPrimitive( D3DPT_LINELIST, 0, nDrawHowMany );
 		
 		mnNextLineVertex = 0;

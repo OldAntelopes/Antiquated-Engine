@@ -27,10 +27,12 @@ public:
 	const VECT*	GetPos( void ) { return( &mxPos ); }
 	const VECT*	GetVel( void ) { return( &mxVel ); }
 	float		GetRot( void ) { return( mfRot ); }
+	float		GetRotSpeed( void ) { return( mfRotSpeed ); }
 
 	void	SetPos( const VECT* pxPos ) { mxPos = *pxPos; }
 	void	SetVel( const VECT* pxVel ) { mxVel = *pxVel; }
 	void	SetRot( float fRot ) { mfRot = fRot; }
+	void	SetRotSpeed( float fRotSpeed ) { mfRotSpeed = fRotSpeed; }
 	void	SetCol( uint32 ulCol ) { mulCol = ulCol; }
 
 	void	SetSpriteScale( float fScale ) { mfSpriteScale = fScale; }
@@ -62,7 +64,8 @@ private:
 	float		mfLongevity;
 	float		mfTimeAlive;
 	float		mfSpriteScale;
-	float		mfRot;
+	float		mfRot = 0.0f;
+	float		mfRotSpeed = 0.0f;
 	int			mnSpriteFrameNum;
 	uint32		mulParamChannel;
 

@@ -42,6 +42,7 @@ public:
 	void	Rect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol);
 	void	ShadedRect( int nLayer, int nX, int nY, int nWidth, int nHeight, uint32 ulCol1, uint32 ulCol2,uint32 ulCol3, uint32 ulCol4 );
 	void	Triangle( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 );
+	void	Line( int nLayer, int nX, int nY, int x2, int y2, uint32 ulCol);
 
 	//------------------------------------------------------------------
 	void		InitD3D( HWND hWindow, BOOL bMinBackBufferSize );

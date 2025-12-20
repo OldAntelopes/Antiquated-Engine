@@ -182,29 +182,21 @@ void		UIButtonsShutdown( void )
 	msButtonStyle.Free();
 }
 
-void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha )
+void		UIButtonDrawBasic( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha )
 {
-InterfaceInstance*		pInterfaceInstance = UIInterfaceInstance();
-#ifdef BASIC_RENDER
-int		nTextSize;
-int		nTextOffsetY;
-#endif
+InterfaceInstance* pInterface = UIInterfaceInstance();
 uint32	ulButtonMainCol = 0xB0707070;
 uint32	ulTextCol = 0xD0F0F0F0;
-BOOL	bEnabled = TRUE;
-
-#ifdef BASIC_RENDER
-	nTextSize = 14;
-	nTextOffsetY = (nHeight - nTextSize) / 2;
+int		nTextSize = 15;
+int		nTextOffsetY = 2;
 
 	switch( nMode )
 	{
-	case 1:
+	case 3:
 		ulButtonMainCol = 0x60606060;
-		ulTextCol = 0x60F0F0F0;
-		bEnabled = FALSE;
+		ulTextCol = 0xE0F0E080;
 		break;
-	case 2:
+	case 4:
 		ulButtonMainCol = 0xB0901008;
 		ulTextCol = 0xE0F0E080;
 		break;
@@ -214,30 +206,34 @@ BOOL	bEnabled = TRUE;
 	}
 
 	InterfaceRect( 0, nX, nY, nWidth, nHeight, ulButtonMainCol );
-
-	if ( bEnabled )
-	{
-		InterfaceRect( 0, nX, nY, nWidth, 1, 0x60D0D0D0 );
-		InterfaceRect( 0, nX, nY, 1, nHeight, 0x60D0D0D0 );
-		InterfaceRect( 0, nX, nY + nHeight, nWidth, 1, 0x60202020 );
-		InterfaceRect( 0, nX + nWidth, nY, 1, nHeight, 0x60202020 );
-	}
-
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
-	
+		
 	InterfaceTextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, szText, ulTextCol, 0 ); 
 	InterfaceSetFontFlags( 0 );
-#endif
+}
+
+
+void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, int nMode, uint32 ulParam, float fAlpha )
+{
+InterfaceInstance*		pInterfaceInstance = UIInterfaceInstance();
+BOOL	bEnabled = TRUE;
 
 	if ( nMode != 1 )
 	{
 		if ( UIHoverItem( nX, nY, nWidth, nHeight ) == TRUE )
 		{
-			nMode = 2;
+			nMode += 2;
 		}
 	}
 
-	msButtonStyle.Render( nX, nY, nWidth, nHeight, szText, nMode, fAlpha );
+	if ( nMode > 2 )
+	{
+		UIButtonDrawBasic( nButtonID, nX, nY, nWidth, nHeight, szText, nMode, ulParam, fAlpha );	
+	}
+	else
+	{
+		msButtonStyle.Render( nX, nY, nWidth, nHeight, szText, nMode, fAlpha );
+	}
 
 	if ( nMode != 1 )
 	{

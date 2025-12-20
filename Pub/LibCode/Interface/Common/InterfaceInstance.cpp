@@ -121,6 +121,12 @@ void	InterfaceInstance::Rect( int nLayer, int nX, int nY, int nWidth, int nHeigh
 	mpOverlays->Rect( nLayer, nX, nY, nWidth, nHeight, ulCol );
 }
 
+void	InterfaceInstance::Line( int nLayer, int X1, int Y1, int X2, int Y2, uint32 ulCol)
+{
+	mpOverlays->Line( nLayer, X1, Y1, X2, Y2, ulCol, ulCol );
+}
+
+
 void	InterfaceInstance::Triangle( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
 {
 	mpOverlays->Triangle( nLayer, nX1, nY1, nX2, nY2,nX3, nY3, ulCol1, ulCol2, ulCol3 );
