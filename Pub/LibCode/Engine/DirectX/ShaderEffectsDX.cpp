@@ -106,24 +106,44 @@ void		EngineShaderEffectReload(int handle, const char* szEffectFilename )
 
 void		EngineShaderEffectApply( int handle, fnDrawFunc drawFunc, void* pParamObject )
 {
-	uint		cPasses = 0;
+uint		cPasses = 0;
+ID3DXEffect* pEffect = mpEffectsMap[handle];
 
-	mpEffectsMap[handle]->Begin( &cPasses, 0 );
-	for (uint i = 0; i < cPasses; i++)
+	if ( pEffect )
 	{
-		mpEffectsMap[handle]->BeginPass(i);
+		pEffect->Begin( &cPasses, 0 );
+		for (uint i = 0; i < cPasses; i++)
+		{
+			pEffect->BeginPass(i);
 
-		// Draw stuff here
-		drawFunc(i, pParamObject);
+			// Draw stuff here
+			drawFunc(i, pParamObject);
 
-		mpEffectsMap[handle]->EndPass();
+			pEffect->EndPass();
+		}
+		pEffect->End();
 	}
-	mpEffectsMap[handle]->End();
 }
 
 void		EngineShaderEffectClear( int handle )
 {
 
+}
+
+void EngineShaderEffectSetConstantFloatArray(int handle, const char* szConstantName, float* pfVals, int nNumFloats )
+{
+	ID3DXEffect* pEffect = mpEffectsMap[handle];
+    if (!pEffect) return;
+
+    D3DXHANDLE hParam = pEffect->GetParameterByName(NULL, szConstantName);
+    if (!hParam) return;
+
+    D3DXPARAMETER_DESC paramDesc;
+    if (FAILED(pEffect->GetParameterDesc(hParam, &paramDesc))) return;
+
+//    if (paramDesc.Type != D3DXPT_FLOAT || paramDesc.Class != D3DXPC_SCALAR) return;
+
+	pEffect->SetFloatArray( hParam, pfVals, nNumFloats );
 }
 
 void EngineShaderEffectSetConstantFloat(int handle, const char* szConstantName, float fVal)
@@ -139,9 +159,6 @@ void EngineShaderEffectSetConstantFloat(int handle, const char* szConstantName, 
 
     // Only set if it's a float and scalar
     if (paramDesc.Type != D3DXPT_FLOAT || paramDesc.Class != D3DXPC_SCALAR) return;
-
-    // Get the register index for the constant
-    UINT regIndex = paramDesc.Bytes / (sizeof(float) * 4); // Each register is 4 floats
 
 	pEffect->SetFloat( hParam, fVal );
 }

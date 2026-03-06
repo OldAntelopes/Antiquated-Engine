@@ -169,6 +169,8 @@ extern void		EngineShaderEffectApply( int handle, fnDrawFunc drawFunc, void* pPa
 extern void		EngineShaderEffectClear( int handle );
 extern void		EngineShaderEffectReload(int handle, const char* szEffectFilename );
 extern void		EngineShaderEffectSetConstantFloat(int handle, const char* szContanstName, float fVal);
+extern void		EngineShaderEffectSetConstantInt(int handle, const char* szContanstName, int val );
+extern void		EngineShaderEffectSetConstantFloatArray(int handle, const char* szContanstName, float* pfVals, int nNumFloats);
 // TOOD - matrices, vectors, textures etc..
 extern void		EngineShaderEffectFree( int handle );
 

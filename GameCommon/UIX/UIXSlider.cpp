@@ -126,7 +126,6 @@ void	UIXSlider::Initialise( UIX_SLIDER_MODE mode, uint32 ulUserParam, float fMin
 
 	switch( mMode )
 	{
-	case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
 	case SLIDERMODE_VALUERANGE:
 		if ( mbShowValueTextBoxes )
 		{
@@ -142,13 +141,24 @@ void	UIXSlider::Initialise( UIX_SLIDER_MODE mode, uint32 ulUserParam, float fMin
 			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
 		} 
 		break;
+	case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
 	case SLIDERMODE_VALUE:
 		if ( mbShowValueTextBoxes )
 		{
-			UIXRECT		textboxRect = UIXRECT(0, 0, 60, GetLocalPositionRect().h - 2);
-
+		int		nTextSectionW = 180;
+		int		nTextBoxW = (nTextSectionW / 3) - 18;
+		UIXRECT		textboxRect = UIXRECT(0, 0, nTextBoxW, GetLocalPositionRect().h - 2);
+			
 			sprintf(acVal, "%.2f", mfCurrentVal);
 			mpValueTextBox = UIX::AddTextBox(this, textboxRect, 0, acVal);
+			textboxRect.x += nTextBoxW + 18;
+
+			sprintf( acVal, "%.3f", mfMinVal );
+			mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+
+			textboxRect.x += nTextBoxW + 14;
+			sprintf( acVal, "%.3f", mfMaxVal );
+			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
 		}
 		break;
 	case SLIDERMODE_PLUSMINUS_VALUE:
@@ -238,7 +248,7 @@ uint32		ulCol = 0xf0505070;
 	{
 	case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
 		{
-		int		nTextAreaW = 120;
+		int		nTextAreaW = 180;
 		int		nBarMaxW = renderRect.w - nTextAreaW;
 		int		nBarW = 0;
 		
@@ -276,9 +286,24 @@ uint32		ulCol = 0xf0505070;
 				mpRangeMaxTextBox->OnRender( pInterface, drawRect );
 			}
 
-			int		nMinBarPos = (int)(((mfMinVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
-			int		nMaxBarPos = (int)(((mfMaxVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
-			int		nCurrentBarPos = (int)(((mfCurrentVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
+			if ( mpValueTextBox )
+			{
+				sprintf(acVal, "%.3f", mfCurrentVal );
+				mpValueTextBox->SetText(acVal);
+				mpValueTextBox->OnRender(pInterface, drawRect);
+			}
+
+			float		fFullRange = mfInitialMaxVal - mfInitialMinVal;
+			int		nMinBarPos = 0;
+			int		nMaxBarPos = 0;
+			int		nCurrentBarPos = 0;
+
+			if ( fFullRange > 0.0f )
+			{
+				nMinBarPos = (int)( ((mfMinVal-mfInitialMinVal) * nBarMaxW) / fFullRange );
+				nMaxBarPos = (int)( ((mfMaxVal-mfInitialMinVal) * nBarMaxW) / fFullRange );
+				nCurrentBarPos = (int)( ((mfCurrentVal-mfInitialMinVal) * nBarMaxW) / fFullRange );
+			}
 
 			mRenderRect.x += nTextAreaW;
 			mRenderRect.w -= nTextAreaW;
@@ -304,15 +329,19 @@ uint32		ulCol = 0xf0505070;
 			pInterface->Triangle( 1, mRenderRect.x + nMaxBarPos, mRenderRect.y + 6, mRenderRect.x + nMaxBarPos + 6, mRenderRect.y + 6, mRenderRect.x + nMaxBarPos, mRenderRect.y, ulCol, ulCol, ulCol );
 
 			// SLIDERMODE_VALUE_WITH_CONSTRAINTS  Current value indicator
+			// 
 			// Bar
-			pInterface->Rect( 0, mRenderRect.x, mRenderRect.y, nBarW, mRenderRect.h, 0xf0202020 );
-			// Value/Grab bar
-			pInterface->Rect( 0, mRenderRect.x + nBarW - 2, mRenderRect.y, 4, mRenderRect.h, 0xf0303040 );
-
-			if ( UIX::IsMouseHover( mRenderRect.x + nBarW - 3, mRenderRect.y, 6, mRenderRect.h ) == TRUE )
+			pInterface->Rect( 0, mRenderRect.x + nMinBarPos, mRenderRect.y, nCurrentBarPos - nMinBarPos, mRenderRect.h, 0xf0202020 );
+			
+			ulCol = 0xf0303040;
+			if ( UIX::IsMouseHover( mRenderRect.x + nCurrentBarPos - 3, mRenderRect.y, 7, mRenderRect.h ) == TRUE )
 			{
 				UIHoverIDSet( UIX_SLIDER_BAR, 0, GetID() );
+				ulCol = 0xf0a08050;
 			}
+
+			// Value/Grab bar
+			pInterface->Rect( 0, mRenderRect.x + nCurrentBarPos - 2, mRenderRect.y, 4, mRenderRect.h, ulCol );
 
 			// Notches
 			pInterface->Rect( 1, mRenderRect.x, mRenderRect.y + mRenderRect.h - 3, 1, 3, 0xa0909090 );
@@ -604,6 +633,10 @@ void		UIXSlider::OnUpdate( float fDelta )
 			}		
 			break;
 		case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
+			if ( mfCurrentVal < mfMinVal ) mfCurrentVal = mfMinVal;
+			if ( mfCurrentVal > mfMaxVal ) mfCurrentVal = mfMaxVal;
+			mfCurrentVal = mValueUpdateFunc( GetID(), mfCurrentVal, mfMinVal, mfMaxVal, mulUserParam, mbIsHeld );
+			break;
 		case SLIDERMODE_VALUERANGE:
 			mfCurrentVal = mValueUpdateFunc( GetID(), mfCurrentVal, mfMinVal, mfMaxVal, mulUserParam, mbIsHeld );
 			break;
