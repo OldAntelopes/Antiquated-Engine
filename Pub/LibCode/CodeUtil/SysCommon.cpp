@@ -604,7 +604,7 @@ va_list         marker;
 #else
 	if (mpfnDebugPrintHandler)
 	{
-	char            acString[512]; 
+	char            acString[2048]; 
 	va_list         marker; 
 
      va_start( marker, format );    
