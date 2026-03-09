@@ -6,6 +6,7 @@
 
 #include "../Platform/Platform.h"
 #include "UI.h"
+#include "UIInternal.h"
 #include "UITextBox.h"
 
 uint32			msulTextBoxRenderFrame = 0;
@@ -58,11 +59,7 @@ private:
 	UITextBox*		mpNext;
 };
 
-int				msnTextBoxNextHandle = 401;
-UITextBox*		mspTextBoxList = NULL;
 
-UITextBox*		mspTextBoxHover = NULL;
-UITextBox*		mspFocusedTextBox = NULL;
 
 
 BOOL		UITextBox::IsOnScreen( void )
@@ -181,14 +178,25 @@ int		nTextOffsetY = 0;
 }
 
 
-void			UITextBoxNewFrame( void )
+UITextBoxImpl::UITextBoxImpl( UIInstance* pUIInstance )
+{
+
+}
+
+void			UITextBoxImpl::NewFrame( void )
 {
 	mspTextBoxHover = NULL;
 	msulTextBoxRenderFrame++;
 
 }
 
-int				UITextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen )
+void			UITextBoxNewFrame( void )
+{
+	mspTempSingleton->mpUITextBoxImpl->NewFrame();
+}
+
+
+int				UITextBoxImpl::Create( int nMode, const char* szInitialText, int nMaxTextLen )
 {
 UITextBox*		pNewTextBox = new UITextBox;
 int				nNewHandle =  msnTextBoxNextHandle++;
@@ -217,7 +225,12 @@ int				nNewHandle =  msnTextBoxNextHandle++;
 	return( nNewHandle );
 }
 
-void			UITextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
+int				UITextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen )
+{
+	return( mspTempSingleton->mpUITextBoxImpl->Create( nMode, szInitialText, nMaxTextLen ));
+}
+
+void			UITextBoxImpl::Render( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
 {
 UITextBox*		pTextBox = mspTextBoxList;
 int				nHoldX, nHoldY;
@@ -249,7 +262,14 @@ int				nHoldX, nHoldY;
 	}
 
 }
-void			UITextBoxEndEdit( int nHandle )
+
+void			UITextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
+{	
+	mspTempSingleton->mpUITextBoxImpl->Render( nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
+}
+
+
+void			UITextBoxImpl::EndEdit( int nHandle )
 {
 	if ( ( mspFocusedTextBox ) &&
 		 ( mspFocusedTextBox->GetHandle() == nHandle ) )
@@ -261,8 +281,13 @@ void			UITextBoxEndEdit( int nHandle )
 	}
 
 }
+void			UITextBoxEndEdit( int nHandle )
+{
+	mspTempSingleton->mpUITextBoxImpl->EndEdit( nHandle );
+}
 
-const char*		UITextBoxGetText( int nHandle )
+
+const char*		UITextBoxImpl::GetText( int nHandle )
 {
 UITextBox*		pTextBox = mspTextBoxList;
 
@@ -277,7 +302,13 @@ UITextBox*		pTextBox = mspTextBoxList;
 	return( "" );
 }
 
-void			UITextBoxDestroy( int nHandle )
+const char*		UITextBoxGetText( int nHandle )
+{
+	return( mspTempSingleton->mpUITextBoxImpl->GetText( nHandle ));
+}
+
+
+void			UITextBoxImpl::Destroy( int nHandle )
 {
 UITextBox*		pTextBox = mspTextBoxList;
 UITextBox*		pLast = NULL;
@@ -303,7 +334,12 @@ UITextBox*		pNext;
 	}
 }
 
-int		UITextBoxKeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj )
+void			UITextBoxDestroy( int nHandle )
+{
+	mspTempSingleton->mpUITextBoxImpl->Destroy( nHandle );
+}
+
+int		UITextBoxImpl::KeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj )
 {
 	switch( nResponseCode )
 	{
@@ -358,7 +394,12 @@ int		UITextBoxKeyboardMessageHandler( int nResponseCode, const char* szInputText
 	return( 0 );
 }
 
-void		UITextBoxEndCurrentEdit( void )
+int		UITextBoxKeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj )
+{
+	return( mspTempSingleton->mpUITextBoxImpl->KeyboardMessageHandler( nResponseCode, szInputText, pUserObj ) );
+}
+
+void		UITextBoxImpl::EndCurrentEdit( void )
 {
 	if ( mspFocusedTextBox )
 	{
@@ -366,7 +407,12 @@ void		UITextBoxEndCurrentEdit( void )
 	}
 }
 
-BOOL		UITextBoxOnRelease( int X, int Y )
+void		UITextBoxEndCurrentEdit( void )
+{
+	mspTempSingleton->mpUITextBoxImpl->EndCurrentEdit();
+}
+
+BOOL		UITextBoxImpl::OnRelease( int X, int Y )
 {
 	if ( mspTextBoxHover )
 	{
@@ -389,8 +435,13 @@ BOOL		UITextBoxOnRelease( int X, int Y )
 
 }
 
+BOOL		UITextBoxOnRelease( int X, int Y )
+{
+	return( mspTempSingleton->mpUITextBoxImpl->OnRelease( X, Y ) );
+}
 
-void	UITextboxShutdown( void )
+
+void	UITextBoxImpl::Shutdown( void )
 {
 UITextBox*		pTextBox = mspTextBoxList;
 UITextBox*		pNext;
@@ -402,4 +453,9 @@ UITextBox*		pNext;
 		pTextBox = pNext;
 	}
 	mspTextBoxList = NULL;
+}
+
+void	UITextboxShutdown( void )
+{
+	mspTempSingleton->mpUITextBoxImpl->Shutdown();
 }

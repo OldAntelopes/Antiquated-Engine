@@ -18,39 +18,26 @@
 
 InterfaceInstance*	mpInterfaceInstance = NULL;
 
-short		mwUIPressX = 0;
-short		mwUIPressY = 0;
-short		mwUIRightPressX = 0;
-short		mwUIRightPressY = 0;
-int			mnUISetCursorX = NOTFOUND;
-int			mnUISetCursorY = NOTFOUND;
+UIInstance		msTempSingleton;
+UIInstance*		mspTempSingleton = &msTempSingleton;
 
-int			mnUIButtonIDPressed = NOTFOUND;
-uint32		mulUIButtonIDPressedParam = 0;
-uint32		mulUIButtonIDPressedIDParam = 0;
-int			mnUIRightButtonIDPressed = NOTFOUND;
-uint32		mulUIRightButtonIDPressedParam = 0;
-uint32		mulUIRightButtonIDPressedIDParam = 0;
-
-int			mnUIButtonIDHovered = NOTFOUND;
-uint32		mulUIButtonIDHoveredParam = 0;
-uint32		mulUIButtonIDHoveredID = 0;
-
-int			mnUIButtonIDHeld = NOTFOUND;
-uint32		mulUIButtonIDHeldParam = 0;
-uint32		mulUIButtonIDHeldID = 0;
-
-std::map<int, UIButtonHandler>	msButtonHandlerList;
-std::map<int, UIHoldHandler>	msHoldHandlerList;
-
-void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler )
+void		UIInstance::RegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler )
 {
 	msHoldHandlerList[nButtonID] = fnHoldHandler;
 }
 
-void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler )
+void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler )
+{
+	msTempSingleton.RegisterHoldHandler( nButtonID, fnHoldHandler );
+}
+
+void		UIInstance::RegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler )
 {
 	msButtonHandlerList[nButtonID] = fnButtonHandler;
+}
+void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler )
+{
+	msTempSingleton.RegisterButtonPressHandler( nButtonID, fnButtonHandler );
 }
 
 
@@ -58,19 +45,18 @@ void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandl
 
 void		UIOnInterfaceDraw( void )
 {
-	UITextBoxNewFrame();
-	UIButtonsNewFrame();
-	UIDropdownNewFrame();
+//	UITextBoxNewFrame();
+//	UIButtonsNewFrame();
+//	UIDropdownNewFrame();
 }
 
-
-void		UIUpdate( float fDelta )
+void		UIInstance::Update( float fDelta )
 {
 	mnUIButtonIDPressed = NOTFOUND;
 	mnUIRightButtonIDPressed = NOTFOUND;
 	mnUIButtonIDHovered = NOTFOUND;
-	UITextBoxNewFrame();
-	UIButtonsNewFrame();
+	mpUITextBoxImpl->NewFrame();
+	mpUIButtonImpl->NewFrame();
 	UIDropdownNewFrame();
 
 	UIScrollablePageUpdate( fDelta );
@@ -84,22 +70,33 @@ void		UIUpdate( float fDelta )
 	}
 
 }
+void		UIUpdate( float fDelta )
+{
+	msTempSingleton.Update(fDelta);
+}
 
 
-BOOL		UIOnZoom( float fZoomAmount )
+BOOL		UIInstance::OnZoom( float fZoomAmount )
 {
 	UIScrollablePageOnZoom( fZoomAmount );
 	return( FALSE );
 }
+BOOL		UIOnZoom( float fZoomAmount )
+{
+	return( msTempSingleton.OnZoom( fZoomAmount ) );
+}
 
-BOOL		UIOnRightButtonPress( int X, int Y )
+BOOL		UIInstance::OnRightButtonPress( int X, int Y )
 {
 	mwUIRightPressX = X;
 	mwUIRightPressY = Y;
 	return( FALSE );
 }
-
-BOOL		UIOnPress( int X, int Y )
+BOOL		UIOnRightButtonPress( int X, int Y )
+{
+	return( msTempSingleton.OnRightButtonPress( X, Y ) );
+}
+BOOL		UIInstance::OnPress( int X, int Y )
 {
 	if ( ( UISliderOnPress( X, Y ) == FALSE ) &&
 		 ( UIListBoxOnPress( X, Y ) == FALSE ) )
@@ -126,7 +123,22 @@ BOOL		UIOnPress( int X, int Y )
 	return( FALSE );
 }
 
-BOOL		UIOnReleaseRightButton( int X, int Y )
+BOOL		UIOnPress( int X, int Y )
+{
+	return( msTempSingleton.OnPress(X,Y) );
+}
+
+void		UIInstance::ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
+{
+	mpUIButtonImpl->Draw( this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha);
+}
+
+void		UIInstance::ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam )
+{
+	ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+}
+
+BOOL		UIInstance::OnReleaseRightButton( int X, int Y )
 {
 BOOL		bRet = FALSE;
 
@@ -146,7 +158,12 @@ BOOL		bRet = FALSE;
 	return( bRet );
 }
 
-BOOL		UIOnRelease( int X, int Y )
+BOOL		UIOnReleaseRightButton( int X, int Y )
+{
+	return( msTempSingleton.OnReleaseRightButton( X, Y ) );
+}
+
+BOOL		UIInstance::OnRelease( int X, int Y )
 {
 BOOL	bRet = FALSE;
 bool	bHoldHandlerWasActioned = false;
@@ -205,30 +222,52 @@ bool	bHoldHandlerWasActioned = false;
 	return( bRet );
 }
 
-InterfaceInstance*		UIInterfaceInstance()
+
+BOOL		UIOnRelease( int X, int Y )
+{
+	return( msTempSingleton.OnRelease( X, Y ) );
+}
+
+InterfaceInstance*		UIInstance::GetInterfaceInstance()
 {
 	return( mpInterfaceInstance );
 }
 
-void		UIInitialise( InterfaceInstance* pInterfaceInstance )
+InterfaceInstance*		UIInterfaceInstance()
+{
+	return( msTempSingleton.GetInterfaceInstance() );
+}
+
+void		UIInstance::Initialise( InterfaceInstance* pInterfaceInstance )
 {
 	if ( pInterfaceInstance == NULL )
 	{
 		pInterfaceInstance = InterfaceInstanceMain();
 	}
 	mpInterfaceInstance = pInterfaceInstance;
-	UIButtonsInitialise();
+
+	mpUIButtonImpl = new UIButtonImpl( this );
+	mpUITextBoxImpl = new UITextBoxImpl( this );
 }
 
-void		UIShutdown( void )
+void		UIInitialise( InterfaceInstance* pInterfaceInstance )
+{
+	msTempSingleton.Initialise( pInterfaceInstance );
+}
+
+void		UIInstance::Shutdown( void )
 {
 	// TODO - Cleanup msButtonHandlerList
-
-	UIButtonsShutdown();
+	mpUIButtonImpl->Shutdown();
 	UITextboxShutdown();
 }
 
-void		UIGetCurrentCursorPosition( int* pnX, int* pnY )
+void	UIShutdown()
+{
+	msTempSingleton.Shutdown();
+}
+
+void		UIInstance::GetCurrentCursorPosition( int* pnX, int* pnY )
 {
 	if ( mnUISetCursorX == NOTFOUND )
 	{
@@ -241,46 +280,80 @@ void		UIGetCurrentCursorPosition( int* pnX, int* pnY )
 	}
 }
 
-void		UISetCurrentCursorPosition( int nX, int nY )
+void		UIGetCurrentCursorPosition( int* pnX, int* pnY )
+{
+	msTempSingleton.GetCurrentCursorPosition( pnX, pnY );
+}
+
+void		UIInstance::SetCurrentCursorPosition( int nX, int nY )
 {
 	mnUISetCursorX = nX;
 	mnUISetCursorY = nY;
 }
 
+void		UISetCurrentCursorPosition( int nX, int nY )
+{
+	msTempSingleton.SetCurrentCursorPosition( nX, nY );
+}
 
-uint32	UIGetCurrentHoverIDIndexParam()
+uint32	UIInstance::GetCurrentHoverIDIndexParam()
 {
 	return( mulUIButtonIDHoveredID );
 }
 
-uint32	UIGetCurrentPressIDIndexParam()
+uint32	UIGetCurrentHoverIDIndexParam()
+{
+	return( msTempSingleton.GetCurrentHoverIDIndexParam() );
+}
+
+uint32	UIInstance::GetCurrentPressIDIndexParam()
 {
 	return(mulUIButtonIDPressedIDParam);
 }
 
-void		UIHoverIDSet( int nButtonID, uint32 ulParam, uint32 ulID )
+uint32	UIGetCurrentPressIDIndexParam()
+{
+	return( msTempSingleton.GetCurrentPressIDIndexParam() );
+}
+
+
+void		UIInstance::HoverIDSet( int nButtonID, uint32 ulParam, uint32 ulID )
 {
 	mnUIButtonIDHovered = nButtonID;
 	mulUIButtonIDHoveredParam = ulParam;
 	mulUIButtonIDHoveredID = ulID;
 }
 
+void		UIHoverIDSet( int nButtonID, uint32 ulParam, uint32 ulID )
+{
+	msTempSingleton.HoverIDSet( nButtonID, ulParam, ulID );
+}
 
-void		UIRightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
+void		UIInstance::RightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 {
 	mnUIRightButtonIDPressed = nButtonID;
 	mulUIRightButtonIDPressedParam = ulParam;
 	mulUIRightButtonIDPressedIDParam = ulIDParam;
 }
 
-void		UIPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
+void		UIRightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
+{
+	msTempSingleton.RightPressIDSet( nButtonID, ulParam, ulIDParam );
+}
+
+void		UIInstance::PressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 {
 	mnUIButtonIDPressed = nButtonID;
 	mulUIButtonIDPressedParam = ulParam;
 	mulUIButtonIDPressedIDParam = ulIDParam;
 }
 
-BOOL		UIHoverItem( int X, int Y, int W, int H )
+void		UIPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
+{
+	msTempSingleton.PressIDSet( nButtonID, ulParam, ulIDParam );
+}
+
+BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
 {
 int		hoverX, hoverY;
 
@@ -296,7 +369,12 @@ int		hoverX, hoverY;
 	return( FALSE );
 }
 
-BOOL		UIIsRightPressed( int X, int Y, int W, int H )
+BOOL		UIHoverItem( int X, int Y, int W, int H )
+{
+	return( msTempSingleton.HoverItem( X, Y, W, H ) );
+}
+
+BOOL		UIInstance::IsRightPressed( int X, int Y, int W, int H )
 {
 	if ( ( mwUIRightPressX > X ) &&
 		 ( mwUIRightPressX < X + W ) &&
@@ -308,7 +386,12 @@ BOOL		UIIsRightPressed( int X, int Y, int W, int H )
 	return( FALSE );
 }
 
-BOOL		UIIsPressed( int X, int Y, int W, int H )
+BOOL		UIIsRightPressed( int X, int Y, int W, int H )
+{
+	return( msTempSingleton.IsRightPressed( X, Y, W, H ) );
+}
+	
+BOOL		UIInstance::IsPressed( int X, int Y, int W, int H )
 {
 	if ( ( mwUIPressX > X ) &&
 		 ( mwUIPressX < X + W ) &&
@@ -320,6 +403,10 @@ BOOL		UIIsPressed( int X, int Y, int W, int H )
 	return( FALSE );
 }
 
+BOOL		UIIsPressed( int X, int Y, int W, int H )
+{
+	return( msTempSingleton.IsPressed( X, Y, W, H ) );
+}
 
 void		UIReleaseGraphicsForDeviceReset( void )
 {
@@ -329,4 +416,34 @@ void		UIReleaseGraphicsForDeviceReset( void )
 void		UIInitGraphicsPostDeviceReset( void )
 {
 
+}
+
+
+//-------------------------------
+
+int		UIInstance::TextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen )
+{
+	return( mpUITextBoxImpl->Create( nMode, szInitialText, nMaxTextLen ) );
+}
+
+
+void	UIInstance::TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
+{
+	mpUITextBoxImpl->Render( nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
+}
+
+
+const char*		UIInstance::TextBoxGetText( int nHandle )
+{
+	return( mpUITextBoxImpl->GetText( nHandle ) );
+}
+
+void		UIInstance::TextBoxEndEdit( int nHandle )
+{
+	mpUITextBoxImpl->EndEdit( nHandle );
+}
+
+void		UIInstance::TextBoxDestroy( int nHandle )
+{
+	mpUITextBoxImpl->Destroy( nHandle );
 }
