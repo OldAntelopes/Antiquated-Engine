@@ -186,14 +186,14 @@ bool	bHoldHandlerWasActioned = false;
 	{
 		if ( ( UIDropdownOnRelease( X, Y ) == FALSE ) &&
 			 ( UISliderOnRelease( X, Y, TRUE ) == FALSE ) &&
-			 ( UITextBoxOnRelease( X, Y ) == FALSE ) )
+			 ( mpUITextBoxImpl->OnRelease( this, X, Y ) == FALSE ) )
 		{
 			if ( mnUIButtonIDPressed != NOTFOUND )
 			{
 				if ( msButtonHandlerList[mnUIButtonIDPressed] )
 				{			
 					// If we press another button, we should cancel any text box edits in progress first..
-					UITextBoxEndCurrentEdit();
+					mpUITextBoxImpl->EndCurrentEdit();
 
 					msButtonHandlerList[mnUIButtonIDPressed]( mnUIButtonIDPressed, mulUIButtonIDPressedParam, mulUIButtonIDPressedIDParam );
 				}
@@ -259,7 +259,7 @@ void		UIInstance::Shutdown( void )
 {
 	// TODO - Cleanup msButtonHandlerList
 	mpUIButtonImpl->Shutdown();
-	UITextboxShutdown();
+	mpUITextBoxImpl->Shutdown();
 }
 
 void	UIShutdown()
@@ -357,7 +357,7 @@ BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
 {
 int		hoverX, hoverY;
 
-	UIGetCurrentCursorPosition( &hoverX, &hoverY );
+	GetCurrentCursorPosition( &hoverX, &hoverY );
 	if ( ( hoverX > X ) &&
 		 ( hoverX < X + W ) &&
 		 ( hoverY > Y ) &&
@@ -429,7 +429,7 @@ int		UIInstance::TextBoxCreate( int nMode, const char* szInitialText, int nMaxTe
 
 void	UIInstance::TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
 {
-	mpUITextBoxImpl->Render( nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
+	mpUITextBoxImpl->Render( this, nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
 }
 
 

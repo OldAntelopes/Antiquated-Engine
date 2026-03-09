@@ -23,17 +23,20 @@ public:
 	void		NewFrame( void );
 		
 	int			Create( int nMode, const char* szInitialText, int nMaxTextLen );
-	void		Render( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
+	void		Render( UIInstance* pUIInstance, int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
 	const char*	GetText( int nHandle );
 	void		EndEdit( int nHandle );
 	void		Destroy( int nHandle );
 	
-	int			KeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj );
+	static int			KeyboardMessageHandlerStatic(int nResponseCode, const char* szInputText, void* pUserObj);
+
 	void		EndCurrentEdit( void );
-	BOOL		OnRelease( int X, int Y );
+	BOOL		OnRelease( UIInstance* pUI, int X, int Y );
 
 
 private:
+	int			KeyboardMessageHandler(int nResponseCode, const char* szInputText);
+	
 	int				msnTextBoxNextHandle = 401;
 	UITextBox*		mspTextBoxList = NULL;
 

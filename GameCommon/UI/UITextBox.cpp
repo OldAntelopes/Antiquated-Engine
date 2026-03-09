@@ -3,6 +3,7 @@
 
 #include "StandardDef.h"
 #include "Interface.h"
+#include "InterfaceEx.h"
 
 #include "../Platform/Platform.h"
 #include "UI.h"
@@ -33,7 +34,7 @@ public:
 
 	void			Init( int nMode, const char* szInitialText, int nMaxTextLen );
 
-	void			Render( int nScreenX, int nScreenY, int nScreenW, int nScreenH );
+	void			Render( InterfaceInstance* pInterface, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
 	const char*		GetText() { return( mszText ); }
 
 	BOOL			IsOnScreen( void );
@@ -92,7 +93,7 @@ void	UITextBox::SetText( const char* szNewText )
 	strcpy( mszText, szNewText );
 }
 
-void	UITextBox::Render( int nScreenX, int nScreenY, int nScreenW, int nScreenH )
+void	UITextBox::Render( InterfaceInstance* pInterface, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
 {
 int		nTextHeight;
 int		nFontToUse = 0;
@@ -104,22 +105,22 @@ int		nTextOffsetY = 0;
 
 	if ( mbIsFocused )
 	{
-		InterfaceRect( 1, nScreenX, nScreenY, nScreenW, nScreenH, 0xFFE0D0B0 );
-		InterfaceRect( 1, nScreenX, nScreenY, nScreenW, 2, 0xD0B09070 );
-		InterfaceRect( 1, nScreenX, nScreenY+2, 2, nScreenH-2, 0xD0B09070 );
+		pInterface->Rect( 1, nScreenX, nScreenY, nScreenW, nScreenH, 0xFFE0D0B0 );
+		pInterface->Rect( 1, nScreenX, nScreenY, nScreenW, 2, 0xD0B09070 );
+		pInterface->Rect( 1, nScreenX, nScreenY+2, 2, nScreenH-2, 0xD0B09070 );
 	}
 	else
 	{
-		InterfaceRect( 1, nScreenX, nScreenY, nScreenW, nScreenH, 0xFFD0C0A0 );
-		InterfaceRect( 1, nScreenX, nScreenY, nScreenW, 3, 0xD0907050 );
-		InterfaceRect( 1, nScreenX, nScreenY+3, 3, nScreenH-3, 0xD0907050 );
+		pInterface->Rect( 1, nScreenX, nScreenY, nScreenW, nScreenH, 0xFFD0C0A0 );
+		pInterface->Rect( 1, nScreenX, nScreenY, nScreenW, 3, 0xD0907050 );
+		pInterface->Rect( 1, nScreenX, nScreenY+3, 3, nScreenH-3, 0xD0907050 );
 	}
-	InterfaceLine( 2, nScreenX - 1, nScreenY - 1, nScreenX + nScreenW, nScreenY - 1, 0xE0202020, 0xE0202020 );
-	InterfaceLine( 2, nScreenX - 1, nScreenY - 1, nScreenX - 1, nScreenY + nScreenH, 0xE0202020, 0xE0202020 );
-	InterfaceLine( 2, nScreenX, nScreenY + nScreenH, nScreenX + nScreenW, nScreenY + nScreenH, 0xE0c0c0c0, 0xE0c0c0c0 );
-	InterfaceLine( 2, nScreenX + nScreenW, nScreenY, nScreenX + nScreenW, nScreenY + nScreenH, 0xE0c0c0c0, 0xE0c0c0c0 );
+	pInterface->Line( 2, nScreenX - 1, nScreenY - 1, nScreenX + nScreenW, nScreenY - 1, 0xE0202020 );
+	pInterface->Line( 2, nScreenX - 1, nScreenY - 1, nScreenX - 1, nScreenY + nScreenH, 0xE0202020 );
+	pInterface->Line( 2, nScreenX, nScreenY + nScreenH, nScreenX + nScreenW, nScreenY + nScreenH, 0xE0c0c0c0 );
+	pInterface->Line( 2, nScreenX + nScreenW, nScreenY, nScreenX + nScreenW, nScreenY + nScreenH, 0xE0c0c0c0 );
 
-	nTextHeight = GetStringHeight( mszText, nFontToUse );
+	nTextHeight = pInterface->GetStringHeight( mszText, nFontToUse );
 	nTextOffsetY = ((nScreenH - 2) - nTextHeight ) / 2;
 
 	// Is a password dialog
@@ -158,7 +159,7 @@ int		nTextOffsetY = 0;
 		{
 			acInputBuffer[nLoop] = '*';
 		}
-		InterfaceTextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, acInputBuffer, 0xE0303030, nFontToUse, nScreenW - 6 );
+		pInterface->TextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, nScreenW - 6, 0xE0303030, nFontToUse, acInputBuffer);
 	}
 	else
 	{
@@ -166,11 +167,11 @@ int		nTextOffsetY = 0;
 		{
 		char	acInputBuffer[512];
 			strcpy( acInputBuffer, PlatformKeyboardGetInputString( TRUE ) );
-			InterfaceTextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, acInputBuffer, 0xE0303030, nFontToUse, nScreenW - 6 );
+			pInterface->TextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, nScreenW - 6, 0xE0303030, nFontToUse, acInputBuffer );
 		}
 		else if ( mszText )
 		{
-			InterfaceTextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, mszText, 0xE0303030, nFontToUse, nScreenW - 6 );
+			pInterface->TextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, nScreenW - 6, 0xE0303030, nFontToUse, mszText);
 		}
 	}
 
@@ -230,12 +231,12 @@ int				UITextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen )
 	return( mspTempSingleton->mpUITextBoxImpl->Create( nMode, szInitialText, nMaxTextLen ));
 }
 
-void			UITextBoxImpl::Render( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
+void			UITextBoxImpl::Render( UIInstance* pUIInstance, int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
 {
 UITextBox*		pTextBox = mspTextBoxList;
 int				nHoldX, nHoldY;
 
-	PlatformGetCurrentCursorPosition( &nHoldX, &nHoldY );
+	pUIInstance->GetCurrentCursorPosition( &nHoldX, &nHoldY );
 
 	while( pTextBox )
 	{
@@ -249,7 +250,7 @@ int				nHoldX, nHoldY;
 				mspTextBoxHover = pTextBox;
 				PlatformSetMouseOverCursor( TRUE );
 			}
-			pTextBox->Render( nScreenX, nScreenY, nScreenW, nScreenH );
+			pTextBox->Render( pUIInstance->GetInterfaceInstance(), nScreenX, nScreenY, nScreenW, nScreenH );
 
 			if ( pTextBox == mspFocusedTextBox )
 			{
@@ -265,7 +266,7 @@ int				nHoldX, nHoldY;
 
 void			UITextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH )
 {	
-	mspTempSingleton->mpUITextBoxImpl->Render( nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
+	mspTempSingleton->mpUITextBoxImpl->Render( mspTempSingleton, nHandle, nScreenX, nScreenY, nScreenW, nScreenH );
 }
 
 
@@ -339,7 +340,7 @@ void			UITextBoxDestroy( int nHandle )
 	mspTempSingleton->mpUITextBoxImpl->Destroy( nHandle );
 }
 
-int		UITextBoxImpl::KeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj )
+int		UITextBoxImpl::KeyboardMessageHandler( int nResponseCode, const char* szInputText )
 {
 	switch( nResponseCode )
 	{
@@ -394,9 +395,11 @@ int		UITextBoxImpl::KeyboardMessageHandler( int nResponseCode, const char* szInp
 	return( 0 );
 }
 
-int		UITextBoxKeyboardMessageHandler( int nResponseCode, const char* szInputText, void* pUserObj )
+int		UITextBoxImpl::KeyboardMessageHandlerStatic( int nResponseCode, const char* szInputText, void* pUserObj )
 {
-	return( mspTempSingleton->mpUITextBoxImpl->KeyboardMessageHandler( nResponseCode, szInputText, pUserObj ) );
+	UIInstance* pUIInstance = (UIInstance*)(pUserObj);
+
+	return( pUIInstance->mpUITextBoxImpl->KeyboardMessageHandler( nResponseCode, szInputText ) );
 }
 
 void		UITextBoxImpl::EndCurrentEdit( void )
@@ -412,7 +415,7 @@ void		UITextBoxEndCurrentEdit( void )
 	mspTempSingleton->mpUITextBoxImpl->EndCurrentEdit();
 }
 
-BOOL		UITextBoxImpl::OnRelease( int X, int Y )
+BOOL		UITextBoxImpl::OnRelease( UIInstance* pUI, int X, int Y )
 {
 	if ( mspTextBoxHover )
 	{
@@ -427,7 +430,7 @@ BOOL		UITextBoxImpl::OnRelease( int X, int Y )
 		mspFocusedTextBox = mspTextBoxHover;
 		mspTextBoxHover = NULL;
 
-		PlatformKeyboardRegisterHandler( UITextBoxKeyboardMessageHandler );
+		PlatformKeyboardRegisterHandler( KeyboardMessageHandlerStatic, pUI );
 		PlatformKeyboardActivate( 0,  mspFocusedTextBox->GetText(), "" );
 		return( TRUE );
 	}
@@ -437,7 +440,7 @@ BOOL		UITextBoxImpl::OnRelease( int X, int Y )
 
 BOOL		UITextBoxOnRelease( int X, int Y )
 {
-	return( mspTempSingleton->mpUITextBoxImpl->OnRelease( X, Y ) );
+	return( mspTempSingleton->mpUITextBoxImpl->OnRelease( mspTempSingleton, X, Y ) );
 }
 
 
