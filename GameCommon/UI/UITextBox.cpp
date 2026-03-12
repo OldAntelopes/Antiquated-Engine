@@ -174,8 +174,6 @@ int		nTextOffsetY = 0;
 			pInterface->TextLimitWidth( 2, nScreenX + 3, nScreenY + nTextOffsetY, nScreenW - 6, 0xE0303030, nFontToUse, mszText);
 		}
 	}
-
-
 }
 
 
