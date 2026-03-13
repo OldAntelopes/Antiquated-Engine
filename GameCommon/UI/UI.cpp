@@ -220,6 +220,12 @@ void		UIInitialise( InterfaceInstance* pInterfaceInstance )
 	UIButtonsInitialise();
 }
 
+void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance )
+{
+	mpInterfaceInstance = pInterfaceInstance;
+}
+
+
 void		UIShutdown( void )
 {
 	// TODO - Cleanup msButtonHandlerList

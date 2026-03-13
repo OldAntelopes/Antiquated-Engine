@@ -10,13 +10,6 @@ enum
 	UIRESERVEDBUTTONID_STANDARDLOGININTERFACE = -3,
 };
 
-typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam, uint32 ulIDParam );
-// UIHoldHandler should return TRUE if it has handled the MouseUp action and no further ui should react
-typedef	BOOL(*UIHoldHandler)( int nButtonID, uint32 ulParam, uint32 ulIndex, BOOL bIsHeld, BOOL bFirstPress );
-
-typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
-
-
 enum eUIBUTTON_MODE_FLAGS
 {
 	UIBUTTON_FLAG_NONE = 0,
@@ -28,6 +21,57 @@ enum eUIBUTTON_MODE_FLAGS
 	UIBUTTON_FLAG_FLAT_STYLE = 0x20,
 };
 //-------------------------------------- UIButton
+
+typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam, uint32 ulIDParam );
+// UIHoldHandler should return TRUE if it has handled the MouseUp action and no further ui should react
+typedef	BOOL(*UIHoldHandler)( int nButtonID, uint32 ulParam, uint32 ulIndex, BOOL bIsHeld, BOOL bFirstPress );
+
+typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
+
+
+//--------------------------------------------------------------------------------------------
+
+class UIInstance
+{
+public:
+	// Direct UI draw functions
+
+	void		ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0 );
+
+	// -------------- Ops
+
+	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL );
+	void		Update( float fDelta );
+	void		Shutdown( void );
+
+	void		ReleaseGraphicsForDeviceReset( void );
+	void		InitGraphicsPostDeviceReset( void );
+
+	InterfaceInstance*		GetInterfaceInstance();
+
+	BOOL		OnPress( int X, int Y );
+	BOOL		OnRightButtonPress( int X, int Y );
+	BOOL		OnRelease( int X, int Y );
+	BOOL		OnReleaseRightButton( int X, int Y );
+	BOOL		OnZoom( float fZoomAmount );		// Mousewheel
+
+	void		OnInterfaceDraw( void );
+
+	void		HoverIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
+	void		PressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
+	void		RightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
+	BOOL		IsPressed( int X, int Y, int W, int H );
+	BOOL		HoverItem( int X, int Y, int W, int H );
+	BOOL		IsRightPressed( int X, int Y, int W, int H );
+
+	void		GetCurrentCursorPosition( int* pnX, int* pnY );
+	void		SetCurrentCursorPosition( int nX, int nY );
+protected:
+	UIInstance();
+};
+
+
+//----------------------------------------------------------------------------------------- Static class
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
 extern void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler );
@@ -83,6 +127,7 @@ extern void			UITextBoxDestroy( int nHandle );
 //----------------------------------------------------------------------------
 //---------------------- UI Operational Functions -----------------------------
 extern void		UIInitialise( InterfaceInstance* pInterfaceInstance = NULL );
+extern void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance );
 extern void		UIUpdate( float fDelta );
 extern void		UIShutdown( void );
 
