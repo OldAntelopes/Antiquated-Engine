@@ -230,10 +230,10 @@ int		nTextOffsetY = 2;
 		ulTextCol = 0xE0F0E080;
 	}
 
-	InterfaceRect( 0, nX, nY, nWidth, nHeight, ulButtonMainCol );
+	pInterface->Rect( 0, nX, nY, nWidth, nHeight, ulButtonMainCol );
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
 		
-	InterfaceTextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, szText, ulTextCol, 0 ); 
+	pInterface->TextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, ulTextCol, 0, szText ); 
 	InterfaceSetFontFlags( 0 );
 }
 
