@@ -74,6 +74,7 @@ public:
 	void		RightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
 	BOOL		IsPressed( int X, int Y, int W, int H );
 	BOOL		HoverItem( int X, int Y, int W, int H );
+	BOOL		IsMouseHover( int X, int Y, int W, int H );
 	BOOL		IsRightPressed( int X, int Y, int W, int H );
 
 	void		GetCurrentCursorPosition( int* pnX, int* pnY );
@@ -198,6 +199,7 @@ extern void		UIRightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
 extern BOOL		UIHoverItem( int X, int Y, int W, int H );
 extern BOOL		UIIsRightPressed( int X, int Y, int W, int H );
+extern BOOL		UIIsMouseHover( int X, int Y, int W, int H );
 
 extern void		UIGetCurrentCursorPosition( int* pnX, int* pnY );
 extern void		UISetCurrentCursorPosition( int nX, int nY );

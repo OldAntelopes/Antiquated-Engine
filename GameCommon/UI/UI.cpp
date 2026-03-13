@@ -358,7 +358,8 @@ void		UIPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 	msTempSingleton.PressIDSet( nButtonID, ulParam, ulIDParam );
 }
 
-BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
+
+BOOL		UIInstance::IsMouseHover( int X, int Y, int W, int H )
 {
 int		hoverX, hoverY;
 
@@ -368,10 +369,24 @@ int		hoverX, hoverY;
 		 ( hoverY > Y ) &&
 		 ( hoverY < Y + H ) )
 	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
+{
+	if ( IsMouseHover( X, Y, W, H ) )
+	{
 		PlatformSetMouseOverCursor( TRUE );
 		return( TRUE );
 	}
 	return( FALSE );
+}
+
+BOOL		UIIsMouseHover( int X, int Y, int W, int H )
+{
+	return( msTempSingleton.IsMouseHover( X, Y, W, H ) );
 }
 
 BOOL		UIHoverItem( int X, int Y, int W, int H )

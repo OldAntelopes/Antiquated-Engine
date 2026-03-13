@@ -345,8 +345,8 @@ public:
 	static BOOL							IsOffscreen( int x, int y );
 	static BOOL							IsInActivePageRegion( int x, int y );
 	static BOOL							IsRectInActivePageRegion( UIXRECT rect );
-	static BOOL							IsMouseHover( UIXRECT rect );
-	static BOOL							IsMouseHover( int x, int y, int w, int h );
+	static BOOL							IsMouseHover( UIXRECT rect, BOOL bSetCursor = TRUE );
+	static BOOL							IsMouseHover( int x, int y, int w, int h, BOOL bSetCursor = TRUE );
 
 	static BOOL							CheckForPress( UIXObject* pxObject, UIXRECT rect, uint32 ulButtonID, uint32 ulButtonParam );
 	static BOOL							CheckForRightButtonPress( UIXObject* pxObject, UIXRECT rect, uint32 ulButtonID, uint32 ulButtonParam );

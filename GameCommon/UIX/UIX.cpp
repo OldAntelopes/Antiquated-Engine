@@ -193,7 +193,7 @@ UIXRECT		actualRenderRect = GetActualRenderRect( displayRect );
 
 	mLastRenderDisplayRect = displayRect;
 
-	if ( UIX::IsMouseHover( actualRenderRect ) == TRUE )
+	if ( UIX::IsMouseHover( actualRenderRect, FALSE ) == TRUE )
 	{
 		// TODO - If mouseHover long enough, show tooltip text if we have one
 
@@ -667,20 +667,34 @@ void		UIX::Reset()
 }
 
 
-BOOL		UIX::IsMouseHover( int x, int y, int w, int h )
+BOOL		UIX::IsMouseHover( int x, int y, int w, int h, BOOL bSetCursor )
 {
 	if (IsRectInActivePageRegion(UIXRECT(x, y, w, h)))
 	{
-		return ( UIHoverItem(x, y, w, h) );
+		if ( bSetCursor )
+		{
+			return ( UIHoverItem(x, y, w, h) );	
+		}
+		else
+		{
+			return ( UIIsMouseHover(x, y, w, h) );
+		}
 	}
 	return(FALSE);
 }
 
-BOOL		UIX::IsMouseHover( UIXRECT rect )
+BOOL		UIX::IsMouseHover( UIXRECT rect, BOOL bSetCursor )
 {
 	if ( IsRectInActivePageRegion(rect))
 	{
-		return ( UIHoverItem( rect.x, rect.y, rect.w, rect.h ) );
+		if ( bSetCursor )
+		{
+			return ( UIHoverItem( rect.x, rect.y, rect.w, rect.h) );	
+		}
+		else
+		{
+			return ( UIIsMouseHover( rect.x, rect.y, rect.w, rect.h ) );
+		}
 	}
 	return( FALSE );
 }
