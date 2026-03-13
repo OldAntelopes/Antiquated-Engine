@@ -881,6 +881,12 @@ INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, co
 	InterfaceInstanceMain()->mpFontSystem->TextCentre( nLayer, nX1, nX2, nY, szString, ulCol, nFont );
 }
 
+
+void	FontSystem::SetFontFlags( int flags )
+{
+	mnCurrentFontFlags = flags;
+}
+
 /***************************************************************************
  * Function    : TextCentre
  ***************************************************************************/

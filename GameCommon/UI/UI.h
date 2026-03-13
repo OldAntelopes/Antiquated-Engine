@@ -1,7 +1,10 @@
 #ifndef GAMECOMMON_UI_H
 #define GAMECOMMON_UI_H
 
+#include <map>
 class InterfaceInstance;
+class UIButtonImpl;
+class UITextBoxImpl;
 
 // ---------- Reserved buttonIDs
 enum
@@ -27,19 +30,26 @@ typedef	void(*UIButtonHandler)( int nButtonID, uint32 ulParam, uint32 ulIDParam 
 typedef	BOOL(*UIHoldHandler)( int nButtonID, uint32 ulParam, uint32 ulIndex, BOOL bIsHeld, BOOL bFirstPress );
 
 typedef	void(*fnValueChangeCallback)( int hDropdownHandle, int nNewSelectedParam, void* pUserParam );
-
-
-//--------------------------------------------------------------------------------------------
+//--------------------------------------------------
 
 class UIInstance
 {
 public:
-	// Direct UI draw functions
 
+	void		RegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
+	void		RegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler );
+
+	//-----------------------------------------
 	void		ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0 );
+	void		ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0,  float fAlpha = 0.5f );
 
-	// -------------- Ops
+	int			TextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen );
+	void		TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
+	const char*	TextBoxGetText( int nHandle );
+	void		TextBoxEndEdit( int nHandle );
+	void		TextBoxDestroy( int nHandle );
 
+	//---------------------- UI Operational Functions -----------------------------
 	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL );
 	void		Update( float fDelta );
 	void		Shutdown( void );
@@ -47,8 +57,7 @@ public:
 	void		ReleaseGraphicsForDeviceReset( void );
 	void		InitGraphicsPostDeviceReset( void );
 
-	InterfaceInstance*		GetInterfaceInstance();
-
+	// Press/control handlers
 	BOOL		OnPress( int X, int Y );
 	BOOL		OnRightButtonPress( int X, int Y );
 	BOOL		OnRelease( int X, int Y );
@@ -56,6 +65,9 @@ public:
 	BOOL		OnZoom( float fZoomAmount );		// Mousewheel
 
 	void		OnInterfaceDraw( void );
+	
+	//-----------------------------------------------------------------
+	// UI Internal
 
 	void		HoverIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
 	void		PressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
@@ -66,12 +78,47 @@ public:
 
 	void		GetCurrentCursorPosition( int* pnX, int* pnY );
 	void		SetCurrentCursorPosition( int nX, int nY );
+	
+	uint32		GetCurrentHoverIDIndexParam();
+	uint32		GetCurrentPressIDIndexParam();
+
+	InterfaceInstance*		GetInterfaceInstance();
+
+	// Just for ease of transferring from the old static model
+	// (Should be able to move them back to protected once the msTempSingleton is removed)
+	UIButtonImpl*		mpUIButtonImpl = NULL;
+	UITextBoxImpl*		mpUITextBoxImpl = NULL;
+
 protected:
-	UIInstance();
+
+	InterfaceInstance*		mpInterfaceInstance = NULL;
+	
+
+	short		mwUIPressX = 0;
+	short		mwUIPressY = 0;
+	short		mwUIRightPressX = 0;
+	short		mwUIRightPressY = 0;
+	int			mnUISetCursorX = NOTFOUND;
+	int			mnUISetCursorY = NOTFOUND;
+
+	int			mnUIButtonIDPressed = NOTFOUND;
+	uint32		mulUIButtonIDPressedParam = 0;
+	uint32		mulUIButtonIDPressedIDParam = 0;
+	int			mnUIRightButtonIDPressed = NOTFOUND;
+	uint32		mulUIRightButtonIDPressedParam = 0;
+	uint32		mulUIRightButtonIDPressedIDParam = 0;
+
+	int			mnUIButtonIDHovered = NOTFOUND;
+	uint32		mulUIButtonIDHoveredParam = 0;
+	uint32		mulUIButtonIDHoveredID = 0;
+
+	int			mnUIButtonIDHeld = NOTFOUND;
+	uint32		mulUIButtonIDHeldParam = 0;
+	uint32		mulUIButtonIDHeldID = 0;
+
+	std::map<int, UIButtonHandler>	msButtonHandlerList;
+	std::map<int, UIHoldHandler>	msHoldHandlerList;
 };
-
-
-//----------------------------------------------------------------------------------------- Static class
 
 extern void		UIRegisterButtonPressHandler( int nButtonID, UIButtonHandler fnButtonHandler );
 extern void		UIRegisterHoldHandler( int nButtonID, UIHoldHandler fnHoldHandler );

@@ -31,6 +31,7 @@ public:
 	void	TextCentre( int nLayer, int nX1, int nY, uint32 ulCol, int nFont, const char* szString, ... );
 	void	TextRight( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* szString, ... );
 	const char*	TextLimitWidth( int nLayer, int nX, int nY, int nMaxWidth, uint32 ulCol, int nFont, const char* szString, ...  );
+	void	SetFontFlags( int flags );
 
 	int		GetStringWidth( const char* pcString, int nFont );
 	int		GetStringHeight( const char* pcString, int nFont );

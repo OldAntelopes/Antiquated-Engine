@@ -5,6 +5,7 @@
 
 #include "../Platform/Platform.h"
 #include "UI.h"
+#include "UIInternal.h"
 #include "UIButton.h"
 
 class ButtonStyle
@@ -12,16 +13,16 @@ class ButtonStyle
 public:
 	ButtonStyle();
 
-	void	Initialise( int mode, const char* szAssetPath );
+	void	Initialise( InterfaceInstance* pInterface, int mode, const char* szAssetPath );
 
 	void	NewFrame( void );
 
-	void	Render( int X, int Y, int W, int H, const char* szText, uint32 modeFlags, float fAlpha );
+	void	Render( InterfaceInstance* pInterface, int X, int Y, int W, int H, const char* szText, uint32 modeFlags, float fAlpha );
 
 	void	Free( void );
 
 private:
-	void	InitOverlays( void );
+	void	InitOverlays( InterfaceInstance* pInterface );
 	
 	float	m_fGlobalAlpha;
 	int		mahUIButtonTextures[9];
@@ -62,9 +63,8 @@ int		nLoop;
 	}
 }
 
-void	ButtonStyle::Initialise( int mode, const char* szAssetPath )
+void	ButtonStyle::Initialise( InterfaceInstance* pInterface, int mode, const char* szAssetPath )
 {
-InterfaceInstance* pInterface = UIInterfaceInstance();
 char		acString[256];
 FILE*		pFile;
 	m_fGlobalAlpha = 1.0f;
@@ -96,20 +96,19 @@ FILE*		pFile;
 
 }
 
-void		ButtonStyle::InitOverlays( void )
+void		ButtonStyle::InitOverlays( InterfaceInstance* pInterface )
 {
 int		nLoop;
 
 	for ( nLoop = 0; nLoop < 9; nLoop++ )
 	{
-		mahUIButtonOverlays[nLoop] = UIInterfaceInstance()->CreateNewTexturedOverlay(1, mahUIButtonTextures[nLoop] );
+		mahUIButtonOverlays[nLoop] = pInterface->CreateNewTexturedOverlay(1, mahUIButtonTextures[nLoop] );
 	}
 }
 
 
-void	ButtonStyle::Render( int X, int Y, int W, int H, const char* szText, uint32 modeFlags, float fAlpha )
+void	ButtonStyle::Render( InterfaceInstance* pInterface, int X, int Y, int W, int H, const char* szText, uint32 modeFlags, float fAlpha )
 {
-InterfaceInstance* pInterface = UIInterfaceInstance();
 int		nButtonImageW = 8;
 int		nButtonImageH = 8;
 uint32	ulBackgroundCol;
@@ -118,7 +117,7 @@ int		nFont = 1;
 
 	if ( mahUIButtonOverlays[0] == NOTFOUND )
 	{ 
-		InitOverlays();
+		InitOverlays( pInterface );
 	}
 
 	if ( modeFlags & UIBUTTON_FLAG_DISABLED )
@@ -194,26 +193,37 @@ int		nFont = 1;
 
 //---------------------------------------------------
 
-ButtonStyle			msButtonStyle;
-
-void		UIButtonsInitialise( void )
+UIButtonImpl::UIButtonImpl( UIInstance* pUIInstance )
 {
-	msButtonStyle.Initialise( 1, "Data\\UI\\Button1" );
+	mpButtonStyle = new ButtonStyle;
+	mpButtonStyle->Initialise( pUIInstance->GetInterfaceInstance(), 1, "Data\\UI\\Button1");
+
 }
+	
+void		UIButtonImpl::Shutdown()
+{
+	mpButtonStyle->Free();
+
+}
+
+void		UIButtonImpl::NewFrame( void )
+{
+	mpButtonStyle->NewFrame();
+}
+
 
 void		UIButtonsNewFrame( void )
 {
-	msButtonStyle.NewFrame();
+	mspTempSingleton->mpUIButtonImpl->NewFrame();
 }
 
 void		UIButtonsShutdown( void )
 {
-	msButtonStyle.Free();
+	mspTempSingleton->mpUIButtonImpl->Shutdown();
 }
 
-void		UIButtonDrawBasic( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, uint32 modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
+void		UIButtonDrawBasic( InterfaceInstance* pInterface, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, uint32 modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
 {
-InterfaceInstance* pInterface = UIInterfaceInstance();
 uint32	ulButtonMainCol = 0xB0707070;
 uint32	ulTextCol = 0xD0F0F0F0;
 int		nTextSize = 15;
@@ -237,15 +247,14 @@ int		nTextOffsetY = 2;
 	InterfaceSetFontFlags( 0 );
 }
 
-
-void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
+void UIButtonImpl::Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
 {
-InterfaceInstance*		pInterfaceInstance = UIInterfaceInstance();
+InterfaceInstance*		pInterfaceInstance = pUIInstance->GetInterfaceInstance();
 BOOL	bEnabled = TRUE;
 
 	if ( (modeFlags & UIBUTTON_FLAG_DISABLED) == 0 )
 	{
-		if ( UIHoverItem( nX, nY, nWidth, nHeight ) == TRUE )
+		if ( pUIInstance->HoverItem( nX, nY, nWidth, nHeight ) == TRUE )
 		{
 			modeFlags = (eUIBUTTON_MODE_FLAGS)(modeFlags | UIBUTTON_FLAG_HOVERED);
 		}
@@ -253,27 +262,31 @@ BOOL	bEnabled = TRUE;
 
 	if ( modeFlags & UIBUTTON_FLAG_FLAT_STYLE )
 	{
-		UIButtonDrawBasic( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha );	
+		UIButtonDrawBasic( pInterfaceInstance, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha );	
 	}
 	else
 	{
-		msButtonStyle.Render( nX, nY, nWidth, nHeight, szText, modeFlags, fAlpha );
+		mpButtonStyle->Render( pInterfaceInstance, nX, nY, nWidth, nHeight, szText, modeFlags, fAlpha );
 	}
 
 	if ( (modeFlags & UIBUTTON_FLAG_DISABLED) == 0 )
 	{
-		if ( UIIsPressed( nX, nY, nWidth, nHeight ) == TRUE )
+		if ( pUIInstance->IsPressed( nX, nY, nWidth, nHeight ) == TRUE )
 		{
-			UIPressIDSet( nButtonID, ulParam, ulIDParam );
+			pUIInstance->PressIDSet( nButtonID, ulParam, ulIDParam );
 		}
 	}
 
 }
 
+void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
+{
+	mspTempSingleton->ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha);
+}
 
 void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam  )
 {
-	UIButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	mspTempSingleton->ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
 }
 
 

@@ -129,6 +129,11 @@ uint32*		pArgs;
 	mpFontSystem->Text( nLayer, nX, nY, acString, ulCol, nFont );
 }
 
+void	InterfaceInstance::SetFontFlags( int flags )
+{
+	mpFontSystem->SetFontFlags( flags );
+}
+
 void	InterfaceInstance::TextCentre( int nLayer, int nX1, int nY, uint32 ulCol, int nFont, const char* text, ... )
 {
 char		acString[4096];
