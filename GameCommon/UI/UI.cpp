@@ -255,6 +255,7 @@ void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance )
 	mpInterfaceInstance = pInterfaceInstance;
 }
 
+void	UIInitialise(InterfaceInstance* pInterfaceInstance)
 {
 	msTempSingleton.Initialise( pInterfaceInstance );
 }
