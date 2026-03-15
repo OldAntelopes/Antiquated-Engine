@@ -110,9 +110,10 @@ public:
 	void		DrawAllElements( void );
 	float		GetFPS() { return( mfInterfaceFPS ); }
 	BOOL		HasWindowChanged() { return( mboHasWindowChanged );}
-
+	BOOL		WasFullscreen() { return( mboCurrentlyFullscreen ); }
 	void		RegisterDeviceResetCallbacks(fnInterfaceCallback fnPreReset, fnInterfaceCallback fnPostReset) { mfnPreDeviceResetCallback = fnPreReset; mfnPostDeviceResetCallback = fnPostReset; }
 	void*		GetRawTexture( int nHandle );
+
 protected:
 	void		SetDevice( void* pDevice );		// oldschool
 	void		CreateD3DInstanceIfNeeded();
@@ -141,6 +142,10 @@ protected:
 	BOOL	mboFullScreen = FALSE;
 	BOOL	mboCurrentlyFullscreen = FALSE;
 	BOOL	mboHasWindowChanged = FALSE;
+	BOOL	mboMinPageSize = TRUE;
+	int		mnMinBackBufferSizeW = 0;
+	int		mnMinBackBufferSizeH = 0;
+
 	int		mnRequestedMonitorNum = NOTFOUND;
 	
 

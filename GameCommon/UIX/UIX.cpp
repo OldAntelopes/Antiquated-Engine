@@ -3,6 +3,8 @@
 #include "StandardDef.h"
 
 #include "InterfaceEx.h"
+
+#include "../Platform/Platform.h"
 #include "../UI/UI.h"
 #include "UIX.h"
 #include "UIXButton.h"
@@ -41,6 +43,9 @@ int							UIX::msMouseWheelHoverPriority = 0;
 int							UIX::mshUIXIconOverlays[MAX_NUM_UIX_ICONS] = { NOTFOUND };
 int							UIX::mshUIXIconsList[MAX_NUM_UIX_ICONS] = { NOTFOUND };
 std::string					UIX::msDragText;
+std::string					UIX::msTooltipText;
+int							UIX::msnTooltipPriority = NOTFOUND;
+
 
 
 uint32						UIX::msDragSourceParam = 0;
@@ -193,13 +198,31 @@ UIXRECT		actualRenderRect = GetActualRenderRect( displayRect );
 
 	mLastRenderDisplayRect = displayRect;
 
+	UIX::msSelectionPriority += GetSelectionPriorityLayer();
+
 	if ( UIX::IsMouseHover( actualRenderRect, FALSE ) == TRUE )
 	{
-		// TODO - If mouseHover long enough, show tooltip text if we have one
+		// If mouseHover long enough, show tooltip text if we have one
+		mfHoverTime += PlatformGetFrameDelta();
+		if ( mfHoverTime > 1.0f )
+		{
+		const char*		pcTooltip = GetTooltipText();
 
+			if ( pcTooltip != NULL )
+			{
+				UIX::SetActiveTooltip( UIX::msSelectionPriority, pcTooltip );
+			}
+			else
+			{
+				// Reset the hover time if we have no tooltip to show
+				mfHoverTime = 0.0f;
+			}
+		}
 	}
-
-	UIX::msSelectionPriority += GetSelectionPriorityLayer();
+	else
+	{
+		mfHoverTime = 0.0f;
+	}
 
 	xRect = OnRender( pInterface, displayRect );
 		// The y and h values returned from the render function are used
@@ -398,6 +421,14 @@ UIXObject* pObject = UIX::FindUIXObjectByID(ulIDParam);
 	return(FALSE);
 }
 
+const char*		UIXObject::GetTooltipText()
+{
+	if (mfnCustomTooltipCallback)
+	{
+		return(mfnCustomTooltipCallback(this, mulCustomTooltipParam));
+	}
+	return(NULL);
+}
 
 void	UIXObject::RegisterDragControlHandler( int nButtonID )
 {
@@ -699,6 +730,51 @@ BOOL		UIX::IsMouseHover( UIXRECT rect, BOOL bSetCursor )
 	return( FALSE );
 }
 
+void		UIX::RenderTooltip( InterfaceInstance* pxInterface )
+{
+// todo 
+	if ( msnTooltipPriority != NOTFOUND )
+	{
+	int		stringWidth = pxInterface->GetStringWidth( msTooltipText.c_str(), 3 );
+	UIXRECT		rect;
+	int		mouseX;
+	int		mouseY;
+
+		UIGetCurrentCursorPosition( &mouseX, &mouseY );
+
+		rect.x = mouseX - (stringWidth/2);
+		if ( rect.x < 5 ) rect.x = 5;
+
+		if ( rect.x + stringWidth > pxInterface->GetWidth() )
+		{
+		int		overflow = (rect.x + stringWidth) - pxInterface->GetWidth();
+			
+			rect.x -= overflow + 5;
+		}
+
+		rect.y = mouseY + 25;
+		if ( rect.y >= pxInterface->GetHeight() ) rect.y = mouseY - 35;
+
+		rect.w = stringWidth + 10;
+		rect.h = 20;
+
+		pxInterface->Rect( 2, rect.x, rect.y, rect.w, rect.h, 0xd0101010 );
+		pxInterface->OutlineBox( 2, rect.x, rect.y, rect.w, rect.h, 0xc0505050 );
+
+		pxInterface->Text( 2, rect.x + 5, rect.y + 3, 0xe0f0f0f0, 3, msTooltipText.c_str() );
+	}
+	msnTooltipPriority = NOTFOUND;
+
+}
+
+void		UIX::SetActiveTooltip( int priority, const char* szText )
+{
+	if ( priority >= msnTooltipPriority )
+	{
+		msTooltipText = szText;
+		msnTooltipPriority = priority;
+	}
+}
 
 void		UIX::Render( InterfaceInstance* pxInterface )
 {
@@ -725,6 +801,7 @@ UIXRECT		pageDisplayRect;
 	}
 	// Debug stuff
 //	pxInterface->Text( 0, 5, 20, 0xd0f02010, 0, "press-pri: %d", msPressedSelectionPriority );
+	RenderTooltip(pxInterface);
 }
 
 void		UIX::CloseAllMenus()

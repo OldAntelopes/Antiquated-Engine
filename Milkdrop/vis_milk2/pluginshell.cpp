@@ -576,7 +576,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 
 int CPluginShell::PluginInitialize(LPDIRECT3DDEVICE9 device, D3DPRESENT_PARAMETERS* d3dpp, HWND hwnd, int iWidth, int iHeight)
 {
-	SysDebugPrint( "Milk plugin initialisation.." );
+	SysDebugPrint( "Milk plugin initialisation %dx%d..", iWidth, iHeight );
     // note: initialize GDI before DirectX.  Also separate them because
     // when we change windowed<->fullscreen, or lose the device and restore it,
     // we don't want to mess with any (persistent) GDI stuff.

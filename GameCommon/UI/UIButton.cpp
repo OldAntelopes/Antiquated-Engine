@@ -247,6 +247,46 @@ int		nTextOffsetY = 2;
 	InterfaceSetFontFlags( 0 );
 }
 
+void	UIButtonImpl::DrawCheckbox( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
+{
+InterfaceInstance*		pInterface = pUIInstance->GetInterfaceInstance();
+uint32		ulTextCol = 0xc0c0c0c0;
+BOOL		bChecked = (modeFlags & UIBUTTON_FLAG_ISCHECKED) != 0;
+
+	if ( (modeFlags & UIBUTTON_FLAG_DISABLED) == 0 )
+	{
+		if ( pUIInstance->HoverItem( nX, nY, nWidth, nHeight ) == TRUE )
+		{
+			modeFlags = (eUIBUTTON_MODE_FLAGS)(modeFlags | UIBUTTON_FLAG_HOVERED);
+		}
+	}
+	else
+	{
+		ulTextCol = 0x80808080;
+	}
+
+	pInterface->OutlineBox(0, nX, nY, nHeight, nHeight, 0xC0505050);
+
+	if (bChecked)
+	{
+		pInterface->Rect( 0, nX + 1, nY + 2, nHeight - 3, nHeight - 3, 0xd0c09010 );
+	}
+		
+	if ( UIIsMouseHover( nX, nY, nWidth, nHeight) )
+	{
+		ulTextCol = 0xe0f0f0f0;
+	}
+	pInterface->Text(1, nX + nHeight + 2, nY + 3, ulTextCol, 3, szText );
+
+	if ( (modeFlags & UIBUTTON_FLAG_DISABLED) == 0 )
+	{
+		if ( pUIInstance->IsPressed( nX, nY, nWidth, nHeight ) == TRUE )
+		{
+			pUIInstance->PressIDSet( nButtonID, ulParam, ulIDParam );
+		}
+	}
+}
+
 void UIButtonImpl::Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
 {
 InterfaceInstance*		pInterfaceInstance = pUIInstance->GetInterfaceInstance();

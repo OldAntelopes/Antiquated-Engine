@@ -141,6 +141,8 @@ struct UIXRECT
 
 typedef	UIXRECT(*fnCustomRenderCallback)( UIXObject* pObj, InterfaceInstance* pInterface, UIXRECT& rectInOut, uint32 ulUserParam );
 typedef	BOOL(*fnCustomDragHoldHandlerCallback)(UIXObject* pObj, uint32 ulParam, BOOL bIsHeld, BOOL bFirstPress);
+typedef const char*(*fnCustomTooltipCallback)(UIXObject* pObj, uint32 ulParam);
+
 
 class UIXObject
 {
@@ -161,6 +163,7 @@ public:
 	void				SetDragReceiveCallback(int dragType, fnDragReceiveCallback func, uint32 ulDestParam);
 	void				SetDraggable(int nDragItemType, uint32 ulDragParam);
 	//------------------------------------------
+	void				SetTooltipCallback(fnCustomTooltipCallback func, uint32 ulTooltipParam) { mfnCustomTooltipCallback = func; mulCustomTooltipParam = ulTooltipParam; }
 
 	virtual void		UpdateUIStateData( UIStateData* pData ) {}
 	virtual float		OnValueChange( UIXObject* pxSourceObj, float fNewValue, BOOL bByUserEditFlag ) { return( fNewValue ); }
@@ -191,6 +194,7 @@ protected:
 	virtual void		EndEdit() {}
 	virtual void		OnEscape() {}
 	virtual void		OnFocusedKeyUp( int keyCode ) {}
+	virtual const char*		GetTooltipText();
 
 	void		Update( float delta );
 	UIXRECT		Render( InterfaceInstance* pInterface, UIXRECT rect );
@@ -260,7 +264,7 @@ private:
 	std::map<std::string, int>		mUserParamExList;
 	std::map<int, fnDragReceiveCallback>		mDragMap;
 	std::map<int, uint32>						mDragMapParams;
-	std::string		mTooltipText;
+//	std::string		mTooltipText;
 
 	uint32			mulID;
 	UIXRECT			mDisplayRect;
@@ -273,7 +277,11 @@ private:
 	uint32				mulSelectParam = 0;
 	fnSelectedCallback	mfnRightClickSelectedCallback = NULL;
 	uint32				mulRightClickSelectParam = 0;
-	
+	float				mfHoverTime = 0.0f;
+
+	fnCustomTooltipCallback	mfnCustomTooltipCallback = NULL;
+	uint32					mulCustomTooltipParam = 0;
+
 	//--------------------  Drag n drop stuff
 	// todo - this stuff could probably be standardised into some form of standard draggable object
 
@@ -337,6 +345,7 @@ public:
 	static void							EndDragItemType( int type );
 
 	static void							SetMousewheelHoverObject(UIXObject* pObject);
+	static void							SetActiveTooltip( int priority, const char* szText );
 
 	static void							SetTextEditFocus( UIXObject* pObject );
 	static UIXObject*					GetTextEditFocus() { return( mspTextEditFocusObject ); }
@@ -364,6 +373,7 @@ protected:
 private:
 	static void		ButtonPressHandler( int nButtonID, uint32 ulParam, uint32 ulIDParam );
 	static BOOL		SliderHoldHandler( int nButtonID, uint32 ulParam, uint32 ulIndex, BOOL bIsHeld, BOOL bFirstPress );
+	static void		RenderTooltip(InterfaceInstance* pxInterface);
 
 	static uint32						msulNextObjectID;
 	static std::vector<UIXPage*>		msPagesList;
@@ -382,6 +392,9 @@ private:
 	static int					mshUIXIconsList[MAX_NUM_UIX_ICONS];
 	static int					mshUIXIconOverlays[MAX_NUM_UIX_ICONS];
 	static std::string					msDragText;
+	static std::string					msTooltipText;
+	static int							msnTooltipPriority;
+
 };
 
 

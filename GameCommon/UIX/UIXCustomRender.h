@@ -23,6 +23,8 @@ private:
 	fnCustomDragHoldHandlerCallback		mfnCustomDragHolderHandlerCallback = NULL;
 	uint32			mulUserParam = 0;
 
+
+
 };
 
 

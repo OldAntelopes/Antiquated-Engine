@@ -135,7 +135,14 @@ void		UIInstance::ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, in
 
 void		UIInstance::ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam )
 {
-	ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	if ( modeFlags & UIBUTTON_FLAG_CHECKBOX )
+	{
+		mpUIButtonImpl->DrawCheckbox(this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	}
+	else
+	{
+		ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	}
 }
 
 BOOL		UIInstance::OnReleaseRightButton( int X, int Y )
