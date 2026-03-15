@@ -201,6 +201,8 @@ public:
 	void	TextCentre( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont );
 	void	TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont );
 	const char*	TextLimitWidth( int nLayer, int nX1, int nY, const char* szString, uint32 ulCol, int nFont, int nMaxWidth );
+	const char*	TextLimitWidthCentred( int nLayer, int nX1, int nY, const char* szString, uint32 ulCol, int nFont, int nMaxWidth );
+	
 	void	SetFontFlags( int flags );
 
 	void	RenderStrings( int nLayer );

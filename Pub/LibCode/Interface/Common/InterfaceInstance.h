@@ -30,7 +30,11 @@ public:
 	void	Text( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* szString, ...  );
 	void	TextCentre( int nLayer, int nX1, int nY, uint32 ulCol, int nFont, const char* szString, ... );
 	void	TextRight( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* szString, ... );
+	void	TextBox( int nLayer, int nX, int nY, int nWidth, uint32 ulCol, int nFont, int flags, const char* szString, ... );
+
 	const char*	TextLimitWidth( int nLayer, int nX, int nY, int nMaxWidth, uint32 ulCol, int nFont, const char* szString, ...  );
+	const char*	TextLimitWidthCentred( int nLayer, int nX, int nY, int nMaxWidth, uint32 ulCol, int nFont, const char* text, ... );
+
 	void	SetFontFlags( int flags );
 
 	int		GetStringWidth( const char* pcString, int nFont );

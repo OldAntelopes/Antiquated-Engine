@@ -114,6 +114,29 @@ uint32*		pArgs;
 	return( NULL );
 }
 
+const char*	InterfaceInstance::TextLimitWidthCentred( int nLayer, int nX, int nY, int nMaxWidth, uint32 ulCol, int nFont, const char* text, ... )
+{
+char		acString[2048];
+va_list		marker;
+uint32*		pArgs;
+
+	pArgs = (uint32*)( &text ) + 1;
+
+    va_start( marker, text );     
+	vsprintf( acString, text, marker );
+	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
+
+	const char*		pcTextReached = mpFontSystem->TextLimitWidthCentred( nLayer, nX, nY, acString, ulCol, nFont, nMaxWidth );
+
+	if ( pcTextReached )
+	{
+		return( text + (pcTextReached-acString) );
+	}
+	return( NULL );
+}
+
+
+
 void	InterfaceInstance::Text( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* text, ... )
 {
 char		acString[2048];
@@ -132,6 +155,22 @@ uint32*		pArgs;
 void	InterfaceInstance::SetFontFlags( int flags )
 {
 	mpFontSystem->SetFontFlags( flags );
+}
+
+void	InterfaceInstance::TextBox( int nLayer, int nX, int nY, int nWidth, uint32 ulCol, int nFont, int flags, const char* text, ... )
+{
+char		acString[4096];
+va_list		marker;
+uint32*		pArgs;
+
+	pArgs = (uint32*)( &text ) + 1;
+
+    va_start( marker, text );     
+	vsprintf( acString, text, marker );
+	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
+
+	mpFontSystem->TextBoxMaxHeight( nLayer, nX, nY, acString, ulCol, nFont, nWidth, 1000, flags );
+
 }
 
 void	InterfaceInstance::TextCentre( int nLayer, int nX1, int nY, uint32 ulCol, int nFont, const char* text, ... )
