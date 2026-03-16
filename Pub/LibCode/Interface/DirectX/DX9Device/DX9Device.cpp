@@ -378,6 +378,35 @@ D3DVIEWPORT9	viewData = { (DWORD)X, (DWORD)Y, (DWORD)W, (DWORD)H, 0.0f, 1.0f };
 	hr = mpInterfaceD3DDevice->SetViewport( &viewData );
 }
 
+// Helper struct to pass data to the callback
+struct MonitorEnumData {
+    int targetIndex;
+    int currentIndex;
+    HMONITOR hMonitor;
+};
+
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM lParam) {
+    MonitorEnumData* data = reinterpret_cast<MonitorEnumData*>(lParam);
+    if (data->currentIndex == data->targetIndex) {
+        data->hMonitor = hMonitor;
+        // Stop enumeration
+        return FALSE;
+    }
+    data->currentIndex++;
+    return TRUE;
+}
+
+HMONITOR GetMonitorInfoByIndex(int index, MONITORINFOEX& mi) 
+{
+    MonitorEnumData data = { index, 0, nullptr };
+    EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, reinterpret_cast<LPARAM>(&data));
+    if (data.hMonitor) 
+	{
+		GetMonitorInfo(data.hMonitor, &mi);
+		return data.hMonitor;
+	}
+	return 0;
+}
 
 
 void	InterfaceInternalsDX::SetRenderCanvas()
@@ -474,14 +503,29 @@ int adapterIndex = 0;
 						mpInterfaceInstance->GetWindowWidth(), mpInterfaceInstance->GetWindowHeight(),
 						SWP_SHOWWINDOW );
 	}
+
+	HMONITOR hMonitor = 0;
+
 	// No specific monitor, so find the monitor that the window is currently on
 	if ( nRequestedMonitor == NOTFOUND )
 	{
-		HMONITOR hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTONEAREST);
-		MONITORINFOEX mi;
+		hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTONEAREST);
+	}
+	else
+	{
+	MONITORINFOEX mi;
+		
 		mi.cbSize = sizeof(mi);
-		GetMonitorInfo(hMonitor, &mi);
+		hMonitor = GetMonitorInfoByIndex( nRequestedMonitor, mi);
+	}
 
+	if ( hMonitor == 0 )
+	{
+		SysDebugPrint( "Error determining correct monitor, resorting to default" );
+		adapterIndex = 0;
+	}
+	else
+	{
 		for (UINT i = 0; i < mpD3D->GetAdapterCount(); ++i) 
 		{
 			if (mpD3D->GetAdapterMonitor(i) == hMonitor)
@@ -490,10 +534,6 @@ int adapterIndex = 0;
 				break;
 			}
 		}
-	}
-	else
-	{
-		adapterIndex = nRequestedMonitor;
 	}
 
 	if( FAILED( mpD3D->GetAdapterDisplayMode( adapterIndex, &d3ddm ) ) )
@@ -685,35 +725,6 @@ int		InterfaceGetNumMonitors()
 
 
 
-// Helper struct to pass data to the callback
-struct MonitorEnumData {
-    int targetIndex;
-    int currentIndex;
-    HMONITOR hMonitor;
-};
-
-BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM lParam) {
-    MonitorEnumData* data = reinterpret_cast<MonitorEnumData*>(lParam);
-    if (data->currentIndex == data->targetIndex) {
-        data->hMonitor = hMonitor;
-        // Stop enumeration
-        return FALSE;
-    }
-    data->currentIndex++;
-    return TRUE;
-}
-
-bool GetMonitorInfoByIndex(int index, MONITORINFOEX& mi) 
-{
-    MonitorEnumData data = { index, 0, nullptr };
-    EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, reinterpret_cast<LPARAM>(&data));
-    if (data.hMonitor) 
-	{
-		GetMonitorInfo(data.hMonitor, &mi);
-		return true;
-	}
-	return false;
-}
 
 void	InterfaceGetMonitorDimensions( int nMonitorNum, int* pnOutW, int* pnOutH )
 {

@@ -45,11 +45,23 @@ public:
 	void		ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0 );
 	void		ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0,  float fAlpha = 0.5f );
 
+	// ---------------------- TextBox -----------------------------
 	int			TextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen );
 	void		TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
 	const char*	TextBoxGetText( int nHandle );
 	void		TextBoxEndEdit( int nHandle );
 	void		TextBoxDestroy( int nHandle );
+
+	// ---------------------- Dropdown -----------------------------
+	int			DropdownCreate( void );
+	int			DropdownAddElement( int nHandle, const char* szElementName, uint32 ulElementParam );
+	void		DropdownRender( int nHandle, int ScreenX, int ScreenY, int ScreenW, int ScreenH, int nFullH, float fAlpha );
+	int			DropdownGetSelection( int nHandle, char* szElementNameOut, uint32* pulElementParamOut );
+	uint32		DropdownGetSelectedParam( int nHandle );
+	int			DropdownGetNumElements( int nHandle );
+	void		DropdownSetValueChangeCallback( int nHandle, fnValueChangeCallback callbackFunc, void* pUserParam );
+	void		DropdownDestroy( int nHandle );
+
 
 	//---------------------- UI Operational Functions -----------------------------
 	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL );
