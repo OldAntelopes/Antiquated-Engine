@@ -463,11 +463,11 @@ void	UIXObject::Shutdown()
 	mContainsList.clear();
 }
 
-void		UIXObject::OnReceiveDragItem( int dragType, UIXObject* pxSourceObject, uint32 ulDragParam )
+void		UIXObject::OnReceiveDragItem( int dragType, UIXObject* pxSourceObject, uint32 ulDragParam, const char* szDragFilename )
 {
 	if ( mDragMap[dragType] )
 	{
-		mDragMap[dragType](pxSourceObject, ulDragParam, this, mDragMapParams[dragType] );
+		mDragMap[dragType](pxSourceObject, ulDragParam, this, mDragMapParams[dragType], szDragFilename );
 	}
 }
 

@@ -100,7 +100,7 @@ enum UIX_VALUE_CALLBACK_FLAGS
 
 // Value Update callbacks are used by sliders etc to both inform the user of the current value(s) of the slider and accept changes to the value from the outside
 typedef	float(*fnValueUpdateCallback)( uint32 ulUIXObjectID, float fUIXValue, float fUIXMinRangeVal, float fUIXMaxRangeValue, uint32 ulUserParam, BOOL bIsUIHeld );
-typedef	void(*fnDragReceiveCallback)( UIXObject* pxSourceObject, uint32 ulDragParam, UIXObject* pxDestObject, uint32 ulDragDestParam );
+typedef	void(*fnDragReceiveCallback)( UIXObject* pxSourceObject, uint32 ulDragParam, UIXObject* pxDestObject, uint32 ulDragDestParam, const char* szDragDropFilename );
 typedef	void(*fnSelectedCallback)( UIXObject* pxSourceObject, uint32 ulSelectParam );
 
 class UIStateData
@@ -179,6 +179,7 @@ public:
 
 	// For custom drag activation
 	void				ActivateDragHold(UIXRECT rect, uint32 ulDragParam);
+	virtual void		OnReceiveDragItem( int dragType, UIXObject* pxSourceObject, uint32 ulDragParam, const char* szDragdropFilename = NULL );
 protected:
 	UIXObject( UIXObject* pParent, uint32 uID, UIXRECT rect );
 	virtual ~UIXObject();
@@ -235,7 +236,6 @@ protected:
 
 	
 	virtual void		OnHoverDragItem( int dragType ) {}
-	virtual void		OnReceiveDragItem( int dragType, UIXObject* pxSourceObject, uint32 ulDragParam );
 	virtual BOOL		OnDragHoldUpdate(uint32 ulParam, BOOL bIsHeld, BOOL bFirstPress) { return(FALSE); }		// Optional
 	
 	void				SetDraggableRenderRect(UIXRECT rect) { mDraggableRenderRect = rect; }
