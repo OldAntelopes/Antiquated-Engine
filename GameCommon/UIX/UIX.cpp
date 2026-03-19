@@ -128,6 +128,15 @@ void	UIXObject::Update( float delta )
 	}
 }
 
+void	UIXObject::CloseAllDropdowns( uint32 ulExceptID )
+{
+	OnCloseAllDropdowns( ulExceptID );
+	for ( UIXObject* pContainedObject : mContainsList )
+	{
+		pContainedObject->CloseAllDropdowns(ulExceptID);
+	}
+}
+
 void	UIXObject::CloseAllMenus()
 {
 	OnCloseAllMenus();
@@ -804,6 +813,15 @@ UIXRECT		pageDisplayRect;
 	RenderTooltip(pxInterface);
 }
 
+void		UIX::CloseAllDropdowns( uint32 ulExceptID )
+{
+	for( UIXPage* pxPages : msPagesList )
+	{
+		pxPages->CloseAllDropdowns(ulExceptID);
+	}
+
+}
+
 void		UIX::CloseAllMenus()
 {
 	for( UIXPage* pxPages : msPagesList )
@@ -1031,7 +1049,7 @@ UIXCheckbox*		pNewCheckbox = new UIXCheckbox( pxContainer, msulNextObjectID++, r
 }
 
 
-UIXShape*			UIX::AddShape( UIXObject* pxContainer, UIXRECT rect, int mode, BOOL bBlocks, uint32 ulCol1, uint32 ulCol2, uint32 ulButtonID, uint32 ulButtonParam )
+UIXShape*			UIX::AddShape( UIXObject* pxContainer, UIXRECT rect, eUIXSHAPE_MODE mode, BOOL bBlocks, uint32 ulCol1, uint32 ulCol2, uint32 ulButtonID, uint32 ulButtonParam )
 {
 UIXShape*		pNewShape = new UIXShape( pxContainer, msulNextObjectID++, rect );
 

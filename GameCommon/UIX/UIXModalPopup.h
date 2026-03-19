@@ -15,7 +15,7 @@ protected:
 
 	virtual UIXRECT		OnRender( InterfaceInstance* pInterface, UIXRECT pDisplayRect );
 
-	virtual int		GetSelectionPriorityLayer() { return( 2 ); }
+	virtual int		GetSelectionPriorityLayer() { return(GetBasePriority() +  2 ); }
 private:
 
 };

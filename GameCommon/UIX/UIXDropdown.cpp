@@ -42,8 +42,13 @@ void		UIXDropdown::OnMouseWheel(float fOffset)
 void	UIXDropdown::ToggleExpanded()
 { 
 	mbIsExpanded = !mbIsExpanded;
-
+	if (mbIsExpanded)
+	{
+		UIX::CloseAllDropdowns(GetID());
+	}
 }
+	
+
 
 void	UIXDropdown::OnFocusedKeyUp( int keyCode )
 {
@@ -99,6 +104,15 @@ void	UIXDropdown::OnEscape()
 
 
 
+void	UIXDropdown::OnCloseAllDropdowns( uint32 ulExceptID )
+{
+	if ( ulExceptID != GetID() )
+	{
+		mbIsExpanded = FALSE;
+	}
+}
+
+
 UIXRECT		UIXDropdown::OnRender( InterfaceInstance* pInterface, UIXRECT rect )
 {
 UIXRECT		renderRect = GetActualRenderRect( rect );
@@ -149,6 +163,10 @@ int			entryIndex = 0;
 		expandedRect.y += renderRect.h + 1;
 		expandedRect.h = (mDropdownEntries.size() * 14) + 4;
 		// Show list..
+		if ( m_DropListWidth != 0 )
+		{
+			expandedRect.w = m_DropListWidth;
+		}
 
 		nMaxDropdownH = pInterface->GetHeight() - (expandedRect.y + 4);
 		nMaxNumEntriesInView = (nMaxDropdownH - 4) / 14;

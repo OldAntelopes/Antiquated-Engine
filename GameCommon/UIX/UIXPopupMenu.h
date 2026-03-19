@@ -36,7 +36,7 @@ public:
 	void		SetExpanded( BOOL bFlag );
 
 protected:
-	virtual int			GetSelectionPriorityLayer() { return( 10 ); }
+	virtual int			GetSelectionPriorityLayer() { return( GetBasePriority() + 10 ); }
 
 private:
 
@@ -70,7 +70,7 @@ public:
 protected:
 	void			ClearExpandedChildren();
 private:
-	virtual int		GetSelectionPriorityLayer() { return( 10 ); }
+	virtual int		GetSelectionPriorityLayer() { return(GetBasePriority() +  10 ); }
 	virtual bool		ShouldDisplayChildren() { return false; }
 
 };

@@ -24,7 +24,7 @@ protected:
 	static void			RegisterControlHandlers();
 	virtual bool		OnSelected( int nButtonID, uint32 ulParam );
 	virtual void		EndEdit();
-	virtual int		GetSelectionPriorityLayer() { return(1); }
+	virtual int		GetSelectionPriorityLayer() { return(GetBasePriority() + 1); }
 
 private:
 	static int		TextBoxKeyboardMessageHandlerStatic( int nResponseCode, const char* szInputText, void* pUserObj );

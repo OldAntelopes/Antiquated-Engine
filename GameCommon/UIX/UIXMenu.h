@@ -25,7 +25,7 @@ public:
 	void	SetLastRenderRect(UIXRECT rect) { mLastRenderRect = rect; }
 
 protected:
-	virtual int		GetSelectionPriorityLayer() { return( 10 ); }
+	virtual int		GetSelectionPriorityLayer() { return(GetBasePriority() +  10 ); }
 	virtual void		OnEscape();
 	virtual void		OnCloseAllMenus();
 
@@ -54,7 +54,7 @@ public:
 	virtual UIXRECT		OnRender( InterfaceInstance* pInterface, UIXRECT rect );
 	virtual void		OnPostRender( InterfaceInstance* pInterface, UIXRECT rect );
 private:
-	virtual int		GetSelectionPriorityLayer() { return( 10 ); }
+	virtual int		GetSelectionPriorityLayer() { return(GetBasePriority() +  10 ); }
 	virtual bool		ShouldDisplayChildren() { return false; }
 
 };
