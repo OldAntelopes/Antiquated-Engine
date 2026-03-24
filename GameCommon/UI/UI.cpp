@@ -128,6 +128,11 @@ BOOL		UIOnPress( int X, int Y )
 	return( msTempSingleton.OnPress(X,Y) );
 }
 
+void		UIInstance::CheckboxDraw(int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, BOOL bChecked, uint32 ulParam, uint32 ulIDParam )
+{
+	mpUIButtonImpl->DrawCheckbox(this, nButtonID, nX, nY, nWidth, nHeight, szText, bChecked, ulParam, ulIDParam );
+}
+
 void		UIInstance::ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
 {
 	mpUIButtonImpl->Draw( this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha);
@@ -258,8 +263,8 @@ void		UIInitialise( InterfaceInstance* pInterfaceInstance )
 void		UIInstance::Shutdown( void )
 {
 	// TODO - Cleanup msButtonHandlerList
-	mpUIButtonImpl->Shutdown();
-	mpUITextBoxImpl->Shutdown();
+	mpUIButtonImpl->Shutdown( this );
+	mpUITextBoxImpl->Shutdown( this );
 }
 
 void	UIShutdown()

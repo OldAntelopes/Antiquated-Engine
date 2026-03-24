@@ -17,9 +17,10 @@ class UIButtonImpl
 {
 public:
 	UIButtonImpl( UIInstance* pUIInstance );
-	void		Shutdown();
+	void		Shutdown(UIInstance* pUIInstance);
 
 	void		Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha );
+	void		DrawCheckbox(UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, BOOL bChecked, uint32 ulParam, uint32 ulIDParam, float fAlpha = 1.0f );
 	void		NewFrame( void );
 
 private:

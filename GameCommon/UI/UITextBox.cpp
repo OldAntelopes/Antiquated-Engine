@@ -444,7 +444,7 @@ BOOL		UITextBoxOnRelease( int X, int Y )
 }
 
 
-void	UITextBoxImpl::Shutdown( void )
+void	UITextBoxImpl::Shutdown(UIInstance* pUIInstance)
 {
 UITextBox*		pTextBox = mspTextBoxList;
 UITextBox*		pNext;
@@ -460,5 +460,5 @@ UITextBox*		pNext;
 
 void	UITextboxShutdown( void )
 {
-	mspTempSingleton->mpUITextBoxImpl->Shutdown();
+	mspTempSingleton->mpUITextBoxImpl->Shutdown(mspTempSingleton);
 }

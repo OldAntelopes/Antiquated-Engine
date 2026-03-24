@@ -22,6 +22,7 @@ enum eUIBUTTON_MODE_FLAGS
 	UIBUTTON_FLAG_NO_LABEL = 0x8,
 	UIBUTTON_FLAG_SMALL_FONT = 0x10,
 	UIBUTTON_FLAG_FLAT_STYLE = 0x20,
+	UIBUTTON_FLAG_CHECKBOX = 0x40,
 };
 //-------------------------------------- UIButton
 
@@ -42,6 +43,7 @@ public:
 	//-----------------------------------------
 	void		ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0 );
 	void		ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0,  float fAlpha = 0.5f );
+	void		CheckboxDraw(int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, BOOL bChecked, uint32 ulParam, uint32 ulIDParam = 0);
 
 	int			TextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen );
 	void		TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );

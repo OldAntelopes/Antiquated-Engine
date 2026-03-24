@@ -17,7 +17,7 @@ class UITextBoxImpl
 {
 public:
 	UITextBoxImpl( UIInstance* pUIInstance );
-	void		Shutdown();
+	void		Shutdown(UIInstance* pUIInstance);
 
 //	void		Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha );
 	void		NewFrame( void );

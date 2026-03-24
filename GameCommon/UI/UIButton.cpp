@@ -19,7 +19,7 @@ public:
 
 	void	Render( InterfaceInstance* pInterface, int X, int Y, int W, int H, const char* szText, uint32 modeFlags, float fAlpha );
 
-	void	Free( void );
+	void	Free( InterfaceInstance* pInterface);
 
 private:
 	void	InitOverlays( InterfaceInstance* pInterface );
@@ -53,7 +53,7 @@ int		nLoop;
 }
 
 
-void	ButtonStyle::Free( void )
+void	ButtonStyle::Free(InterfaceInstance* pInterface)
 {
 int		nLoop;
 
@@ -200,9 +200,9 @@ UIButtonImpl::UIButtonImpl( UIInstance* pUIInstance )
 
 }
 	
-void		UIButtonImpl::Shutdown()
+void		UIButtonImpl::Shutdown(UIInstance* pUIInstance)
 {
-	mpButtonStyle->Free();
+	mpButtonStyle->Free( pUIInstance->GetInterfaceInstance());
 
 }
 
@@ -212,15 +212,6 @@ void		UIButtonImpl::NewFrame( void )
 }
 
 
-void		UIButtonsNewFrame( void )
-{
-	mspTempSingleton->mpUIButtonImpl->NewFrame();
-}
-
-void		UIButtonsShutdown( void )
-{
-	mspTempSingleton->mpUIButtonImpl->Shutdown();
-}
 
 void		UIButtonDrawBasic( InterfaceInstance* pInterface, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, uint32 modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
 {
@@ -240,11 +231,36 @@ int		nTextOffsetY = 2;
 		ulTextCol = 0xE0F0E080;
 	}
 
-	InterfaceRect( 0, nX, nY, nWidth, nHeight, ulButtonMainCol );
+	pInterface->Rect( 0, nX, nY, nWidth, nHeight, ulButtonMainCol );
 	InterfaceSetFontFlags( FONT_FLAG_DROP_SHADOW );
 		
-	InterfaceTextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, szText, ulTextCol, 0 ); 
+	pInterface->TextCentre( 1, nX + (nWidth/2), nY + nTextOffsetY, ulTextCol, 0, szText );
 	InterfaceSetFontFlags( 0 );
+}
+
+void	UIButtonImpl::DrawCheckbox(UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, BOOL bChecked, uint32 ulParam, uint32 ulIDParam, float fAlpha)
+{
+	InterfaceInstance* pInterface = pUIInstance->GetInterfaceInstance();
+
+	uint32		ulTextCol = 0xc0c0c0c0;
+	pInterface->OutlineBox(0, nX, nY, nHeight, nHeight, 0xC0505050);
+
+	if (bChecked)
+	{
+		pInterface->Rect(0, nX + 1, nY + 2, nHeight - 3, nHeight - 3, 0xd0808080);
+		ulTextCol = 0xd0e0e0e0;
+	}
+
+	if (pUIInstance->HoverItem(nX, nY, nWidth, nHeight) == TRUE)
+	{
+		ulTextCol = 0xe0f0f0f0;
+	}
+	pInterface->Text(1, nX + nHeight + 2, nY + 3, ulTextCol, 3, szText);
+
+	if ( pUIInstance->IsPressed(nX, nY, nWidth, nHeight) == TRUE )
+	{
+		pUIInstance->PressIDSet(nButtonID, ulParam, ulIDParam);
+	}
 }
 
 void UIButtonImpl::Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
@@ -284,10 +300,6 @@ void		UIButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight,
 	mspTempSingleton->ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha);
 }
 
-void		UIButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam  )
-{
-	mspTempSingleton->ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
-}
 
 
 BOOL		UIButtonRegion( int nButtonID, int nX, int nY, int nWidth, int nHeight, uint32 ulParam, uint32 ulIDParam )
@@ -301,3 +313,22 @@ BOOL	bIsHovered = UIHoverItem( nX, nY, nWidth, nHeight );
 	return( bIsHovered );
 }
 
+
+
+//--------------------------------
+// Legacy singleton mode
+
+void		UIButtonDraw(int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam)
+{
+	mspTempSingleton->ButtonDrawAlpha(nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f);
+}
+
+void		UIButtonsNewFrame(void)
+{
+	mspTempSingleton->mpUIButtonImpl->NewFrame();
+}
+
+void		UIButtonsShutdown(void)
+{
+	mspTempSingleton->mpUIButtonImpl->Shutdown(mspTempSingleton);
+}
