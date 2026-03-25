@@ -32,6 +32,8 @@ UIXRECT		occupyRect;
 	return displayRect;
 }
 
+
+
 BOOL	UIXCustomRender::OnDragHoldUpdate(uint32 ulIndex, BOOL bIsHeld, BOOL bFirstPress)
 {
 	if (mfnCustomDragHolderHandlerCallback)

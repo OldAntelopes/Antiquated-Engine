@@ -128,9 +128,6 @@ void	Particle::DefaultRender( void )
 
 			if (mfSpriteAspect != 1.0f )
 			{
-				// TODO - The 1920x1080Aspect bit doesnt work unless camera is in default direction because
-				// it assumes XZ orientation.. needs reworking to take note of actual orientation
-
 				Sprites3DAddSpriteRotScaleXY( hSpriteGroup, GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot(), mfSpriteAspect );			
 			}
 			else

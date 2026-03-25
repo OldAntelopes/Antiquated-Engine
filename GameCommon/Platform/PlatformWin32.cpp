@@ -816,8 +816,6 @@ float			PlatformGetFrameDelta( void )
 
 void		PlatformUpdateCursor( void )
 {
-	if ( mbThisWindowIsFocused )
-	{
 	HCURSOR hCurrent = GetCursor();
 /*
 	HCURSOR hSizeNS = LoadCursor(NULL, IDC_SIZENS);
@@ -829,25 +827,23 @@ void		PlatformUpdateCursor( void )
 		if (hCurrent != hSizeNS && hCurrent != hSizeWE &&
 			hCurrent != hSizeNWSE && hCurrent != hSizeNESW &&  hCurrent != hSizeAll)
 */
-		{		
-			if ( mbActivateMouseOverCursor )
+	{		
+		if ( mbActivateMouseOverCursor )
+		{
+			if ( mbHandCursorSet == FALSE )
 			{
-				if ( mbHandCursorSet == FALSE )
-				{
-					SetCursor( mhPlatformWin32HandCursor );
-					mbHandCursorSet = TRUE;
-				}
-			}
-			else
-			{
-				SetCursor( mhPlatformWin32ArrowCursor );
-				mbHandCursorSet = FALSE;
+				SetCursor( mhPlatformWin32HandCursor );
+				mbHandCursorSet = TRUE;
 			}
 		}
-		mbActivateMouseOverCursor = FALSE;
+		else
+		{
+			SetCursor( mhPlatformWin32ArrowCursor );
+			mbHandCursorSet = FALSE;
+		}
 	}
-
-
+	mbActivateMouseOverCursor = FALSE;
+	
 }
 
 BOOL		PlatformUpdateFrame( void )

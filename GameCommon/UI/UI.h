@@ -23,6 +23,7 @@ enum eUIBUTTON_MODE_FLAGS
 	UIBUTTON_FLAG_SMALL_FONT = 0x10,
 	UIBUTTON_FLAG_FLAT_STYLE = 0x20,
 	UIBUTTON_FLAG_CHECKBOX = 0x40,
+	UIBUTTON_FLAG_ISCHECKED = 0x80,
 };
 //-------------------------------------- UIButton
 
@@ -45,11 +46,23 @@ public:
 	void		ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam = 0,  float fAlpha = 0.5f );
 	void		CheckboxDraw(int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, BOOL bChecked, uint32 ulParam, uint32 ulIDParam = 0);
 
+	// ---------------------- TextBox -----------------------------
 	int			TextBoxCreate( int nMode, const char* szInitialText, int nMaxTextLen );
 	void		TextBoxRender( int nHandle, int nScreenX, int nScreenY, int nScreenW, int nScreenH );
 	const char*	TextBoxGetText( int nHandle );
 	void		TextBoxEndEdit( int nHandle );
 	void		TextBoxDestroy( int nHandle );
+
+	// ---------------------- Dropdown -----------------------------
+	int			DropdownCreate( void );
+	int			DropdownAddElement( int nHandle, const char* szElementName, uint32 ulElementParam );
+	void		DropdownRender( int nHandle, int ScreenX, int ScreenY, int ScreenW, int ScreenH, int nFullH, float fAlpha );
+	int			DropdownGetSelection( int nHandle, char* szElementNameOut, uint32* pulElementParamOut );
+	uint32		DropdownGetSelectedParam( int nHandle );
+	int			DropdownGetNumElements( int nHandle );
+	void		DropdownSetValueChangeCallback( int nHandle, fnValueChangeCallback callbackFunc, void* pUserParam );
+	void		DropdownDestroy( int nHandle );
+
 
 	//---------------------- UI Operational Functions -----------------------------
 	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL );
@@ -76,6 +89,7 @@ public:
 	void		RightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 0 );
 	BOOL		IsPressed( int X, int Y, int W, int H );
 	BOOL		HoverItem( int X, int Y, int W, int H );
+	BOOL		IsMouseHover( int X, int Y, int W, int H );
 	BOOL		IsRightPressed( int X, int Y, int W, int H );
 
 	void		GetCurrentCursorPosition( int* pnX, int* pnY );
@@ -176,6 +190,7 @@ extern void			UITextBoxDestroy( int nHandle );
 //----------------------------------------------------------------------------
 //---------------------- UI Operational Functions -----------------------------
 extern void		UIInitialise( InterfaceInstance* pInterfaceInstance = NULL );
+extern void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance );
 extern void		UIUpdate( float fDelta );
 extern void		UIShutdown( void );
 
@@ -199,6 +214,7 @@ extern void		UIRightPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIndex = 
 extern BOOL		UIIsPressed( int X, int Y, int W, int H );
 extern BOOL		UIHoverItem( int X, int Y, int W, int H );
 extern BOOL		UIIsRightPressed( int X, int Y, int W, int H );
+extern BOOL		UIIsMouseHover( int X, int Y, int W, int H );
 
 extern void		UIGetCurrentCursorPosition( int* pnX, int* pnY );
 extern void		UISetCurrentCursorPosition( int nX, int nY );

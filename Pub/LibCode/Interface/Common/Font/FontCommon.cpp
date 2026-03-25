@@ -725,6 +725,7 @@ const char* InterfaceTextLimitWidth( int nLayer, int nX, int nY, const char* szS
 	return( InterfaceInstanceMain()->TextLimitWidth( nLayer, nX, nY, nMaxWidth, ulCol, nFont, szString ) );
 }
 
+
 const char* FontSystem::TextLimitWidth( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont, int nMaxWidth )
 {
 char	acBuff[512];
@@ -788,8 +789,7 @@ int		nPreBackstepPos;
 
 }
 
-
-char* InterfaceTextLimitWidthCentred( int nLayer, int nX, int nY, const char* szString, int ulCol, int nFont, int nMaxWidth )
+const char* FontSystem::TextLimitWidthCentred( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont, int nMaxWidth )
 {
 char	acBuff[512];
 int		nLoop = 0;
@@ -850,6 +850,12 @@ int		nPreBackstepPos;
 	return( (char*)szString + nLoop );
 }
 
+
+const char* InterfaceTextLimitWidthCentred( int nLayer, int nX, int nY, const char* szString, int ulCol, int nFont, int nMaxWidth )
+{
+	return( InterfaceInstanceMain()->TextLimitWidthCentred( nLayer, nX, nY, nMaxWidth, ulCol, nFont, szString ) );
+}
+
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 	InterfaceInstanceMain()->Text( nLayer, nX, nY, ulCol, nFont, szString );
@@ -879,6 +885,12 @@ void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 
 INTERFACE_API void InterfaceTextCenter( int nLayer, int nX1, int nX2, int nY, const char* szString, uint32 ulCol, int nFont )
 {
 	InterfaceInstanceMain()->mpFontSystem->TextCentre( nLayer, nX1, nX2, nY, szString, ulCol, nFont );
+}
+
+
+void	FontSystem::SetFontFlags( int flags )
+{
+	mnCurrentFontFlags = flags;
 }
 
 /***************************************************************************
@@ -1664,11 +1676,11 @@ int		nMaxY = NOTFOUND;
 	{
 		if ( bLeftAlign )
 		{
-			InterfaceText( nLayer, nX, nY, szString, ulCol, font );
+			Text( nLayer, nX, nY, szString, ulCol, font );
 		}
 		else
 		{
-			InterfaceTextCenter( nLayer, nX, nX + nMaxWidth, nY, szString, ulCol, font );
+			TextCentre( nLayer, nX, nX + nMaxWidth, nY, szString, ulCol, font );
 		}
 		nY += nLineSep;
 	}
@@ -1676,12 +1688,13 @@ int		nMaxY = NOTFOUND;
 	{
 		if ( bLeftAlign )
 		{
-			pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+			pcEndOfLine = TextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
 		}
 		else
 		{
-			pcEndOfLine = InterfaceTextLimitWidthCentred( nLayer, nX + (nMaxWidth/2), nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+			pcEndOfLine = TextLimitWidthCentred( nLayer, nX + (nMaxWidth/2), nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
 		}
+
 		nY += nLineSep;
 		while ( pcEndOfLine != NULL )
 		{
@@ -1691,14 +1704,14 @@ int		nMaxY = NOTFOUND;
 			if ( ( bLeftAlign == FALSE ) &&
 				 ( nStringWidth < nMaxWidth ) )
 			{
-				InterfaceTextCenter( nLayer, nX, nX + nMaxWidth, nY, pcEndOfLine, ulCol, font );		
+				TextCentre( nLayer, nX, nX + nMaxWidth, nY, pcEndOfLine, ulCol, font );		
 				pcEndOfLine = NULL;
 			}
 			else
 			{
 				// todo - if there is a maxY and this is the last line that will fit, 
 				// replace the last word of the text with '...' (if we can)
-				pcEndOfLine = InterfaceTextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
+				pcEndOfLine = TextLimitWidth( nLayer, nX, nY, (char*)pcEndOfLine, ulCol, font, nMaxWidth );
 			}
 			nY += nLineSep;
 

@@ -46,6 +46,7 @@ public:
 
 	void		SetSelectionChangedCallback( fnDropdownSelectionChangedCallback func ) { mSelectionChangedCallback = func; }
 	void		RegisterValueUpdateHandler( fnDropdownUpdateHandler func ) { mValueUpdateFunc = func; }
+	void		SetDropListWidth( int droplistWidth ) { m_DropListWidth = droplistWidth; }
 
 	virtual void	OnMouseWheel(float fOffset);
 
@@ -60,11 +61,12 @@ protected:
 	virtual void		OnUpdate( float fDelta );
 	virtual bool		OnSelected( int nButtonID, uint32 ulParam);
 	virtual void		OnFocusedKeyUp( int keyCode );
+	virtual void		OnCloseAllDropdowns( uint32 ulExceptID );
 
 	void			ToggleExpanded(); 
 	
 	uint32			GetNextIndex( UIXDropdownEntry* pDropdownEntry ) { mDropdownEntries.push_back( pDropdownEntry ); return( mulNextElementIndex++ ); }
-	virtual int		GetSelectionPriorityLayer() { if ( mbIsExpanded ) return( 3 ); return( 1 ); }
+	virtual int		GetSelectionPriorityLayer() { if ( mbIsExpanded ) return( GetBasePriority() + 3 ); return( GetBasePriority() + 1 ); }
 	virtual void			OnEscape();
 
 private:
@@ -78,6 +80,7 @@ private:
 	fnDropdownUpdateHandler	mValueUpdateFunc = NULL;
 	int		mnSelectedIndex = NOTFOUND;
 
+	int		m_DropListWidth = 0;
 
 	UIXScrollbar* mpScrollbar = NULL;
 };

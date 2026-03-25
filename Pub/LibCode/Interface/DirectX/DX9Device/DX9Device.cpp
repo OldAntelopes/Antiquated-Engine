@@ -31,14 +31,12 @@ LPGRAPHICSDEVICE       mpLegacyInterfaceD3DDeviceSingleton = NULL; // Our render
 
 LPGRAPHICS        mpD3D       = NULL; // Used to create the D3DDevice
 
-BOOL	mboMinPageSize = TRUE;
 BOOL	msbInterfaceGlobalTextureFilteringEnable = TRUE;
 
 D3DPRESENT_PARAMETERS	mLastUsedD3dpp;
 
 u64		mullInterfaceLastPresentTick = 0;
 
-BOOL	mboCurrentlyFullscreen = FALSE;
 
 // TODO - Really this needs to be in InterfaceInstance.. hack atm means we assume only 1 instance ever does things with it
 IDirect3DSurface9*		mspInterfaceRenderCanvas = NULL;
@@ -380,6 +378,35 @@ D3DVIEWPORT9	viewData = { (DWORD)X, (DWORD)Y, (DWORD)W, (DWORD)H, 0.0f, 1.0f };
 	hr = mpInterfaceD3DDevice->SetViewport( &viewData );
 }
 
+// Helper struct to pass data to the callback
+struct MonitorEnumData {
+    int targetIndex;
+    int currentIndex;
+    HMONITOR hMonitor;
+};
+
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM lParam) {
+    MonitorEnumData* data = reinterpret_cast<MonitorEnumData*>(lParam);
+    if (data->currentIndex == data->targetIndex) {
+        data->hMonitor = hMonitor;
+        // Stop enumeration
+        return FALSE;
+    }
+    data->currentIndex++;
+    return TRUE;
+}
+
+HMONITOR GetMonitorInfoByIndex(int index, MONITORINFOEX& mi) 
+{
+    MonitorEnumData data = { index, 0, nullptr };
+    EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, reinterpret_cast<LPARAM>(&data));
+    if (data.hMonitor) 
+	{
+		GetMonitorInfo(data.hMonitor, &mi);
+		return data.hMonitor;
+	}
+	return 0;
+}
 
 
 void	InterfaceInternalsDX::SetRenderCanvas()
@@ -467,14 +494,38 @@ int		InterfaceInternalsDX::GetDXDeviceCreateParams( HWND hWindow, BOOL boMinPage
 D3DDISPLAYMODE d3ddm;
 int adapterIndex = 0;
 
+	// Resize the window if we're in windowed mode and we have just left fullscreen
+	if( ( boFullscreen == FALSE ) &&
+		( mpInterfaceInstance->WasFullscreen() == TRUE ) )
+	{	
+		SetWindowPos( hWindow, HWND_NOTOPMOST,
+						mnWindowLeft, mnWindowTop,
+						mpInterfaceInstance->GetWindowWidth(), mpInterfaceInstance->GetWindowHeight(),
+						SWP_SHOWWINDOW );
+	}
+
+	HMONITOR hMonitor = 0;
+
 	// No specific monitor, so find the monitor that the window is currently on
 	if ( nRequestedMonitor == NOTFOUND )
 	{
-	HMONITOR hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTONEAREST);
+		hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTONEAREST);
+	}
+	else
+	{
 	MONITORINFOEX mi;
+		
 		mi.cbSize = sizeof(mi);
-		GetMonitorInfo(hMonitor, &mi);
+		hMonitor = GetMonitorInfoByIndex( nRequestedMonitor, mi);
+	}
 
+	if ( hMonitor == 0 )
+	{
+		SysDebugPrint( "Error determining correct monitor, resorting to default" );
+		adapterIndex = 0;
+	}
+	else
+	{
 		for (UINT i = 0; i < mpD3D->GetAdapterCount(); ++i) 
 		{
 			if (mpD3D->GetAdapterMonitor(i) == hMonitor)
@@ -483,10 +534,6 @@ int adapterIndex = 0;
 				break;
 			}
 		}
-	}
-	else
-	{
-		adapterIndex = nRequestedMonitor;
 	}
 
 	if( FAILED( mpD3D->GetAdapterDisplayMode( adapterIndex, &d3ddm ) ) )
@@ -678,44 +725,26 @@ int		InterfaceGetNumMonitors()
 
 
 
-// Helper struct to pass data to the callback
-struct MonitorEnumData {
-    int targetIndex;
-    int currentIndex;
-    HMONITOR hMonitor;
-};
-
-BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM lParam) {
-    MonitorEnumData* data = reinterpret_cast<MonitorEnumData*>(lParam);
-    if (data->currentIndex == data->targetIndex) {
-        data->hMonitor = hMonitor;
-        // Stop enumeration
-        return FALSE;
-    }
-    data->currentIndex++;
-    return TRUE;
-}
-
-bool GetMonitorInfoByIndex(int index, MONITORINFO& mi) 
-{
-    MonitorEnumData data = { index, 0, nullptr };
-    EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, reinterpret_cast<LPARAM>(&data));
-    if (data.hMonitor) 
-	{
-		GetMonitorInfo(data.hMonitor, &mi);
-		return true;
-	}
-	return false;
-}
 
 void	InterfaceGetMonitorDimensions( int nMonitorNum, int* pnOutW, int* pnOutH )
 {
-MONITORINFO mi = { sizeof(mi) };
-			
+MONITORINFOEX mi;
+DEVMODE dm;
+		
+	mi.cbSize = sizeof(mi);
 	GetMonitorInfoByIndex(nMonitorNum, mi);
-	*pnOutW = mi.rcMonitor.right - mi.rcMonitor.left;
-	*pnOutH = mi.rcMonitor.bottom - mi.rcMonitor.top;
 
+	dm.dmSize = sizeof(dm);
+	if (EnumDisplaySettings(mi.szDevice, ENUM_CURRENT_SETTINGS, &dm)) 
+	{
+		*pnOutW = dm.dmPelsWidth;
+		*pnOutH = dm.dmPelsHeight;
+	}
+	else
+	{
+		*pnOutW = mi.rcMonitor.right - mi.rcMonitor.left;
+		*pnOutH = mi.rcMonitor.bottom - mi.rcMonitor.top;
+	}
 }
 
 void	 InterfaceInstance::CreateD3DInstanceIfNeeded()
@@ -769,6 +798,8 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 	bool		bFullScreenAntiAlias = false;
 
 		mboMinPageSize = boMinPageSize;
+		mnMinBackBufferSizeW = nBackBufferMinW;
+		mnMinBackBufferSizeH = nBackBufferMinH;
 		if ( mnWindowWidth == 0 ) mnWindowWidth = 800;
 		if ( mnWindowHeight == 0 ) mnWindowHeight = 800;
 
@@ -806,7 +837,8 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 		if ( mboFullScreen )
 		{
 		RECT rc;
-		MONITORINFO mi = { sizeof(mi) };
+		MONITORINFOEX mi;
+			mi.cbSize = sizeof(mi);	
 			
 			if ( mnRequestedMonitorNum == NOTFOUND )
 			{
@@ -1002,6 +1034,7 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 		mpInterfaceInternals->SetStandardMaterial();
 	}
 
+	mboCurrentlyFullscreen = mboFullScreen;
 #ifdef TUD9
 	if ( pNewGraphicsDevice )
 	{
@@ -1160,7 +1193,7 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		if ( HasWindowChanged() == TRUE )
 		{
 			ReleaseForDeviceReset();
-			InitD3D( mhWindow, mboMinPageSize);
+			InitD3D( mhWindow, mboMinPageSize, mnMinBackBufferSizeW, mnMinBackBufferSizeH );
 
 			if ( mpInterfaceInternals->mpInterfaceD3DDevice != NULL )
 			{

@@ -140,7 +140,14 @@ void		UIInstance::ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, in
 
 void		UIInstance::ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam )
 {
-	ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	if ( modeFlags & UIBUTTON_FLAG_CHECKBOX )
+	{
+		mpUIButtonImpl->DrawCheckbox(this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	}
+	else
+	{
+		ButtonDrawAlpha( nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	}
 }
 
 BOOL		UIInstance::OnReleaseRightButton( int X, int Y )
@@ -255,7 +262,12 @@ void		UIInstance::Initialise( InterfaceInstance* pInterfaceInstance )
 	mpUITextBoxImpl = new UITextBoxImpl( this );
 }
 
-void		UIInitialise( InterfaceInstance* pInterfaceInstance )
+void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance )
+{
+	mpInterfaceInstance = pInterfaceInstance;
+}
+
+void	UIInitialise(InterfaceInstance* pInterfaceInstance)
 {
 	msTempSingleton.Initialise( pInterfaceInstance );
 }
@@ -358,7 +370,8 @@ void		UIPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 	msTempSingleton.PressIDSet( nButtonID, ulParam, ulIDParam );
 }
 
-BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
+
+BOOL		UIInstance::IsMouseHover( int X, int Y, int W, int H )
 {
 int		hoverX, hoverY;
 
@@ -368,10 +381,24 @@ int		hoverX, hoverY;
 		 ( hoverY > Y ) &&
 		 ( hoverY < Y + H ) )
 	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+BOOL		UIInstance::HoverItem( int X, int Y, int W, int H )
+{
+	if ( IsMouseHover( X, Y, W, H ) )
+	{
 		PlatformSetMouseOverCursor( TRUE );
 		return( TRUE );
 	}
 	return( FALSE );
+}
+
+BOOL		UIIsMouseHover( int X, int Y, int W, int H )
+{
+	return( msTempSingleton.IsMouseHover( X, Y, W, H ) );
 }
 
 BOOL		UIHoverItem( int X, int Y, int W, int H )

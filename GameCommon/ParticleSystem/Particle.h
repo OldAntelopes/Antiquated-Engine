@@ -62,24 +62,24 @@ public:
 protected:
 
 	float		mfTimeAlive = 0.0f;
-
-private:
-	void		DefaultRender( void );
-	
 	int			mnParticleGraphicsNum;
-	VECT		mxPos;
-	VECT		mxVel;
-	int			mType;
-	uint32		mulCol;
 	float		mfLongevity;
 	float		mfFadeInTime = 0.0f;
 	float		mfSpriteScale;
 	float		mfSpriteAspect = 1.0f;
+	VECT		mxPos;
+	VECT		mxVel;
+	int			mType;
+	uint32		mulCol;
 	float		mfRot = 0.0f;
 	float		mfRotSpeed = 0.0f;
 	int			mnSpriteFrameNum;
 	uint32		mulParamChannel;
 
+
+private:
+	void		DefaultRender( void );
+	
 	Particle*	mpNext;
 
 };
