@@ -575,7 +575,11 @@ VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
 //-----------------------------------------------------------------------------
 void	SpriteGroup::ApplyRenderFlags(  )
 {
-	if ( mRenderFlags & kSpriteRender_Subtractive )
+	if (mRenderFlags & kSpriteRender_DestInv)
+	{
+		EngineSetBlendMode( BLEND_MODE_DESTINV);
+	}
+	else if ( mRenderFlags & kSpriteRender_Subtractive )
 	{
 		if ( mRenderFlags & kSpriteRender_ColourBlend )
 		{
