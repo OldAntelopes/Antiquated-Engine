@@ -899,27 +899,51 @@ SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
 
 
 
+void Sprites3DCommonRenderSetup( BOOL bUseZWrite )
+{
+	Sprites3DCreateCamFacingOffsets( 1.0f );
+	EngineEnableCulling( 0 );
+
+	if (bUseZWrite == TRUE)
+	{
+		EngineEnableBlend(FALSE);
+		EngineEnableZWrite(TRUE);
+	}
+	else
+	{
+		EngineEnableBlend(TRUE);
+		EngineEnableZWrite(FALSE);
+	}
+}
+
+void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite )
+{
+SpriteGroup*	pSpriteGroups = mspSpriteGroups;
+	
+	Sprites3DCommonRenderSetup(bUseZWrite);
+
+	while( pSpriteGroups )
+	{
+		if ( pSpriteGroups->mLayer == nLayerNum )
+		{
+			pSpriteGroups->Render();
+		}
+		pSpriteGroups = pSpriteGroups->mpNext;
+	}
+	mpEngineDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+    mpEngineDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	msSprite3dActiveLayers[nLayerNum] = false;
+}
+
 void Sprites3DFlush( BOOL bUseZWrite )
 {
 SpriteGroup*	pSpriteGroups = mspSpriteGroups;
 
-	Sprites3DCreateCamFacingOffsets( 1.0f );
-	EngineEnableCulling( 0 );
-	if ( bUseZWrite == TRUE )
-	{
-		EngineEnableBlend( FALSE );
-		EngineEnableZWrite( TRUE );
-	}
-	else
-	{
-		EngineEnableBlend( TRUE );
-		EngineEnableZWrite( FALSE );
-	}
+	Sprites3DCommonRenderSetup(bUseZWrite);
 
 	for (auto& layerActive : msSprite3dActiveLayers)
 	{
 		pSpriteGroups = mspSpriteGroups;
-		// TODO: Render in layers
 		while( pSpriteGroups )
 		{
 			if ( pSpriteGroups->mLayer == layerActive.first )
@@ -928,22 +952,8 @@ SpriteGroup*	pSpriteGroups = mspSpriteGroups;
 			}
 			pSpriteGroups = pSpriteGroups->mpNext;
 		}
-
 	}
 
 	mpEngineDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
     mpEngineDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-	/*
-	        lpDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_GOURAUD );
-	    lpDevice->SetRenderState( D3DRS_SPECULARENABLE, FALSE );
-        lpDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-        lpDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
-        lpDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-        lpDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-        lpDevice->SetRenderState( D3DRS_COLORVERTEX, TRUE );
-        lpDevice->SetRenderState( D3DRS_FILLMODE,  D3DFILL_SOLID );
-        lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
-	    lpDevice->SetRenderState( D3DRS_AMBIENT, 0xFFFFFFFF );  //?
-        lpDevice->SetRenderState( D3DRS_CLIPPING, TRUE );
-		*/
 }

@@ -61,6 +61,32 @@ void	ParticleManagerAddParticleToLayer( RegisteredParticleList*	pRegisteredParti
 	pRegisteredParticleList->mParticleLayerMap[layer] = pParticle;
 }
 
+Particle*		ParticleManagerAddParticleToGroup( ParticleGroup* pParticleGroup, const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
+{
+Particle*		pNewParticle = NULL;
+RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
+int layer = pParticleGroup->GetGroupLayerID();
+
+	while( pRegisteredParticleList )
+	{
+		// TODO - Replace with hash lookup
+		if ( stricmp( pRegisteredParticleList->mszParticleName, szParticleName ) == 0 )
+		{
+			pNewParticle = pRegisteredParticleList->mfnParticleNew();
+			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, layer, pUserObject );
+			
+			if ( msActiveParticleLayers[layer] == false )
+			{
+				msActiveParticleLayers[layer] = true;
+			}
+			pParticleGroup->AddParticle(pNewParticle);
+			return( pNewParticle );
+		}
+		pRegisteredParticleList = pRegisteredParticleList->mpNext;
+	}
+	return( NULL );
+}
+
 Particle*		ParticleManagerAddParticle( const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
 {
 Particle*		pNewParticle = NULL;
@@ -74,7 +100,6 @@ RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
 			pNewParticle = pRegisteredParticleList->mfnParticleNew();
 			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel, pUserObject );
 
-			// TODO - Channel = layer (when needed)
 			ParticleManagerAddParticleToLayer(pRegisteredParticleList, pNewParticle, ulInitParamChannel);
 			return( pNewParticle );
 		}
@@ -104,6 +129,46 @@ void	ParticleManagerDeleteParticle( Particle* pParticle )
 	pParticle->SetTypeID( IN_MORGUE );
 }
 
+
+//---------------------------------------------------------
+void	ParticleGroup::Update( float delta )
+{
+	for (Particle* pParticle : mpParticleList)
+	{
+		if ( pParticle->GetTypeID() != IN_MORGUE )
+		{
+			pParticle->Update( delta );
+		}
+	}
+
+	auto it = mpParticleList.begin();
+	
+	while(it != mpParticleList.end())
+	{
+		Particle* pParticle = *it;
+
+		if( pParticle->GetTypeID() == IN_MORGUE) 
+		{
+	        it = mpParticleList.erase(it);
+	    }
+	    else ++it;
+	}
+}
+
+void	ParticleGroup::Render()
+{
+	for (Particle* pParticle : mpParticleList)
+	{
+		pParticle->Render();		
+	}
+
+	Sprites3DFlushLayer(mGroupLayerNum, FALSE );
+
+}
+
+
+//---------------------------------------
+
 void		ParticleManagerInitGraphics( void )
 {
 
@@ -119,6 +184,19 @@ void		ParticleManagerInit( void )
 {
 
 }
+
+int		msnParticleGroupLayerNum = 1000;
+
+ParticleGroup*	ParticleManagerCreateParticleGroup( void )
+{
+	return(new ParticleGroup(msnParticleGroupLayerNum++));
+}
+
+void				ParticleManagerDeleteParticleGroup( ParticleGroup* pParticleGroup )
+{
+	delete pParticleGroup;
+}
+
 
 void	ParticleManagerDeleteAllActiveParticles( void )
 {

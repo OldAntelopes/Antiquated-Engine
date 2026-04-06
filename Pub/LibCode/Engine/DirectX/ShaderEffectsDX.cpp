@@ -146,6 +146,24 @@ void EngineShaderEffectSetConstantFloatArray(int handle, const char* szConstantN
 	pEffect->SetFloatArray( hParam, pfVals, nNumFloats );
 }
 
+
+void EngineShaderEffectSetConstantBool(int handle, const char* szConstantName, bool bFlag )
+{
+    ID3DXEffect* pEffect = mpEffectsMap[handle];
+    if (!pEffect) return;
+
+    D3DXHANDLE hParam = pEffect->GetParameterByName(NULL, szConstantName);
+    if (!hParam) return;
+
+    D3DXPARAMETER_DESC paramDesc;
+    if (FAILED(pEffect->GetParameterDesc(hParam, &paramDesc))) return;
+
+    // Only set if it's a float and scalar
+    if (paramDesc.Type != D3DXPT_BOOL) return;
+
+	pEffect->SetBool( hParam, bFlag );
+}
+
 void EngineShaderEffectSetConstantFloat(int handle, const char* szConstantName, float fVal)
 {
     ID3DXEffect* pEffect = mpEffectsMap[handle];

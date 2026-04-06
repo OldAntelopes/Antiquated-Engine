@@ -43,6 +43,8 @@ extern void	Sprites3DAddSpriteRotScaleXY( SPRITE_GROUP hGroup, const VECT* pxPos
 extern void	Sprites3DFreeGroup( SPRITE_GROUP hGroup );
 
 extern void Sprites3DFlush( BOOL bUseZWrite );
+extern void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite );
+
 
 
 
