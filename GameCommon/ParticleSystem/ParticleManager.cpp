@@ -73,7 +73,7 @@ int layer = pParticleGroup->GetGroupLayerID();
 		if ( stricmp( pRegisteredParticleList->mszParticleName, szParticleName ) == 0 )
 		{
 			pNewParticle = pRegisteredParticleList->mfnParticleNew();
-			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, layer, pUserObject );
+			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel, pUserObject, layer );
 			
 			if ( msActiveParticleLayers[layer] == false )
 			{
@@ -91,6 +91,7 @@ Particle*		ParticleManagerAddParticle( const char* szParticleName, const VECT* p
 {
 Particle*		pNewParticle = NULL;
 RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
+int		nSpriteRenderLayer = ulInitParamChannel;
 
 	while( pRegisteredParticleList )
 	{
@@ -98,7 +99,7 @@ RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
 		if ( stricmp( pRegisteredParticleList->mszParticleName, szParticleName ) == 0 )
 		{
 			pNewParticle = pRegisteredParticleList->mfnParticleNew();
-			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel, pUserObject );
+			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel, pUserObject, nSpriteRenderLayer);
 
 			ParticleManagerAddParticleToLayer(pRegisteredParticleList, pNewParticle, ulInitParamChannel);
 			return( pNewParticle );
@@ -150,6 +151,7 @@ void	ParticleGroup::Update( float delta )
 		if( pParticle->GetTypeID() == IN_MORGUE) 
 		{
 	        it = mpParticleList.erase(it);
+			delete pParticle;
 	    }
 	    else ++it;
 	}

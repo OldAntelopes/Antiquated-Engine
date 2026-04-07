@@ -17,6 +17,7 @@
 #include "../../../Engine/DirectX/OculusDX.h"
 #include "../../../Engine/DirectX/EngineDX.h"
 #include "../InterfaceInternalsDX.h"
+#include "../../Common/Overlays/TexturedOverlays.h"
 #include "DX9Device.h"
 
 extern "C"
@@ -35,7 +36,6 @@ BOOL	msbInterfaceGlobalTextureFilteringEnable = TRUE;
 
 D3DPRESENT_PARAMETERS	mLastUsedD3dpp;
 
-u64		mullInterfaceLastPresentTick = 0;
 
 
 // TODO - Really this needs to be in InterfaceInstance.. hack atm means we assume only 1 instance ever does things with it
@@ -774,7 +774,7 @@ void	 InterfaceInstance::CreateD3DInstanceIfNeeded()
 /***************************************************************************
  * Function    : InterfaceInstance::InitD3D
  ***************************************************************************/
-void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize, int nBackBufferMinW, int nBackBufferMinH )
+void	 InterfaceInstance::InitD3D( HWND hWindow, BOOL boMinPageSize, int nBackBufferMinW, int nBackBufferMinH, int windowType )
 {
 LPGRAPHICSDEVICE	pNewGraphicsDevice;
 
@@ -861,9 +861,7 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 		}
 		else
 		{
-			SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
-
-			InterfaceSetWindowStyle( hWindow, false );
+			mpInterfaceInternals->mpInterfaceInstance->SetWindowStyle(windowType, TRUE);
 		}
 
 		mLastUsedD3dpp = d3dpp;
@@ -1228,6 +1226,7 @@ BOOL	boIsSmall = InterfaceIsSmall();
 		xColor = (D3DCOLOR)( ulCol );
 		ret = mpInterfaceInternals->mpInterfaceD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, xColor, 1.0f, 0 );
 	}
+	mpTexturedOverlays->NewFrame();
 	return( 0 );
 	
 }

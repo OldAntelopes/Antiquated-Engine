@@ -32,6 +32,7 @@ InterfaceInstance::InterfaceInstance()
 	mpTexturedOverlays->InitialiseModule( this );
 	mpInterfaceInternals->InitialiseModule( this );
 	mpFontSystem->InitialiseModule( this );
+	// Default standard window style
 	mdwWindowStyle = WS_CAPTION|WS_SYSMENU|WS_THICKFRAME|WS_MINIMIZEBOX|WS_VISIBLE;
 
 }
@@ -277,6 +278,31 @@ int			InterfaceInstance::GetTexture( const char* szFilename, int nFlags, BOOL bA
 {
 	return( mpTexturedOverlays->GetTextureInternal( szFilename, nFlags, NOTFOUND, bAsync ) );
 }
+
+void		InterfaceInstance::SetWindowStyle(int type, BOOL bApply)
+{
+	switch (type)
+	{
+	case 0:
+	default:
+		mdwWindowStyle = WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_VISIBLE;
+		break;
+	case 1:
+		mdwWindowStyle = WS_POPUP | WS_VISIBLE | WS_EX_TOPMOST;
+		break;
+	}
+
+	if (bApply)
+	{
+		ApplyWindowStyle();
+	}
+}
+
+void		InterfaceInstance::ApplyWindowStyle()
+{
+	SetWindowLong(mhWindow, GWL_STYLE, mdwWindowStyle);
+}
+
 
 void*		InterfaceInstance::GetRawTexture( int nHandle )
 {

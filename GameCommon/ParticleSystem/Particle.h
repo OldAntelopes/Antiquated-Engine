@@ -20,7 +20,7 @@ public:
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 	virtual float		GetAlphaOverride( void ) { return -1.0f; }
 
-	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
+	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL, int nSpriteRenderLayer = 0 );
 	void	Update( float fDelta );
 	virtual void	Render( void );
 	
@@ -55,6 +55,7 @@ public:
 	float	GetSpriteAspect( void ) const { return( mfSpriteAspect ); }
 	uint32	GetCol( void ) const { return( mulCol ); }
 	uint32	GetParamChannel( void ) const { return( mulParamChannel ); }
+	int		GetSpriteRenderLayer() const { return(mnSpriteRenderLayer); }
 
 	void		SetNext( Particle* pNext ) { mpNext = pNext; }
 	Particle*	GetNext( void ) { return( mpNext ); }
@@ -75,7 +76,7 @@ protected:
 	float		mfRotSpeed = 0.0f;
 	int			mnSpriteFrameNum;
 	uint32		mulParamChannel;
-
+	int			mnSpriteRenderLayer = 0;
 
 private:
 	void		DefaultRender( void );

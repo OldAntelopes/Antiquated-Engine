@@ -60,7 +60,7 @@ public:
 	void	Line( int nLayer, int nX, int nY, int x2, int y2, uint32 ulCol);
 
 	//------------------------------------------------------------------
-	void		InitD3D( HWND hWindow, BOOL bMinBackBufferSize, int nBackBufferMinW = 0, int nBackBufferMinH = 0 );
+	void		InitD3D( HWND hWindow, BOOL bMinBackBufferSize, int nBackBufferMinW = 0, int nBackBufferMinH = 0, int windowType = 0 );
 	void		SetIsLinkedToEngine( BOOL bFlag ) { mbIsLinkedToEngine = bFlag; }
 	void		InitialiseInstance( BOOL bUseDefaultFonts );
 
@@ -118,11 +118,14 @@ public:
 	void		RegisterDeviceResetCallbacks(fnInterfaceCallback fnPreReset, fnInterfaceCallback fnPostReset) { mfnPreDeviceResetCallback = fnPreReset; mfnPostDeviceResetCallback = fnPostReset; }
 	void*		GetRawTexture( int nHandle );
 
+	void		SetMinPageSize(BOOL bFlag) { mboMinPageSize = bFlag; }
+
+	void		ApplyWindowStyle();
+	void		SetWindowStyle(int type, BOOL bApply = TRUE );
 protected:
 	void		SetDevice( void* pDevice );		// oldschool
 	void		CreateD3DInstanceIfNeeded();
 
-	void		UpdateWindowStyle( HWND hWindow, BOOL boFullScreen );
 
 	fnInterfaceCallback	mfnPreDeviceResetCallback = NULL;
 	fnInterfaceCallback	mfnPostDeviceResetCallback = NULL;
@@ -133,6 +136,7 @@ protected:
 	int		mnAdapterUsedForDevice = 0;
 	BOOL	mboBorderlessFullscreen = FALSE;
 	BOOL	mbIsLinkedToEngine = FALSE;
+	u64		mullInterfaceLastPresentTick = 0;
 
 	InterfaceRECT		m_DrawRect;
 	int		mnRenderSurfaceWidth = 900;

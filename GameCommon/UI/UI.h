@@ -65,7 +65,7 @@ public:
 
 
 	//---------------------- UI Operational Functions -----------------------------
-	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL );
+	void		Initialise( InterfaceInstance* pInterfaceInstance = NULL, BOOL bMinimalInit = FALSE );
 	void		Update( float fDelta );
 	void		Shutdown( void );
 

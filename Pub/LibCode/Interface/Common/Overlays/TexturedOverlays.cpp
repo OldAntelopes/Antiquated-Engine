@@ -567,6 +567,10 @@ FLATVERTEX*	pVertices;
 	}
 	
 	mpxNextFreeRect = mpxRectBuffer;
+}
+
+void		TexturedOverlays::NewFrame()
+{
 	mnNumActiveTexOverlays = 0;
 }
 
@@ -1180,6 +1184,7 @@ BOOL TexturedOverlays::SyncLoadTexture(const char* szFilename, int nFlags, int n
 	{
 		maxInternalTextures[nHandle].nRefCount = 1;
 		maxInternalTextures[nHandle].ulLastTouched = GetTickCount();
+		maxInternalTextures[nHandle].nLoadState = LOADSTATE_LOADED;
 
 		if (strlen(szFilename) < 127)
 		{

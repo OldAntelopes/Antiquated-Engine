@@ -250,7 +250,7 @@ InterfaceInstance*		UIInterfaceInstance()
 	return( msTempSingleton.GetInterfaceInstance() );
 }
 
-void		UIInstance::Initialise( InterfaceInstance* pInterfaceInstance )
+void		UIInstance::Initialise( InterfaceInstance* pInterfaceInstance, BOOL bMinimalInit)
 {
 	if ( pInterfaceInstance == NULL )
 	{
@@ -258,8 +258,11 @@ void		UIInstance::Initialise( InterfaceInstance* pInterfaceInstance )
 	}
 	mpInterfaceInstance = pInterfaceInstance;
 
-	mpUIButtonImpl = new UIButtonImpl( this );
-	mpUITextBoxImpl = new UITextBoxImpl( this );
+	if (bMinimalInit == FALSE)
+	{
+		mpUIButtonImpl = new UIButtonImpl(this);
+		mpUITextBoxImpl = new UITextBoxImpl(this);
+	}
 }
 
 void		UISetActiveInterface( InterfaceInstance* pInterfaceInstance )

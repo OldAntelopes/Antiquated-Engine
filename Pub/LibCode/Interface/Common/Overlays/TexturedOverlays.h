@@ -96,6 +96,7 @@ public:
 	void		Reset();
 	
 	void		Render( int nLayer );
+	void		NewFrame();
 
 	void		SetLimit( int nState );
 

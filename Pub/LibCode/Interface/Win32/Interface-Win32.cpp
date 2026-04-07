@@ -242,8 +242,7 @@ void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
 	}
 	else
 	{
-		InterfaceInstanceMain()->ApplyWindowStyle( hWindow );
-		SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
+		InterfaceInstanceMain()->ApplyWindowStyle();
 	}
 }
 
