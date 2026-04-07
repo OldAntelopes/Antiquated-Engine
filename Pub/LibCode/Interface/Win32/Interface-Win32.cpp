@@ -24,7 +24,6 @@
 HWND		mhwndInterfaceMain = NULL;
 
 WNDCLASSEX* mpxWindClass;
-DWORD		mdwWindowStyle;
 
 int		mnWindowLeft = 50;
 int		mnWindowTop = 50;
@@ -243,7 +242,8 @@ void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
 	}
 	else
 	{
-        SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
+		InterfaceInstanceMain()->ApplyWindowStyle( hWindow );
+		SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
 	}
 }
 

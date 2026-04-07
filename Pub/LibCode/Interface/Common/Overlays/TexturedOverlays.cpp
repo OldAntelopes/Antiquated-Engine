@@ -175,7 +175,7 @@ int		nDrawHowMany;
 		}
 
 		// Enable alpha testing (skips pixels with less than a certain alpha.)
-		EngineEnableAlphaTest( TRUE );
+		mpInterfaceD3DDevice->SetRenderState( D3DRS_ALPHATESTENABLE, 1 );
 
 		if ( maxOverlayData[ mnCurrentTexOverlayRenderTexture ].pTexture != NULL )
 		{

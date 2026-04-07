@@ -151,7 +151,8 @@ protected:
 	int		mnMinBackBufferSizeH = 0;
 
 	int		mnRequestedMonitorNum = NOTFOUND;
-	
+	DWORD		mdwWindowStyle = 0;
+
 
 };
 

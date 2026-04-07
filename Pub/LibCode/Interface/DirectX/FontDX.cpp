@@ -244,7 +244,7 @@ int				nDrawHowMany;
 			}
 		}
 
-		if ( InterfaceFontIsFilteringOn( mnCurrentRenderFont ) == TRUE )
+		if ( mpInterfaceInstance->mpFontSystem->IsFontFilteringOn( mnCurrentRenderFont ) == TRUE )
 		{
 			mpInterfaceInstance->EnableTextureFiltering( TRUE );
 //			InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
@@ -297,7 +297,7 @@ void FontSystem::InitialiseFontBuffersDX( void )
 
 void FontSystem::StringRenderBegin( void )
 {
-	mpInterfaceInstance->EnableTextureFiltering( TRUE );
+	mpInterfaceInstance->EnableTextureFiltering( FALSE );
 //	InterfaceSetGlobalParam( INTF_TEXTURE_FILTERING, 2 );
 	mpInterfaceD3DDevice->SetFVF( D3DFVF_FLATVERTEX );
 	mpInterfaceD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE );

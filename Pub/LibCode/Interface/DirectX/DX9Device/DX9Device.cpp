@@ -333,27 +333,22 @@ void InterfaceTurnOnTextureFiltering( int nMode )
 
 void InterfaceInstance::EnableTextureFiltering( BOOL bFlag )
 {
-	if ( mboTextureFilteringCurrentState != bFlag )
+	if ( bFlag == FALSE )
 	{
-		if ( bFlag == FALSE )
-		{
-			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
-			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
-			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
-			mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
-		}
-		else
-		{
-			if ( msbInterfaceGlobalTextureFilteringEnable != FALSE )
-			{
-				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
-				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
-				mpLegacyInterfaceD3DDeviceSingleton->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
-			}	
-		}
-		mboTextureFilteringCurrentState = bFlag;
+		mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
+		mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER,   D3DTEXF_POINT  );
+		mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );	
+		mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAXANISOTROPY, 1 );
 	}
-
+	else
+	{
+		if ( msbInterfaceGlobalTextureFilteringEnable != FALSE )
+		{
+			mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, mnMagFilter );
+			mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, mnMinFilter );
+			mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, mnMipFilter );//D3DTEXF_GAUSSIANQUAD );// mnMipFilter );	
+		}	
+	}
 }
 
 
@@ -866,6 +861,8 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 		}
 		else
 		{
+			SetWindowLong( hWindow, GWL_STYLE, mdwWindowStyle );
+
 			InterfaceSetWindowStyle( hWindow, false );
 		}
 

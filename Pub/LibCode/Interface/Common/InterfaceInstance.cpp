@@ -32,6 +32,8 @@ InterfaceInstance::InterfaceInstance()
 	mpTexturedOverlays->InitialiseModule( this );
 	mpInterfaceInternals->InitialiseModule( this );
 	mpFontSystem->InitialiseModule( this );
+	mdwWindowStyle = WS_CAPTION|WS_SYSMENU|WS_THICKFRAME|WS_MINIMIZEBOX|WS_VISIBLE;
+
 }
 
 void	InterfaceInstance::SetDevice( void* pDevice )
@@ -71,7 +73,6 @@ void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
 		InterfaceSetIsUsingDefaultFonts( bUseDefaultFonts );
 		mpFontSystem->InitialiseFonts( bUseDefaultFonts );
 		mpOverlays->Initialise();
-
 		mpTexturedOverlays->Initialise();
 
 		InterfaceImagesInit();
