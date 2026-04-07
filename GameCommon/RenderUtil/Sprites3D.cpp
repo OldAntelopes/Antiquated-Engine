@@ -65,6 +65,8 @@ SPRITE_GROUP		msnNextSpriteGroupNum = 9000;
 
 MultiVertexBuffers		mxSprites3dBuffers;
 
+float		msfSpriteOffsetsAppliedAspect = 1.0f;
+
 VECT		maxCamFacingSpriteOffsets[6];
 VECT		maxFlatSpriteOffsets[6];
 VECT		maxXAxisSpriteOffsets[6];
@@ -648,7 +650,6 @@ Sprite*		pNext;
 
 		u64 ullEventID = SysProfileStartEvent( "SpriteGroup::Render", mhGroupNum );		
 		float		fAspectRatio = 1.0f;
-		float		fAppliedAspect = 1.0f;
 
 		while( pSprites )
 		{
@@ -663,10 +664,10 @@ Sprite*		pNext;
 				fAspectRatio = 1.0f;
 			}
 
-			if ( fAspectRatio != fAppliedAspect )
+			if ( fAspectRatio != msfSpriteOffsetsAppliedAspect )
 			{
 				Sprites3DCreateCamFacingOffsets( fAspectRatio );
-				fAppliedAspect = fAspectRatio;
+				msfSpriteOffsetsAppliedAspect = fAspectRatio;
 			}
 			
 			if ( mRenderFlags & kSpriteRender_Rotated )
