@@ -191,6 +191,7 @@ VECT	xCamDir;
 
 	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxYAxisSpriteOffsets, fAspectRatio );
 
+	msfSpriteOffsetsAppliedAspect = fAspectRatio;
 }
 
 
@@ -667,7 +668,6 @@ Sprite*		pNext;
 			if ( fAspectRatio != msfSpriteOffsetsAppliedAspect )
 			{
 				Sprites3DCreateCamFacingOffsets( fAspectRatio );
-				msfSpriteOffsetsAppliedAspect = fAspectRatio;
 			}
 			
 			if ( mRenderFlags & kSpriteRender_Rotated )
