@@ -142,7 +142,9 @@ void		UIInstance::ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHe
 {
 	if ( modeFlags & UIBUTTON_FLAG_CHECKBOX )
 	{
-		mpUIButtonImpl->DrawCheckbox(this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, 1.0f );
+	BOOL		bIsChecked = false;
+		if ( modeFlags & UIBUTTON_FLAG_ISCHECKED ) bIsChecked = true;
+		mpUIButtonImpl->DrawCheckbox(this, nButtonID, nX, nY, nWidth, nHeight, szText, bIsChecked, ulParam, ulIDParam, 1.0f );
 	}
 	else
 	{
