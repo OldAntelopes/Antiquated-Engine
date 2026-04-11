@@ -798,6 +798,7 @@ int		nPreBackstepPos;
 
 	ZeroMemory(acBuff, 512 );
 	acBuff[0] = szString[0];
+	// TODO - UGH, surely theres a better way of doing this.. mm
 	while ( ( acBuff[nLoop] != 0 ) &&
 			( GetStringWidth( acBuff, nFont ) < nMaxWidth ) )
 	{
