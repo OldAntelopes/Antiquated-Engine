@@ -578,6 +578,10 @@ EngineGameInterface*	EngineGetGameInterface( void );
 void					EngineSetSceneMapGameInterface( SceneMapGameInterface* );
 SceneMapGameInterface*	EngineGetSceneMapGameInterface( void );
 
+class EngineInstance;
+extern EngineInstance* 		EngineInstanceMain();
+
+
 #endif // #ifdef __cplusplus
 
 

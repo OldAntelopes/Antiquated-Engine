@@ -24,6 +24,7 @@ public:
 	void		Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
 	void		RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
 	void		RenderRotSoftEdges( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
+	void		RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
 
 	VECT		mxPos;
 	float		mfRot;
@@ -122,26 +123,32 @@ void	Sprites3dBufferDeleteAll()
 
 void	Sprites3DCreateOffsetGroup( VECT* pxCamRight, VECT* pxCamDown, VECT* pxOffsetGroup, float fRightAspect )
 {
+	// top left
 	pxOffsetGroup[0].x = (pxCamRight->x * -0.5f * fRightAspect) + (pxCamDown->x * -0.5f);
 	pxOffsetGroup[0].y = (pxCamRight->y * -0.5f * fRightAspect) + (pxCamDown->y * -0.5f);
 	pxOffsetGroup[0].z = (pxCamRight->z * -0.5f * fRightAspect) + (pxCamDown->z * -0.5f);
 
+	// top right
 	pxOffsetGroup[1].x = (pxCamRight->x * 0.5f * fRightAspect) + (pxCamDown->x * -0.5f);
 	pxOffsetGroup[1].y = (pxCamRight->y * 0.5f * fRightAspect) + (pxCamDown->y * -0.5f);
 	pxOffsetGroup[1].z = (pxCamRight->z * 0.5f * fRightAspect) + (pxCamDown->z * -0.5f);
 
+	// bottom left
 	pxOffsetGroup[2].x = (pxCamRight->x * -0.5f * fRightAspect) + (pxCamDown->x * 0.5f);
 	pxOffsetGroup[2].y = (pxCamRight->y * -0.5f * fRightAspect) + (pxCamDown->y * 0.5f);
 	pxOffsetGroup[2].z = (pxCamRight->z * -0.5f * fRightAspect) + (pxCamDown->z * 0.5f);
 
+	// top right
 	pxOffsetGroup[3].x = (pxCamRight->x * 0.5f * fRightAspect) + (pxCamDown->x * -0.5f);
 	pxOffsetGroup[3].y = (pxCamRight->y * 0.5f * fRightAspect) + (pxCamDown->y * -0.5f);
 	pxOffsetGroup[3].z = (pxCamRight->z * 0.5f * fRightAspect) + (pxCamDown->z * -0.5f);
 
+	// bottom right
 	pxOffsetGroup[4].x = (pxCamRight->x * 0.5f * fRightAspect) + (pxCamDown->x * 0.5f);
 	pxOffsetGroup[4].y = (pxCamRight->y * 0.5f * fRightAspect) + (pxCamDown->y * 0.5f);
 	pxOffsetGroup[4].z = (pxCamRight->z * 0.5f * fRightAspect) + (pxCamDown->z * 0.5f);
 
+	// bottom left
 	pxOffsetGroup[5].x = (pxCamRight->x * -0.5f * fRightAspect) + (pxCamDown->x * 0.5f);
 	pxOffsetGroup[5].y = (pxCamRight->y * -0.5f * fRightAspect) + (pxCamDown->y * 0.5f);
 	pxOffsetGroup[5].z = (pxCamRight->z * -0.5f * fRightAspect) + (pxCamDown->z * 0.5f);
@@ -192,6 +199,280 @@ VECT	xCamDir;
 	Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxYAxisSpriteOffsets, fAspectRatio );
 
 	msfSpriteOffsetsAppliedAspect = fAspectRatio;
+}
+
+
+class SpriteVertexCache
+{
+public:
+	void	Update( int nFrameNum, float fGridScale, float fScale, float fScaleZ, uint32 ulCol, int nRenderFlags, VECT* pxCamDir, float fRot );
+
+	int		mnFrameNum = -1;
+	float	mfGridScale = -1.0f;
+	float	mfScale = -1.0f;
+	float	mfScaleZ = -1.0f;
+	uint32	mulCol = 0;
+	int		mnRenderFlags = -1;
+	VECT	mxCamDir = { -1.0f, -1.0f, -1.0f };
+	float	mfRot = -1.0f;
+
+	ENGINEBUFFERVERTEX		maxVertexCache[8];
+};
+
+
+
+void	SpriteVertexCache::Update( int nFrameNum, float fGridScale, float fScale, float fScaleZ, uint32 ulCol, int nRenderFlags, VECT* pxCamDir, float fRot )
+{
+const float		fSoftenBorder = 0.2f;
+	if ( ( nFrameNum != mnFrameNum ) ||
+		 ( fGridScale != mfGridScale ) )
+	{	
+	const float		fEdgeScale = 0.5f * fSoftenBorder;
+	const float		fMidPointScale = 1.0f - fEdgeScale;
+		mnFrameNum = nFrameNum;
+		mfGridScale = fGridScale;
+		
+	float		fUBase,	fVBase;
+	float		fUWidth, fVHeight;
+	int			nNumPerRow = (int)( 1.0f / fGridScale );
+
+		fUBase = (mnFrameNum % nNumPerRow) * fGridScale;
+		fVBase = (mnFrameNum / nNumPerRow) * fGridScale;
+		fUWidth = fGridScale;
+		fVHeight = fGridScale;
+
+		ENGINEBUFFERVERTEX* pxVertexCache = maxVertexCache;
+		// Vert 1 - Top left
+		pxVertexCache->tu = fUBase;
+		pxVertexCache->tv = fVBase;
+		pxVertexCache++;
+		// Vert 2 - Top Right
+		pxVertexCache->tu = fUBase + fUWidth;
+		pxVertexCache->tv = fVBase;
+		pxVertexCache++;
+		// Vert 3 - Bot Left
+		pxVertexCache->tu = fUBase;
+		pxVertexCache->tv = fVBase + fVHeight;
+		pxVertexCache++;
+		// Vert 4 - Bot Right
+		pxVertexCache->tu = fUBase + fUWidth;
+		pxVertexCache->tv = fVBase + fVHeight;
+		pxVertexCache++;
+		// Vert 5 - Inner Top Left
+		pxVertexCache->tu = fUBase + (fUWidth*fEdgeScale);
+		pxVertexCache->tv = fVBase + (fVHeight*fEdgeScale);
+		pxVertexCache++;
+		// Vert 6 - Inner Top Right
+		pxVertexCache->tu = fUBase + (fUWidth*fMidPointScale);
+		pxVertexCache->tv = fVBase + (fVHeight*fEdgeScale);
+		pxVertexCache++;
+		// Vert 7 - Inner Bot Left
+		pxVertexCache->tu = fUBase + (fUWidth*fEdgeScale);
+		pxVertexCache->tv = fVBase + (fVHeight*fMidPointScale);
+		pxVertexCache++;
+		// Vert 8 - Inner Bot Right
+		pxVertexCache->tu = fUBase + (fUWidth*fMidPointScale);
+		pxVertexCache->tv = fVBase + (fVHeight*fMidPointScale);
+		pxVertexCache++;
+	}
+
+	if ( ulCol != mulCol )
+	{
+		mulCol = ulCol;
+		uint32		ulSoftEdgeCol = GetColWithModifiedAlpha( mulCol, 0.0f );
+
+		ENGINEBUFFERVERTEX* pxVertexCache = maxVertexCache;
+		// Vert 1 - Top left
+		pxVertexCache->color = ulSoftEdgeCol;
+		pxVertexCache++;
+		// Vert 2 - Top Right
+		pxVertexCache->color = ulSoftEdgeCol;
+		pxVertexCache++;
+		// Vert 3 - Bot Left
+		pxVertexCache->color = ulSoftEdgeCol;
+		pxVertexCache++;
+		// Vert 4 - Bot Right
+		pxVertexCache->color = ulSoftEdgeCol;
+		pxVertexCache++;
+		// Vert 5 - Inner Top Left
+		pxVertexCache->color = ulCol;
+		pxVertexCache++;
+		// Vert 6 - Inner Top Right
+		pxVertexCache->color = ulCol;
+		pxVertexCache++;
+		// Vert 7 - Inner Bot Left
+		pxVertexCache->color = ulCol;
+		pxVertexCache++;
+		// Vert 8 - Inner Bot Right
+		pxVertexCache->color = ulCol;
+		pxVertexCache++;
+	}
+
+	if ( ( nRenderFlags != mnRenderFlags ) ||
+		 ( pxCamDir->x != mxCamDir.x ) ||
+		 ( pxCamDir->y != mxCamDir.y ) ||
+		 ( pxCamDir->z != mxCamDir.z ) ||
+		 ( fRot != mfRot ) ||
+		 ( fScale != mfScale ) ||
+		 ( fScaleZ != mfScaleZ ) )
+	{
+	VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
+	VECT		xRotAxis;
+	VECT*		pxRotateAxis = pxCamDir;
+	ENGINEMATRIX	xRotMat;
+	VECT		xOffset;
+	const float		fEdgeScale = fSoftenBorder;
+	const float		fMidPointScale = 1.0f - fEdgeScale;
+
+		ENGINEBUFFERVERTEX* pxVertexCache = maxVertexCache;
+		mfScale = fScale;
+		mfScaleZ = fScaleZ;
+		mnRenderFlags = nRenderFlags;
+		mxCamDir = *pxCamDir;
+		mfRot = fRot;
+
+		if ( nRenderFlags & kSpriteRender_Orientation_Flat )
+		{
+			pxSpriteOffsets = maxFlatSpriteOffsets;
+			xRotAxis.x = 0.0f;
+			xRotAxis.y = 0.0f;
+			xRotAxis.z = 1.0f;
+			pxRotateAxis = &xRotAxis;
+		}
+		else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
+		{
+			pxSpriteOffsets = maxXAxisSpriteOffsets;
+			xRotAxis.x = 0.0f;
+			xRotAxis.y = 1.0f;
+			xRotAxis.z = 0.0f;
+			pxRotateAxis = &xRotAxis;
+		}
+		else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+		{
+			pxSpriteOffsets = maxYAxisSpriteOffsets;
+			xRotAxis.x = 1.0f;
+			xRotAxis.y = 0.0f;
+			xRotAxis.z = 0.0f;
+			pxRotateAxis = &xRotAxis;
+		}
+
+		EngineMatrixRotationAxis( &xRotMat, &xRotAxis, mfRot );
+
+		pxVertexCache = maxVertexCache;
+		// Vert 1 - Top left
+		xOffset.x = pxSpriteOffsets[0].x * fScale;
+		xOffset.y = pxSpriteOffsets[0].y * fScale;
+		xOffset.z = pxSpriteOffsets[0].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 2 - Top Right
+		xOffset.x = pxSpriteOffsets[1].x * fScale;
+		xOffset.y = pxSpriteOffsets[1].y * fScale;
+		xOffset.z = pxSpriteOffsets[1].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 3 - Bot Left
+		xOffset.x = pxSpriteOffsets[2].x * fScale;
+		xOffset.y = pxSpriteOffsets[2].y * fScale;
+		xOffset.z = pxSpriteOffsets[2].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 4 - Bot Right
+		xOffset.x = pxSpriteOffsets[4].x * fScale;
+		xOffset.y = pxSpriteOffsets[4].y * fScale;
+		xOffset.z = pxSpriteOffsets[4].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+
+		fScale *= fMidPointScale;
+		fScaleZ *= fMidPointScale;
+
+		// Vert 5 - Inner Top left
+		xOffset.x = pxSpriteOffsets[0].x * fScale;
+		xOffset.y = pxSpriteOffsets[0].y * fScale;
+		xOffset.z = pxSpriteOffsets[0].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 6 - Inner Top Right
+		xOffset.x = pxSpriteOffsets[1].x * fScale;
+		xOffset.y = pxSpriteOffsets[1].y * fScale;
+		xOffset.z = pxSpriteOffsets[1].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 7 - Inner Bot Left
+		xOffset.x = pxSpriteOffsets[2].x * fScale;
+		xOffset.y = pxSpriteOffsets[2].y * fScale;
+		xOffset.z = pxSpriteOffsets[2].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+		// Vert 8 - Inner Bot Right
+		xOffset.x = pxSpriteOffsets[4].x * fScale;
+		xOffset.y = pxSpriteOffsets[4].y * fScale;
+		xOffset.z = pxSpriteOffsets[4].z * fScaleZ;	
+		VectTransform( &pxVertexCache->position, &xOffset, &xRotMat );
+		pxVertexCache++;
+
+	}
+
+}
+
+SpriteVertexCache		mxSpriteVertexCache;
+
+void	Sprite::RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
+{
+
+	mxSpriteVertexCache.Update( mnFrameNum, fGridScale, mfScale, mfScaleZ, mulCol, nRenderFlags, EngineCameraGetDirection(), mfRot );
+
+	// Tri 1
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[0], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[1], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[4], &mxPos );
+
+	// Tri 2
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[1], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[5], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[4], &mxPos );
+
+	// Tri 3
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[1], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[3], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[5], &mxPos );
+
+	// Tri 4
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[3], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[7], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[5], &mxPos );
+
+	// Tri 5
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[3], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[2], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[7], &mxPos );
+
+	// Tri 6
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[2], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[6], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[7], &mxPos );
+
+	// Tri 7
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[2], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[0], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[6], &mxPos );
+
+	// Tri 8
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[0], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[4], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[6], &mxPos );
+
+	// Tri 9
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[4], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[5], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[6], &mxPos);
+	// Tri 10 
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[5], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[7], &mxPos );
+	pxDrawBuffer->AddEngineVertex( &mxSpriteVertexCache.maxVertexCache[6], &mxPos );
+
+	pxDrawBuffer->FlushWhenFull( 30, TRUE );
 }
 
 
@@ -674,7 +955,8 @@ Sprite*		pNext;
 			{
 				if ( mRenderFlags & kSpriteRender_SoftEdges )
 				{
-					pSprites->RenderRotSoftEdges( &mxSprites3dBuffers, mfGridScale, mRenderFlags );		
+//					pSprites->RenderRotSoftEdges( &mxSprites3dBuffers, mfGridScale, mRenderFlags );		
+					pSprites->RenderRotSoftEdgesComplex( &mxSprites3dBuffers, mfGridScale, mRenderFlags );		
 				}
 				else
 				{

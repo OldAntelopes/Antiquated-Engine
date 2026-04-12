@@ -113,7 +113,6 @@
     </ClInclude>
     <ClInclude Include="..\LibCode\Engine\BaseMesh.h" />
     <ClInclude Include="..\LibCode\Engine\CollisionMaths.h" />
-    <ClInclude Include="..\Include\Engine.h" />
     <ClInclude Include="..\LibCode\Engine\EngineCamera.h" />
     <ClInclude Include="..\Include\EngineMaths.h" />
     <ClInclude Include="..\LibCode\Engine\EngineMesh.h" />
@@ -577,6 +576,17 @@
     <ClInclude Include="..\LibCode\Engine\DirectX\ShaderEffectsDX.h">
       <Filter>DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\EngineInstance.h" />
+    <ClInclude Include="..\LibCode\Engine\DirectX\EngineInternalsDX.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\EngineModule.h" />
+    <ClInclude Include="..\Include\EngineEx.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Engine.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\Engine\CollisionMaths\dist_pointline.cpp">
@@ -701,6 +711,11 @@
     <ClCompile Include="..\LibCode\Engine\DirectX\ShaderEffectsDX.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\EngineInstance.cpp" />
+    <ClCompile Include="..\LibCode\Engine\DirectX\EngineInternalsDX.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\EngineModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\LibCode\Engine\DirectX\BaseMeshDX.h">

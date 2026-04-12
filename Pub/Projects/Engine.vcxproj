@@ -352,6 +352,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\EngineEx.h" />
     <ClInclude Include="..\Include\fbxsdk.h" />
     <ClInclude Include="..\Include\fbxsdk\core\fbxclassid.h" />
     <ClInclude Include="..\Include\fbxsdk\core\fbxconnectionpoint.h" />
@@ -505,6 +506,7 @@
     <ClInclude Include="..\LibCode\Engine\CollisionMaths\vec3f.h" />
     <ClInclude Include="..\LibCode\Engine\BSPRender\BSPModel.h" />
     <ClInclude Include="..\LibCode\Engine\DirectX\CascadeShadowMapDX.h" />
+    <ClInclude Include="..\LibCode\Engine\DirectX\EngineInternalsDX.h" />
     <ClInclude Include="..\LibCode\Engine\DirectX\OculusDX.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -518,6 +520,8 @@
     <ClInclude Include="..\LibCode\Engine\DirectX\ShadowMapDX.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\EngineInstance.h" />
+    <ClInclude Include="..\LibCode\Engine\EngineModule.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\3dsLoader.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\fbxLoader.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\ObjLoader.h" />
@@ -637,6 +641,7 @@
     <ClCompile Include="..\LibCode\Engine\CollisionMaths\plane.cpp" />
     <ClCompile Include="..\LibCode\Engine\BSPRender\BSPModel.cpp" />
     <ClCompile Include="..\LibCode\Engine\DirectX\CascadeShadowMapDX.cpp" />
+    <ClCompile Include="..\LibCode\Engine\DirectX\EngineInternalsDX.cpp" />
     <ClCompile Include="..\LibCode\Engine\DirectX\OculusDX.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -650,6 +655,8 @@
     <ClCompile Include="..\LibCode\Engine\DirectX\ShadowMapDX.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\EngineInstance.cpp" />
+    <ClCompile Include="..\LibCode\Engine\EngineModule.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\3dsLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp" />
