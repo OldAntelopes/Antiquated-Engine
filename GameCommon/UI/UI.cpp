@@ -370,6 +370,11 @@ void		UIInstance::PressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 	mulUIButtonIDPressedIDParam = ulIDParam;
 }
 
+void		UIInstance::RenderDebugInfo()
+{
+	// TODO - Use this to show the current mnUIButtonIDHovered / buttonIDPressed etc for debug purposes
+}
+
 void		UIPressIDSet( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 {
 	msTempSingleton.PressIDSet( nButtonID, ulParam, ulIDParam );

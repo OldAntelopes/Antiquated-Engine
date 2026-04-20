@@ -507,7 +507,6 @@ BOOL	FontSystem::LoadFont( int nFontNum, const char* pcImageFileName, const char
 		mpFontDefs[nFontNum] = new CFontDef;
 		mpFontDefs[nFontNum]->SetTextureFileName( pcImageFileName );
 
-		// TEMP - REMOVE
 		mpFontDefs[nFontNum]->LoadTexture( mpInterfaceInstance );
 		mpFontDefs[nFontNum]->Initialise( pcLayoutFile, nGlobalVerticalOffset );
 		if ( ulFlags & 1 )

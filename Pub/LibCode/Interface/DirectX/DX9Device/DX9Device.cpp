@@ -600,7 +600,7 @@ int adapterIndex = 0;
 	InterfaceSetZBufferLockable( FALSE );
 
 	// Apply full-scene antialias if available and on in options
-	if ( InterfaceGetOption( FSAA ) == 1 )
+	if ( 1 )//InterfaceGetOption( FSAA ) == 1 )
 	{
 		if( SUCCEEDED(mpD3D->CheckDeviceMultiSampleType( adapterIndex, D3DDEVTYPE_HAL, d3ddm.Format, FALSE, D3DMULTISAMPLE_4_SAMPLES, NULL ) ) )
 		{

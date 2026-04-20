@@ -1914,3 +1914,167 @@ void		EngineClearZBuffer( void )
 {
 	mpEngineDevice->Clear( 0, NULL, D3DCLEAR_ZBUFFER,0, 1.0f, 0 );
 }
+
+
+struct EngineStateDump
+{
+	DWORD	maRenderStateTypes[256];
+};
+
+
+EngineStateDump		msxCurrentState;
+EngineStateDump		msxPrevState;
+BOOL			msbFirstDumpState = true;
+const int			msnNumDumpFields = 53;
+
+void		EngineDumpRenderStateItem( int itemNum, D3DRENDERSTATETYPE type, EngineStateDump* pDumpDest )
+{
+DWORD		value;
+
+	mpEngineDevice->GetRenderState( type, &value );
+	pDumpDest->maRenderStateTypes[itemNum] = value;
+
+}
+
+void		EngineDumpShowDiffs()
+{
+int		loop;
+int		nNumDiffs = 0;
+
+	SysDebugPrint("Engine State Dump");
+	SysDebugPrint("-----------------");
+
+	for( loop = 0; loop < msnNumDumpFields; loop++ )
+	{
+		if ( msxCurrentState.maRenderStateTypes[loop] != msxPrevState.maRenderStateTypes[loop] )
+		{
+			SysDebugPrint( "Diff[%d] : Current (%ld) Prev (%ld)", loop, msxCurrentState.maRenderStateTypes[loop],msxPrevState.maRenderStateTypes[loop] );
+			nNumDiffs++;
+		}
+	}
+	SysDebugPrint("-----------------");
+	SysDebugPrint("%d diffs", nNumDiffs);
+	SysDebugPrint("-----------------");
+}
+
+void		EngineDumpState()
+{
+	if ( msbFirstDumpState )
+	{
+		memset( &msxCurrentState, 0, sizeof( msxCurrentState ) );
+		memset( &msxPrevState, 0, sizeof( msxPrevState ) );
+	}
+
+	EngineDumpRenderStateItem( 0, D3DRS_ZENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 1, D3DRS_FILLMODE, &msxCurrentState );
+	EngineDumpRenderStateItem( 2, D3DRS_SHADEMODE, &msxCurrentState );
+	EngineDumpRenderStateItem( 3, D3DRS_ZWRITEENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 4, D3DRS_ALPHATESTENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 5, D3DRS_LASTPIXEL, &msxCurrentState );
+	EngineDumpRenderStateItem( 6, D3DRS_SRCBLEND, &msxCurrentState );
+	EngineDumpRenderStateItem( 7, D3DRS_DESTBLEND, &msxCurrentState );
+	EngineDumpRenderStateItem( 8, D3DRS_CULLMODE, &msxCurrentState );
+	EngineDumpRenderStateItem( 9, D3DRS_ZFUNC, &msxCurrentState );
+	EngineDumpRenderStateItem( 10, D3DRS_ALPHAREF, &msxCurrentState );
+	EngineDumpRenderStateItem( 11, D3DRS_ALPHAFUNC, &msxCurrentState );
+	EngineDumpRenderStateItem( 12, D3DRS_DITHERENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 13, D3DRS_ALPHABLENDENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 14, D3DRS_FOGENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 15, D3DRS_SPECULARENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 16, D3DRS_FOGCOLOR, &msxCurrentState );
+	EngineDumpRenderStateItem( 17, D3DRS_FOGTABLEMODE, &msxCurrentState );
+	EngineDumpRenderStateItem( 18, D3DRS_FOGSTART, &msxCurrentState );
+	EngineDumpRenderStateItem( 19, D3DRS_FOGEND, &msxCurrentState );
+	EngineDumpRenderStateItem( 20, D3DRS_FOGDENSITY, &msxCurrentState );
+	EngineDumpRenderStateItem( 21, D3DRS_RANGEFOGENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 22, D3DRS_STENCILENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 23, D3DRS_STENCILFAIL, &msxCurrentState );
+	EngineDumpRenderStateItem( 24, D3DRS_STENCILZFAIL, &msxCurrentState );
+	EngineDumpRenderStateItem( 25, D3DRS_STENCILPASS, &msxCurrentState );
+	EngineDumpRenderStateItem( 26, D3DRS_STENCILFUNC, &msxCurrentState );
+	EngineDumpRenderStateItem( 27, D3DRS_STENCILREF, &msxCurrentState );
+	EngineDumpRenderStateItem( 28, D3DRS_STENCILMASK, &msxCurrentState );
+	EngineDumpRenderStateItem( 29, D3DRS_STENCILWRITEMASK, &msxCurrentState );
+	EngineDumpRenderStateItem( 30, D3DRS_TEXTUREFACTOR, &msxCurrentState );
+	EngineDumpRenderStateItem( 31, D3DRS_WRAP0, &msxCurrentState );
+	EngineDumpRenderStateItem( 32, D3DRS_CLIPPING, &msxCurrentState );
+	EngineDumpRenderStateItem( 33, D3DRS_LIGHTING, &msxCurrentState );
+	EngineDumpRenderStateItem( 34, D3DRS_AMBIENT, &msxCurrentState );
+	EngineDumpRenderStateItem( 35, D3DRS_FOGVERTEXMODE, &msxCurrentState );
+	EngineDumpRenderStateItem( 36, D3DRS_COLORVERTEX, &msxCurrentState );
+	EngineDumpRenderStateItem( 37, D3DRS_LOCALVIEWER, &msxCurrentState );
+	EngineDumpRenderStateItem( 38, D3DRS_NORMALIZENORMALS, &msxCurrentState );
+	EngineDumpRenderStateItem( 39, D3DRS_DIFFUSEMATERIALSOURCE, &msxCurrentState );
+	EngineDumpRenderStateItem( 40, D3DRS_SPECULARMATERIALSOURCE, &msxCurrentState );
+	EngineDumpRenderStateItem( 41, D3DRS_AMBIENTMATERIALSOURCE, &msxCurrentState );
+	EngineDumpRenderStateItem( 42, D3DRS_EMISSIVEMATERIALSOURCE, &msxCurrentState );
+	EngineDumpRenderStateItem( 43, D3DRS_VERTEXBLEND, &msxCurrentState );
+	EngineDumpRenderStateItem( 44, D3DRS_CLIPPLANEENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 45, D3DRS_BLENDOP, &msxCurrentState );
+	EngineDumpRenderStateItem( 46, D3DRS_SEPARATEALPHABLENDENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 47, D3DRS_SRCBLENDALPHA, &msxCurrentState );
+	EngineDumpRenderStateItem( 48, D3DRS_DESTBLENDALPHA, &msxCurrentState );
+	EngineDumpRenderStateItem( 49, D3DRS_BLENDOPALPHA, &msxCurrentState );
+	EngineDumpRenderStateItem( 50, D3DRS_INDEXEDVERTEXBLENDENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 51, D3DRS_COLORWRITEENABLE, &msxCurrentState );
+	EngineDumpRenderStateItem( 52, D3DRS_ENABLEADAPTIVETESSELLATION, &msxCurrentState );
+	EngineDumpRenderStateItem( 53, D3DRS_DEPTHBIAS, &msxCurrentState );
+
+	if ( msbFirstDumpState )
+	{
+		memcpy( &msxPrevState, &msxCurrentState, sizeof( msxPrevState ) );
+		msbFirstDumpState = false;
+		SysDebugPrint("Initial Engine State recorded");
+	}
+	else
+	{
+		EngineDumpShowDiffs();
+	}
+
+
+	/*
+
+	D3DRS_POINTSIZE                 = 154,  
+    D3DRS_POINTSIZE_MIN             = 155,  
+    D3DRS_POINTSPRITEENABLE         = 156,  
+    D3DRS_POINTSCALEENABLE          = 157,  
+    D3DRS_POINTSCALE_A              = 158,  
+    D3DRS_POINTSCALE_B              = 159,  
+    D3DRS_POINTSCALE_C              = 160,  
+    D3DRS_MULTISAMPLEANTIALIAS      = 161,  
+    D3DRS_MULTISAMPLEMASK           = 162,  
+    D3DRS_PATCHEDGESTYLE            = 163,  
+    D3DRS_DEBUGMONITORTOKEN         = 165,  
+    D3DRS_POINTSIZE_MAX             = 166,  
+    D3DRS_TWEENFACTOR               = 170,  
+    D3DRS_POSITIONDEGREE            = 172,  
+    D3DRS_NORMALDEGREE              = 173,  
+    D3DRS_SCISSORTESTENABLE         = 174,
+    D3DRS_SLOPESCALEDEPTHBIAS       = 175,
+    D3DRS_ANTIALIASEDLINEENABLE     = 176,
+    D3DRS_MINTESSELLATIONLEVEL      = 178,
+    D3DRS_MAXTESSELLATIONLEVEL      = 179,
+    D3DRS_ADAPTIVETESS_X            = 180,
+    D3DRS_ADAPTIVETESS_Y            = 181,
+    D3DRS_ADAPTIVETESS_Z            = 182,
+    D3DRS_ADAPTIVETESS_W            = 183,
+    D3DRS_TWOSIDEDSTENCILMODE       = 185,  
+    D3DRS_CCW_STENCILFAIL           = 186,  
+    D3DRS_CCW_STENCILZFAIL          = 187,  
+    D3DRS_CCW_STENCILPASS           = 188,  
+    D3DRS_CCW_STENCILFUNC           = 189,  
+    D3DRS_COLORWRITEENABLE1         = 190,  
+    D3DRS_COLORWRITEENABLE2         = 191,  
+    D3DRS_COLORWRITEENABLE3         = 192,  
+    D3DRS_BLENDFACTOR               = 193,  
+    D3DRS_SRGBWRITEENABLE           = 194,  
+    D3DRS_WRAP8                     = 198,  
+    D3DRS_WRAP9                     = 199,
+    D3DRS_WRAP10                    = 200,
+    D3DRS_WRAP11                    = 201,
+    D3DRS_WRAP12                    = 202,
+    D3DRS_WRAP13                    = 203,
+    D3DRS_WRAP14                    = 204,
+    D3DRS_WRAP15                    = 205,
+		*/
+}

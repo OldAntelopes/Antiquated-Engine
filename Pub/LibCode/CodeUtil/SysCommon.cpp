@@ -412,7 +412,7 @@ uint32	GetColWithModifiedAlpha( uint32 ulCol, float fAlpha )
 uint32	ulAlpha = ulCol >> 24;
 uint32	ulResult;
 
-	ulAlpha = (uint32)( (float)ulAlpha * fAlpha );
+	ulAlpha = (uint32)( ( (float)ulAlpha * fAlpha ) + 0.5f); 
 	if ( ulAlpha > 0xff ) ulAlpha = 0xFF;
 	ulResult = (ulCol & 0xFFFFFF) | (ulAlpha << 24);
 	return( (unsigned long)ulResult );

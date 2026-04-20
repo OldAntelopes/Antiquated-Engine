@@ -6,6 +6,41 @@
 #include "UIXTextBox.h"
 #include "UIXSlider.h"
 
+void	UIXSlider::ModifySliderRange( float fValue, float fMinRange, float fMaxRange )		// Triggered by (e.g) midi control changing slider values
+{
+	mfMinVal = fMinRange;
+	mfMaxVal = fMaxRange;
+	mfCurrentVal = fValue;
+
+	// Expand the handled range if our new value is higher
+	if ( mfMinVal < mfInitialMinVal )
+	{
+		if ( mbAllowRangeExpand )
+		{
+			mfInitialMinVal = mfMinVal;
+		}
+		else
+		{
+			mfMinVal = mfInitialMinVal;
+			mfMaxVal = max( mfMinVal, mfMaxVal );
+		}
+	}
+	
+	// Expand the handled range if our new value is higher
+	if ( mfMaxVal > mfInitialMaxVal )
+	{
+		if ( mbAllowRangeExpand )
+		{
+			mfInitialMaxVal = mfMaxVal;
+		}
+		else
+		{
+			mfMaxVal = mfInitialMaxVal;
+			mfMinVal = min( mfMinVal, mfMaxVal );
+		}				
+	}
+}
+
 float	UIXSlider::OnValueChange( UIXObject* pxSourceObj, float fNewValue, BOOL bFromTextBoxEntry )		// Triggered by (e.g) child text boxes when a new value is entered there directly
 {
 	if ( pxSourceObj == mpRangeMinTextBox)
@@ -30,8 +65,7 @@ float	UIXSlider::OnValueChange( UIXObject* pxSourceObj, float fNewValue, BOOL bF
 					{
 						mfMaxVal = mfInitialMaxVal;
 						mfMinVal = min( mfMinVal, mfMaxVal );
-					}
-					
+					}				
 				}
 			}
 			else 
@@ -153,12 +187,26 @@ void	UIXSlider::Initialise( UIX_SLIDER_MODE mode, uint32 ulUserParam, float fMin
 			mpValueTextBox = UIX::AddTextBox(this, textboxRect, 0, acVal);
 			textboxRect.x += nTextBoxW + 18;
 
-			sprintf( acVal, "%.3f", mfMinVal );
-			mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+			// TODO - Should really have something that deals with integers properly here
+			// (e.g. Pixellate Pixel size property doesnt need any .00 )
+			if ( mfMaxVal >= 10.0f )
+			{
+				sprintf( acVal, "%.1f", mfMinVal );
+				mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
 
-			textboxRect.x += nTextBoxW + 14;
-			sprintf( acVal, "%.3f", mfMaxVal );
-			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+				textboxRect.x += nTextBoxW + 14;
+				sprintf( acVal, "%.1f", mfMaxVal );
+				mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+			}
+			else
+			{
+				sprintf( acVal, "%.3f", mfMinVal );
+				mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+
+				textboxRect.x += nTextBoxW + 14;
+				sprintf( acVal, "%.3f", mfMaxVal );
+				mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+			}
 		}
 		break;
 	case SLIDERMODE_PLUSMINUS_VALUE:
@@ -607,6 +655,29 @@ uint32		ulCol = 0xf0505070;
 		break;
 	}
 	
+	if (UIX::IsUISelectionModeActive() == TRUE )
+	{
+	uint32		ulShadedCol = 0x40d0c040;
+	uint32		ulOutlineCol = 0x80e0d080;
+
+		if ( UIX::GetFocusedObject() == this )
+		{
+			ulShadedCol = 0x806080d0;
+			ulOutlineCol = 0xB0a0b0f0;
+		}
+		else if ( UIX::IsMouseHover( mRenderRect ) )
+		{
+			ulShadedCol = 0x60e0d060;
+			ulOutlineCol = 0xB0f0e0a0;
+			UIX::CheckForPress( this, mRenderRect, UIX_OBJECT_SELECT, 0  );
+		}
+		pInterface->Rect( 0, mRenderRect.x, mRenderRect.y, mRenderRect.w, mRenderRect.h, ulShadedCol );
+		pInterface->OutlineBox( 0, mRenderRect.x, mRenderRect.y, mRenderRect.w, mRenderRect.h, ulOutlineCol );	
+
+		auto	selectionText = GetObjectSelectionText();
+		pInterface->TextCentre( 1, mRenderRect.x + (mRenderRect.w/2), mRenderRect.y + 3, 0xd0d0d0d0, 3, selectionText.c_str() );
+	}
+
 	displayRect.h = 0;
 	displayRect.y = GetLocalPositionRect().y + GetLocalPositionRect().h + 1;		// displayRect.y returns the lowest point we drew to
 

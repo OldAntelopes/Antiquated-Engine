@@ -302,6 +302,7 @@ extern void		EngineCameraSetViewAspectOverride( float fAspect );
 extern void		EngineActivateClippingPlane( BOOL bFlag, float fZHeight );
 extern void		EngineSetTextureReductionMode( int nMode );
 
+extern void		EngineDumpState();
 //-------------------------------------------------------------
 // Culling
 //-------------------------------------------------

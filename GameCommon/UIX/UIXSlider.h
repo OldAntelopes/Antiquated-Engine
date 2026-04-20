@@ -17,6 +17,9 @@ public:
 	void	ShowCurrentValueIndicator( BOOL bFlag ) { mbShowCurrentValueIndicator = bFlag; }
 
 	virtual float		OnValueChange( UIXObject* pxSourceObj, float fNewValue, BOOL bByUserEditFlag );		// Triggered by (e.g) child text boxes when a new value is entered there directly
+
+	void	ModifySliderRange( float fValue, float fMinRange, float fMaxRange );		// Triggered by (e.g) midi control changing slider values
+
 protected:
 	UIXSlider( UIXObject* pxParent, uint32 uID, UIXRECT rect ) : UIXObject( pxParent, uID, rect ) {}
 

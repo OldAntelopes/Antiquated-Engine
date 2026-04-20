@@ -45,7 +45,8 @@ int							UIX::mshUIXIconsList[MAX_NUM_UIX_ICONS] = { NOTFOUND };
 std::string					UIX::msDragText;
 std::string					UIX::msTooltipText;
 int							UIX::msnTooltipPriority = NOTFOUND;
-
+BOOL						UIX::mbUISelectionModeActive = FALSE;
+fnObjectSelectionCallback	UIX::msfnObjectSelectionHandler = NULL;
 
 
 uint32						UIX::msDragSourceParam = 0;
@@ -516,7 +517,19 @@ void		UIX::ButtonPressHandler( int nButtonID, uint32 ulParam, uint32 ulIDParam )
 	{
 	UIXObject* pObject = it->second;
 
-		pObject->SelectObject( nButtonID, ulParam );
+		// This is the mode we use when doing 'Edit midi mapping' and we're just interested 
+		if ( nButtonID == UIX_OBJECT_SELECT )
+		{
+			mspFocusedSelectionObject = pObject;
+			if (msfnObjectSelectionHandler)
+			{
+				msfnObjectSelectionHandler(pObject);
+			}
+		}
+		else
+		{
+			pObject->SelectObject( nButtonID, ulParam );
+		}
 	}
 }
 	
@@ -667,6 +680,7 @@ void		UIX::Initialise( int mode )
 	UIRegisterButtonPressHandler( UIX_POPUP_MENU_ITEM, ButtonPressHandler );
 	UIRegisterButtonPressHandler( UIX_TAB_SELECT, ButtonPressHandler );
 	UIRegisterButtonPressHandler( UIX_RIGHT_CLICK_SELECT, ButtonPressHandler );
+	UIRegisterButtonPressHandler( UIX_OBJECT_SELECT, ButtonPressHandler );
 	
 			
 	UIRegisterHoldHandler( UIX_SLIDER_BAR, SliderHoldHandler );
