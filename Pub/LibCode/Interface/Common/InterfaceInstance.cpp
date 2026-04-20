@@ -95,6 +95,8 @@ static BOOL			ms_bHasInitialisedMainInstance = FALSE;
 	return( &ms_MainSingletonInstance );
 }
 
+char	mszTextLimitReturnBuff[2048];
+
 const char*	InterfaceInstance::TextLimitWidth( int nLayer, int nX, int nY, int nMaxWidth, uint32 ulCol, int nFont, const char* text, ... )
 {
 char		acString[2048];
@@ -111,7 +113,8 @@ uint32*		pArgs;
 
 	if ( pcTextReached )
 	{
-		return( text + (pcTextReached-acString) );
+		strcpy_s( mszTextLimitReturnBuff, pcTextReached );
+		return( mszTextLimitReturnBuff );
 	}
 	return( NULL );
 }
@@ -132,7 +135,8 @@ uint32*		pArgs;
 
 	if ( pcTextReached )
 	{
-		return( text + (pcTextReached-acString) );
+		strcpy_s( mszTextLimitReturnBuff, pcTextReached );
+		return( mszTextLimitReturnBuff );
 	}
 	return( NULL );
 }

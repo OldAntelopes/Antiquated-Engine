@@ -2,11 +2,8 @@
 #ifndef TEXTURE_MANAGER_H
 #define	TEXTURE_MANAGER_H
 
-#ifdef __cplusplus
-extern "C"				// All interfaces use a C-linkage
-{
-#endif
-	
+typedef	void(*TextureManagerPrintCallback)( const char* );
+
 typedef struct
 {
 	int		nHandleCounter;
@@ -14,6 +11,35 @@ typedef struct
 	int		nNumTextureLoadsFailed;
 
 } TEXTURE_MANAGER_STATS;
+
+
+#ifdef __cplusplus
+
+#include "../EngineModule.h"
+
+class EngineTextureManagerDX  : public EngineModule
+{
+public:
+	EngineTextureManagerDX();
+	~EngineTextureManagerDX();
+
+	void	Init(void);
+	void	Update(void);
+	void	Free(BOOL bFreeAll);
+
+	void	GetStats(TEXTURE_MANAGER_STATS* pxOut);
+	void	Dump(TextureManagerPrintCallback fnPrintCallback);
+
+};
+
+
+#endif
+
+#ifdef __cplusplus
+extern "C"				// All interfaces use a C-linkage
+{
+#endif
+	
 
 							
 extern	void	EngineTextureManagerInitDX( void );
@@ -23,7 +49,6 @@ extern	void	EngineTextureManagerFreeDX( BOOL );
 
 extern void		EngineTextureManagerGetStats( TEXTURE_MANAGER_STATS* pxOut );
 
-typedef	void(*TextureManagerPrintCallback)( const char* );
 
 extern void		EngineTextureManagerDump( TextureManagerPrintCallback fnPrintCallback );
 

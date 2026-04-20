@@ -3452,6 +3452,13 @@ bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick)
         if (bTick)
             return true;
     }
+	else if ( sh->warp.ptr == NULL )
+	{
+       // switch to fallback shader
+       m_fallbackShaders_ps.warp.ptr->AddRef();
+       m_fallbackShaders_ps.warp.CT->AddRef();
+       memcpy(&sh->warp, &m_fallbackShaders_ps.warp, sizeof(PShaderInfo));
+    }
 
     if (!sh->comp.ptr && pState->m_nCompPSVersion > 0)
     {
@@ -3466,7 +3473,13 @@ bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick)
             //m_nLoadingPreset = 1000;
         }
     }
-
+	else if ( sh->comp.ptr == NULL )
+	{
+       // switch to fallback shader
+       m_fallbackShaders_ps.comp.ptr->AddRef();
+       m_fallbackShaders_ps.comp.CT->AddRef();
+       memcpy(&sh->comp, &m_fallbackShaders_ps.comp, sizeof(PShaderInfo));
+	}
     return true;
 }
 
@@ -6024,7 +6037,7 @@ void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, bool bWrap)
     p += sprintf(p, "    // darken (decay) over time%c", LF);
     p += sprintf(p, "    ret *= %.2f; //or try: ret -= 0.004;%c", decay, LF);
     //p += sprintf(p, "    %c", LF);
-    //p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
+	p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
     p += sprintf(p, "}%c", LF);
 }
 
@@ -6069,7 +6082,7 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
         p += sprintf(p, "    ret = ret*(1-ret)*4; //solarize%c", LF);
     if (bInvert)
         p += sprintf(p, "    ret = 1 - ret; //invert%c", LF);
-    //p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
+    p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
     p += sprintf(p, "}%c", LF);
 }
 

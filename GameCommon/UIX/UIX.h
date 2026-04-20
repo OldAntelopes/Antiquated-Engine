@@ -48,6 +48,7 @@ enum
 	UIX_POPUP_MENU_ITEM,
 	UIX_CUSTOM_RENDER,
 	UIX_RIGHT_CLICK_SELECT,
+	UIX_OBJECT_SELECT,
 };
 
 enum eUIXBUTTON_MODE
@@ -109,6 +110,7 @@ enum UIX_VALUE_CALLBACK_FLAGS
 typedef	float(*fnValueUpdateCallback)( uint32 ulUIXObjectID, float fUIXValue, float fUIXMinRangeVal, float fUIXMaxRangeValue, uint32 ulUserParam, BOOL bIsUIHeld );
 typedef	void(*fnDragReceiveCallback)( UIXObject* pxSourceObject, uint32 ulDragParam, UIXObject* pxDestObject, uint32 ulDragDestParam, const char* szDragDropFilename );
 typedef	void(*fnSelectedCallback)( UIXObject* pxSourceObject, uint32 ulSelectParam );
+typedef	void(*fnObjectSelectionCallback)( UIXObject* pxSelectedObject );
 
 class UIStateData
 {
@@ -184,6 +186,12 @@ public:
 
 	void				SetRightClickSelectedCallback(fnSelectedCallback  callbackFunc, uint32 ulSelectParam) { mfnRightClickSelectedCallback = callbackFunc; mulRightClickSelectParam = ulSelectParam; }
 	void				SetBasePriority( int priorityVal ) { mBasePriority = priorityVal; }
+
+	void				SetObjectSelectionText( const char* szText ) { mSelectObjectText = szText; }		// Displayed when we're in ObjectSelect mode
+	
+	void				SetUIDParam(u64 param) { mullUIDParam = param; }
+	u64					GetUIDParam() { return mullUIDParam; }	
+
 	// For custom drag activation
 	void				ActivateDragHold(UIXRECT rect, uint32 ulDragParam);
 	virtual void		OnReceiveDragItem( int dragType, UIXObject* pxSourceObject, uint32 ulDragParam, const char* szDragdropFilename = NULL );
@@ -204,6 +212,8 @@ protected:
 	virtual void		OnFocusedKeyUp( int keyCode ) {}
 	virtual void		OnCloseAllDropdowns( uint32 ulExceptID ) {}
 	virtual const char*		GetTooltipText();
+
+	const std::string&			GetObjectSelectionText() { return( mSelectObjectText ); }
 
 	void		Update( float delta );
 	UIXRECT		Render( InterfaceInstance* pInterface, UIXRECT rect );
@@ -286,12 +296,14 @@ private:
 	UIXObject*		mpParent;
 	fnSelectedCallback	mfnSelectedCallback = NULL;
 	uint32				mulSelectParam = 0;
+	u64					mullUIDParam = 0;	
 	fnSelectedCallback	mfnRightClickSelectedCallback = NULL;
 	uint32				mulRightClickSelectParam = 0;
 	float				mfHoverTime = 0.0f;
 	int					mBasePriority = 0;
 	fnCustomTooltipCallback	mfnCustomTooltipCallback = NULL;
 	uint32					mulCustomTooltipParam = 0;
+	std::string				mSelectObjectText;
 
 	//--------------------  Drag n drop stuff
 	// todo - this stuff could probably be standardised into some form of standard draggable object
@@ -358,6 +370,9 @@ public:
 
 	static void							SetMousewheelHoverObject(UIXObject* pObject);
 	static void							SetActiveTooltip( int priority, const char* szText );
+	
+	static void							SetUISelectionMode(BOOL bActive) { mbUISelectionModeActive = bActive; }
+	static BOOL							IsUISelectionModeActive() { return(mbUISelectionModeActive); }		
 
 	static void							SetTextEditFocus( UIXObject* pObject );
 	static UIXObject*					GetTextEditFocus() { return( mspTextEditFocusObject ); }
@@ -378,6 +393,7 @@ public:
 
 	static uint32						GetNextObjectID();
 	static uint32						GetCurrentPressObjectID();
+	static void							RegisterObjectSelectionHandler( fnObjectSelectionCallback handler ) { msfnObjectSelectionHandler = handler; }  
 protected:
 	static void							SetActivePageRegion(UIXRECT rect) { mxActivePageRegion = rect; }
 
@@ -406,6 +422,8 @@ private:
 	static std::string					msDragText;
 	static std::string					msTooltipText;
 	static int							msnTooltipPriority;
+	static BOOL							mbUISelectionModeActive;		
+	static fnObjectSelectionCallback	msfnObjectSelectionHandler;
 
 };
 

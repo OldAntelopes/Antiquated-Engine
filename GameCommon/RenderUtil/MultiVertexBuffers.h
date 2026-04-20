@@ -48,6 +48,15 @@ public:
 		}
 	}
 
+	void		AddEngineVertex( ENGINEBUFFERVERTEX* pxVertex, const VECT* pxPos )
+	{
+		*mpulColStream = pxVertex->color;
+		VectAdd( mpxPosStream, &pxVertex->position, pxPos );
+		mpfUVStream[0] = pxVertex->tu;
+		mpfUVStream[1] = pxVertex->tv;
+		AddVert();
+	}
+
 	void		AddVert( void )
 	{
 		mpxPosStream = (VECT*)( ( (byte*)mpxPosStream) + mnPosStride );

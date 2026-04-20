@@ -507,7 +507,6 @@ BOOL	FontSystem::LoadFont( int nFontNum, const char* pcImageFileName, const char
 		mpFontDefs[nFontNum] = new CFontDef;
 		mpFontDefs[nFontNum]->SetTextureFileName( pcImageFileName );
 
-		// TEMP - REMOVE
 		mpFontDefs[nFontNum]->LoadTexture( mpInterfaceInstance );
 		mpFontDefs[nFontNum]->Initialise( pcLayoutFile, nGlobalVerticalOffset );
 		if ( ulFlags & 1 )
@@ -798,6 +797,7 @@ int		nPreBackstepPos;
 
 	ZeroMemory(acBuff, 512 );
 	acBuff[0] = szString[0];
+	// TODO - UGH, surely theres a better way of doing this.. mm
 	while ( ( acBuff[nLoop] != 0 ) &&
 			( GetStringWidth( acBuff, nFont ) < nMaxWidth ) )
 	{

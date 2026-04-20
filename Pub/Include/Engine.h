@@ -302,6 +302,7 @@ extern void		EngineCameraSetViewAspectOverride( float fAspect );
 extern void		EngineActivateClippingPlane( BOOL bFlag, float fZHeight );
 extern void		EngineSetTextureReductionMode( int nMode );
 
+extern void		EngineDumpState();
 //-------------------------------------------------------------
 // Culling
 //-------------------------------------------------
@@ -577,6 +578,10 @@ EngineGameInterface*	EngineGetGameInterface( void );
 
 void					EngineSetSceneMapGameInterface( SceneMapGameInterface* );
 SceneMapGameInterface*	EngineGetSceneMapGameInterface( void );
+
+class EngineInstance;
+extern EngineInstance* 		EngineInstanceMain();
+
 
 #endif // #ifdef __cplusplus
 

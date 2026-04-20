@@ -43,7 +43,7 @@ uint32		ulCol = 0x90303030;
 uint32		ulTextCol = 0xd0d0d0d0;
 int		headerH = 20;
 int		nHeaderOffsetX = 0;
-int			nHeaderW = W - mHeaderRect.w;
+int			nHeaderW = W;
 BOOL	bMouseIsOverSectionHeader = FALSE;
 
 	switch( mMode )
