@@ -175,6 +175,26 @@ void	UIXSlider::Initialise( UIX_SLIDER_MODE mode, uint32 ulUserParam, float fMin
 			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
 		} 
 		break;
+	case SLIDERMODE_INTVALUE_WITH_CONSTRAINTS:
+		if ( mbShowValueTextBoxes )
+		{
+		int		nTextSectionW = 180;
+		int		nTextBoxW = (nTextSectionW / 3) - 18;
+		UIXRECT		textboxRect = UIXRECT(0, 0, nTextBoxW, GetLocalPositionRect().h - 2);
+			
+			sprintf(acVal, "%d", (int)mfCurrentVal);
+			mpValueTextBox = UIX::AddTextBox(this, textboxRect, 0, acVal);
+			textboxRect.x += nTextBoxW + 18;
+
+			sprintf( acVal, "%d", (int)mfMinVal );
+			mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+
+			textboxRect.x += nTextBoxW + 14;
+			sprintf( acVal, "%d", (int)mfMaxVal );
+			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+		}
+		break;
+
 	case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
 	case SLIDERMODE_VALUE:
 		if ( mbShowValueTextBoxes )
@@ -295,11 +315,12 @@ uint32		ulCol = 0xf0505070;
 	switch( mMode )
 	{
 	case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
+	case SLIDERMODE_INTVALUE_WITH_CONSTRAINTS:
 		{
 		int		nTextAreaW = 180;
 		int		nBarMaxW = renderRect.w - nTextAreaW;
 		int		nBarW = 0;
-		
+	
 			if ( mfMaxVal > mfMinVal )
 			{
 				nBarW = (int)(((mfCurrentVal-mfMinVal) * nBarMaxW) / (mfMaxVal-mfMinVal));
@@ -311,7 +332,7 @@ uint32		ulCol = 0xf0505070;
 
 			// Show the text values to the left
 			UIXRECT		drawRect = renderRect;
-			int			nTextBoxW = (nTextAreaW / 2) - 8;
+			int			nTextBoxW = ((nTextAreaW*2) / 3) - 17;
 			char		acVal[128];
 			uint32		ulTextCol = 0xC0C0C0C0;
 
@@ -321,7 +342,14 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMinTextBox )
 			{
-				sprintf( acVal, "%.3f", mfMinVal );
+				if ( mMode == SLIDERMODE_INTVALUE_WITH_CONSTRAINTS )
+				{
+					sprintf( acVal, "%d", (int)mfMinVal );
+				}
+				else
+				{
+					sprintf( acVal, "%.2f", mfMinVal );
+				}
 				mpRangeMinTextBox->SetText( acVal );
 				mpRangeMinTextBox->OnRender( pInterface, drawRect );
 				pInterface->Text( 1, drawRect.x + nTextBoxW + 4, drawRect.y + 4, ulTextCol, 3, "-" );
@@ -329,14 +357,28 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMaxTextBox )
 			{
-				sprintf( acVal, "%.3f", mfMaxVal );
+				if ( mMode == SLIDERMODE_INTVALUE_WITH_CONSTRAINTS )
+				{
+					sprintf( acVal, "%d", (int)mfMaxVal );
+				}
+				else
+				{
+					sprintf( acVal, "%.2f", mfMaxVal );
+				}
 				mpRangeMaxTextBox->SetText( acVal );
 				mpRangeMaxTextBox->OnRender( pInterface, drawRect );
 			}
 
 			if ( mpValueTextBox )
 			{
-				sprintf(acVal, "%.3f", mfCurrentVal );
+				if ( mMode == SLIDERMODE_INTVALUE_WITH_CONSTRAINTS )
+				{
+					sprintf( acVal, "%d", (int)mfCurrentVal );
+				}
+				else
+				{
+					sprintf(acVal, "%.2f", mfCurrentVal );
+				}
 				mpValueTextBox->SetText(acVal);
 				mpValueTextBox->OnRender(pInterface, drawRect);
 			}
@@ -703,6 +745,7 @@ void		UIXSlider::OnUpdate( float fDelta )
 				}
 			}		
 			break;
+		case SLIDERMODE_INTVALUE_WITH_CONSTRAINTS:
 		case SLIDERMODE_VALUE_WITH_CONSTRAINTS:
 			if ( mfCurrentVal < mfMinVal ) mfCurrentVal = mfMinVal;
 			if ( mfCurrentVal > mfMaxVal ) mfCurrentVal = mfMaxVal;
