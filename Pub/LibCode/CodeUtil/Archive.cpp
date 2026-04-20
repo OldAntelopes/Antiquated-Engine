@@ -202,7 +202,7 @@ volatile int		msnNextArchiveFileHandleNum = 1;
 void	ArchiveGetConvertedFilePath( const char* szFilename, char* szOut )
 {
 	// If we've been given a full, local path (e.g. c:\archive.tua )
-	if ( szFilename[1] == ':' )
+	if ( SysIsAbsolutePath(szFilename) == TRUE )
 	{
 		strcpy( szOut, szFilename );
 	}

@@ -60,7 +60,7 @@ extern void		EnsureFilenameHasExtension(char* acFilename, const char* acExtensio
 extern BOOL		SysFilenameHasExtension( const char* szFilename, const char* szExtension );
 extern void		SysExtractFilenameFromPath( const char* szPath, char* szFilenameOut );
 extern void		SysExtractPathFromFilename( const char* szFilename, char* szPathOut );
-
+extern BOOL		SysIsAbsolutePath(const char* szFilename);
 
 //------------------------------------------------------------------
 

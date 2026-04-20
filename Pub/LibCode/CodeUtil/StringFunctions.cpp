@@ -81,6 +81,18 @@ const char*	FindChar( const char* pcRunner, char cChar )
 	return( NULL );
 }
 
+BOOL		SysIsAbsolutePath(const char* szFilename)
+{
+	// This isnt exactly very bright :)
+	if (szFilename[1] == ':')
+	{
+		return(TRUE);
+	}
+	return(FALSE);
+
+}
+
+
 void		SysExtractPathFromFilename( const char* szFilename, char* szPathOut )
 {
 int		pathLen = (int)strlen(szFilename);

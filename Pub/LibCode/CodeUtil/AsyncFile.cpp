@@ -434,8 +434,8 @@ BOOL	SysSelectFolderDialogAsync( const char* szTitle, const char* szRootFolder, 
 {
 char		acFullPathToDefaultFolder[512];
 
-	// HACK - Detect absolute path 
-	if (szDefaultFolder[1] != ':')
+	// Detect absolute path 
+	if ( SysIsAbsolutePath(szDefaultFolder) )
 	{
 		SysGetCurrentDir(256, acFullPathToDefaultFolder);
 		strcat(acFullPathToDefaultFolder, "\\");
@@ -454,9 +454,17 @@ BOOL	SysGetOpenFilenameDialogAsync( const char* szFileFilter, const char* szTitl
 {
 char		acFullPathToDefaultFolder[512];
 
-	SysGetCurrentDir( 256, acFullPathToDefaultFolder );
-	strcat( acFullPathToDefaultFolder, "\\");
-	strcat( acFullPathToDefaultFolder, szDefaultFolder );
+	// Detect absolute path 
+	if (SysIsAbsolutePath(szDefaultFolder))
+	{
+		strcpy(acFullPathToDefaultFolder, szDefaultFolder);
+	}
+	else
+	{
+		SysGetCurrentDir(256, acFullPathToDefaultFolder);
+		strcat(acFullPathToDefaultFolder, "\\");
+		strcat(acFullPathToDefaultFolder, szDefaultFolder);
+	}
 
 	return( AsyncFileSelector::Get().Add( 0, szFileFilter, szTitle, acFullPathToDefaultFolder, nFlags, fnCallback ) );
 }
