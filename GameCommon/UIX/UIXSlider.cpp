@@ -713,11 +713,20 @@ uint32		ulCol = 0xf0505070;
 			ulOutlineCol = 0xB0f0e0a0;
 			UIX::CheckForPress( this, mRenderRect, UIX_OBJECT_SELECT, 0  );
 		}
+		else if ( GetObjectSelectionText().empty() == false )
+		{
+			ulShadedCol = 0x60108020;
+			ulOutlineCol = 0xB020c060;
+		}
+
 		pInterface->Rect( 0, mRenderRect.x, mRenderRect.y, mRenderRect.w, mRenderRect.h, ulShadedCol );
 		pInterface->OutlineBox( 0, mRenderRect.x, mRenderRect.y, mRenderRect.w, mRenderRect.h, ulOutlineCol );	
 
 		auto	selectionText = GetObjectSelectionText();
-		pInterface->TextCentre( 1, mRenderRect.x + (mRenderRect.w/2), mRenderRect.y + 3, 0xd0d0d0d0, 3, selectionText.c_str() );
+		int		nFontHeight = 12;
+		int		lineY = mRenderRect.y + (mRenderRect.h / 2) - (nFontHeight / 2);
+//		pInterface->TextCentre( 1, mRenderRect.x + (mRenderRect.w/2), lineY, 0xd0d0d0d0, 3, selectionText.c_str() );
+		pInterface->TextBox(1, mRenderRect.x, lineY, mRenderRect.w, 0xd0d0d0d0, 3, 0, selectionText.c_str());
 	}
 
 	displayRect.h = 0;
