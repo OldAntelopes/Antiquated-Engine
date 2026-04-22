@@ -289,6 +289,41 @@ UIXRECT		drawRect = GetActualRenderRect( displayRect );
 		break;
 
 	}
+
+	if ( (GetUIDParam() != 0 ) &&
+		 (UIX::IsUISelectionModeActive() == TRUE) )
+	{
+		uint32		ulShadedCol = 0x40d0c040;
+		uint32		ulOutlineCol = 0x80e0d080;
+
+		if (UIX::GetFocusedObject() == this)
+		{
+			ulShadedCol = 0x806080d0;
+			ulOutlineCol = 0xB0a0b0f0;
+		}
+		else if (UIX::IsMouseHover(drawRect))
+		{
+			ulShadedCol = 0x60e0d060;
+			ulOutlineCol = 0xB0f0e0a0;
+			UIX::CheckForPress(this, drawRect, UIX_OBJECT_SELECT, 0);
+		}
+		else if (GetObjectSelectionText().empty() == false)
+		{
+			ulShadedCol = 0x60108020;
+			ulOutlineCol = 0xB020c060;
+		}
+
+		pInterface->Rect(0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulShadedCol);
+		pInterface->OutlineBox(0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulOutlineCol);
+
+		auto	selectionText = GetObjectSelectionText();
+		int		nFontHeight = 12;
+		int		lineY = drawRect.y + (drawRect.h / 2) - (nFontHeight / 2);
+		//		pInterface->TextCentre( 1, mRenderRect.x + (mRenderRect.w/2), lineY, 0xd0d0d0d0, 3, selectionText.c_str() );
+		pInterface->TextBox(1, drawRect.x, lineY, drawRect.w, 0xd0d0d0d0, 3, 0, selectionText.c_str());
+	}
+
+
 	displayRect.h = localRect.h + 1;
 	displayRect.y = localRect.h + 1; //drawRect.y + drawRect.h + 1;		// displayRect.y returns the lowest point we drew to
 
