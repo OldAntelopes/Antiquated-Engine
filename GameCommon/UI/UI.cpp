@@ -202,10 +202,14 @@ bool	bHoldHandlerWasActioned = false;
 	if ( UIScrollablePageOnRelease( X, Y ) == 0 )
 	{
 		if ( ( UIDropdownOnRelease( X, Y ) == FALSE ) &&
-			 ( UISliderOnRelease( X, Y, TRUE ) == FALSE ) &&
-			 ( mpUITextBoxImpl->OnRelease( this, X, Y ) == FALSE ) )
+			 ( UISliderOnRelease( X, Y, TRUE ) == FALSE ) )
 		{
-			if ( mnUIButtonIDPressed != NOTFOUND )
+			if ( ( mpUITextBoxImpl ) &&
+				 ( mpUITextBoxImpl->OnRelease( this, X, Y ) == TRUE )	)
+			{
+				bRet = TRUE;
+			}
+			else if ( mnUIButtonIDPressed != NOTFOUND )
 			{
 				if ( msButtonHandlerList[mnUIButtonIDPressed] )
 				{			
