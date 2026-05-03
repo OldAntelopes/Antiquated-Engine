@@ -457,7 +457,14 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMinTextBox )
 			{
-				sprintf( acVal, "%.3f", mfMinVal );
+				if ( ( mfMinVal < -100.0f ) || ( mfMinVal > 100.0f ) )
+				{
+					sprintf( acVal, "%.1f", mfMinVal );			
+				}
+				else
+				{
+					sprintf( acVal, "%.3f", mfMinVal );
+				}
 				mpRangeMinTextBox->SetText( acVal );
 				mpRangeMinTextBox->OnRender( pInterface, drawRect );
 
@@ -466,7 +473,14 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMaxTextBox )
 			{
-				sprintf( acVal, "%.3f", mfMaxVal );
+				if ( ( mfMaxVal < -100.0f ) || ( mfMaxVal > 100.0f ) )
+				{
+					sprintf( acVal, "%.1f", mfMaxVal );
+				}
+				else
+				{
+					sprintf( acVal, "%.3f", mfMaxVal );
+				}
 				mpRangeMaxTextBox->SetText( acVal );
 				mpRangeMaxTextBox->OnRender( pInterface, drawRect );
 			}
@@ -475,6 +489,9 @@ uint32		ulCol = 0xf0505070;
 			int		nMinBarPos = (int)(((mfMinVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
 			int		nMaxBarPos = (int)(((mfMaxVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
 			int		nCurrentBarPos = (int)(((mfCurrentVal-mfInitialMinVal) * nBarMaxW) / (mfInitialMaxVal-mfInitialMinVal));
+
+			if ( mfMinVal < mfInitialMinVal ) nMinBarPos = 0;
+			if ( mfMaxVal > mfInitialMaxVal ) nMaxBarPos = nBarMaxW;
 
 			mRenderRect.x += nTextAreaW;
 			mRenderRect.w -= nTextAreaW;

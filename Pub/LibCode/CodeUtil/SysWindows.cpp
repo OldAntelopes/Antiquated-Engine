@@ -278,6 +278,12 @@ struct tm *dcp;
 	}
 }
 
+BOOL	SysLaunchExplorerWindow( const char* szPath )
+{
+	ShellExecute( NULL, "open", szPath, 0, 0, SW_SHOWDEFAULT );
+	return( TRUE );
+}
+
 BOOL	SysLaunchBrowserWindow( const char* szWeblink )
 {
 	ShellExecute( GetDesktopWindow(), "Open", szWeblink, 0, 0, SW_SHOWNORMAL );

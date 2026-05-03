@@ -62,6 +62,17 @@ void		UIXMenuItem::DoRender( InterfaceInstance* pInterface, UIXRECT rect )
 {
 	int		nNumChildren = GetChildObjectList().size();
 	UIXMenuItem* pMenuItem;
+	int		stringWidth;
+
+	for ( UIXObject* pItem : GetChildObjectList() )
+	{
+		pMenuItem = (UIXMenuItem*)pItem;
+		stringWidth = pInterface->GetStringWidth( pMenuItem->GetText(), 0 ) + 1;
+		if ( rect.w < stringWidth + 25 )
+		{
+			rect.w = stringWidth + 25;
+		}
+	}
 
 	rect.h = nNumChildren * 20 + 4;
 	pInterface->ShadedRect(0, rect.x, rect.y, rect.w, rect.h, 0xFF202020, 0xFF202020, 0xFF181818, 0xFF181818);
@@ -100,11 +111,12 @@ void		UIXMenuItem::DoRender( InterfaceInstance* pInterface, UIXRECT rect )
 
 //---------------------------------------------------------------------
 
-UIXMenuItem*	UIXMenu::AddMenuItem( const char* szMenuItemName )
+UIXMenuItem*	UIXMenu::AddMenuItem( const char* szMenuItemName, int nSubMenuWidth )
 {
 UIXMenuItem*		pNewMenuItem = new UIXMenuItem(this, UIX::GetNextObjectID(), UIXRECT(0, 0, 0, 0));
 
 	pNewMenuItem->Initialise(szMenuItemName);
+	pNewMenuItem->SetSubMenuWidth( nSubMenuWidth );
 	GetChildObjectList().push_back( pNewMenuItem );
 	return( pNewMenuItem );
 }

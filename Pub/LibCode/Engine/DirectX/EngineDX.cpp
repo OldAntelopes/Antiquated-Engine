@@ -1299,6 +1299,7 @@ void	EngineSetBlendMode( int nBlendMode )
 #ifdef TUD11
 	PANIC_IF( TRUE, "DX11 EngineSetBlendMode TBI" );
 #else
+	mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	switch( nBlendMode )
 	{
 	case BLEND_MODE_SRCALPHA_ADDITIVE:
@@ -1314,8 +1315,10 @@ void	EngineSetBlendMode( int nBlendMode )
 		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
 		break;
 	case BLEND_MODE_COLOUR_SUBTRACTIVE:
-		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
-		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
+		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		// Set blend operation to reverse subtract (dest - src)
+		mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
 		break;
 	case BLEND_MODE_ALPHA_SUBTRACTIVE:
 		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);

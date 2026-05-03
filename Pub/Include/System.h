@@ -184,6 +184,7 @@ extern void		SysURLStripParameters( const char* szURL, char* szURLOut );
 //-----------------------------------------------------------------------------
 
 extern BOOL	SysLaunchBrowserWindow( const char* szWeblink );
+extern BOOL	SysLaunchExplorerWindow( const char* szPath );
 
 extern const char*		SysNetworkGetIPAddressText( uint32 ulIP );
 extern uint32			SysNetworkGetIPAddress( const char* szIPAddressString );

@@ -20,6 +20,7 @@ public:
 	virtual bool		OnSelected( int nButtonID, uint32 ulParam );
 	bool			IsExpanded() const { return mbIsExpanded; }
 
+	void		SetSubMenuWidth(int width) { mSubMenuWidth = width; }
 
 	UIXRECT		GetLastRenderRect() const { return mLastRenderRect; }
 	void	SetLastRenderRect(UIXRECT rect) { mLastRenderRect = rect; }
@@ -37,7 +38,7 @@ private:
 	bool			mbIsExpanded = false;	
 	BOOL			mbIsChecked = FALSE;	
 	BOOL			mbIsHeader = FALSE;	
-	
+	int				mSubMenuWidth = 100;
 	UIXRECT			mLastRenderRect;
 
 };
@@ -49,7 +50,7 @@ public:
 
 	void		Initialise( );
 	
-	UIXMenuItem*		AddMenuItem( const char* szMenuItemName );
+	UIXMenuItem*		AddMenuItem( const char* szMenuItemName, int nSubMenuWidth = 100 );
 
 	virtual UIXRECT		OnRender( InterfaceInstance* pInterface, UIXRECT rect );
 	virtual void		OnPostRender( InterfaceInstance* pInterface, UIXRECT rect );
