@@ -101,7 +101,7 @@ int		ret;
 	ret = TcpGetListenSocket (&m_WebServerListenSocket, NULL, &uwPort, 4);
 	if ( ret == TCP4U_SUCCESS )
 	{
-		SysDebugPrint("BasicWebServer TCP listen socket open on %d\n", uwPort );
+//		SysDebugPrint("BasicHTTP TCP listen socket open on %d\n", uwPort );
 		m_hWebServerConnectionListenThread = SysCreateThread( WebServerTCPListenThread, NULL, 0, 0 );
 		return( 1 );
 	}
@@ -268,6 +268,11 @@ char	buf[256];
 	if ( flags & CONTENT_TYPE_TEXT )
 	{
 		sprintf(buf, "Content-Type: text/html\r\n" );
+		send( hSocket, buf, strlen(buf), 0);
+	}
+	else if ( flags & CONTENT_TYPE_JSON )
+	{
+		sprintf(buf, "Content-Type: application/json\r\n" );
 		send( hSocket, buf, strlen(buf), 0);
 	}
 	

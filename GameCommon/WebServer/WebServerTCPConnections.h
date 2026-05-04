@@ -26,6 +26,7 @@ enum eHeaderFlags
 	NO_FLAGS = 0,
 	CLOSE_CONNECTION = 0x1,
 	CONTENT_TYPE_TEXT = 0x2,
+	CONTENT_TYPE_JSON = 0x4,
 };
 
 extern void	TcpConnectionSendHTTPResponse( SOCKET hSocket, int nResponseCode, const char* szBody, int nBodyLen, eHeaderFlags flags = NO_FLAGS );
