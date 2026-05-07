@@ -287,8 +287,17 @@ void	UIInitialise(InterfaceInstance* pInterfaceInstance)
 void		UIInstance::Shutdown( void )
 {
 	// TODO - Cleanup msButtonHandlerList
-	mpUIButtonImpl->Shutdown( this );
-	mpUITextBoxImpl->Shutdown( this );
+	if ( mpUIButtonImpl )
+	{
+		mpUIButtonImpl->Shutdown( this );
+	}
+
+	if ( mpUITextBoxImpl )
+	{
+		mpUITextBoxImpl->Shutdown( this );
+	}
+	SAFE_DELETE( mpUIButtonImpl );
+	SAFE_DELETE( mpUITextBoxImpl );
 }
 
 void	UIShutdown()
