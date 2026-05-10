@@ -299,6 +299,24 @@ SysProfileEvent*		pEvent = new SysProfileEvent( msulNextProfileEventID++ );
 	}
 	return(pEvent);
 }
+
+void	SysProfileReleaseAll()
+{
+SysProfileEvent* pNext;
+SysProfileEvent* pEvent;
+
+	for( int i = 0; i < MAX_SCRIPTEVENT_HASHVAL; i++ )
+	{
+		pEvent = mapSysProfileEventsHashMap[i];
+		while( pEvent )
+		{
+			pNext = pEvent->GetNext();
+			delete( pEvent );
+			pEvent = pNext;
+		}
+		mapSysProfileEventsHashMap[i] = NULL;
+	}
+}
 //------------------------------------------------------------------------------------------------------------
 
 

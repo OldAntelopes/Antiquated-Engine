@@ -70,8 +70,28 @@ void		UIInstance::Update( float fDelta )
 	}
 
 }
+
+float		msfGlowSin = 0.0f;
+
+uint32	UIGetGlowColour()
+{
+float	fSin = (sinf( msfGlowSin ) + 1.0f ) * 0.5f;
+uint32	R = (uint32)( 60 + (fSin * 110) );
+uint32	G = (uint32)( 50 + (fSin * 100) );
+uint32	B = (uint32)( 10 + (fSin * 20) );
+uint32	col;
+
+	col = 0xFF000000 | (R<<16) | (G<<8) | (B);
+	return col;
+}
+
 void		UIUpdate( float fDelta )
 {
+	msfGlowSin += fDelta * 4.0f;
+	if ( msfGlowSin > A360 )
+	{
+		msfGlowSin -= A360;
+	}
 	msTempSingleton.Update(fDelta);
 }
 

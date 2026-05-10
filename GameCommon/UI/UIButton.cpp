@@ -59,7 +59,7 @@ int		nLoop;
 
 	for ( nLoop = 0; nLoop < 9; nLoop++ )
 	{
-		UIInterfaceInstance()->ReleaseTexture(mahUIButtonTextures[nLoop] );
+		pInterface->ReleaseTexture(mahUIButtonTextures[nLoop] );
 	}
 }
 
@@ -203,7 +203,8 @@ UIButtonImpl::UIButtonImpl( UIInstance* pUIInstance )
 void		UIButtonImpl::Shutdown(UIInstance* pUIInstance)
 {
 	mpButtonStyle->Free( pUIInstance->GetInterfaceInstance());
-
+	delete mpButtonStyle;
+	mpButtonStyle = NULL;
 }
 
 void		UIButtonImpl::NewFrame( void )

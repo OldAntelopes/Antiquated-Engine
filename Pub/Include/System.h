@@ -247,6 +247,7 @@ extern u64		SysProfileStartEvent( const char* szEventName, int nEventParam = 0, 
 extern void		SysProfileEndEvent( u64 ullEventID );
 extern BOOL		SysProfileGetStat( int nStatNum, SYS_PROFILE_STAT* pStatOut );
 extern void		SysProfileNextEvent( u64* pullEventID, const char* szEventName );		// Convenience func for events on same level ; Calls end then start
+extern void		SysProfileReleaseAll();
 
 
 

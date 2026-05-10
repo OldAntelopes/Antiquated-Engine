@@ -214,7 +214,16 @@ UIXRECT		drawRect = GetActualRenderRect( displayRect );
 		break;
 
 	case UIXBUTTON_RECT_ICON:
-		pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mulCol );
+		if ( mbIsGlowing )
+		{
+		uint32		ulGlowCol = UIGetGlowColour();
+
+			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulGlowCol );
+		}
+		else
+		{
+			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mulCol );
+		}
 		if ( mulButtonID != 0 )
 		{
 			if ( UIX::CheckForPress( this, drawRect, mulButtonID, mulButtonParam ) )

@@ -25,13 +25,14 @@ UIXDropdown::~UIXDropdown()
 		delete pListEntry;
 	}
 	mDropdownEntries.clear();
+	mpSelectedEntry = NULL;
 }
 
 
 void	UIXDropdown::Initialise( int mode )
 {
 	mpScrollbar = new UIXScrollbar(this, UIX::GetNextObjectID(), UIXRECT(0, 0, 0, 0));
-
+	mpSelectedEntry = NULL;
 }
 
 void		UIXDropdown::OnMouseWheel(float fOffset)

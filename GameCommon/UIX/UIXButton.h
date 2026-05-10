@@ -18,6 +18,7 @@ public:
 
 	void	SetDynamicButtonImageHandler( fnDynamicButtonImageHandleCallback func, void* pUserParam ) { mfnDynamicButtonImageHandler = func; mpImageHandlerParam = pUserParam; }
 	void	SetCollapsedState( BOOL bCollapsed ) { mbIsCollapsed = bCollapsed; }
+	void	SetGlowing( BOOL bGlowing ) { mbIsGlowing = bGlowing; }
 
 protected:
 	UIXButton( UIXObject* pxParent, uint32 uID, UIXRECT rect ) : UIXObject( pxParent, uID, rect ) {}
@@ -42,6 +43,7 @@ private:
 	BOOL				mbIsBlocking = TRUE;
 	BOOL				mbIsLabelEditable = FALSE;
 	BOOL				mbIsCollapsed = FALSE;
+	BOOL				mbIsGlowing = FALSE;
 	BOOL				mbHasAttemptedLoadTexture = FALSE;
 	fnLabelEditCallback		mfnLabelEditCallback = NULL;
 	fnDynamicButtonImageHandleCallback		mfnDynamicButtonImageHandler = NULL;

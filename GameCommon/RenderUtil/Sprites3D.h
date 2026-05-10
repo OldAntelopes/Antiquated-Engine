@@ -21,6 +21,7 @@ enum eSpriteGroupRenderFlags
 	kSpriteRender_IncAlpha = 0x200,
 	kSpriteRender_CustomAspect = 0x400,
 	kSpriteRender_DestInv = 0x800,
+	kSpriteRender_DestAdd = 0x1000,
 };
 
 typedef int		SPRITE_GROUP;

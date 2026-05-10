@@ -80,7 +80,7 @@ void DetectMemoryLeaks()
    _CrtSetReportMode(_CRT_ASSERT,_CRTDBG_MODE_FILE); 
    _CrtSetReportFile(_CRT_ASSERT,_CRTDBG_FILE_STDERR); 
 
-//	_CrtSetBreakAlloc( 16251 );
+//	_CrtSetBreakAlloc( 24779 );
 } 
 #endif
 
@@ -202,7 +202,7 @@ BOOL				PlatformHasKeyboard( void )
 void		PlatformKeyboardActivate( int mode, const char* szStartText, const char* szPrompt )
 {
 	strcpy( mszKeyboardInputString, szStartText );
-	mnKeyboardInputCursor = strlen( szStartText );
+	mnKeyboardInputCursor = (int)strlen( szStartText );
 	mbKeyboardInputWholeStringSelected = TRUE;
 } 
 
@@ -243,7 +243,7 @@ void				PlatformKeyboardSetInputString( const char* szNewInputString )
 	else
 	{
 		strcpy( mszKeyboardInputString, szNewInputString );
-		mnKeyboardInputCursor = strlen( mszKeyboardInputString );
+		mnKeyboardInputCursor = (int)strlen( mszKeyboardInputString );
 	}
 }
 
@@ -299,8 +299,8 @@ void	PlatformPasteFromClipboardToConsole( void )
 			if ( pszText != NULL )
 			{
 
-			int		nPasteStrLen = strlen( pszText );
-			int		nCurrentStrLen = strlen( mszKeyboardInputString );
+			int		nPasteStrLen = (int)strlen( pszText );
+			int		nCurrentStrLen = (int)strlen( mszKeyboardInputString );
 
 				if ( nPasteStrLen + nCurrentStrLen < 250 ) 
 				{
@@ -501,7 +501,7 @@ int		PlatformSaveDataFileRead( unsigned char* pucData, int nMemSize )
 {
 	if ( mspLoadFile )
 	{
-	int		nBytesRead = fread( pucData, nMemSize, 1, mspLoadFile );
+	int		nBytesRead = (int)fread( pucData, nMemSize, 1, mspLoadFile );
 		return( nBytesRead );
 	}
 	return( -1 );
@@ -604,7 +604,7 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 	case WM_RBUTTONUP:
 		{
-		uint32	ulExtraInfo = GetMessageExtraInfo();
+		uint32	ulExtraInfo = (uint32)GetMessageExtraInfo();
 			mwMouseX = LOWORD(lParam);
 			mwMouseY = HIWORD(lParam);
 
@@ -613,7 +613,7 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 	case WM_LBUTTONUP:
 		{
-		uint32	ulExtraInfo = GetMessageExtraInfo();
+		uint32	ulExtraInfo = (uint32)GetMessageExtraInfo();
 
 			mwMouseX = LOWORD(lParam);
 			mwMouseY = HIWORD(lParam);

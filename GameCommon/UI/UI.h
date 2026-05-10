@@ -225,5 +225,6 @@ InterfaceInstance*		UIInterfaceInstance();
 extern uint32	UIGetCurrentHoverIDIndexParam();
 extern uint32	UIGetCurrentPressIDIndexParam();
 
+extern uint32	UIGetGlowColour();
 
 #endif

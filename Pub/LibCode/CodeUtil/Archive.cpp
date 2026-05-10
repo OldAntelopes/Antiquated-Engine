@@ -266,7 +266,7 @@ int		ArchiveFileRef::ReadData( byte* pbMem, int nSize )
 {
 int		bytesRead = 0;
 
-	bytesRead = fread( pbMem, 1, nSize, m_pArchiveFileSystem );
+	bytesRead = (int)fread( pbMem, 1, nSize, m_pArchiveFileSystem );
 	ApplyLightDecryption( pbMem, nSize, mnArchiveReadPositionFromFileStart );
 	mnArchiveReadPositionAbsolute += bytesRead;
 	mnArchiveReadPositionFromFileStart += bytesRead;

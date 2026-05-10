@@ -135,7 +135,7 @@ const char*	pcRunner = szPath + (pathLen - 1);
 
 BOOL		SysFilenameHasExtension( const char* szFilename, const char* szExtension )
 {
-	int nExtLen = strlen(szExtension);
+	int nExtLen = (int)strlen(szExtension);
 	int		fileNameLen = (int)strlen(szFilename);
 	if ( fileNameLen >= nExtLen)
 	{
@@ -150,7 +150,7 @@ BOOL		SysFilenameHasExtension( const char* szFilename, const char* szExtension )
 void		EnsureFilenameHasExtension(char* acFilename, const char* acExtension)
 {
 	// Check if the filename already has the extension
-	int nExtLen = strlen(acExtension);
+	int nExtLen = (int)strlen(acExtension);
 	if ((int)strlen(acFilename) >= nExtLen)
 	{
 		if (stricmp(acExtension, &acFilename[strlen(acFilename) - nExtLen]) == 0)
@@ -165,7 +165,7 @@ void		EnsureFilenameHasExtension(char* acFilename, const char* acExtension)
 void		StringToLower( const char* pcSourceString, char* pcOutString )
 {
 int		nLoop;
-int		nLen = strlen( pcSourceString );
+int		nLen = (int)strlen( pcSourceString );
 char*		pcOutRunner = pcOutString;
 const char*		pcRunner = pcSourceString;
 
@@ -290,7 +290,7 @@ int			nStrLen = 0;
 void StripWhiteSpaceRight( char* pcLine )
 {
 int		nLen;
-	nLen = strlen( pcLine ) - 1;
+	nLen = (int)strlen( pcLine ) - 1;
 	while ( ( pcLine[nLen] == ' ' ) ||
 			( pcLine[nLen] == '\r' ) ||
 			( pcLine[nLen] == '\n' ) ||
