@@ -143,6 +143,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <StandardDef.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
+#define MILK_READ_CONFIGS
+
+
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
 #define TEXT_SURFACE_NOT_READY  0
 #define TEXT_SURFACE_REQUESTED  1
@@ -565,10 +568,13 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	//-----
 
 	OverrideDefaults();
+#ifdef MILK_READ_CONFIGS
 	ReadConfig();
+#endif
 	MyPreInitialize(szPresetRootFolder);
+#ifdef MILK_READ_CONFIGS
 	MyReadConfig();
-
+#endif
 	//-----
 
 	return TRUE;

@@ -984,21 +984,8 @@ int		i;
 	m_bAutoGamma    = true;
 	//m_nFpsLimit			= -1;
 	m_bEnableRating			= false;
-    //m_bInstaScan            = false;
-	m_bSongTitleAnims		= false;
-	m_fSongTitleAnimDuration = 1.7f;
-	m_fTimeBetweenRandomSongTitles = -1.0f;
-	m_fTimeBetweenRandomCustomMsgs = -1.0f;
-	m_nSongTitlesSpawned = 0;
-	m_nCustMsgsSpawned = 0;
     m_nFramesSinceResize = 0;
 
-    //m_bAlways3D		  	    = false;
-    //m_fStereoSep            = 1.0f;
-    //m_bAlwaysOnTop		= false;
-    //m_bFixSlowText          = true;
-    //m_bWarningsDisabled     = false;
-    m_bWarningsDisabled2    = false;
     //m_bAnisotropicFiltering = true;
     m_bPresetLockOnAtStartup = false;
 	m_bPreventScollLockHandling = false;
@@ -1034,9 +1021,6 @@ int		i;
     m_pSpriteVertDecl = NULL;
     m_pWfVertDecl = NULL;
     m_pMyVertDecl = NULL;
-
-    m_gdi_title_font_doublesize  = NULL;
-    m_d3dx_title_font_doublesize = NULL;
 
     // RUNTIME SETTINGS THAT WE'VE ADDED
     m_prev_time = GetTime() - 0.0333f; // note: this will be updated each frame, at bottom of MyRenderFn.
@@ -1102,9 +1086,6 @@ int		i;
 	m_bShowSongLen		= false;
 	m_fShowRatingUntilThisTime = -1.0f;
 	ClearErrors();
-	m_szDebugMessage[0]	= 0;
-    m_szSongTitle[0]    = 0;
-    m_szSongTitlePrev[0] = 0;
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1192,17 +1173,6 @@ void CPlugin::MyReadConfig()
     //m_bInstaScan    = GetPrivateProfileBool("settings","bInstaScan",m_bInstaScan,pIni);
 	m_bHardCutsDisabled = GetPrivateProfileBoolW(L"settings",L"bHardCutsDisabled",m_bHardCutsDisabled,pIni);
 	g_bDebugOutput	= GetPrivateProfileBoolW(L"settings",L"bDebugOutput",g_bDebugOutput,pIni);
-	//m_bShowSongInfo = GetPrivateProfileBool("settings","bShowSongInfo",m_bShowSongInfo,pIni);
-	//m_bShowPresetInfo=GetPrivateProfileBool("settings","bShowPresetInfo",m_bShowPresetInfo,pIni);
-	m_bSongTitleAnims   = GetPrivateProfileBoolW(L"settings",L"bSongTitleAnims",m_bSongTitleAnims,pIni);
-
-	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
-	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
-	m_bShowPresetInfo	= GetPrivateProfileBoolW(L"settings",L"bShowPresetInfo",m_bShowPresetInfo	,pIni);
-	//m_bShowDebugInfo	= GetPrivateProfileBool("settings","bShowDebugInfo", m_bShowDebugInfo	,pIni);
-	m_bShowSongTitle	= GetPrivateProfileBoolW(L"settings",L"bShowSongTitle", m_bShowSongTitle	,pIni);
-	m_bShowSongTime		= GetPrivateProfileBoolW(L"settings",L"bShowSongTime",  m_bShowSongTime	,pIni);
-	m_bShowSongLen		= GetPrivateProfileBoolW(L"settings",L"bShowSongLen",   m_bShowSongLen		,pIni);
 
 	//m_bFixPinkBug		= GetPrivateProfileBool("settings","bFixPinkBug",m_bFixPinkBug,pIni);
 	int nTemp = GetPrivateProfileBoolW(L"settings",L"bFixPinkBug",-1,pIni);
@@ -1212,13 +1182,6 @@ void CPlugin::MyReadConfig()
 		m_n16BitGamma = 2;
 	m_n16BitGamma		= GetPrivateProfileIntW(L"settings",L"n16BitGamma",m_n16BitGamma,pIni);
 	m_bAutoGamma        = GetPrivateProfileBoolW(L"settings",L"bAutoGamma",m_bAutoGamma,pIni);
-	//m_bAlways3D				= GetPrivateProfileBool("settings","bAlways3D",m_bAlways3D,pIni);
-    //m_fStereoSep            = GetPrivateProfileFloat("settings","fStereoSep",m_fStereoSep,pIni);
-	//m_bFixSlowText          = GetPrivateProfileBool("settings","bFixSlowText",m_bFixSlowText,pIni);
-	//m_bAlwaysOnTop		= GetPrivateProfileBool("settings","bAlwaysOnTop",m_bAlwaysOnTop,pIni);
-	//m_bWarningsDisabled		= GetPrivateProfileBool("settings","bWarningsDisabled",m_bWarningsDisabled,pIni);
-	m_bWarningsDisabled2    = GetPrivateProfileBoolW(L"settings",L"bWarningsDisabled2",m_bWarningsDisabled2,pIni);
-    //m_bAnisotropicFiltering = GetPrivateProfileBool("settings","bAnisotropicFiltering",m_bAnisotropicFiltering,pIni);
     m_bPresetLockOnAtStartup = GetPrivateProfileBoolW(L"settings",L"bPresetLockOnAtStartup",m_bPresetLockOnAtStartup,pIni);
 	m_bPreventScollLockHandling = GetPrivateProfileBoolW(L"settings",L"m_bPreventScollLockHandling",m_bPreventScollLockHandling,pIni);
 
@@ -1240,10 +1203,7 @@ void CPlugin::MyReadConfig()
 	m_fTimeBetweenPresetsRand	= GetPrivateProfileFloatW(L"settings",L"fTimeBetweenPresetsRand",m_fTimeBetweenPresetsRand,pIni);
 	m_fHardCutLoudnessThresh	= GetPrivateProfileFloatW(L"settings",L"fHardCutLoudnessThresh" ,m_fHardCutLoudnessThresh ,pIni);
 	m_fHardCutHalflife			= GetPrivateProfileFloatW(L"settings",L"fHardCutHalflife"       ,m_fHardCutHalflife       ,pIni);
-	m_fSongTitleAnimDuration	= GetPrivateProfileFloatW(L"settings",L"fSongTitleAnimDuration" ,m_fSongTitleAnimDuration ,pIni);
-	m_fTimeBetweenRandomSongTitles = GetPrivateProfileFloatW(L"settings",L"fTimeBetweenRandomSongTitles" ,m_fTimeBetweenRandomSongTitles,pIni);
-	m_fTimeBetweenRandomCustomMsgs = GetPrivateProfileFloatW(L"settings",L"fTimeBetweenRandomCustomMsgs" ,m_fTimeBetweenRandomCustomMsgs,pIni);
-    m_adapterId = GetPrivateProfileIntW(L"settings", L"nVideoAdapterIndex", 0, pIni);
+	m_adapterId = GetPrivateProfileIntW(L"settings", L"nVideoAdapterIndex", 0, pIni);
 
     // --------
 
@@ -1294,14 +1254,11 @@ void CPlugin::MyWriteConfig()
 
 	wchar_t szSectionName[] = L"settings";
 
-	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
 	WritePrivateProfileIntW(m_bHardCutsDisabled,	    L"bHardCutsDisabled",	pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableRating,		    L"bEnableRating",		pIni, L"settings");
 	WritePrivateProfileIntW(g_bDebugOutput,		    L"bDebugOutput",			pIni, L"settings");
 	WritePrivateProfileIntW(m_n16BitGamma, 		    L"n16BitGamma",			pIni, L"settings");
 	WritePrivateProfileIntW(m_bAutoGamma,  		    L"bAutoGamma",			pIni, L"settings");
-	WritePrivateProfileIntW(m_bWarningsDisabled2,	L"bWarningsDisabled2",	pIni, L"settings");
-	//WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
     WritePrivateProfileIntW(m_bPresetLockOnAtStartup,L"bPresetLockOnAtStartup",pIni,L"settings");
 	WritePrivateProfileIntW(m_bPreventScollLockHandling,L"m_bPreventScollLockHandling",pIni,L"settings");
     // note: this is also written @ exit of the visualizer
@@ -1320,9 +1277,6 @@ void CPlugin::MyWriteConfig()
 	WritePrivateProfileFloatW(m_fTimeBetweenPresetsRand, L"fTimeBetweenPresetsRand",  pIni, L"settings");
 	WritePrivateProfileFloatW(m_fHardCutLoudnessThresh,  L"fHardCutLoudnessThresh",   pIni, L"settings");
 	WritePrivateProfileFloatW(m_fHardCutHalflife,        L"fHardCutHalflife",         pIni, L"settings");
-	WritePrivateProfileFloatW(m_fSongTitleAnimDuration,  L"fSongTitleAnimDuration",   pIni, L"settings");
-	WritePrivateProfileFloatW(m_fTimeBetweenRandomSongTitles,L"fTimeBetweenRandomSongTitles",pIni, L"settings");
-	WritePrivateProfileFloatW(m_fTimeBetweenRandomCustomMsgs,L"fTimeBetweenRandomCustomMsgs",pIni, L"settings");
 
     WritePrivateProfileIntW(m_adapterId, L"nVideoAdapterIndex", pIni, L"settings");
 
@@ -1481,7 +1435,7 @@ void CPlugin::CancelThread(int max_wait_time_ms)
 
 void CPlugin::CleanUpMyNonDx9Stuff()
 {
-int		i;
+//int		i;
 
     // This gets called only once, when your plugin exits.
     // Be sure to clean up any objects here that were
@@ -2551,8 +2505,6 @@ bool CPlugin::AddNoiseVol(const wchar_t* szTexName, int size, int zoom_factor)
     //           1 = random noise
     //           2 = smoothed (interp)
     //           4/8/16... = cubic interp.
-
-    wchar_t buf[2048], title[64];
 
     // Synthesize noise texture(s)
     LPDIRECT3DVOLUMETEXTURE9 pNoiseTex = NULL;
@@ -3888,14 +3840,6 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
-    SafeRelease(m_d3dx_title_font_doublesize);
-
-    // NOTE: THIS CODE IS IN THE RIGHT PLACE.
-    if (m_gdi_title_font_doublesize)
-    {
-        DeleteObject(m_gdi_title_font_doublesize);
-        m_gdi_title_font_doublesize = NULL;
-    }
 
     m_texmgr.Finish();
 
@@ -4149,7 +4093,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
     bool bCtrlHeldDown  = (GetKeyState(VK_CONTROL) & mask) != 0;
 
     int nRepeat = 1;  //updated as appropriate
-    int rep;
+//    int rep;
 
     switch (uMsg)
     {
@@ -4535,6 +4479,43 @@ void CPlugin::GenPlasma(int x0, int x1, int y0, int y1, float dt)
         GenPlasma(midx, x1, midy, y1, dt*0.5f);
     }
 }
+
+void CPlugin::LoadPresetFromMem( byte* pbMem, int nMemSize, float fBlendTime)
+{
+    // clear old error msg...
+    if (m_nFramesSinceResize > 4)
+    	ClearErrors(ERR_PRESET);
+	
+//	if (szPresetFilename != m_szCurrentPresetFile) //[sic]
+//		    lstrcpyW(m_szCurrentPresetFile, szPresetFilename);
+
+   CState *temp = m_pState;
+	m_pState = m_pOldState;
+	m_pOldState = temp;
+
+    DWORD ApplyFlags = STATE_ALL;
+    ApplyFlags ^= (m_bWarpShaderLock ? STATE_WARP : 0);
+    ApplyFlags ^= (m_bCompShaderLock ? STATE_COMP : 0);
+
+	// TODO - This uses file ptr inside.. need to do a mem version of it..
+    m_pState->Import(m_szCurrentPresetFile, GetTime(), m_pOldState, ApplyFlags);
+
+	m_fPresetStartTime = GetTime();
+	m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
+
+        // release stuff from m_OldShaders, then move m_shaders to m_OldShaders, then load the new shaders.
+    SafeRelease( m_OldShaders.comp.ptr );
+    SafeRelease( m_OldShaders.warp.ptr );
+    SafeRelease( m_OldShaders.comp.CT );
+    SafeRelease( m_OldShaders.warp.CT );
+    m_OldShaders = m_shaders;
+    ZeroMemory(&m_shaders, sizeof(PShaderSet));
+
+    LoadShaders(&m_shaders, m_pState, false);
+
+    OnFinishedLoadingPreset();
+}
+
 
 void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 {
@@ -5906,7 +5887,6 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 	int ret = m_texmgr.LoadTex(img, nSlot, initcode, code, GetTime(), GetFrame(), ck);
 	m_texmgr.m_tex[nSlot].nUserData = nSpriteNum;
 
-    wchar_t buf[1024];
 	switch(ret & TEXMGR_ERROR_MASK)
 	{
 	case TEXMGR_ERR_SUCCESS:
@@ -6089,11 +6069,4 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
 
 void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
 {
-    //if (playbackService &&
-    //    playbackService->GetPlaybackState() == musik::core::sdk::PlaybackStopped)
-    //{
-    //    emulatedWinampSongTitle = "Playback Stopped";
-    //}
-    emulatedWinampSongTitle = "";
-    lstrcpynW(szSongTitle, AutoWide(emulatedWinampSongTitle.c_str(), CP_UTF8), nSize);
 }

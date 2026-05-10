@@ -303,25 +303,8 @@ public:
 
         int			m_n16BitGamma;
         bool		m_bAutoGamma;
-        //int		m_nFpsLimit;
-        //int			m_cLeftEye3DColor[3];
-        //int			m_cRightEye3DColor[3];
         bool		m_bEnableRating;
-        //bool        m_bInstaScan;
-        bool		m_bSongTitleAnims;
-        float		m_fSongTitleAnimDuration;
-        float		m_fTimeBetweenRandomSongTitles;
-        float		m_fTimeBetweenRandomCustomMsgs;
-        int			m_nSongTitlesSpawned;
-        int			m_nCustMsgsSpawned;
-
-        //bool		m_bAlways3D;
-        //float       m_fStereoSep;
-        //bool		m_bAlwaysOnTop;
-        //bool		m_bFixSlowText;
-        //bool		m_bWarningsDisabled;		// messageboxes
-        bool		m_bWarningsDisabled2;		// warnings/errors in upper-right corner (m_szUserMessage)
-        //bool        m_bAnisotropicFiltering;
+				
         bool        m_bPresetLockOnAtStartup;
 		bool		m_bPreventScollLockHandling;
         int         m_nMaxPSVersion_ConfigPanel;  // -1 = auto, 0 = disable shaders, 2 = ps_2_0, 3 = ps_3_0
@@ -329,9 +312,6 @@ public:
         int         m_nMaxPSVersion;              // this one will be the ~min of the other two.  0/2/3.
         int         m_nMaxImages;
         int         m_nMaxBytes;
-
-        HFONT       m_gdi_title_font_doublesize;
-        LPD3DXFONT  m_d3dx_title_font_doublesize;
 
         // PIXEL SHADERS
         DWORD                   m_dwShaderFlags;       // Shader compilation/linking flags
@@ -463,27 +443,6 @@ public:
 
         void GetSongTitle(wchar_t *szSongTitle, int nSize);
 
-        //musik::core::sdk::IPlaybackService* playbackService;
-        std::string emulatedWinampSongTitle;
-        char		m_szDebugMessage[512];
-        wchar_t		m_szSongTitle    [512];
-        wchar_t		m_szSongTitlePrev[512];
-
-        // stuff for menu system:
-		/*
-        CMilkMenu	*m_pCurMenu;	// should always be valid!
-        CMilkMenu	 m_menuPreset;
-        CMilkMenu	  m_menuWave;
-        CMilkMenu	  m_menuAugment;
-        CMilkMenu	  m_menuCustomWave;
-        CMilkMenu	  m_menuCustomShape;
-        CMilkMenu	  m_menuMotion;
-        CMilkMenu	  m_menuPost;
-        CMilkMenu    m_menuWavecode[MAX_CUSTOM_WAVES];
-        CMilkMenu    m_menuShapecode[MAX_CUSTOM_SHAPES];
-        bool         m_bShowShaderHelp;
-		*/
-
         wchar_t		m_szMilkdrop2Path[MAX_PATH];		// ends in a backslash
         wchar_t		m_szMsgIniFile[MAX_PATH];
         wchar_t     m_szImgIniFile[MAX_PATH];
@@ -566,6 +525,8 @@ public:
 	    void		Randomize();
 	    void		LoadRandomPreset(float fBlendTime);
 	    void		LoadPreset(const wchar_t *szPresetFilename, float fBlendTime);
+		void		LoadPresetFromMem( byte* pbMem, int nMemSize, float fBlendTime);
+
         void        LoadPresetTick();
         void        FindValidPresetDir();
 	    wchar_t*	GetMsgIniFile()    { return m_szMsgIniFile; };
