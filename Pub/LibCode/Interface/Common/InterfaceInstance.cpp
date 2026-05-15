@@ -145,17 +145,20 @@ uint32*		pArgs;
 
 void	InterfaceInstance::Text( int nLayer, int nX, int nY, uint32 ulCol, int nFont, const char* text, ... )
 {
-char		acString[2048];
-va_list		marker;
-uint32*		pArgs;
+	if ( text )
+	{
+	char		acString[2048];
+	va_list		marker;
+	uint32*		pArgs;
 
-	pArgs = (uint32*)( &text ) + 1;
+		pArgs = (uint32*)( &text ) + 1;
 
-    va_start( marker, text );     
-	vsprintf( acString, text, marker );
-	if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
+		va_start( marker, text );     
+		vsprintf( acString, text, marker );
+		if ( ulCol == 0 ) ulCol = 0xd0d0d0d0;			// Default col is an offwhite 
 
-	mpFontSystem->Text( nLayer, nX, nY, acString, ulCol, nFont );
+		mpFontSystem->Text( nLayer, nX, nY, acString, ulCol, nFont );
+	}
 }
 
 void	InterfaceInstance::SetFontFlags( int flags )

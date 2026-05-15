@@ -158,6 +158,7 @@ void		UIInstance::ButtonDrawAlpha( int nButtonID, int nX, int nY, int nWidth, in
 	mpUIButtonImpl->Draw( this, nButtonID, nX, nY, nWidth, nHeight, szText, modeFlags, ulParam, ulIDParam, fAlpha);
 }
 
+
 void		UIInstance::ButtonDraw( int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam )
 {
 	if ( modeFlags & UIBUTTON_FLAG_CHECKBOX )

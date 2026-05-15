@@ -227,6 +227,15 @@ void				PlatformKeyboardRegisterSpecialKeyUpHandler( PlatformKeyboardSpecialKeyP
 	mfnSpecialKeyUpHandler = fnHandler;
 }
 
+BOOL				PlatformKeyboardHasActiveHandler( void )
+{
+	if ( mfnKeyboardHandler )
+	{
+		return( TRUE );
+	}
+	return(FALSE);
+}
+
 void		PlatformKeyboardRegisterHandler( PlatformKeyboardMessageHandler fnHandler, void* pUserObj )
 {
 	mfnKeyboardHandler = fnHandler;
@@ -711,11 +720,19 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
     return( DefWindowProc( hWnd, msg, wParam, lParam ) );
 }
 
+void	PlatformLoadCursors()
+{
+	if ( mhPlatformWin32ArrowCursor == 0 )
+	{
+		mhPlatformWin32HandCursor = LoadCursor(NULL,MAKEINTRESOURCE(32649));
+		mhPlatformWin32ArrowCursor = LoadCursor(NULL,IDC_ARROW);
+	}
+
+}
 void		PlatformSetWindow( int handle )
 {
 	ghPlatformWin32wndMain = (HWND)handle;
-	mhPlatformWin32HandCursor = LoadCursor(NULL,MAKEINTRESOURCE(32649));
-	mhPlatformWin32ArrowCursor = LoadCursor(NULL,IDC_ARROW);
+	PlatformLoadCursors();
 	mbHandCursorSet = FALSE;
 }
 
@@ -736,8 +753,7 @@ WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowsMsgProc, 0L, 0L,
 	InterfaceInitWindow( szWindowTitle, (void*)&wc, bAllowResize );
 	ghPlatformWin32wndMain = InterfaceGetWindow();
 
-	mhPlatformWin32HandCursor = LoadCursor(NULL,MAKEINTRESOURCE(32649));
-	mhPlatformWin32ArrowCursor = LoadCursor(NULL,IDC_ARROW);
+	PlatformLoadCursors();
 	SetCursor( mhPlatformWin32ArrowCursor );
 	mbHandCursorSet = FALSE;
 

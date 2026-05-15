@@ -57,6 +57,7 @@ void	UIXTextBox::EndEdit()
 
 	UIX::SetTextEditFocus( NULL );
 	PlatformKeyboardSetInputString( "" );
+	PlatformKeyboardRegisterHandler( NULL, NULL );
 }
 
 int		UIXTextBox::OnKeyboardMessage( int nResponseCode, const char* szInputText )

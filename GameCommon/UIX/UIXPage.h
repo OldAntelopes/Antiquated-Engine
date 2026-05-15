@@ -17,6 +17,7 @@ public:
 	UIXRECT		GetPageRenderRect() { return( mPageRenderRect ); }
 	BOOL		IsWithinPage(int x, int y);
 
+	const std::string& GetTitle() const { return mTitle; }	
 private:
 	UIXRECT		mPageRenderRect;
 	BOOL		mbUseClipping = FALSE;

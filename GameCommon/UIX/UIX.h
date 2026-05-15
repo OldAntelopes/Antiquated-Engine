@@ -24,6 +24,7 @@ class UIXModalPopup;
 class UIXMenu;
 class UIXPopupMenu;
 class UIXTabBar;
+class UIXHorizScrollbar;
 
 #define		MAX_NUM_UIX_ICONS		40
 
@@ -49,6 +50,7 @@ enum
 	UIX_CUSTOM_RENDER,
 	UIX_RIGHT_CLICK_SELECT,
 	UIX_OBJECT_SELECT,
+	UIX_HORIZ_SCROLLBAR,
 };
 
 enum eUIXBUTTON_MODE
@@ -148,6 +150,8 @@ struct UIXRECT
 	int w;
 	int h;
 };
+
+typedef	int(*fnControlCallback)( UIXObject* pObj, BOOL bIsHeld, int nScrollValue, int* pnMaxRange, int* pnViewRange );
 
 typedef	UIXRECT(*fnCustomRenderCallback)( UIXObject* pObj, InterfaceInstance* pInterface, UIXRECT& rectInOut, uint32 ulUserParam );
 typedef	BOOL(*fnCustomDragHoldHandlerCallback)(UIXObject* pObj, uint32 ulParam, BOOL bIsHeld, BOOL bFirstPress);
@@ -351,6 +355,8 @@ public:
 	static UIXText*						AddText( UIXObject* pxContainer, UIXRECT rect, uint32 ulCol = 0xc0c0c0c0, int font = 0, UIX_TEXT_FLAGS fontFlags = NONE,  const char* szTitle = NULL, ... );
 	static UIXShape*					AddShape( UIXObject* pxContainer, UIXRECT rect, eUIXSHAPE_MODE mode = UIXSHAPE_SHADEDRECT, BOOL bBlocks = FALSE, uint32 ulCol1 = 0xC0C0C0C0, uint32 ulCol2 = 0xC0C0C0C0, uint32 ulButtonID = 0, uint32 ulButtonParam = 0 );
 	static UIXCustomRender*				AddCustomRender( UIXObject* pxContainer, UIXRECT rect, fnCustomRenderCallback renderFunc, uint32 ulUserParam = 0, fnCustomDragHoldHandlerCallback dragFunc = NULL);
+	static UIXHorizScrollbar*			AddHorizScrollbar( UIXObject* pxContainer, UIXRECT rect, fnControlCallback controlCallback, int nVal = 0, int nViewRange = 10, int nMaxRange = 100);
+	
 	static UIXCheckbox*					AddCheckbox( UIXObject* pxContainer, UIXRECT rect, UIX_CHECKBOX_MODE mode, BOOL bIsChecked, const char* szText, fnSelectedCallback selectedFunc, uint32 ulSelectParam = 0 );
 	static UIXModalPopup*				AddModalPopup( UIXObject* pxContainer, UIXRECT rect );
 	static UIXMenu*						AddMenuBar( UIXObject* pxContainer, UIXRECT rect );
@@ -384,6 +390,7 @@ public:
 	static BOOL							IsRectInActivePageRegion( UIXRECT rect );
 	static BOOL							IsMouseHover( UIXRECT rect, BOOL bSetCursor = TRUE );
 	static BOOL							IsMouseHover( int x, int y, int w, int h, BOOL bSetCursor = TRUE );
+	static BOOL							IsTextInputActive();		
 
 	static BOOL							CheckForPress( UIXObject* pxObject, UIXRECT rect, uint32 ulButtonID, uint32 ulButtonParam );
 	static BOOL							CheckForRightButtonPress( UIXObject* pxObject, UIXRECT rect, uint32 ulButtonID, uint32 ulButtonParam );

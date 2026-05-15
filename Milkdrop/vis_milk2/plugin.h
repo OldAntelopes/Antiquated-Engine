@@ -539,14 +539,11 @@ public:
 	    int 		HandleRegularKey(WPARAM wParam);
 	    bool		OnResizeGraphicsWindow();
 	    void		ClearGraphicsWindow();	// for windowed mode only
-	    void		LaunchCustomMessage(int nMsgNum);
-	    void		ReadCustomMessages();
 
 		void		EnableAutoPresetSelection( bool bFlag ) { mbAutoPresetSelection = bFlag; }
 		void		SetPresetPath( const char* szPresetPath, BOOL bRescan );		// TODO - should be wchar_t
 	    wchar_t*    GetPresetDir()     { return m_szPresetDir; };
 
-	    void		ShowSongTitleAnim(/*IDirect3DTexture9* lpRenderTarget,*/ int w, int h, float fProgress);
 	    void		DrawWave(float *fL, float *fR);
         void        DrawCustomWaves();
         void        DrawCustomShapes();

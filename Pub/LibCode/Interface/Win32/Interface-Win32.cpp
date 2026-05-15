@@ -228,8 +228,8 @@ void	InterfaceInstance::SetInitialWindowSize( int sizeX, int sizeY )
 		xRect.top = 0;
 		xRect.bottom = sizeY;
 //		AdjustWindowRect( &xRect, WS_CAPTION|WS_SYSMENU|WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX, FALSE );
-		mnWindowWidth = (xRect.right - xRect.left) + 1;
-		mnWindowHeight = (xRect.bottom - xRect.top) + 1;
+		mnWindowWidth = (xRect.right - xRect.left);// + 1;
+		mnWindowHeight = (xRect.bottom - xRect.top);// + 1;
 	}
 }
 

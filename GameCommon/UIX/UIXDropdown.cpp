@@ -287,7 +287,8 @@ void		UIXDropdown::OnUpdate( float fDelta )
 
 void		UIXDropdown::SetSelectedElementIndex( int index )
 {
-	if ( index < (int)mDropdownEntries.size() )
+	if ( ( index >= 0 ) &&
+		 ( index < (int)mDropdownEntries.size() ) )
 	{
 		mpSelectedEntry = mDropdownEntries[index];
 		mnSelectedIndex = index;

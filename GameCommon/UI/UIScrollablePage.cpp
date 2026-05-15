@@ -243,6 +243,35 @@ UIScrollablePage*		pPage = UIScrollablePageFind( nHandle );
 		pPage->mnFullHeight = 0;
 		pPage->mnFullWidth = nFullW;
 		pPage->mnLastRenderFrame = mnScrollablePageCurrentRenderFrame;
+
+		int		nScrollbarBoxX;
+		int		nScrollbarBoxY;
+		int		nScrollbarBoxW;
+		int		nScrollbarBoxH;
+		int		nBarX, nBarY, nBarW, nBarH;
+		int		nMaxBarW;
+		float	fBarScale;
+
+		nScrollbarBoxX = ScreenX;
+		nScrollbarBoxY = ScreenY;
+		nScrollbarBoxW = ScreenW;
+		nScrollbarBoxH = ScreenH;
+		InterfaceOutlineBox( 0, nScrollbarBoxX, nScrollbarBoxY, nScrollbarBoxW, nScrollbarBoxH, 0xd0a0a0a0 );
+
+		nBarX = nScrollbarBoxX + 2;
+		nBarY = nScrollbarBoxY + 2;
+
+		nBarH = nScrollbarBoxH - 4;
+		nMaxBarW = nScrollbarBoxW - 4;
+
+		fBarScale = (float)( ScreenW ) / (float)( nFullW );
+
+		nBarX += (int)( pPage->mnCurrentOffset * fBarScale );
+		if ( fBarScale > 1.0f ) fBarScale = 1.0f;
+		nBarW = (int)( nMaxBarW * fBarScale );
+
+		if ( nBarW < 10 ) nBarW = 10;
+		InterfaceRect( 1, nBarX, nBarY, nBarW, nBarH, 0xc0b0b0b0 );
 	}
 	return( FALSE );
 }

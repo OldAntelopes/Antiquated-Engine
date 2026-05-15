@@ -457,7 +457,7 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMinTextBox )
 			{
-				if ( ( mfMinVal < -100.0f ) || ( mfMinVal > 100.0f ) )
+				if ( ( mfMinVal <= -100.0f ) || ( mfMinVal >= 100.0f ) )
 				{
 					sprintf( acVal, "%.1f", mfMinVal );			
 				}
@@ -492,6 +492,8 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mfMinVal < mfInitialMinVal ) nMinBarPos = 0;
 			if ( mfMaxVal > mfInitialMaxVal ) nMaxBarPos = nBarMaxW;
+			if ( nMaxBarPos < 0 ) nMaxBarPos = 0;
+			if ( nMinBarPos > nBarMaxW ) nMinBarPos = nBarMaxW;
 
 			mRenderRect.x += nTextAreaW;
 			mRenderRect.w -= nTextAreaW;

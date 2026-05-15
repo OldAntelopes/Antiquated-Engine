@@ -130,6 +130,12 @@ const char*	pcRunner = szPath + (pathLen - 1);
 		pcRunner--;
 	}
 
+	if ( ( *pcRunner == '\\') ||
+		 ( *pcRunner == '/') )
+	{
+		pcRunner++;
+	}
+
 	strcpy( szFilenameOut, pcRunner );
 }
 

@@ -24,6 +24,7 @@
 #include "UIXMenu.h"
 #include "UIXTabBar.h"
 #include "UIXModalPopup.h"
+#include "UIXHorizScrollbar.h"
 
 uint32						UIX::msulNextObjectID = 2001;
 std::vector<UIXPage*>		UIX::msPagesList;
@@ -498,6 +499,11 @@ BOOL	UIX::IsRectInActivePageRegion(UIXRECT rect)
 	return(TRUE);
 }
 
+BOOL	UIX::IsTextInputActive()
+{
+	return( PlatformKeyboardHasActiveHandler() );
+}
+
 BOOL	UIX::IsInActivePageRegion(int x, int y)
 {
 	if (x < mxActivePageRegion.x) return(FALSE);
@@ -690,6 +696,7 @@ void		UIX::Initialise( int mode )
 	// These two do custom hold handling (e.g. for scrollbars, value scroll)
 	UIXTextBox::RegisterControlHandlers();
 	UIXScrollableSection::RegisterControlHandlers();
+	UIXHorizScrollbar::RegisterControlHandlers();
 
 	// -----------------------------------------------
 	// ----- Object types implementing drag and drop --
@@ -952,6 +959,11 @@ void			UIX::SetTextEditFocus( UIXObject* pObject )
 		mspTextEditFocusObject->EndEdit();
 	}
 	mspTextEditFocusObject = pObject;
+
+	if ( mspTextEditFocusObject == NULL )
+	{
+		PlatformKeyboardRegisterHandler( NULL, NULL );
+	}
 }
 
 
@@ -1004,6 +1016,15 @@ UIXButton*		pNewButton = new UIXButton( pxContainer, msulNextObjectID++, rect );
 uint32		UIX::GetNextObjectID()
 {
 	return(msulNextObjectID++);
+}
+
+UIXHorizScrollbar*		UIX::AddHorizScrollbar( UIXObject* pxContainer, UIXRECT rect, fnControlCallback controlCallback, int nVal, int nViewRange, int nMaxRange)
+{
+UIXHorizScrollbar*		pNewHorizScrollbar = new UIXHorizScrollbar( pxContainer, msulNextObjectID++, rect );
+
+	pNewHorizScrollbar->Initialise( controlCallback, nVal, nViewRange, nMaxRange );
+	pxContainer->mContainsList.push_back( pNewHorizScrollbar );
+	return( pNewHorizScrollbar );
 }
 
 UIXCustomRender*	UIX::AddCustomRender( UIXObject* pxContainer, UIXRECT rect, fnCustomRenderCallback renderFunc, uint32 ulUserParam, fnCustomDragHoldHandlerCallback dragFunc)

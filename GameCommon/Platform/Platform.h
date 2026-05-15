@@ -84,6 +84,7 @@ extern void				PlatformKeyboardActivate( int mode, const char* szStartText, cons
 extern void				PlatformKeyboardDeactivate( void );
 extern BOOL				PlatformKeyboardOSKIsActive( void );
 extern void				PlatformKeyboardRegisterHandler( PlatformKeyboardMessageHandler fnHandler, void* pUserObj = NULL);
+extern BOOL				PlatformKeyboardHasActiveHandler( void );
 extern const char*		PlatformKeyboardGetInputString( BOOL bIncludeCursor );
 extern void				PlatformKeyboardSetInputString( const char* szNewInputString );
 extern void				PlatformKeyboardRegisterSpecialKeyUpHandler( PlatformKeyboardSpecialKeyPressHandler fnHandler ); // For detecting keyup events for things like F-keys etc
@@ -118,6 +119,7 @@ extern void				PlatformRequestApplicationShutdown( void );
 
 // set directly (used by Atractor)
 extern void		PlatformSetWindow( int handle );
+extern void 	PlatformLoadCursors();
 
 // If you need to insert the platform keyboard handler into your own windows message handler
 extern void	PlatformKeyboardHandleSpecialKeyDown( int nKeyCode );

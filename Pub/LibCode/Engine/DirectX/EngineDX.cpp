@@ -1321,8 +1321,9 @@ void	EngineSetBlendMode( int nBlendMode )
 		mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
 		break;
 	case BLEND_MODE_ALPHA_SUBTRACTIVE:
-		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
-		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
 		break;
 	case BLEND_MODE_COLOUR_BLEND:
 		mpEngineDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);

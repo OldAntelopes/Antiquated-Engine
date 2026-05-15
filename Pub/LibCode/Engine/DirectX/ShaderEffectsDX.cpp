@@ -72,7 +72,7 @@ ID3DXEffect* pEffect = EngineShaderEffectCreateEffectFromFileInMem( szFilename, 
 		mpEffectsMap[nHandle] = pEffect;
 		return( nHandle );
 	}
-	return( NOTFOUND );
+	return( -2 );
 }
 
 

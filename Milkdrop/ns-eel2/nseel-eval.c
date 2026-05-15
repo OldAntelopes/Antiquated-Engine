@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <ctype.h>
+
 #include "ns-eel-int.h"
 
 #define NSEEL_VARS_MALLOC_CHUNKSIZE 8
@@ -120,11 +121,17 @@ static INT_PTR register_var(compileContext *ctx, const char *name, EEL_F **ptr)
     {
       ctx->varTable_Values = (EEL_F **)realloc(ctx->varTable_Values,(ctx->varTable_numBlocks+NSEEL_VARS_MALLOC_CHUNKSIZE) * sizeof(EEL_F *));
       ctx->varTable_Names = (char **)realloc(ctx->varTable_Names,(ctx->varTable_numBlocks+NSEEL_VARS_MALLOC_CHUNKSIZE) * sizeof(char *));
+
+//	  SysPanicIf(ctx->varTable_Values == NULL );
+//	  SysPanicIf(ctx->varTable_Names == NULL );
     }
     ctx->varTable_numBlocks++;
 
     ctx->varTable_Values[wb] = (EEL_F *)calloc(sizeof(EEL_F),NSEEL_VARS_PER_BLOCK);
     ctx->varTable_Names[wb] = (char *)calloc(NSEEL_MAX_VARIABLE_NAMELEN,NSEEL_VARS_PER_BLOCK);
+
+//    SysPanicIf(ctx->varTable_Values[wb] == NULL );
+//    SysPanicIf(ctx->varTable_Names[wb] == NULL );
   }
 
   nameptr=ctx->varTable_Names[wb]+ti*NSEEL_MAX_VARIABLE_NAMELEN;
