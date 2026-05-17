@@ -25,8 +25,11 @@ extern void		TrailsUpdateAll( float fDelta );
 
 extern void		TrailsRenderAll( void );
 
+extern void		TrailsOnGraphicDeviceChanged();
+
 extern void		TrailsShutdown( void );
 
+extern int		TrailsGetTrailFaderTextureHandle( void );
 
 
 
