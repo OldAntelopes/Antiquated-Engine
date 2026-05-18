@@ -3,6 +3,7 @@
 
 #include "StandardDef.h"
 #include "Engine.h"
+#include "RenderObject.h"
 
 //----------------------------------------------------------
 // RibbonTrail
@@ -13,7 +14,7 @@
 #define	NUM_TRAIL_INDICES		(NUM_POLYS_IN_TRAIL*3)
 
 
-class RibbonTrail
+class RibbonTrail : public RenderObject
 {
 public:
 	typedef struct
@@ -26,12 +27,14 @@ public:
 	} TRAIL_POINT;
 
 	RibbonTrail();
-	~RibbonTrail();
+	virtual ~RibbonTrail();
+
+	virtual int		OnRender( void );
+
 
 	void	Initialise( int nType );
 
 	void	Update( const VECT* pxCurrentPos, uint32 ulPointGap, BOOL bDoDraw = TRUE );
-	int		Render( void );
 
 	void	SetScale( float fScale ) { mfScale = fScale; }
 	void	SetAlpha( float fAlpha ) { mfAlpha = fAlpha; }

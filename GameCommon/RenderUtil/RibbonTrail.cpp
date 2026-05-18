@@ -1,6 +1,7 @@
 
+#include "StandardDef.h"
 #include "RibbonTrail.h"
-
+#include "Trails.h"
 
 RibbonTrail::RibbonTrail()
 {
@@ -280,7 +281,7 @@ uint32	ulCurrentTick = SysGetTick();
 }
 
 
-int	RibbonTrail::Render( void )
+int		RibbonTrail::OnRender( void )
 {
 ENGINEBUFFERVERTEX*	pxVertices;
 VECT	xPos;
@@ -458,4 +459,6 @@ void	RibbonTrail::Initialise( int nType )
 	mulTintCol = 0xFFFFFF;
 	InitTrailBuffers();
 
+	SetTextureHandle( TrailsGetTrailFaderTextureHandle() );
+	SetRenderType(kRenderType_RibbonTrail);
 }

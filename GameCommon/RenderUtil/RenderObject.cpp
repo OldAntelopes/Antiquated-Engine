@@ -64,11 +64,34 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 	}
 }
 
-void	RenderObject::Render()
+
+void	RenderObject::SetTextureHandle(int hTex) 
+{
+	mTextureHandle = hTex; 
+}
+
+int		RenderObject::Render()
 {
 	// TODO - Apply texture
 
 	ApplyRenderFlags(mBlendFlags);
 
-	OnRender();
+	return ( OnRender() );
+}
+
+
+int		RenderObjectGroup::Render()
+{
+int	count = 0;
+
+	for ( auto& renderObject : mRenderObjectsByType )
+	{
+		std::vector<RenderObject*>& objectsOfThisType = renderObject.second;
+		for ( RenderObject* pObject : objectsOfThisType )
+		{
+			count += pObject->Render();
+		}
+	}
+	
+	return count;
 }

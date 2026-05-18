@@ -29,22 +29,48 @@ enum
 	kRenderFlag_DestAdd = 0x1000,
 };
 
+enum
+{
+	kRenderType_Sprite3d = 0,
+	kRenderType_Line,
+	kRenderType_RibbonTrail,	
+};
+
 class RenderObject
 {
 public:
-	virtual void		OnRender() = 0;
+	virtual int		OnRender() = 0;
 
-	void	Render();
+	int		Render();
 
 	void	SetBlendFlags(uint32 ulBlendFlags) { mBlendFlags = ulBlendFlags; }	
 
 	int		GetTextureHandle() { return(mTextureHandle); }
+	int		GetRenderType() { return(mRenderType); }
+protected:
+	void	SetTextureHandle(int hTex);
+	void	SetRenderType(int nType) { mRenderType = nType; }
+
 private:
 	void	ApplyRenderFlags( uint32 renderFlags );
 
 	uint32	mBlendFlags = 0;
 	int		mTextureHandle = NOTFOUND;
+	int		mRenderType = kRenderType_Sprite3d;
+};
 
+class RenderObjectGroup
+{
+public:
+	int		Render();
+
+	void	AddRenderObject(RenderObject* pObject) 
+	{
+		int		nType = pObject->GetRenderType();	
+		mRenderObjectsByType[nType].push_back(pObject);
+	}
+
+	std::map<int, std::vector<RenderObject*>>	mRenderObjectsByType;
 };
 
 //-------------------------------------------------------------------
@@ -67,27 +93,33 @@ public:
 	{
 		int		hTex = pObject->GetTextureHandle();
 
-		mRenderObjectsByTextureHandle[hTex].push_back(pObject); 
+		if ( mRenderObjectGroupsByTextureHandle.find(hTex) == mRenderObjectGroupsByTextureHandle.end() )
+		{
+			// TODO - Object pooling here rather than deleting and re-creating groups each frame
+			RenderObjectGroup* pNewGroup = new RenderObjectGroup();
+			mRenderObjectGroupsByTextureHandle[hTex] = pNewGroup;
+		}
+
+		mRenderObjectGroupsByTextureHandle[hTex]->AddRenderObject(pObject);
 	}
 
 	void	Flush() 
 	{
-		// Render objects are grouped by texture handle to reduce texture switches. We loop through each group and render them together.
-		for (auto& texGroup : mRenderObjectsByTextureHandle)
+		for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
 		{
-			for (RenderObject* pObject : texGroup.second)
-			{
-				pObject->Render();
-			}
+			RenderObjectGroup* pGroup = texGroup.second;
+			pGroup->Render();
+			// TODO - Object pooling here rather than deleting and re-creating groups each frame
+			delete pGroup;
 		}	
-		mRenderObjectsByTextureHandle.clear();
+		mRenderObjectGroupsByTextureHandle.clear();
 	}
 
 private:
 
 	// 
 
-	std::map<int, std::vector<RenderObject*>>	mRenderObjectsByTextureHandle;	
+	std::map<int, RenderObjectGroup*>	mRenderObjectGroupsByTextureHandle;	
 };
 
 #endif
