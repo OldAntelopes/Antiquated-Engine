@@ -162,6 +162,7 @@ class UIXObject
 {
 friend class UIX;
 friend class MilkPresetBrowser;
+friend class AssetBrowser;
 public:
 	uint32			GetID() const { return( mulID ); }
 
