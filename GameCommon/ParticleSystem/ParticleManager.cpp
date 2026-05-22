@@ -87,6 +87,26 @@ int layer = pParticleGroup->GetGroupLayerID();
 	return( NULL );
 }
 
+Particle*	ParticleManagerCreateNewParticle( const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
+{
+Particle*		pNewParticle = NULL;
+RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
+int		nSpriteRenderLayer = ulInitParamChannel;
+
+	while( pRegisteredParticleList )
+	{
+		// TODO - Replace with hash lookup
+		if ( stricmp( pRegisteredParticleList->mszParticleName, szParticleName ) == 0 )
+		{
+			pNewParticle = pRegisteredParticleList->mfnParticleNew();
+			pNewParticle->Init( pRegisteredParticleList->mnParticleTypeID, pxPos, pxVel, ulCol, fLongevity, nInitParam, ulInitParamChannel, pUserObject, nSpriteRenderLayer);
+			return( pNewParticle );
+		}
+		pRegisteredParticleList = pRegisteredParticleList->mpNext;
+	}
+	return( NULL );
+}
+
 Particle*		ParticleManagerAddParticle( const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
 {
 Particle*		pNewParticle = NULL;

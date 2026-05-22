@@ -41,6 +41,9 @@ extern Particle*	ParticleManagerAddParticle( const char* szParticleTypeName, con
 
 extern Particle*	ParticleManagerAddParticleToGroup( ParticleGroup* pParticleGroup, const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
 
+
+extern Particle*	ParticleManagerCreateNewParticle( const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject );
+
 extern int		ParticleManagerGetRenderedParticleCount();
 
 #endif
