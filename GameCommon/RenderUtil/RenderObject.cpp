@@ -72,15 +72,39 @@ void	RenderObject::SetTextureHandle(int hTex)
 
 int		RenderObject::Render()
 {
-	// TODO - Apply texture
 
 	ApplyRenderFlags(mBlendFlags);
 
 	return ( OnRender() );
 }
 
+int		RenderObject::PreRender()
+{
+
+	return ( OnPreRender() );
+}
+
 
 int		RenderObjectGroup::Render()
+{
+int	count = 0;
+
+	// TODO - Apply texture
+	EngineSetTexture( 0, mTextureHandle );
+
+	for ( auto& renderObject : mRenderObjectsByType )
+	{
+		std::vector<RenderObject*>& objectsOfThisType = renderObject.second;
+		for ( RenderObject* pObject : objectsOfThisType )
+		{
+			count += pObject->Render();
+		}
+	}
+	
+	return count;
+}
+
+int		RenderObjectGroup::PreRender()
 {
 int	count = 0;
 
@@ -89,7 +113,7 @@ int	count = 0;
 		std::vector<RenderObject*>& objectsOfThisType = renderObject.second;
 		for ( RenderObject* pObject : objectsOfThisType )
 		{
-			count += pObject->Render();
+			count += pObject->PreRender();
 		}
 	}
 	

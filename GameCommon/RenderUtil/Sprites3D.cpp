@@ -13,53 +13,8 @@
 
 std::map<int,bool>		msSprite3dActiveLayers;
 
-class Sprite
-{
-public:
-	Sprite()
-	{
-		mfRot = 0.0f;
-	}
 
-	void		Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
-	void		RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
-	void		RenderRotSoftEdges( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
-	void		RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
-
-	VECT		mxPos;
-	float		mfRot;
-	float		mfScale;
-	float		mfScaleZ;
-	float		mfAspectRatio;
-	int			mnFrameNum;
-	uint32		mulCol;
-	Sprite*		mpNext;
-};
-
-class SpriteGroup
-{
-public:
-	SpriteGroup()
-	{
-		mpSpriteList = NULL;
-		mpNext = NULL;
-		mhGroupNum = NOTFOUND;
-	}
-
-	void		Render( void );
-
-	SPRITE_GROUP		mhGroupNum;
-	int					mhTexture;
-	int					mLayer;
-	float				mfGridScale;
-	eSpriteGroupRenderFlags	mRenderFlags;
-	Sprite*				mpSpriteList;
-	SpriteGroup*		mpNext;
-private:
-	void		ApplyRenderFlags();
-};
-
-SpriteGroup*		mspSpriteGroups = NULL;
+std::vector<SpriteGroup*>	mspManagedSpriteGroups;
 
 SPRITE_GROUP		msnNextSpriteGroupNum = 9000;
 
@@ -917,7 +872,7 @@ void	SpriteGroup::ApplyRenderFlags(  )
 	}
 }
 
-void	SpriteGroup::Render( void )
+int	SpriteGroup::OnRender( void )
 {
 Sprite*		pSprites = mpSpriteList;
 Sprite*		pNext;
@@ -990,6 +945,7 @@ Sprite*		pNext;
 	}
 
 	mpSpriteList = NULL;
+	return( 0 );
 }
 
 
@@ -1017,16 +973,11 @@ void Sprites3DInitialise( void )
 
 void Sprites3DShutdown( void )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-SpriteGroup*	pNext;
-
-	while( pSpriteGroups )
+	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		pNext = pSpriteGroups->mpNext;
 		delete pSpriteGroups;
-		pSpriteGroups = pNext;
 	}
-	mspSpriteGroups = NULL;
+	mspManagedSpriteGroups.clear();
 
 	Sprites3DReleaseGraphicsDeviceResources();
 	Sprites3dBufferDeleteAll();
@@ -1034,65 +985,45 @@ SpriteGroup*	pNext;
 
 SpriteGroup*	 Sprites3DFindGroup( SPRITE_GROUP hGroupNum )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-
-	while( pSpriteGroups )
+	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		if ( pSpriteGroups->mhGroupNum == hGroupNum )
+		if ( pSpriteGroup->mhGroupNum == hGroupNum )
 		{
-			return( pSpriteGroups );
+			return( pSpriteGroup );
 		}
-		pSpriteGroups = pSpriteGroups->mpNext;
 	}
 	return( NULL );
 }
 
 void	Sprites3DFreeGroup( SPRITE_GROUP hGroup )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-SpriteGroup*	pLast = NULL;
-
-	while( pSpriteGroups )
+	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		if ( pSpriteGroups->mhGroupNum == hGroup )
+		if ( pSpriteGroup->mhGroupNum == hGroup )
 		{
-			if ( pLast == NULL )
-			{
-				mspSpriteGroups = pSpriteGroups->mpNext;
-			}
-			else
-			{
-				pLast->mpNext = pSpriteGroups->mpNext;
-			}
-			delete pSpriteGroups;
-			return;
+			mspManagedSpriteGroups.erase( pSpriteGroup );
+			delete pSpriteGroup;
 		}
-		pLast = pSpriteGroups;
-		pSpriteGroups = pSpriteGroups->mpNext;
 	}
 
 }
 
 SPRITE_GROUP	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eSpriteGroupRenderFlags nRenderFlags, int layer )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-
-	while( pSpriteGroups )
+	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		if ( ( pSpriteGroups->mhTexture == nTextureHandle ) &&
-			 ( pSpriteGroups->mRenderFlags == nRenderFlags ) &&
-			 ( pSpriteGroups->mLayer == layer ) )
+		if ( ( pSpriteGroup->mhTexture == nTextureHandle ) &&
+			 ( pSpriteGroup->mRenderFlags == nRenderFlags ) &&
+			 ( pSpriteGroup->mLayer == layer ) )
 		{
-			return( pSpriteGroups->mhGroupNum );
+			return( pSpriteGroup->mhGroupNum );
 		}
-		pSpriteGroups = pSpriteGroups->mpNext;
 	}
 
 	msSprite3dActiveLayers[layer] = true;
 
-	pSpriteGroups = new SpriteGroup;
-	pSpriteGroups->mpNext = mspSpriteGroups;
-	mspSpriteGroups = pSpriteGroups;
+	SpriteGroup* pSpriteGroups = new SpriteGroup;
+	mspManagedSpriteGroups.push_back( pSpriteGroups );
 
 	pSpriteGroups->mhTexture = nTextureHandle;
 	pSpriteGroups->mLayer = layer;

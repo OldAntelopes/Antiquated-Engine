@@ -39,8 +39,10 @@ enum
 class RenderObject
 {
 public:
+	virtual int		OnPreRender() { return 0; };
 	virtual int		OnRender() = 0;
 
+	int		PreRender();
 	int		Render();
 
 	void	SetBlendFlags(uint32 ulBlendFlags) { mBlendFlags = ulBlendFlags; }	
@@ -62,7 +64,11 @@ private:
 class RenderObjectGroup
 {
 public:
+	RenderObjectGroup( int hTex ) { mTextureHandle = hTex; }
+
 	int		Render();
+	int		PreRender();
+	int		GetTextureHandle() { return(mTextureHandle); }
 
 	void	AddRenderObject(RenderObject* pObject) 
 	{
@@ -71,6 +77,7 @@ public:
 	}
 
 	std::map<int, std::vector<RenderObject*>>	mRenderObjectsByType;
+	int		mTextureHandle = NOTFOUND;
 };
 
 //-------------------------------------------------------------------
@@ -96,7 +103,7 @@ public:
 		if ( mRenderObjectGroupsByTextureHandle.find(hTex) == mRenderObjectGroupsByTextureHandle.end() )
 		{
 			// TODO - Object pooling here rather than deleting and re-creating groups each frame
-			RenderObjectGroup* pNewGroup = new RenderObjectGroup();
+			RenderObjectGroup* pNewGroup = new RenderObjectGroup( hTex );
 			mRenderObjectGroupsByTextureHandle[hTex] = pNewGroup;
 		}
 
@@ -105,6 +112,12 @@ public:
 
 	void	Flush() 
 	{
+		for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
+		{
+			RenderObjectGroup* pGroup = texGroup.second;
+			pGroup->PreRender();
+		}
+
 		for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
 		{
 			RenderObjectGroup* pGroup = texGroup.second;

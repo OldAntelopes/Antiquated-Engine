@@ -1,10 +1,7 @@
 #ifndef GAMECOMMON_RENDERUTIL_SPRITES3D_H
 #define GAMECOMMON_RENDERUTIL_SPRITES3D_H
 
-#ifdef __cplusplus
-extern "C"				// All interfaces use a C-linkage
-{
-#endif
+#include "RenderObject.h"
 
 enum eSpriteGroupRenderFlags
 {
@@ -25,6 +22,67 @@ enum eSpriteGroupRenderFlags
 };
 
 typedef int		SPRITE_GROUP;
+
+
+#ifdef __cplusplus
+
+class MultiVertexBuffers;
+
+class Sprite
+{
+public:
+	Sprite()
+	{
+		mfRot = 0.0f;
+	}
+
+	void		Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
+	void		RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
+	void		RenderRotSoftEdges( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
+	void		RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags );
+
+	VECT		mxPos;
+	float		mfRot;
+	float		mfScale;
+	float		mfScaleZ;
+	float		mfAspectRatio;
+	int			mnFrameNum;
+	uint32		mulCol;
+	Sprite*		mpNext;
+};
+
+class SpriteGroup : public RenderObject
+{
+public:
+	SpriteGroup()
+	{
+		mpSpriteList = NULL;
+		mpNext = NULL;
+		mhGroupNum = NOTFOUND;
+	}
+
+	virtual int		OnRender( void );
+
+	SPRITE_GROUP		mhGroupNum;
+	int					mhTexture;
+	int					mLayer;
+	float				mfGridScale;
+	eSpriteGroupRenderFlags	mRenderFlags;
+	Sprite*				mpSpriteList;
+	SpriteGroup*		mpNext;
+private:
+	void		ApplyRenderFlags();
+};
+
+#endif  // #ifdef __cplusplus
+
+
+
+#ifdef __cplusplus
+extern "C"				// All interfaces use a C-linkage
+{
+#endif
+
 
 extern void Sprites3DInitialise( void );
 extern void Sprites3DShutdown( void );
