@@ -36,12 +36,17 @@ public:
     // Call once per frame (e.g. after Present) to dump to Output / log
     void DumpFrame()
     {
-        char buf[256];
+    char buf[256];
+        OutputDebugStringA("-----------------------");
+        sprintf_s(buf, "[RenderProfiler] Frame Dump:\n");
+        OutputDebugStringA("----------");
+        OutputDebugStringA(buf);
         for (const auto& s : mSamples)
         {
             sprintf_s(buf, "[RenderProfiler] %-40s  %.3f ms\n", s.label, s.ms);
             OutputDebugStringA(buf);
         }
+        OutputDebugStringA("-----------------------");
     }
 
     const std::vector<RenderCpuSample>& GetSamples() const { return mSamples; }

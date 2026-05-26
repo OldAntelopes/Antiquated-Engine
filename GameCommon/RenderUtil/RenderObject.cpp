@@ -170,6 +170,10 @@ void		RenderObjectLog::OnNewFrame( BOOL bDumpPreviousFrameDebugLog )
 {
 	if ( bDumpPreviousFrameDebugLog )
 	{
+		SysDebugPrint("---**************************************************************---");
+		RenderProfiler::Get().DumpFrame();
+		SysDebugPrint("---**************************************************************---");
+
 		SysDebugPrint("--- RenderObjectList Debug Log ---");
 		for ( const std::string& logEntry : mLogEntries )
 		{
