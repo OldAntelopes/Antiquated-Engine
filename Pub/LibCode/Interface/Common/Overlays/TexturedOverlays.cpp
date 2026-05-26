@@ -954,6 +954,8 @@ int		nLoop;
 		free( mpxRectBuffer );
 	}
 
+	// TODO - This current defaults to 576,000 bytes (0.5 mb.. which is a bit excessive as often nothing like that will be used)..
+	// todo make it expand dynamically
 	mpxRectBuffer = (TEXTURED_RECT_DEF*)( malloc( mnTexRectMaxBufferSize * sizeof(TEXTURED_RECT_DEF) ) );
 	if ( mpxRectBuffer != NULL )
 	{

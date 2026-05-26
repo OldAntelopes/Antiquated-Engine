@@ -74,12 +74,26 @@ uint32	maulProfileTimes[32];
 char	maszProfileNames[32][32];
 
 #ifdef _DEBUG
+static long msnBreakOnAllocSize = -1;
+
+static int AllocHook( int allocType, void* userData, size_t size, int blockType, long requestNumber, const unsigned char* filename, int lineNumber )
+{
+    if ( msnBreakOnAllocSize > 0 && (long)size == msnBreakOnAllocSize )
+    {
+        __debugbreak();  // <-- set a breakpoint here, or it will break automatically
+    }
+    return TRUE;
+}
+
 void DetectMemoryLeaks() 
 { 
    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF); 
    _CrtSetReportMode(_CRT_ASSERT,_CRTDBG_MODE_FILE); 
    _CrtSetReportFile(_CRT_ASSERT,_CRTDBG_FILE_STDERR); 
 
+    msnBreakOnAllocSize = 44878;
+   _CrtSetAllocHook( AllocHook );
+// 
 //	_CrtSetBreakAlloc( 24779 );
 } 
 #endif

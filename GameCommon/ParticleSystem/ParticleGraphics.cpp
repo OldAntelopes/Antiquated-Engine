@@ -11,8 +11,8 @@ public:
 	ParticleGraphic();
 	~ParticleGraphic();
 
-	void			Init( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer = 0 );
-	void			InitFromTexHandle( int hTex, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer = 0 );
+	void			Init( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer = 0 );
+	void			InitFromTexHandle( int hTex, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer = 0 );
 
 	const char*		GetTextureName( void ) { return( mszTextureName ); }
 
@@ -21,8 +21,10 @@ public:
 	void				SetParticleGraphicID( int nID ) { mnParticleGraphicID = nID; }
 	int					GetParticleGraphicID( void ) { return( mnParticleGraphicID ); }
 
-	SPRITE_GROUP		GetSpriteGroup( void ) { return( mhSpriteGroup ); }
-	eSpriteGroupRenderFlags		GetRenderFlags() const { return( mRenderFlags ); }
+	SpriteGroup*		GetSpriteGroup( void ) { return( mpSpriteGroup ); }
+//	SPRITE_GROUP		GetSpriteGroupHandle( void ) { return( mhSpriteGroup ); }
+
+	eRenderFlags		GetRenderFlags() const { return( mRenderFlags ); }
 	int				GetLayer() const { return(mLayer); }		
 
 	ParticleGraphic*		GetNext( void ) { return( mpNext ); }
@@ -32,9 +34,11 @@ private:
 	int					mhTexture;
 
 	char*				mszTextureName = NULL;
-	eSpriteGroupRenderFlags		mRenderFlags;
+	eRenderFlags		mRenderFlags;
 
-	SPRITE_GROUP		mhSpriteGroup;
+//	SPRITE_GROUP		mhSpriteGroup;
+	SpriteGroup* mpSpriteGroup;
+
 	int					mLayer;	
 	int					mnParticleGraphicID;
 
@@ -63,9 +67,12 @@ ParticleGraphic::~ParticleGraphic()
 	{
 		EngineReleaseTexture( &mhTexture );
 	}
+
+	mpSpriteGroup->Release();
+	mpSpriteGroup = NULL;
 }
 
-void		ParticleGraphic::InitFromTexHandle( int hTex, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+void		ParticleGraphic::InitFromTexHandle( int hTex, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 const char*		szTextureName = "<External>";
 
@@ -76,10 +83,12 @@ const char*		szTextureName = "<External>";
 	strcpy( mszTextureName, szTextureName );
 
 	mhTexture = hTex;
-	mhSpriteGroup = Sprites3DGetGroup( mhTexture, fGridScale, renderFlags, layer );
+//	mhSpriteGroup = Sprites3DGetManagedGroupHandle( mhTexture, fGridScale, renderFlags, layer );
+
+	mpSpriteGroup = Sprites3DGetGroup(mhTexture, fGridScale, renderFlags, layer);	
 }
 
-void		ParticleGraphic::Init( const char* szTextureName, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+void		ParticleGraphic::Init( const char* szTextureName, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 	mszTextureName = (char*)( malloc( strlen( szTextureName ) + 1 ) );
 	strcpy( mszTextureName, szTextureName );
@@ -88,7 +97,9 @@ void		ParticleGraphic::Init( const char* szTextureName, float fGridScale, BOOL b
 	mRenderFlags = renderFlags;
 	mLayer = layer;
 
-	mhSpriteGroup = Sprites3DGetGroup( mhTexture, fGridScale, renderFlags, layer );
+	mpSpriteGroup = Sprites3DGetGroup(mhTexture, fGridScale, renderFlags, layer);	
+	
+//	mhSpriteGroup = Sprites3DGetManagedGroupHandle( mhTexture, fGridScale, renderFlags, layer );
 
 }
 
@@ -131,7 +142,7 @@ ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 	return( NULL );
 }
 
-ParticleGraphic*		ParticleGraphicsFindTexHandle( int hTex, eSpriteGroupRenderFlags renderFlags, int layer )
+ParticleGraphic*		ParticleGraphicsFindTexHandle( int hTex, eRenderFlags renderFlags, int layer )
 {
 ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 
@@ -150,7 +161,7 @@ ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 	return( NULL );
 }
 
-ParticleGraphic*		ParticleGraphicsFind(const char* szTextureName, eSpriteGroupRenderFlags renderFlags, int layer )
+ParticleGraphic*		ParticleGraphicsFind(const char* szTextureName, eRenderFlags renderFlags, int layer )
 {
 ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 
@@ -169,7 +180,7 @@ ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 	return( NULL );
 }
 
-int		ParticleGraphicsCreateHandle( int hTex, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+int		ParticleGraphicsCreateHandle( int hTex, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 ParticleGraphic*		pParticleGraphic = ParticleGraphicsFindTexHandle( hTex, renderFlags, layer );
 
@@ -201,7 +212,7 @@ int		ParticleGraphicsGetTextureHandle(int nParticleGraphicID)
 	return(NOTFOUND);
 }
 
-int		ParticleGraphicsCreate( const char* szTextureName, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+int		ParticleGraphicsCreate( const char* szTextureName, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 ParticleGraphic*		pParticleGraphic = ParticleGraphicsFind( szTextureName, renderFlags, layer );
 
@@ -226,7 +237,7 @@ int		ParticleGraphicsGetNumActiveSpriteGroups()
 	return( msnNumParticleGraphics );
 }
 
-SPRITE_GROUP		ParticleGraphicsGetSpriteGroup( int nParticleGraphicID )
+SpriteGroup*		ParticleGraphicsGetSpriteGroup( int nParticleGraphicID )
 {
 ParticleGraphic*		pParticleGraphic = ParticleGraphicsFindFromID( nParticleGraphicID );
 	
@@ -234,6 +245,6 @@ ParticleGraphic*		pParticleGraphic = ParticleGraphicsFindFromID( nParticleGraphi
 	{
 		return( pParticleGraphic->GetSpriteGroup() );
 	}
-	return( NOTFOUND );
+	return( NULL );
 }
 

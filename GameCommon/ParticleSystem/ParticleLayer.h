@@ -12,24 +12,22 @@ class ParticleLayer : public RenderObject
 {
 public:
 	ParticleLayer() {}
+	virtual ~ParticleLayer();
 
 	void	Update( float delta );
 	virtual int		OnPreRender();
 	virtual int		OnRender();
 //	int		GetGroupLayerID() { return mGroupLayerNum; }
+	virtual const char* GetName() const { return "Particle Layer"; }
 
 	void		RenderAndFlush( int layerNum );
 
 	Particle*		AddParticle( const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
 
-
 private:
 	std::vector<Particle*>		mpParticleList;
 
-	int		mGroupLayerNum;
-
-
-
+	int		mGroupLayerNum = 0;
 };
 
 

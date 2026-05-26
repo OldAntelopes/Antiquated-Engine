@@ -15,9 +15,12 @@ std::map<int,bool>		msSprite3dActiveLayers;
 
 
 std::vector<SpriteGroup*>	mspManagedSpriteGroups;
+std::vector<SpriteGroup*>	mspUnmanagedSpriteGroups;
+
 
 SPRITE_GROUP		msnNextSpriteGroupNum = 9000;
 
+extern void Sprites3DCommonRenderSetup( BOOL bUseZWrite );
 
 MultiVertexBuffers		mxSprites3dBuffers;
 
@@ -286,7 +289,7 @@ const float		fSoftenBorder = 0.2f;
 		mxCamDir = *pxCamDir;
 		mfRot = fRot;
 
-		if ( nRenderFlags & kSpriteRender_Orientation_Flat )
+		if ( nRenderFlags & kRenderFlag_Orientation_Flat )
 		{
 			pxSpriteOffsets = maxFlatSpriteOffsets;
 			xRotAxis.x = 0.0f;
@@ -294,7 +297,7 @@ const float		fSoftenBorder = 0.2f;
 			xRotAxis.z = 1.0f;
 			pxRotateAxis = &xRotAxis;
 		}
-		else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
+		else if ( nRenderFlags & kRenderFlag_Orientation_XAxis )
 		{
 			pxSpriteOffsets = maxXAxisSpriteOffsets;
 			xRotAxis.x = 0.0f;
@@ -302,7 +305,7 @@ const float		fSoftenBorder = 0.2f;
 			xRotAxis.z = 0.0f;
 			pxRotateAxis = &xRotAxis;
 		}
-		else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+		else if ( nRenderFlags & kRenderFlag_Orientation_YAxis )
 		{
 			pxSpriteOffsets = maxYAxisSpriteOffsets;
 			xRotAxis.x = 1.0f;
@@ -373,7 +376,7 @@ const float		fSoftenBorder = 0.2f;
 
 SpriteVertexCache		mxSpriteVertexCache;
 
-void	Sprite::RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
+void	Sprite::RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eRenderFlags nRenderFlags )
 {
 
 	mxSpriteVertexCache.Update( mnFrameNum, fGridScale, mfScale, mfScaleZ, mulCol, nRenderFlags, EngineCameraGetDirection(), mfRot );
@@ -431,7 +434,7 @@ void	Sprite::RenderRotSoftEdgesComplex( MultiVertexBuffers* pxDrawBuffer, float 
 }
 
 
-void	Sprite::RenderRotSoftEdges( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
+void	Sprite::RenderRotSoftEdges( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eRenderFlags nRenderFlags )
 {
 float		fUBase,	fVBase;
 float		fUWidth, fVHeight;
@@ -445,7 +448,7 @@ VECT*		pxRotateAxis = EngineCameraGetDirection();
 ENGINEMATRIX	xRotMat;
 uint32		ulSoftEdgeCol = GetColWithModifiedAlpha( mulCol, 0.0f );
 
-	if ( nRenderFlags & kSpriteRender_Orientation_Flat )
+	if ( nRenderFlags & kRenderFlag_Orientation_Flat )
 	{
 		pxSpriteOffsets = maxFlatSpriteOffsets;
 		xRotAxis.x = 0.0f;
@@ -453,7 +456,7 @@ uint32		ulSoftEdgeCol = GetColWithModifiedAlpha( mulCol, 0.0f );
 		xRotAxis.z = 1.0f;
 		pxRotateAxis = &xRotAxis;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_XAxis )
 	{
 		pxSpriteOffsets = maxXAxisSpriteOffsets;
 		xRotAxis.x = 0.0f;
@@ -461,7 +464,7 @@ uint32		ulSoftEdgeCol = GetColWithModifiedAlpha( mulCol, 0.0f );
 		xRotAxis.z = 0.0f;
 		pxRotateAxis = &xRotAxis;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_YAxis )
 	{
 		pxSpriteOffsets = maxYAxisSpriteOffsets;
 		xRotAxis.x = 1.0f;
@@ -601,7 +604,7 @@ uint32		ulSoftEdgeCol = GetColWithModifiedAlpha( mulCol, 0.0f );
 	pxDrawBuffer->FlushWhenFull( 12, TRUE );
 }
 
-void	Sprite::RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
+void	Sprite::RenderRot( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eRenderFlags nRenderFlags )
 {
 float		fUBase,	fVBase;
 float		fUWidth, fVHeight;
@@ -614,7 +617,7 @@ VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
 VECT*		pxRotateAxis = EngineCameraGetDirection();
 ENGINEMATRIX	xRotMat;
 
-	if ( nRenderFlags & kSpriteRender_Orientation_Flat )
+	if ( nRenderFlags & kRenderFlag_Orientation_Flat )
 	{
 		pxSpriteOffsets = maxFlatSpriteOffsets;
 		xRotAxis.x = 0.0f;
@@ -622,7 +625,7 @@ ENGINEMATRIX	xRotMat;
 		xRotAxis.z = 1.0f;
 		pxRotateAxis = &xRotAxis;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_XAxis )
 	{
 		pxSpriteOffsets = maxXAxisSpriteOffsets;
 		xRotAxis.x = 0.0f;
@@ -630,7 +633,7 @@ ENGINEMATRIX	xRotMat;
 		xRotAxis.z = 0.0f;
 		pxRotateAxis = &xRotAxis;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_YAxis )
 	{
 		pxSpriteOffsets = maxYAxisSpriteOffsets;
 		xRotAxis.x = 1.0f;
@@ -718,7 +721,7 @@ ENGINEMATRIX	xRotMat;
 }
 
 
-void	Sprite::Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eSpriteGroupRenderFlags nRenderFlags )
+void	Sprite::Render( MultiVertexBuffers* pxDrawBuffer, float fGridScale, eRenderFlags nRenderFlags )
 {
 float		fUBase,	fVBase;
 float		fUWidth, fVHeight;
@@ -728,15 +731,15 @@ VECT		xOffset;
 int			nNumPerRow = (int)( 1.0f / fGridScale );
 VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
 
-	if ( nRenderFlags & kSpriteRender_Orientation_Flat )
+	if ( nRenderFlags & kRenderFlag_Orientation_Flat )
 	{
 		pxSpriteOffsets = maxFlatSpriteOffsets;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_XAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_XAxis )
 	{
 		pxSpriteOffsets = maxXAxisSpriteOffsets;
 	}
-	else if ( nRenderFlags & kSpriteRender_Orientation_YAxis )
+	else if ( nRenderFlags & kRenderFlag_Orientation_YAxis )
 	{
 		pxSpriteOffsets = maxYAxisSpriteOffsets;
 	}
@@ -812,91 +815,60 @@ VECT*		pxSpriteOffsets = maxCamFacingSpriteOffsets;
 }
 
 //-----------------------------------------------------------------------------
-void	SpriteGroup::ApplyRenderFlags(  )
-{
-	if (mRenderFlags & kSpriteRender_DestAdd )
+
+void	SpriteGroup::Release() 
+{ 
+	if (mnRefs > 1) 
 	{
-		EngineSetBlendMode( BLEND_MODE_DESTADD );
-	}
-	else if (mRenderFlags & kSpriteRender_DestInv)
-	{
-		EngineSetBlendMode( BLEND_MODE_DESTINV);
-	}
-	else if ( mRenderFlags & kSpriteRender_Subtractive )
-	{
-		if ( mRenderFlags & kSpriteRender_ColourBlend )
-		{
-			if ( mRenderFlags & kSpriteRender_IncAlpha)
-			{
-				EngineSetBlendMode( BLEND_MODE_COLOUR_SUBTRACTIVE_ALPHA );				
-			}
-			else
-			{
-				EngineSetBlendMode( BLEND_MODE_COLOUR_SUBTRACTIVE );		
-			}
-		}
-		else
-		{
-			EngineSetBlendMode( BLEND_MODE_ALPHA_SUBTRACTIVE );
-		}
-	}
-	else if ( mRenderFlags & kSpriteRender_Additive )
-	{
-		if ( mRenderFlags & kSpriteRender_ColourBlend )
-		{
-			EngineSetBlendMode( BLEND_MODE_COLOUR_ADDITIVE );		
-		}
-		else
-		{
-			EngineSetBlendMode( BLEND_MODE_SRCALPHA_ADDITIVE );
-		}
-	}
-	else if ( mRenderFlags & kSpriteRender_ColourBlend )
-	{
-		if ( mRenderFlags & kSpriteRender_IncAlpha)
-		{
-			EngineSetBlendMode( BLEND_MODE_COLOUR_BOTHALPHA );		
-		}
-		else
-		{
-			EngineSetBlendMode( BLEND_MODE_COLOUR_BLEND );
-		}
-	}
-	else if ( mRenderFlags & kSpriteRender_SingleColTexAlpha )
-	{
-		EngineSetBlendMode( BLEND_MODE_COLOUR_INVALPHA );
+		mnRefs--;
 	}
 	else
 	{
-		EngineSetBlendMode( BLEND_MODE_ALPHABLEND );
+		Sprite*		pSprites = mpSpriteList;
+		Sprite*		pNext;
+		while( pSprites )
+		{
+			pNext = pSprites->mpNext;
+			Sprites3dReleaseSprite( pSprites );
+			pSprites = pNext;
+		}			
+
+		// Remove this item from mspUnmanagedSpriteGroups list
+		for ( auto it = mspUnmanagedSpriteGroups.begin(); it != mspUnmanagedSpriteGroups.end(); ++it )
+		{
+			if ( *it == this )
+			{
+				mspUnmanagedSpriteGroups.erase( it );
+				break;
+			}
+		}		
+		delete this;  
 	}
 }
+
 
 int	SpriteGroup::OnRender( void )
 {
 Sprite*		pSprites = mpSpriteList;
 Sprite*		pNext;
+int			count = 0;
+
+	Sprites3DCommonRenderSetup(FALSE);
 
 	// DONT render if the texture hasn't loaded yet. We'd prefer nothing than big white squares
-	if ( EngineTextureIsFullyLoaded( mhTexture ) == TRUE )
+	if ( EngineTextureIsFullyLoaded( GetTextureHandle() ) == TRUE )
 	{
-		// Colour is texture * diffuse
-		EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
-		EngineSetTexture( 0, mhTexture );
-
-		// Set blend mode
-		ApplyRenderFlags();
-	
 		mxSprites3dBuffers.Lock();
 
 		u64 ullEventID = SysProfileStartEvent( "SpriteGroup::Render", mhGroupNum );		
 		float		fAspectRatio = 1.0f;
+		uint32		ulRenderFlags = GetBlendFlags();
 
 		while( pSprites )
 		{
 			pNext = pSprites->mpNext;
-
-			if ( mRenderFlags & kSpriteRender_CustomAspect )
+			
+			if ( ulRenderFlags & kRenderFlag_CustomAspect )
 			{
 				fAspectRatio = pSprites->mfAspectRatio;
 			}
@@ -910,24 +882,25 @@ Sprite*		pNext;
 				Sprites3DCreateCamFacingOffsets( fAspectRatio );
 			}
 			
-			if ( mRenderFlags & kSpriteRender_Rotated )
+			if ( ulRenderFlags & kRenderFlag_Rotated )
 			{
-				if ( mRenderFlags & kSpriteRender_SoftEdges )
+				if ( ulRenderFlags & kRenderFlag_SoftEdges )
 				{
 //					pSprites->RenderRotSoftEdges( &mxSprites3dBuffers, mfGridScale, mRenderFlags );		
-					pSprites->RenderRotSoftEdgesComplex( &mxSprites3dBuffers, mfGridScale, mRenderFlags );		
+					pSprites->RenderRotSoftEdgesComplex( &mxSprites3dBuffers, mfGridScale, ulRenderFlags );		
 				}
 				else
 				{
-					pSprites->RenderRot( &mxSprites3dBuffers, mfGridScale, mRenderFlags );
+					pSprites->RenderRot( &mxSprites3dBuffers, mfGridScale, ulRenderFlags );
 				}
 			}
 			else
 			{
-				pSprites->Render( &mxSprites3dBuffers, mfGridScale, mRenderFlags );
+				pSprites->Render( &mxSprites3dBuffers, mfGridScale, ulRenderFlags );
 			}
 			// Might be wiser to pre-allocate sprites and reuse them rather than delete and re-new every frame, but this is simpler for now
 			Sprites3dReleaseSprite( pSprites );
+			count++;
 			pSprites = pNext;
 		}
 	
@@ -945,7 +918,9 @@ Sprite*		pNext;
 	}
 
 	mpSpriteList = NULL;
-	return( 0 );
+	mnNumSpritesInList = 0;	
+	mulLastRenderTick = SysGetTick();
+	return( count );
 }
 
 
@@ -975,9 +950,10 @@ void Sprites3DShutdown( void )
 {
 	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		delete pSpriteGroups;
+		delete pSpriteGroup;
 	}
 	mspManagedSpriteGroups.clear();
+	mspUnmanagedSpriteGroups.clear();
 
 	Sprites3DReleaseGraphicsDeviceResources();
 	Sprites3dBufferDeleteAll();
@@ -985,6 +961,7 @@ void Sprites3DShutdown( void )
 
 SpriteGroup*	 Sprites3DFindGroup( SPRITE_GROUP hGroupNum )
 {
+	// TODO maybe should map this (or just simple groupnum = index?)
 	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
 		if ( pSpriteGroup->mhGroupNum == hGroupNum )
@@ -997,23 +974,60 @@ SpriteGroup*	 Sprites3DFindGroup( SPRITE_GROUP hGroupNum )
 
 void	Sprites3DFreeGroup( SPRITE_GROUP hGroup )
 {
-	for ( auto pSpriteGroup : mspManagedSpriteGroups )
+	for ( auto it = mspManagedSpriteGroups.begin(); it != mspManagedSpriteGroups.end(); ++it )
 	{
-		if ( pSpriteGroup->mhGroupNum == hGroup )
+		if ( (*it)->mhGroupNum == hGroup )
 		{
-			mspManagedSpriteGroups.erase( pSpriteGroup );
-			delete pSpriteGroup;
+			delete *it;
+			mspManagedSpriteGroups.erase( it );
+			break;
 		}
 	}
 
 }
 
-SPRITE_GROUP	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eSpriteGroupRenderFlags nRenderFlags, int layer )
+
+SpriteGroup*	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eRenderFlags nRenderFlags, int layer )
+{
+	for ( auto pSpriteGroup : mspUnmanagedSpriteGroups )
+	{
+		if ( ( pSpriteGroup->GetTextureHandle() == nTextureHandle ) &&
+			 ( pSpriteGroup->GetBlendFlags() == nRenderFlags ) &&
+			 ( pSpriteGroup->mLayer == layer ) )
+		{
+			// TODO IncRef 
+			pSpriteGroup->IncRef();
+			return( pSpriteGroup );
+		}
+	}
+
+	SpriteGroup* pSpriteGroups = new SpriteGroup;
+	mspUnmanagedSpriteGroups.push_back( pSpriteGroups );
+
+	pSpriteGroups->SetTexture( nTextureHandle );
+	pSpriteGroups->SetBlendFlags( nRenderFlags );
+
+	pSpriteGroups->mLayer = layer;
+	pSpriteGroups->mhGroupNum = msnNextSpriteGroupNum++;
+	pSpriteGroups->mfGridScale = fGridScale;
+	pSpriteGroups->mnRefs = 1;
+	
+	return( pSpriteGroups );	
+}
+
+
+
+SpriteGroup*	 Sprites3DGetManagedGroup( SPRITE_GROUP hSpriteGroup )
+{
+	return( Sprites3DFindGroup( hSpriteGroup ) );
+}
+
+SPRITE_GROUP	 Sprites3DGetManagedGroupHandle( int nTextureHandle, float fGridScale, eRenderFlags nRenderFlags, int layer )
 {
 	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		if ( ( pSpriteGroup->mhTexture == nTextureHandle ) &&
-			 ( pSpriteGroup->mRenderFlags == nRenderFlags ) &&
+		if ( ( pSpriteGroup->GetTextureHandle() == nTextureHandle ) &&
+			 ( pSpriteGroup->GetBlendFlags() == nRenderFlags ) &&
 			 ( pSpriteGroup->mLayer == layer ) )
 		{
 			return( pSpriteGroup->mhGroupNum );
@@ -1025,92 +1039,118 @@ SPRITE_GROUP	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eSpriteGr
 	SpriteGroup* pSpriteGroups = new SpriteGroup;
 	mspManagedSpriteGroups.push_back( pSpriteGroups );
 
-	pSpriteGroups->mhTexture = nTextureHandle;
+	pSpriteGroups->SetTexture( nTextureHandle );
+	pSpriteGroups->SetBlendFlags( nRenderFlags );
 	pSpriteGroups->mLayer = layer;
 	pSpriteGroups->mhGroupNum = msnNextSpriteGroupNum++;
 	pSpriteGroups->mfGridScale = fGridScale;
-	pSpriteGroups->mRenderFlags = nRenderFlags;
 	
 	return( pSpriteGroups->mhGroupNum );
 }
 
-void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fScaleZ )
+
+void	SpriteGroup::AddSpriteToInternalList( Sprite* pSprite )
 {
-SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
+	pSprite->mpNext = mpSpriteList;
+	mpSpriteList = pSprite;
+	mnNumSpritesInList++;
 
-	if ( pSpriteGroup )
-	{
-	Sprite*		pSprite = Sprites3dGetFreeSprite();
+}
 
-		pSprite->mpNext = pSpriteGroup->mpSpriteList;
-		pSpriteGroup->mpSpriteList = pSprite;
+void	SpriteGroup::AddSpriteRot( const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fRotation )
+{
+Sprite*		pSprite = Sprites3dGetFreeSprite();
 
-		pSprite->mxPos = *pxPos;
-		pSprite->mfScale = fScale;
-		pSprite->mfScaleZ = fScaleZ;
-		pSprite->mulCol = ulCol;
-		pSprite->mnFrameNum = nFrameNum;
-	}
+	AddSpriteToInternalList( pSprite );
+
+	pSprite->mxPos = *pxPos;
+	pSprite->mfScale = fScale;
+	pSprite->mfScaleZ = fScale;
+	pSprite->mulCol = ulCol;
+	pSprite->mnFrameNum = nFrameNum;
+	pSprite->mfRot = fRotation;
+
+}
+
+void	SpriteGroup::AddSpriteScaleZ( const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fScaleZ )
+{
+Sprite*		pSprite = Sprites3dGetFreeSprite();
+
+	AddSpriteToInternalList( pSprite );
+
+	pSprite->mxPos = *pxPos;
+	pSprite->mfScale = fScale;
+	pSprite->mfScaleZ = fScaleZ;
+	pSprite->mulCol = ulCol;
+	pSprite->mnFrameNum = nFrameNum;
+}
+
+void	SpriteGroup::AddSpriteRotScaleXY( const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fRotation, float fXYScaleFactor )
+{
+Sprite*		pSprite = Sprites3dGetFreeSprite();
+
+	AddSpriteToInternalList( pSprite );
+
+	pSprite->mxPos = *pxPos;
+	pSprite->mfScale = fScale;
+	pSprite->mfAspectRatio = fXYScaleFactor;
+	pSprite->mfScaleZ = fScale;
+	pSprite->mulCol = ulCol;
+	pSprite->mnFrameNum = nFrameNum;
+	pSprite->mfRot = fRotation;
 }
 
 
-void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags )
+void	SpriteGroup::AddSprite( const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags )
 {
-SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
+Sprite*		pSprite = Sprites3dGetFreeSprite();
+
+	AddSpriteToInternalList( pSprite );
+
+	pSprite->mxPos = *pxPos;
+	pSprite->mfScale = fScale;
+	pSprite->mfScaleZ = fScale;
+	pSprite->mulCol = ulCol;
+	pSprite->mnFrameNum = nFrameNum;
+}
+
+void	Sprites3DAddSpriteScaleZ( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fScaleZ )
+{
+SpriteGroup* pSpriteGroup = Sprites3DGetManagedGroup( hGroup );
 
 	if ( pSpriteGroup )
 	{
-	Sprite*		pSprite = Sprites3dGetFreeSprite();
+		pSpriteGroup->AddSpriteScaleZ( pxPos, fScale, ulCol, nFrameNum, nFlags, fScaleZ );
+	}
+}
 
-		pSprite->mpNext = pSpriteGroup->mpSpriteList;
-		pSpriteGroup->mpSpriteList = pSprite;
+void	Sprites3DAddSprite( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags )
+{
+SpriteGroup* pSpriteGroup = Sprites3DGetManagedGroup( hGroup );
 
-		pSprite->mxPos = *pxPos;
-		pSprite->mfScale = fScale;
-		pSprite->mfScaleZ = fScale;
-		pSprite->mulCol = ulCol;
-		pSprite->mnFrameNum = nFrameNum;
+	if ( pSpriteGroup )
+	{
+		pSpriteGroup->AddSprite( pxPos, fScale, ulCol, nFrameNum, nFlags );
 	}
 }
 
 void	Sprites3DAddSpriteRotScaleXY( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fRotation, float fXYScaleFactor )
 {
-SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
+SpriteGroup* pSpriteGroup = Sprites3DGetManagedGroup( hGroup );
 
 	if ( pSpriteGroup )
 	{
-	Sprite*		pSprite = Sprites3dGetFreeSprite();
-
-		pSprite->mpNext = pSpriteGroup->mpSpriteList;
-		pSpriteGroup->mpSpriteList = pSprite;
-
-		pSprite->mxPos = *pxPos;
-		pSprite->mfScale = fScale;
-		pSprite->mfAspectRatio = fXYScaleFactor;
-		pSprite->mfScaleZ = fScale;
-		pSprite->mulCol = ulCol;
-		pSprite->mnFrameNum = nFrameNum;
-		pSprite->mfRot = fRotation;
+		pSpriteGroup->AddSpriteRotScaleXY( pxPos, fScale, ulCol, nFrameNum, nFlags, fRotation, fXYScaleFactor );
 	}
 }
 
 void	Sprites3DAddSpriteRot( SPRITE_GROUP hGroup, const VECT* pxPos, float fScale, uint32 ulCol, int nFrameNum, uint32 nFlags, float fRotation )
 {
-SpriteGroup* pSpriteGroup = Sprites3DFindGroup( hGroup );
+SpriteGroup* pSpriteGroup = Sprites3DGetManagedGroup( hGroup );
 
 	if ( pSpriteGroup )
 	{
-	Sprite*		pSprite = Sprites3dGetFreeSprite();
-
-		pSprite->mpNext = pSpriteGroup->mpSpriteList;
-		pSpriteGroup->mpSpriteList = pSprite;
-
-		pSprite->mxPos = *pxPos;
-		pSprite->mfScale = fScale;
-		pSprite->mfScaleZ = fScale;
-		pSprite->mulCol = ulCol;
-		pSprite->mnFrameNum = nFrameNum;
-		pSprite->mfRot = fRotation;
+		pSpriteGroup->AddSpriteRot( pxPos, fScale, ulCol, nFrameNum, nFlags, fRotation );
 	}
 
 }
@@ -1136,18 +1176,16 @@ void Sprites3DCommonRenderSetup( BOOL bUseZWrite )
 
 void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-	
 	Sprites3DCommonRenderSetup(bUseZWrite);
 
-	while( pSpriteGroups )
+	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
-		if ( pSpriteGroups->mLayer == nLayerNum )
+		if ( pSpriteGroup->mLayer == nLayerNum )
 		{
-			pSpriteGroups->Render();
+			pSpriteGroup->Render();
 		}
-		pSpriteGroups = pSpriteGroups->mpNext;
 	}
+
 	mpEngineDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
     mpEngineDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	msSprite3dActiveLayers[nLayerNum] = false;
@@ -1155,20 +1193,16 @@ SpriteGroup*	pSpriteGroups = mspSpriteGroups;
 
 void Sprites3DFlush( BOOL bUseZWrite )
 {
-SpriteGroup*	pSpriteGroups = mspSpriteGroups;
-
 	Sprites3DCommonRenderSetup(bUseZWrite);
 
 	for (auto& layerActive : msSprite3dActiveLayers)
 	{
-		pSpriteGroups = mspSpriteGroups;
-		while( pSpriteGroups )
-		{
-			if ( pSpriteGroups->mLayer == layerActive.first )
+		for ( auto pSpriteGroup : mspManagedSpriteGroups )
+		{	
+			if ( pSpriteGroup->mLayer == layerActive.first )
 			{
-				pSpriteGroups->Render();
+				pSpriteGroup->Render();
 			}
-			pSpriteGroups = pSpriteGroups->mpNext;
 		}
 	}
 

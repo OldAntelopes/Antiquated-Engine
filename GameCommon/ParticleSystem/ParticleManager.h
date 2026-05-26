@@ -5,10 +5,10 @@
 
 #include "Particle.h"
 
-class ParticleGroup
+class ManagedParticleGroup
 {
 public:
-	ParticleGroup(int groupLayerNum) { mGroupLayerNum = groupLayerNum; }
+	ManagedParticleGroup(int groupLayerNum) { mGroupLayerNum = groupLayerNum; }
 
 	void	Update( float delta );
 	void	Render();
@@ -28,22 +28,24 @@ private:
 //-------------------------------------------------
 
 extern void		ParticleManagerInit( void );
+extern void		ParticleManagerNewFrame();
 
 extern void		ParticleManagerUpdate( float delta );
 extern void		ParticleManagerRender( void );
 
 extern void		ParticleManagerShutdown( void );
 
-extern ParticleGroup*	ParticleManagerCreateParticleGroup( void );
-extern void				ParticleManagerDeleteParticleGroup( ParticleGroup* );
+extern ManagedParticleGroup*	ParticleManagerCreateParticleGroup( void );
+extern void				ParticleManagerDeleteParticleGroup( ManagedParticleGroup* );
 
 extern Particle*	ParticleManagerAddParticle( const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
 
-extern Particle*	ParticleManagerAddParticleToGroup( ParticleGroup* pParticleGroup, const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
+extern Particle*	ParticleManagerAddParticleToGroup( ManagedParticleGroup* pParticleGroup, const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
 
 
 extern Particle*	ParticleManagerCreateNewParticle( const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject );
 
 extern int		ParticleManagerGetRenderedParticleCount();
+extern void		ParticleManagerAddRenderedParticleCount( int count );
 
 #endif

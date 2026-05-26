@@ -1,8 +1,18 @@
 
+#include "RenderProfiler.h"
+#include "RenderMarkers.h"
+
 #include "StandardDef.h"
 #include "Engine.h"
 
 #include "RenderObject.h"
+
+
+RenderObjectLogStats			RenderObjectLog::msLastFrameStats = { 0 };
+RenderObjectLogStats			RenderObjectLog::msCurrentFrameStats = { 0 };
+
+
+uint32		mulLastAppliedRenderFlags = 0;
 
 void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 {
@@ -72,9 +82,11 @@ void	RenderObject::SetTextureHandle(int hTex)
 
 int		RenderObject::Render()
 {
-
-	ApplyRenderFlags(mBlendFlags);
-
+	if ( mBlendFlags != mulLastAppliedRenderFlags )
+	{
+		ApplyRenderFlags( mBlendFlags );
+		mulLastAppliedRenderFlags = mBlendFlags;
+	}
 	return ( OnRender() );
 }
 
@@ -88,34 +100,133 @@ int		RenderObject::PreRender()
 int		RenderObjectGroup::Render()
 {
 int	count = 0;
+int		instanceCount = 0;
+char	acLogBuff[512];
+BOOL	bShouldLogRO = TRUE;
 
-	// TODO - Apply texture
+	// Apply texture for the group
 	EngineSetTexture( 0, mTextureHandle );
+	mulLastAppliedRenderFlags = 0;
 
-	for ( auto& renderObject : mRenderObjectsByType )
+	for ( int nType = 0; nType < kNumRenderTypes; nType++ )
 	{
-		std::vector<RenderObject*>& objectsOfThisType = renderObject.second;
-		for ( RenderObject* pObject : objectsOfThisType )
+		for ( RenderObject* pObject : mRenderObjectsByType[nType] )
 		{
-			count += pObject->Render();
+			instanceCount = pObject->Render();
+			if ( instanceCount > 0 )
+			{
+				count += instanceCount;
+				if ( bShouldLogRO )
+				{
+					pObject->GetDesc( acLogBuff );
+					RenderObjectList::GetCurrent().FlushLog( acLogBuff );
+					RenderObjectLog::AddStatCount(kActiveRenderObjects, 1);
+					RenderObjectLog::AddStatCount(kRenderObjectInstances, instanceCount );
+				}
+			}
 		}
 	}
-	
 	return count;
 }
 
 int		RenderObjectGroup::PreRender()
 {
 int	count = 0;
+int		instanceCount = 0;
+char	acLogBuff[512];
+BOOL	bShouldLogRO = TRUE;
 
-	for ( auto& renderObject : mRenderObjectsByType )
+	for ( int nType = 0; nType < kNumRenderTypes; nType++ )
 	{
-		std::vector<RenderObject*>& objectsOfThisType = renderObject.second;
-		for ( RenderObject* pObject : objectsOfThisType )
+		for ( RenderObject* pObject : mRenderObjectsByType[nType] )
 		{
-			count += pObject->PreRender();
+			instanceCount = pObject->PreRender();
+			if ( instanceCount > 0 )
+			{
+				count += instanceCount;
+				if ( bShouldLogRO )
+				{
+					pObject->GetDesc( acLogBuff );
+					RenderObjectList::GetCurrent().FlushLog( acLogBuff );
+					RenderObjectLog::AddStatCount(kActiveRenderObjects, 1);
+					RenderObjectLog::AddStatCount(kRenderObjectInstances, instanceCount );
+				}
+			}
 		}
 	}
-	
+
 	return count;
+}
+
+//--------------------------------------------
+// RenderObjectLog
+void	RenderObjectLog::AddLog(const char* szMsg) 
+{
+	std::string		string = szMsg;
+	mLogEntries.push_back(string); 
+}
+
+void		RenderObjectLog::OnNewFrame( BOOL bDumpPreviousFrameDebugLog ) 
+{
+	if ( bDumpPreviousFrameDebugLog )
+	{
+		SysDebugPrint("--- RenderObjectList Debug Log ---");
+		for ( const std::string& logEntry : mLogEntries )
+		{
+			SysDebugPrint( logEntry.c_str() );
+		}
+		SysDebugPrint("--- RenderObjectList Complete ---");
+	}
+	mLogEntries.clear();
+	msLastFrameStats = msCurrentFrameStats;
+			
+	memset( &msCurrentFrameStats, 0, sizeof(msCurrentFrameStats));
+}
+
+//-----------------------------------------------------
+
+void	RenderObjectList::Flush( int channelLayer ) 
+{
+	if ( mRenderObjectGroupsByTextureHandle.size() > 0 )
+	{
+		mbIsFlushActive = TRUE;
+		int		initialSize = (int)mRenderObjectGroupsByTextureHandle.size();
+
+		wchar_t wLabel[64];
+		swprintf_s(wLabel, L"RenderObjectList::Flush Ch.%d", channelLayer + 1);
+		RENDER_GPU_SCOPE(wLabel);
+		RENDER_PROFILE_SCOPE("RenderObjectList::Flush");
+
+		Log(">>Ch. %d: Flushing RenderObjectList with %d groups (pre-render)", channelLayer + 1, initialSize);
+		int		numParticles = 0;
+
+		{
+			RENDER_GPU_SCOPE(L"PreRender");
+			RENDER_PROFILE_SCOPE("Flush/PreRender");
+			for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
+			{
+				RenderObjectGroup* pGroup = texGroup.second;
+				numParticles += pGroup->PreRender();
+			}
+		}
+
+		if ( (int)mRenderObjectGroupsByTextureHandle.size() != initialSize )
+		{
+			Log(">>Ch. %d: Render phase %d groups", channelLayer + 1, mRenderObjectGroupsByTextureHandle.size());
+		}
+
+		{
+			RENDER_GPU_SCOPE(L"Render");
+			RENDER_PROFILE_SCOPE("Flush/Render");
+			for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
+			{
+				RenderObjectGroup* pGroup = texGroup.second;
+				pGroup->Render();
+				delete pGroup;
+			}	
+		}
+
+		mRenderObjectGroupsByTextureHandle.clear();
+		mbIsFlushActive = FALSE;
+	}
 }

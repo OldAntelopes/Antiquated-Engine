@@ -20,7 +20,6 @@ extern BOOL		mboRenderLineAlpha;
 
 extern void InterfaceTurnOffTextureFiltering( void );
 extern void InterfaceTurnOnTextureFiltering( int );
-extern void		InterfaceSetIsUsingDefaultFonts( BOOL bUsingDefaultFonts );
 
 enum eInterfaceTextureFormat
 { 

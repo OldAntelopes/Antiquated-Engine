@@ -106,11 +106,10 @@ VECT	xSmoothed;
 
 
 
-uint32	RibbonTrail::GetColour( int nIndex )
+uint32	RibbonTrail::GetColour( int nIndex, uint32 ulCurrentTick )
 {
 	if ( nIndex < MAX_POINTS_IN_TRAIL_LIST )
 	{
-	uint32		ulCurrentTick = SysGetTick();
 	int	nActualIndex = (mnNextTrailPoint + nIndex) % MAX_POINTS_IN_TRAIL_LIST;
 	uint32	ulAliveTime = ulCurrentTick - maxTrailListInternal[nActualIndex].ulTimeAdded;
  
@@ -281,6 +280,9 @@ uint32	ulCurrentTick = SysGetTick();
 }
 
 
+// OnRender
+//  Engine Render states (e.g. blend types) will have been set in the base RenderObject::ApplyRenderFlags call
+//  so OnRender's job is just to churn out polys  (EngineIndexBufferRender)
 int		RibbonTrail::OnRender( void )
 {
 ENGINEBUFFERVERTEX*	pxVertices;
@@ -310,6 +312,8 @@ int		blendCycle = 0;
 
 	if ( mhTrailVertexBuffer != NOTFOUND )
 	{
+	uint32	ulCurrentTick = SysGetTick();
+
 		EngineVertexBufferLock( mhTrailVertexBuffer, FALSE );
 		pxVertices = EngineVertexBufferGetBufferPointer( mhTrailVertexBuffer, MAX_TRAIL_VERTICES );
 			
@@ -322,7 +326,7 @@ int		blendCycle = 0;
 				{ 
 					VectCross( &xRight, &xTangent, &xCamDir );
 					VectNormalize( &xRight );	
-					ulLastCol = GetColour( nLoop );
+					ulLastCol = GetColour( nLoop, ulCurrentTick );
 					if ( ulLastCol != 0 )
 					{
 						bStillAlive = TRUE;
@@ -379,6 +383,8 @@ int		blendCycle = 0;
 			EngineVertexBufferUnlock( mhTrailVertexBuffer );
 
 			EngineIndexBufferRender( mhTrailIndexBuffer, mhTrailVertexBuffer, nNumPolysToDraw, 0 );
+			RenderObjectLog::AddStatCount(kRibbonPolys, nNumPolysToDraw);
+
 		}
 		else
 		{

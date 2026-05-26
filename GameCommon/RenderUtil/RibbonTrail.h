@@ -30,6 +30,7 @@ public:
 	virtual ~RibbonTrail();
 
 	virtual int		OnRender( void );
+	virtual const char* GetName() const { return "Ribbon Trail"; }
 
 
 	void	Initialise( int nType );
@@ -54,7 +55,7 @@ public:
 private:
 
 
-	uint32	GetColour( int nIndex );
+	uint32	GetColour( int nIndex, uint32 ulCurrentTick );
 
 	void	AddPos( const VECT* pxIn, BOOL bDoDraw = TRUE );
 	BOOL	GetPos( int nIndex, VECT* pxOut, VECT* pxTangent );
@@ -69,6 +70,7 @@ private:
 	TRAIL_POINT		maxTrailListInternal[MAX_POINTS_IN_TRAIL_LIST];
 	int		mnNextTrailPoint;
 	int		mnLastTrailPoint;
+	int		mnFilledTrailPoints;
 	uint32	mulLastInternalAddTick;
 	int		mnType;
 	VECT	mxCurrentPos;

@@ -595,7 +595,6 @@ INTERFACE_API void InterfaceInit( BOOL bUseDefaultFonts )
 {
 	if ( mboInterfaceInitialised == FALSE )
 	{
-		InterfaceSetIsUsingDefaultFonts( bUseDefaultFonts );
 		InitialiseFont( bUseDefaultFonts );
 		InitialiseOverlays();
 
@@ -884,8 +883,8 @@ void InterfaceInstance::ReleaseForDeviceReset( void )
 void InterfaceInstance::RestorePostDeviceReset( void )
 {
 	mpFontSystem->InitialiseFontBuffers();
-	InitialiseOverlays();
-	InitTexturedOverlays();
-	InterfaceImagesInit();
+	mpOverlays->Initialise();
+	mpTexturedOverlays->Initialise();
+//	InterfaceImagesInit();
 }
 

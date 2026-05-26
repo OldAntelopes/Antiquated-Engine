@@ -1146,12 +1146,6 @@ BOOL	InterfaceInstance::IsInRender( void )
 	return( FALSE );
 }
 
-BOOL		mbInterfaceIsUsingDefaultFonts = TRUE;
-
-void		InterfaceSetIsUsingDefaultFonts( BOOL bUsingDefaultFonts )
-{
-	mbInterfaceIsUsingDefaultFonts = bUsingDefaultFonts;
-}
 
 void	InterfaceChangeDisplay( BOOL bFullScreen, int nMonitorNum )
 {

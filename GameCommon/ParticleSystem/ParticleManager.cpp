@@ -61,7 +61,7 @@ void	ParticleManagerAddParticleToLayer( RegisteredParticleList*	pRegisteredParti
 	pRegisteredParticleList->mParticleLayerMap[layer] = pParticle;
 }
 
-Particle*		ParticleManagerAddParticleToGroup( ParticleGroup* pParticleGroup, const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
+Particle*		ParticleManagerAddParticleToGroup( ManagedParticleGroup* pParticleGroup, const char* szParticleName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject )
 {
 Particle*		pNewParticle = NULL;
 RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
@@ -152,7 +152,7 @@ void	ParticleManagerDeleteParticle( Particle* pParticle )
 
 
 //---------------------------------------------------------
-void	ParticleGroup::Update( float delta )
+void	ManagedParticleGroup::Update( float delta )
 {
 	for (Particle* pParticle : mpParticleList)
 	{
@@ -177,7 +177,7 @@ void	ParticleGroup::Update( float delta )
 	}
 }
 
-void	ParticleGroup::Render()
+void	ManagedParticleGroup::Render()
 {
 	for (Particle* pParticle : mpParticleList)
 	{
@@ -209,12 +209,12 @@ void		ParticleManagerInit( void )
 
 int		msnParticleGroupLayerNum = 1000;
 
-ParticleGroup*	ParticleManagerCreateParticleGroup( void )
+ManagedParticleGroup*	ParticleManagerCreateParticleGroup( void )
 {
-	return(new ParticleGroup(msnParticleGroupLayerNum++));
+	return(new ManagedParticleGroup(msnParticleGroupLayerNum++));
 }
 
-void				ParticleManagerDeleteParticleGroup( ParticleGroup* pParticleGroup )
+void				ParticleManagerDeleteParticleGroup( ManagedParticleGroup* pParticleGroup )
 {
 	delete pParticleGroup;
 }
@@ -289,6 +289,18 @@ RegisteredParticleList*	pRegisteredParticleList = mspRegisteredParticleList;
 int		msnNumRenderedParticles = 0;
 int		msnNumRenderedParticleGroups = 0;
 
+void		ParticleManagerNewFrame()
+{
+	msnNumRenderedParticles = 0;
+	msnNumRenderedParticleGroups = 0;
+}
+
+void		ParticleManagerAddRenderedParticleCount( int count )
+{
+	msnNumRenderedParticleGroups ++;
+	msnNumRenderedParticles += count;
+}
+
 int		ParticleManagerGetRenderedParticleCount()
 {
 	return( msnNumRenderedParticles );
@@ -296,8 +308,6 @@ int		ParticleManagerGetRenderedParticleCount()
 
 void		ParticleManagerRender( void )
 {
-	msnNumRenderedParticles = 0;
-	msnNumRenderedParticleGroups = 0;
 
 	for ( auto& activeLayerPair : msActiveParticleLayers)
 	{

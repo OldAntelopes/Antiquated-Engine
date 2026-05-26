@@ -23,12 +23,12 @@ Particle::~Particle()
 
 }
 
-void	Particle::SetGraphicHandle( TEXTURE_HANDLE hTex, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+void	Particle::SetGraphicHandle( TEXTURE_HANDLE hTex, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 	mnParticleGraphicsNum = ParticleGraphicsCreateHandle( hTex, fGridScale, bUseRotation, renderFlags, layer );
 }
 
-void	Particle::SetGraphic( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation, eSpriteGroupRenderFlags renderFlags, int layer )
+void	Particle::SetGraphic( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation, eRenderFlags renderFlags, int layer )
 {
 	mnParticleGraphicsNum = ParticleGraphicsCreate( szSpriteTextureName, fGridScale, bUseRotation, renderFlags, layer );
 }
@@ -83,7 +83,7 @@ void	Particle::DefaultRender( void )
 {
 	if ( mnParticleGraphicsNum != NOTFOUND )
 	{
-	SPRITE_GROUP		hSpriteGroup = ParticleGraphicsGetSpriteGroup( mnParticleGraphicsNum );
+	SpriteGroup*		pSpriteGroup = ParticleGraphicsGetSpriteGroup( mnParticleGraphicsNum );
 	float	fScale = 1.0f;
 	uint32	ulCol;
 	float	fAlpha = GetAlphaOverride();
@@ -127,13 +127,18 @@ void	Particle::DefaultRender( void )
 				ulCol = GetColWithModifiedAlpha( mulCol, fAlpha );
 			}
 
-			if (mfSpriteAspect != 1.0f )
+			if ( pSpriteGroup )
 			{
-				Sprites3DAddSpriteRotScaleXY( hSpriteGroup, GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot(), mfSpriteAspect );			
-			}
-			else
-			{
-				Sprites3DAddSpriteRot( hSpriteGroup, GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot() );
+				if (mfSpriteAspect != 1.0f )
+				{				
+					pSpriteGroup->AddSpriteRotScaleXY( GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot(), mfSpriteAspect );			
+				}
+				else
+				{
+					pSpriteGroup->AddSpriteRot( GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot() );
+				}
+
+				RenderObjectList::GetCurrent().AddRenderObjectIfNotPresent( pSpriteGroup );
 			}
 		}
 	}

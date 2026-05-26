@@ -329,7 +329,7 @@ char	mszTempConsolePrint[256] = "";
 
 void		ConsoleRenderEx( InterfaceInstance* pInterface, int x, int y, int w, int h, int nFont, int nLineHeight )
 {
-int			nNumLines = (h - 5) / 16;
+int			nNumLines = (h - 5) / nLineHeight;
 	
 	mnConsoleFont = nFont;
 	m_sMainConsole.Display( pInterface, x, w, y + h - 20, nNumLines, 0, 1.0f );

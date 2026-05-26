@@ -8,6 +8,7 @@
 #include "../../../Include/DirectX/d3dx9shader.h"
 
 #include <map>
+#include <unordered_map>
 #include <StandardDef.h>
 #include <Rendering.h>
 #include <Interface.h>
@@ -110,8 +111,8 @@ typedef struct
 */
 
 
-std::map<int, EngineVertBuffContainer*>		mVertBufferMap;
-std::map<int, EngineIndexBuffContainer*>	mIndexBufferMap;
+std::unordered_map<int, EngineVertBuffContainer*>		mVertBufferMap;
+std::unordered_map<int, EngineIndexBuffContainer*>	mIndexBufferMap;
 
 
 EngineVertBuffContainer*		EngineVertexBufferGetContainer( int hVertBuffer )
@@ -186,22 +187,25 @@ BOOL	EngineIndexBufferRender( INDEX_BUFFER_HANDLE hIndexBuffer, VERTEX_BUFFER_HA
 EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( hVertexBuffer );
 EngineIndexBuffContainer*		pIndexBuffContainer = EngineIndexBufferGetContainer( hIndexBuffer );
 
+static INDEX_BUFFER_HANDLE		snLastIndexBuffer = NOTFOUND;
+static VERTEX_BUFFER_HANDLE		snLastVertexBuffer = NOTFOUND;
+
 	if ( ( pIndexBuffContainer ) &&
 		 ( pVertBuffContainer ) )
 	{
 		int		nNumVerts = pVertBuffContainer->nBufferSize;
 
-		mpEngineDevice->SetIndices( pIndexBuffContainer->pxIndexBuffer );
-		mpEngineDevice->SetStreamSource( 0, pVertBuffContainer->pxVertexBuffer, 0, sizeof(CUSTOMVERTEX) );
+		if ( hIndexBuffer != snLastIndexBuffer )
+		{
+			mpEngineDevice->SetIndices( pIndexBuffContainer->pxIndexBuffer );
+			snLastIndexBuffer = hIndexBuffer;
+		}
+		if ( hVertexBuffer != snLastVertexBuffer )
+		{
+			mpEngineDevice->SetStreamSource( 0, pVertBuffContainer->pxVertexBuffer, 0, sizeof(CUSTOMVERTEX) );
+			snLastVertexBuffer = hVertexBuffer;
+		}
 
-	/*
-		mpEngineDevice->DrawIndexedPrimitiveUP( D3DPT_TRIANGLELIST, 0, 0, nNumVerts, 0, nNumPolys, 
-  [in] const void             *pIndexData,
-  [in]       D3DFORMAT        IndexDataFormat,
-  [in] const void             *pVertexStreamZeroData,
-  [in]       UINT             VertexStreamZeroStride
-);
-*/
 		mpEngineDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, nNumVerts, 0, nNumPolys );   
 		return( TRUE );
 	}
@@ -583,25 +587,15 @@ BOOL		EngineVertexBufferAdd( VERTEX_BUFFER_HANDLE nHandle, ENGINEBUFFERVERTEX* p
 {
 EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( nHandle );
 
-	if ( pVertBuffContainer )
+	if ( pVertBuffContainer && pVertBuffContainer->pxLockedBuffer )
 	{
-		if ( pVertBuffContainer->pxLockedBuffer )
-		{
-			int		nPos = pVertBuffContainer->nBufferPos;
+		int		nPos = pVertBuffContainer->nBufferPos;
 
-			if ( nPos < pVertBuffContainer->nBufferSize )
-			{
-			CUSTOMVERTEX*	pVertBuffer;
-				pVertBuffer = pVertBuffContainer->pxLockedBuffer;
-				pVertBuffer += nPos;
-				*pVertBuffer = *( (CUSTOMVERTEX*)pxVertToAdd );
-				pVertBuffContainer->nBufferPos++;
-				return( TRUE );
-			}
-			else
-			{
-				nPos = nPos - 1;
-			}
+		if ( nPos < pVertBuffContainer->nBufferSize )
+		{
+			pVertBuffContainer->pxLockedBuffer[ nPos ] = *( (CUSTOMVERTEX*)pxVertToAdd );
+			pVertBuffContainer->nBufferPos = nPos + 1;
+			return( TRUE );
 		}
 	}
 	return( FALSE );

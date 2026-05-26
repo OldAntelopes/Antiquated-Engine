@@ -71,7 +71,6 @@ void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
 {
 	if ( mboInterfaceInitialised == FALSE )
 	{
-		InterfaceSetIsUsingDefaultFonts( bUseDefaultFonts );
 		mpFontSystem->InitialiseFonts( bUseDefaultFonts );
 		mpOverlays->Initialise();
 		mpTexturedOverlays->Initialise();
@@ -86,12 +85,6 @@ void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
 InterfaceInstance*		InterfaceInstanceMain()
 {
 static InterfaceInstance		ms_MainSingletonInstance;
-static BOOL			ms_bHasInitialisedMainInstance = FALSE;
-
-	if ( !ms_bHasInitialisedMainInstance )
-	{
-		ms_bHasInitialisedMainInstance = TRUE;
-	}
 	return( &ms_MainSingletonInstance );
 }
 

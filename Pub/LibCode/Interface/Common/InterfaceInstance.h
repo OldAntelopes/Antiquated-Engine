@@ -106,10 +106,10 @@ public:
 	BOOL		LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags );
 
 	// TODO - Make these private and expose all the functionality through this top level interface
-	TexturedOverlays*		mpTexturedOverlays;
-	Overlays*				mpOverlays;
-	InterfaceInternalsDX*	mpInterfaceInternals;
-	FontSystem*				mpFontSystem;
+	TexturedOverlays*		mpTexturedOverlays = NULL;
+	Overlays*				mpOverlays = NULL;
+	InterfaceInternalsDX*	mpInterfaceInternals = NULL;
+	FontSystem*				mpFontSystem = NULL;
 
 	void		DrawAllElements( void );
 	float		GetFPS() { return( mfInterfaceFPS ); }
@@ -132,7 +132,7 @@ protected:
 
 	BOOL	mboInterfaceInitialised = FALSE;
 	bool	mbIsInScene = false;
-	HWND	mhWindow;
+	HWND	mhWindow = NULL;
 	int		mnAdapterUsedForDevice = 0;
 	BOOL	mboBorderlessFullscreen = FALSE;
 	BOOL	mbIsLinkedToEngine = FALSE;
