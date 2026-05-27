@@ -46,7 +46,7 @@ extern "C" int (*warand)(void);
 
 typedef enum { TEX_DISK, TEX_VS, TEX_BLUR0, TEX_BLUR1, TEX_BLUR2, TEX_BLUR3, TEX_BLUR4, TEX_BLUR5, TEX_BLUR6, TEX_BLUR_LAST } tex_code;
 typedef enum { UI_REGULAR, UI_MENU, UI_LOAD, UI_LOAD_DEL, UI_LOAD_RENAME, UI_SAVEAS, UI_SAVE_OVERWRITE, UI_EDIT_MENU_STRING, UI_CHANGEDIR, UI_IMPORT_WAVE, UI_EXPORT_WAVE, UI_IMPORT_SHAPE, UI_EXPORT_SHAPE, UI_UPGRADE_PIXEL_SHADER, UI_MASHUP } ui_mode;
-typedef struct { float rad; float ang; float a; float c;  } td_vertinfo; // blending: mix = max(0,min(1,a*t + c));
+typedef struct { float rad; float ang; float a; float c; float r_exp; } td_vertinfo; // blending: mix = max(0,min(1,a*t + c)); r_exp = rad*2-1 (precomputed for zoom LUT)
 typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -458,17 +458,25 @@ public:
         int               m_nBlurTexH[NUM_BLUR_TEX];
         #endif
         int m_nHighestBlurTexUsedThisFrame;
-        IDirect3DTexture9 *m_lpDDSTitle;    // CAREFUL: MIGHT BE NULL (if not enough mem)!
-        int               m_nTitleTexSizeX, m_nTitleTexSizeY;
-        UINT              m_adapterId;
-        MYVERTEX          *m_verts;
-        MYVERTEX          *m_verts_temp;
-        td_vertinfo       *m_vertinfo;
-        int               *m_indices_strip;
-        int               *m_indices_list;
+		IDirect3DTexture9 *m_lpDDSTitle;    // CAREFUL: MIGHT BE NULL (if not enough mem)!
+		int               m_nTitleTexSizeX, m_nTitleTexSizeY;
+		UINT              m_adapterId;
+		MYVERTEX          *m_verts;
+		MYVERTEX          *m_verts_temp;
+		td_vertinfo       *m_vertinfo;
+		int               *m_indices_strip;
+		int               *m_indices_list;
 		bool				mbAutoPresetSelection = true;
 
-        // for final composite grid:
+		// Per-frame zoom LUT: avoids 2 powf calls per vertex in ComputeGridAlphaValues.
+		// Stores powf(fZoom, powf(fZoomExp, r_exp)) for every grid vertex.
+		// Rebuilt each frame when fZoom/fZoomExp change and no per-vertex code is active.
+		float             *m_zoom_lut;          // [0..(m_nGridX+1)*(m_nGridY+1)-1]
+		float              m_zoom_lut_zoom;     // fZoom value the LUT was built for
+		float              m_zoom_lut_zoomexp;  // fZoomExp value the LUT was built for
+		void               RebuildZoomLUT(float fZoom, float fZoomExp);
+
+		// for final composite grid:
         #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
         #define FCGSY 24 // final composite gridsize - # verts - should be EVEN.
                          // # of grid *cells* is two less,

@@ -164,17 +164,49 @@ void CPlugin::ClearGraphicsWindow()
 {
 }
 
+void CPlugin::RebuildZoomLUT(float fZoom, float fZoomExp)
+{
+	// Precompute powf(fZoom, powf(fZoomExp, r_exp)) for every grid vertex.
+	// Uses log-space arithmetic: exp(exp(r_exp * ln(fZoomExp)) * ln(fZoom))
+	// This lets us replace 2*N powf() calls per frame with 2 logf() calls + N expf() calls,
+	// which is ~2x faster because expf is significantly cheaper than powf.
+	const int nVerts = (m_nGridX + 1) * (m_nGridY + 1);
+
+	if (fZoom <= 0.0f || fZoomExp <= 0.0f)
+	{
+		// degenerate case - fill with 1.0 (no zoom)
+		for (int n = 0; n < nVerts; n++)
+			m_zoom_lut[n] = 1.0f;
+	}
+	else
+	{
+		const float logZoom    = logf(fZoom);
+		const float logZoomExp = logf(fZoomExp);
+		for (int n = 0; n < nVerts; n++)
+		{
+			// powf(fZoomExp, r_exp) == expf(r_exp * logZoomExp)
+			// powf(fZoom, above)    == expf(above * logZoom)
+			m_zoom_lut[n] = expf(expf(m_vertinfo[n].r_exp * logZoomExp) * logZoom);
+		}
+	}
+
+	m_zoom_lut_zoom    = fZoom;
+	m_zoom_lut_zoomexp = fZoomExp;
+}
 
 void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 {
-    // load the 'var_pf_*' variables in this CState object with the correct values.
-    // for vars that affect pixel motion, that means evaluating them at time==-1,
-    //    (i.e. no blending w/blendto value); the blending of the file dx/dy
-    //    will be done *after* execution of the per-vertex code.
-    // for vars that do NOT affect pixel motion, evaluate them at the current time,
-    //    so that if they're blending, both states see the blended value.
+	// load the 'var_pf_*' variables in this CState object with the correct values.
+	// for vars that affect pixel motion, that means evaluating them at time==-1,
+	//    (i.e. no blending w/blendto value); the blending of the file dx/dy
+	//    will be done *after* execution of the per-vertex code.
+	// for vars that do NOT affect pixel motion, evaluate them at the current time,
+	//    so that if they're blending, both states see the blended value.
 
-    // 1. vars that affect pixel motion: (eval at time==-1)
+	// cache GetTime() once - it may involve a timer query
+	float fTime = GetTime();
+
+	// 1. vars that affect pixel motion: (eval at time==-1)
 	*pState->var_pf_zoom		= (double)pState->m_fZoom.eval(-1);//GetTime());
 	*pState->var_pf_zoomexp		= (double)pState->m_fZoomExponent.eval(-1);//GetTime());
 	*pState->var_pf_rot			= (double)pState->m_fRot.eval(-1);//GetTime());
@@ -186,7 +218,7 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	*pState->var_pf_sx			= (double)pState->m_fStretchX.eval(-1);//GetTime());
 	*pState->var_pf_sy			= (double)pState->m_fStretchY.eval(-1);//GetTime());
 	// read-only:
-	*pState->var_pf_time		= (double)(GetTime() - m_fStartTime);
+	*pState->var_pf_time		= (double)(fTime - m_fStartTime);
 	*pState->var_pf_fps         = (double)GetFps();
 	*pState->var_pf_bass		= (double)mysound.imm_rel[0];
 	*pState->var_pf_mid			= (double)mysound.imm_rel[1];
@@ -196,69 +228,69 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	*pState->var_pf_treb_att	= (double)mysound.avg_rel[2];
 	*pState->var_pf_frame		= (double)GetFrame();
 	//*pState->var_pf_monitor     = 0;   -leave this as it was set in the per-frame INIT code!
-    for (int vi=0; vi<NUM_Q_VAR; vi++)
-	    *pState->var_pf_q[vi]	= pState->q_values_after_init_code[vi];//0.0f;
-    *pState->var_pf_monitor     = pState->monitor_after_init_code;
-	*pState->var_pf_progress    = (GetTime() - m_fPresetStartTime) / (m_fNextPresetTime - m_fPresetStartTime);
+	for (int vi=0; vi<NUM_Q_VAR; vi++)
+		*pState->var_pf_q[vi]	= pState->q_values_after_init_code[vi];//0.0f;
+	*pState->var_pf_monitor     = pState->monitor_after_init_code;
+	*pState->var_pf_progress    = (fTime - m_fPresetStartTime) / (m_fNextPresetTime - m_fPresetStartTime);
 
 	// 2. vars that do NOT affect pixel motion: (eval at time==now)
-	*pState->var_pf_decay		= (double)pState->m_fDecay.eval(GetTime());
-	*pState->var_pf_wave_a		= (double)pState->m_fWaveAlpha.eval(GetTime());
-	*pState->var_pf_wave_r		= (double)pState->m_fWaveR.eval(GetTime());
-	*pState->var_pf_wave_g		= (double)pState->m_fWaveG.eval(GetTime());
-	*pState->var_pf_wave_b		= (double)pState->m_fWaveB.eval(GetTime());
-	*pState->var_pf_wave_x		= (double)pState->m_fWaveX.eval(GetTime());
-	*pState->var_pf_wave_y		= (double)pState->m_fWaveY.eval(GetTime());
-	*pState->var_pf_wave_mystery= (double)pState->m_fWaveParam.eval(GetTime());
+	*pState->var_pf_decay		= (double)pState->m_fDecay.eval(fTime);
+	*pState->var_pf_wave_a		= (double)pState->m_fWaveAlpha.eval(fTime);
+	*pState->var_pf_wave_r		= (double)pState->m_fWaveR.eval(fTime);
+	*pState->var_pf_wave_g		= (double)pState->m_fWaveG.eval(fTime);
+	*pState->var_pf_wave_b		= (double)pState->m_fWaveB.eval(fTime);
+	*pState->var_pf_wave_x		= (double)pState->m_fWaveX.eval(fTime);
+	*pState->var_pf_wave_y		= (double)pState->m_fWaveY.eval(fTime);
+	*pState->var_pf_wave_mystery= (double)pState->m_fWaveParam.eval(fTime);
 	*pState->var_pf_wave_mode   = (double)pState->m_nWaveMode;	//?!?! -why won't it work if set to pState->m_nWaveMode???
-	*pState->var_pf_ob_size		= (double)pState->m_fOuterBorderSize.eval(GetTime());
-	*pState->var_pf_ob_r		= (double)pState->m_fOuterBorderR.eval(GetTime());
-	*pState->var_pf_ob_g		= (double)pState->m_fOuterBorderG.eval(GetTime());
-	*pState->var_pf_ob_b		= (double)pState->m_fOuterBorderB.eval(GetTime());
-	*pState->var_pf_ob_a		= (double)pState->m_fOuterBorderA.eval(GetTime());
-	*pState->var_pf_ib_size		= (double)pState->m_fInnerBorderSize.eval(GetTime());
-	*pState->var_pf_ib_r		= (double)pState->m_fInnerBorderR.eval(GetTime());
-	*pState->var_pf_ib_g		= (double)pState->m_fInnerBorderG.eval(GetTime());
-	*pState->var_pf_ib_b		= (double)pState->m_fInnerBorderB.eval(GetTime());
-	*pState->var_pf_ib_a		= (double)pState->m_fInnerBorderA.eval(GetTime());
-	*pState->var_pf_mv_x        = (double)pState->m_fMvX.eval(GetTime());
-	*pState->var_pf_mv_y        = (double)pState->m_fMvY.eval(GetTime());
-	*pState->var_pf_mv_dx       = (double)pState->m_fMvDX.eval(GetTime());
-	*pState->var_pf_mv_dy       = (double)pState->m_fMvDY.eval(GetTime());
-	*pState->var_pf_mv_l        = (double)pState->m_fMvL.eval(GetTime());
-	*pState->var_pf_mv_r        = (double)pState->m_fMvR.eval(GetTime());
-	*pState->var_pf_mv_g        = (double)pState->m_fMvG.eval(GetTime());
-	*pState->var_pf_mv_b        = (double)pState->m_fMvB.eval(GetTime());
-	*pState->var_pf_mv_a        = (double)pState->m_fMvA.eval(GetTime());
-	*pState->var_pf_echo_zoom   = (double)pState->m_fVideoEchoZoom.eval(GetTime());
-	*pState->var_pf_echo_alpha  = (double)pState->m_fVideoEchoAlpha.eval(GetTime());
+	*pState->var_pf_ob_size		= (double)pState->m_fOuterBorderSize.eval(fTime);
+	*pState->var_pf_ob_r		= (double)pState->m_fOuterBorderR.eval(fTime);
+	*pState->var_pf_ob_g		= (double)pState->m_fOuterBorderG.eval(fTime);
+	*pState->var_pf_ob_b		= (double)pState->m_fOuterBorderB.eval(fTime);
+	*pState->var_pf_ob_a		= (double)pState->m_fOuterBorderA.eval(fTime);
+	*pState->var_pf_ib_size		= (double)pState->m_fInnerBorderSize.eval(fTime);
+	*pState->var_pf_ib_r		= (double)pState->m_fInnerBorderR.eval(fTime);
+	*pState->var_pf_ib_g		= (double)pState->m_fInnerBorderG.eval(fTime);
+	*pState->var_pf_ib_b		= (double)pState->m_fInnerBorderB.eval(fTime);
+	*pState->var_pf_ib_a		= (double)pState->m_fInnerBorderA.eval(fTime);
+	*pState->var_pf_mv_x        = (double)pState->m_fMvX.eval(fTime);
+	*pState->var_pf_mv_y        = (double)pState->m_fMvY.eval(fTime);
+	*pState->var_pf_mv_dx       = (double)pState->m_fMvDX.eval(fTime);
+	*pState->var_pf_mv_dy       = (double)pState->m_fMvDY.eval(fTime);
+	*pState->var_pf_mv_l        = (double)pState->m_fMvL.eval(fTime);
+	*pState->var_pf_mv_r        = (double)pState->m_fMvR.eval(fTime);
+	*pState->var_pf_mv_g        = (double)pState->m_fMvG.eval(fTime);
+	*pState->var_pf_mv_b        = (double)pState->m_fMvB.eval(fTime);
+	*pState->var_pf_mv_a        = (double)pState->m_fMvA.eval(fTime);
+	*pState->var_pf_echo_zoom   = (double)pState->m_fVideoEchoZoom.eval(fTime);
+	*pState->var_pf_echo_alpha  = (double)pState->m_fVideoEchoAlpha.eval(fTime);
 	*pState->var_pf_echo_orient = (double)pState->m_nVideoEchoOrientation;
-    // new in v1.04:
-    *pState->var_pf_wave_usedots  = (double)pState->m_bWaveDots;
-    *pState->var_pf_wave_thick    = (double)pState->m_bWaveThick;
-    *pState->var_pf_wave_additive = (double)pState->m_bAdditiveWaves;
-    *pState->var_pf_wave_brighten = (double)pState->m_bMaximizeWaveColor;
-    *pState->var_pf_darken_center = (double)pState->m_bDarkenCenter;
-    *pState->var_pf_gamma         = (double)pState->m_fGammaAdj.eval(GetTime());
-    *pState->var_pf_wrap          = (double)pState->m_bTexWrap;
-    *pState->var_pf_invert        = (double)pState->m_bInvert;
-    *pState->var_pf_brighten      = (double)pState->m_bBrighten;
-    *pState->var_pf_darken        = (double)pState->m_bDarken;
-    *pState->var_pf_solarize      = (double)pState->m_bSolarize;
-    *pState->var_pf_meshx         = (double)m_nGridX;
-    *pState->var_pf_meshy         = (double)m_nGridY;
-    *pState->var_pf_pixelsx       = (double)GetWidth();
-    *pState->var_pf_pixelsy       = (double)GetHeight();
-    *pState->var_pf_aspectx       = (double)m_fInvAspectX;
-    *pState->var_pf_aspecty       = (double)m_fInvAspectY;
-    // new in v2.0:
-    *pState->var_pf_blur1min      = (double)pState->m_fBlur1Min.eval(GetTime());
-    *pState->var_pf_blur2min      = (double)pState->m_fBlur2Min.eval(GetTime());
-    *pState->var_pf_blur3min      = (double)pState->m_fBlur3Min.eval(GetTime());
-    *pState->var_pf_blur1max      = (double)pState->m_fBlur1Max.eval(GetTime());
-    *pState->var_pf_blur2max      = (double)pState->m_fBlur2Max.eval(GetTime());
-    *pState->var_pf_blur3max      = (double)pState->m_fBlur3Max.eval(GetTime());
-    *pState->var_pf_blur1_edge_darken = (double)pState->m_fBlur1EdgeDarken.eval(GetTime());
+	// new in v1.04:
+	*pState->var_pf_wave_usedots  = (double)pState->m_bWaveDots;
+	*pState->var_pf_wave_thick    = (double)pState->m_bWaveThick;
+	*pState->var_pf_wave_additive = (double)pState->m_bAdditiveWaves;
+	*pState->var_pf_wave_brighten = (double)pState->m_bMaximizeWaveColor;
+	*pState->var_pf_darken_center = (double)pState->m_bDarkenCenter;
+	*pState->var_pf_gamma         = (double)pState->m_fGammaAdj.eval(fTime);
+	*pState->var_pf_wrap          = (double)pState->m_bTexWrap;
+	*pState->var_pf_invert        = (double)pState->m_bInvert;
+	*pState->var_pf_brighten      = (double)pState->m_bBrighten;
+	*pState->var_pf_darken        = (double)pState->m_bDarken;
+	*pState->var_pf_solarize      = (double)pState->m_bSolarize;
+	*pState->var_pf_meshx         = (double)m_nGridX;
+	*pState->var_pf_meshy         = (double)m_nGridY;
+	*pState->var_pf_pixelsx       = (double)GetWidth();
+	*pState->var_pf_pixelsy       = (double)GetHeight();
+	*pState->var_pf_aspectx       = (double)m_fInvAspectX;
+	*pState->var_pf_aspecty       = (double)m_fInvAspectY;
+	// new in v2.0:
+	*pState->var_pf_blur1min      = (double)pState->m_fBlur1Min.eval(fTime);
+	*pState->var_pf_blur2min      = (double)pState->m_fBlur2Min.eval(fTime);
+	*pState->var_pf_blur3min      = (double)pState->m_fBlur3Min.eval(fTime);
+	*pState->var_pf_blur1max      = (double)pState->m_fBlur1Max.eval(fTime);
+	*pState->var_pf_blur2max      = (double)pState->m_fBlur2Max.eval(fTime);
+	*pState->var_pf_blur3max      = (double)pState->m_fBlur3Max.eval(fTime);
+	*pState->var_pf_blur1_edge_darken = (double)pState->m_fBlur1EdgeDarken.eval(fTime);
 }
 
 void CPlugin::RunPerFrameEquations(int code)
@@ -1395,6 +1427,25 @@ void CPlugin::ComputeGridAlphaValues()
 		float fSX		= (float)(*pState->var_pf_sx);
 		float fSY		= (float)(*pState->var_pf_sy);
 
+		// Rebuild the zoom LUT when fZoom/fZoomExp have changed and per-vertex code
+		// won't be overriding them per-vertex.  When per-vertex code IS active the LUT
+		// is not used (fZoom/fZoomExp may differ per vertex), so skip the rebuild.
+		if (!pState->m_pp_codehandle &&
+			(fZoom != m_zoom_lut_zoom || fZoomExp != m_zoom_lut_zoomexp))
+		{
+			RebuildZoomLUT(fZoom, fZoomExp);
+		}
+
+		// hoist per-frame rotation trig and warp scale out of the vertex loop
+		float cos_rot_frame = cosf(fRot);
+		float sin_rot_frame = sinf(fRot);
+		float fWarpAmt = fWarp * 0.0035f;
+		// per-frame warp time offsets (constant across all vertices)
+		float fWarpOff0 = fWarpTime * 0.333f;
+		float fWarpOff1 = fWarpTime * 0.375f;
+		float fWarpOff2 = fWarpTime * 0.753f;
+		float fWarpOff3 = fWarpTime * 0.825f;
+
 		int n = 0;
 
 		for (int y=0; y<=m_nGridY; y++)
@@ -1405,6 +1456,10 @@ void CPlugin::ComputeGridAlphaValues()
 				//m_verts[n].x = i/(float)m_nGridX*2.0f - 1.0f;
 				//m_verts[n].y = j/(float)m_nGridY*2.0f - 1.0f;
 				//m_verts[n].z = 0.0f;
+
+				// per-vertex rotation trig - updated only when per-vertex code may change fRot
+				float cos_rot = cos_rot_frame;
+				float sin_rot = sin_rot_frame;
 
 				if (pState->m_pp_codehandle)
 				{
@@ -1448,18 +1503,31 @@ void CPlugin::ComputeGridAlphaValues()
 					fDY   = (float)(*pState->var_pv_dy);
 					fSX   = (float)(*pState->var_pv_sx);
 					fSY   = (float)(*pState->var_pv_sy);
-				}
+					// per-vertex code may have changed fRot or fWarp, recompute
+						cos_rot = cosf(fRot);
+						sin_rot = sinf(fRot);
+						fWarpAmt = fWarp * 0.0035f;
+					}
 
-				float fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].rad*2.0f - 1.0f));
+					// fZoom2 = powf(fZoom, powf(fZoomExp, rad*2-1)).
+					// When no per-vertex code is active, use the precomputed LUT (built above
+					// using log-space arithmetic, ~2x cheaper than two raw powf calls per vertex).
+					// When per-vertex code is active, fZoom/fZoomExp may vary per vertex, so
+					// we must fall back to the direct double-powf computation.
+					float fZoom2;
+					if (pState->m_pp_codehandle)
+						fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].r_exp));
+					else
+						fZoom2 = m_zoom_lut[n];
 
 				// initial texcoords, w/built-in zoom factor
 				float fZoom2Inv = 1.0f/fZoom2;
 				float u =  m_verts[n].x*m_fAspectX*0.5f*fZoom2Inv + 0.5f;
 				float v = -m_verts[n].y*m_fAspectY*0.5f*fZoom2Inv + 0.5f;
-                    //float u_orig = u;
-                    //float v_orig = v;
-                    //m_verts[n].tr = u_orig + texel_offset_x;
-                    //m_verts[n].ts = v_orig + texel_offset_y;
+					//float u_orig = u;
+					//float v_orig = v;
+					//m_verts[n].tr = u_orig + texel_offset_x;
+					//m_verts[n].ts = v_orig + texel_offset_y;
 
 				// stretch on X, Y:
 				u = (u - fCX)/fSX + fCX;
@@ -1468,18 +1536,15 @@ void CPlugin::ComputeGridAlphaValues()
 				// warping:
 				//if (fWarp > 0.001f || fWarp < -0.001f)
 				//{
-					u += fWarp*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(m_verts[n].x*f[0] - m_verts[n].y*f[3]));
-					v += fWarp*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(m_verts[n].x*f[2] + m_verts[n].y*f[1]));
-					u += fWarp*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(m_verts[n].x*f[1] - m_verts[n].y*f[2]));
-					v += fWarp*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(m_verts[n].x*f[0] + m_verts[n].y*f[3]));
+					u += fWarpAmt*sinf(fWarpOff0 + fWarpScaleInv*(m_verts[n].x*f[0] - m_verts[n].y*f[3]));
+					v += fWarpAmt*cosf(fWarpOff1 - fWarpScaleInv*(m_verts[n].x*f[2] + m_verts[n].y*f[1]));
+					u += fWarpAmt*cosf(fWarpOff2 - fWarpScaleInv*(m_verts[n].x*f[1] - m_verts[n].y*f[2]));
+					v += fWarpAmt*sinf(fWarpOff3 + fWarpScaleInv*(m_verts[n].x*f[0] + m_verts[n].y*f[3]));
 				//}
 
 				// rotation:
 				float u2 = u - fCX;
 				float v2 = v - fCY;
-
-				float cos_rot = cosf(fRot);
-				float sin_rot = sinf(fRot);
 				u = u2*cos_rot - v2*sin_rot + fCX;
 				v = u2*sin_rot + v2*cos_rot + fCY;
 
@@ -1613,25 +1678,26 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     //  drivers out there.
     // If we're blending, we'll skip any polygon that is all alpha-blended out.
     // This also respects the MaxPrimCount limit of the video card.
-    MYVERTEX tempv[1024 * 3];
-    int max_prims_per_batch = min( GetCaps()->MaxPrimitiveCount, (sizeof(tempv)/sizeof(tempv[0]))/3) - 4;
-    int primCount = m_nGridX*m_nGridY*2;
-    int src_idx = 0;
-    int prims_sent = 0;
-    while (src_idx < primCount*3)
-    {
-        int prims_queued = 0;
-        int i=0;
-        while (prims_queued < max_prims_per_batch && src_idx < primCount*3)
-        {
-            // copy 3 verts
-            for (int j=0; j<3; j++)
-            {
-                tempv[i++] = m_verts[ m_indices_list[src_idx++] ];
-                // don't forget to flip sign on Y and factor in the decay color!:
-                tempv[i-1].y *= -1;
-		        tempv[i-1].Diffuse = (cDecay & 0x00FFFFFF) | (tempv[i-1].Diffuse & 0xFF000000);
-            }
+	MYVERTEX tempv[1024 * 3];
+	int max_prims_per_batch = min( GetCaps()->MaxPrimitiveCount, (sizeof(tempv)/sizeof(tempv[0]))/3) - 4;
+	int primCount = m_nGridX*m_nGridY*2;
+	int src_idx = 0;
+	int prims_sent = 0;
+	DWORD cDecayRGB = cDecay & 0x00FFFFFF; // precompute RGB mask for the inner loop
+	while (src_idx < primCount*3)
+	{
+		int prims_queued = 0;
+		int i=0;
+		while (prims_queued < max_prims_per_batch && src_idx < primCount*3)
+		{
+			// copy 3 verts
+			for (int j=0; j<3; j++)
+			{
+				tempv[i++] = m_verts[ m_indices_list[src_idx++] ];
+				// don't forget to flip sign on Y and factor in the decay color!:
+				tempv[i-1].y *= -1;
+				tempv[i-1].Diffuse = cDecayRGB | (tempv[i-1].Diffuse & 0xFF000000);
+			}
             if (bCullTiles)
             {
                 DWORD d1 = (tempv[i-3].Diffuse >> 24);
@@ -1973,16 +2039,27 @@ void CPlugin::DrawCustomShapes()
                         ((((int)(*pState->m_shape[i].var_pf_g2 * 255)) & 0xFF) <<  8) |
                         ((((int)(*pState->m_shape[i].var_pf_b2 * 255)) & 0xFF)      );
 
-                    for ( j=1; j<sides+1; j++)
-                    {
-                        float t = (j-1)/(float)sides;
-                        v[j].x = v[0].x + (float)*pState->m_shape[i].var_pf_rad*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f)*m_fAspectY;  // DON'T TOUCH!
-                        v[j].y = v[0].y + (float)*pState->m_shape[i].var_pf_rad*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f);           // DON'T TOUCH!
-                        v[j].z = 0;
-                        v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom) * m_fAspectY; // DON'T TOUCH!
-                        v[j].tv = 0.5f + 0.5f*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);     // DON'T TOUCH!
-                        v[j].Diffuse = v[1].Diffuse;
-                    }
+					{
+						float fShapeRad  = (float)*pState->m_shape[i].var_pf_rad;
+						float fShapeAng  = (float)*pState->m_shape[i].var_pf_ang  + 3.1415927f*0.25f;
+						float fTexAng    = (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f;
+						float fTexZoomInv = 0.5f / (float)*pState->m_shape[i].var_pf_tex_zoom;
+						float fSidesInv  = 1.0f / (float)sides;
+						for ( j=1; j<sides+1; j++)
+						{
+							float tAng     = (j-1)*fSidesInv * 3.1415927f*2.0f;
+							float cosShape = cosf(tAng + fShapeAng);
+							float sinShape = sinf(tAng + fShapeAng);
+							v[j].x  = v[0].x + fShapeRad * cosShape * m_fAspectY;  // DON'T TOUCH!
+							v[j].y  = v[0].y + fShapeRad * sinShape;               // DON'T TOUCH!
+							v[j].z  = 0;
+							float cosTex = cosf(tAng + fTexAng);
+							float sinTex = sinf(tAng + fTexAng);
+							v[j].tu = 0.5f + cosTex * fTexZoomInv * m_fAspectY;   // DON'T TOUCH!
+							v[j].tv = 0.5f + sinTex * fTexZoomInv;                // DON'T TOUCH!
+							v[j].Diffuse = v[1].Diffuse;
+						}
+					}
                     v[sides+1] = v[1];
 
                     if ((int)(*pState->m_shape[i].var_pf_textured) != 0)
@@ -2670,8 +2747,9 @@ void CPlugin::DrawWave(float *fL, float *fR)
 			//color = D3DCOLOR_RGBA_01(cr, cg, cb, alpha);
 
 			{
-				float cos_rot = cosf(GetTime()*0.3f);
-				float sin_rot = sinf(GetTime()*0.3f);
+				float fRotTime = GetTime()*0.3f;
+				float cos_rot = cosf(fRotTime);
+				float sin_rot = sinf(fRotTime);
 
 				for (i=0; i<nVerts; i++)
 				{

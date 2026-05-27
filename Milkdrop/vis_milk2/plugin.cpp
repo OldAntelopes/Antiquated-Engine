@@ -1101,6 +1101,9 @@ int		i;
 	m_vertinfo				= NULL;
 	m_indices_list			= NULL;
 	m_indices_strip			= NULL;
+	m_zoom_lut              = NULL;
+	m_zoom_lut_zoom         = -1.0f;
+	m_zoom_lut_zoomexp      = -1.0f;
 
 	m_bMMX			        = false;
     m_bHasFocus             = true;
@@ -2200,7 +2203,10 @@ int CPlugin::AllocateMyDX9Stuff()
 	m_vertinfo   = new td_vertinfo[(m_nGridX+1)*(m_nGridY+1)];
 	m_indices_strip = new int[(m_nGridX+2)*(m_nGridY*2)];
 	m_indices_list  = new int[m_nGridX*m_nGridY*6];
-	if (!m_verts || !m_vertinfo)
+	m_zoom_lut      = new float[(m_nGridX+1)*(m_nGridY+1)];
+	m_zoom_lut_zoom    = -1.0f;   // force rebuild on first frame
+	m_zoom_lut_zoomexp = -1.0f;
+	if (!m_verts || !m_vertinfo || !m_zoom_lut)
 	{
 		swprintf(buf, L"couldn't allocate mesh - out of memory");
 //TODO REIMPLEMENT		dumpmsg(buf);
@@ -2228,8 +2234,9 @@ int CPlugin::AllocateMyDX9Stuff()
 				m_vertinfo[nVert].ang = 0.0f;
 			else
 				m_vertinfo[nVert].ang = atan2f(m_verts[nVert].y*m_fAspectY, m_verts[nVert].x*m_fAspectX);
-            m_vertinfo[nVert].a = 1;
-            m_vertinfo[nVert].c = 0;
+			m_vertinfo[nVert].a = 1;
+			m_vertinfo[nVert].c = 0;
+			m_vertinfo[nVert].r_exp = m_vertinfo[nVert].rad * 2.0f - 1.0f;
 
             m_verts[nVert].rad = m_vertinfo[nVert].rad;
             m_verts[nVert].ang = m_vertinfo[nVert].ang;
@@ -3865,10 +3872,16 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 		m_indices_list = NULL;
 	}
 
-    if (m_indices_strip != NULL)
+	if (m_indices_strip != NULL)
 	{
 		delete m_indices_strip;
 		m_indices_strip = NULL;
+	}
+
+	if (m_zoom_lut != NULL)
+	{
+		delete[] m_zoom_lut;
+		m_zoom_lut = NULL;
 	}
 
     ClearErrors();
@@ -5774,23 +5787,25 @@ void CPlugin::DoCustomSoundAnalysis()
 	}
 
 	// do temporal blending to create attenuated and super-attenuated versions
+	float fCurrentFps = GetFps();
+	bool bEarlyFrame = (GetFrame() < 50);
 	for (i=0; i<3; i++)
 	{
-        float rate;
+		float rate;
 
 		if (mysound.imm[i] > mysound.avg[i])
 			rate = 0.2f;
 		else
 			rate = 0.5f;
-        rate = AdjustRateToFPS(rate, 30.0f, GetFps());
-        mysound.avg[i] = mysound.avg[i]*rate + mysound.imm[i]*(1-rate);
+		rate = AdjustRateToFPS(rate, 30.0f, fCurrentFps);
+		mysound.avg[i] = mysound.avg[i]*rate + mysound.imm[i]*(1-rate);
 
-		if (GetFrame() < 50)
+		if (bEarlyFrame)
 			rate = 0.9f;
 		else
 			rate = 0.992f;
-        rate = AdjustRateToFPS(rate, 30.0f, GetFps());
-        mysound.long_avg[i] = mysound.long_avg[i]*rate + mysound.imm[i]*(1-rate);
+		rate = AdjustRateToFPS(rate, 30.0f, fCurrentFps);
+		mysound.long_avg[i] = mysound.long_avg[i]*rate + mysound.imm[i]*(1-rate);
 
 
 		// also get bass/mid/treble levels *relative to the past*
