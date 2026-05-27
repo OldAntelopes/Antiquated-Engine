@@ -19,6 +19,22 @@ void	CFontDef::SetTextureAsCurrent( InterfaceInstance* pInstance )
 	pInstance->SetTextureAsCurrentDirect( mpTexture );
 }
 
+void	CFontDef::FreeTexture( InterfaceInstance* pInterface )
+{
+	if ( mhTexture != NOTFOUND )
+	{
+		// todo - FIX THIS.. NEEDS TO know the interface instance
+		pInterface->ReleaseTexture( mhTexture );
+		mhTexture = NOTFOUND;
+	}
+#ifdef TUD9
+	if ( mpTexture != NULL )
+	{
+		mpTexture->Release();
+		mpTexture = NULL;
+	}
+#endif
+}
 
 ///--------------------------------------------------------------
 //CFontDef::LoadTexture

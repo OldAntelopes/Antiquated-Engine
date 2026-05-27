@@ -81,11 +81,15 @@ void		InterfaceInstance::InitialiseInstance( BOOL bUseDefaultFonts )
 	mboInterfaceInitialised = TRUE;
 }
 
+InterfaceInstance*		InterfaceInstance::mspMainInterfaceSingleton = NULL;
 
 InterfaceInstance*		InterfaceInstanceMain()
 {
-static InterfaceInstance		ms_MainSingletonInstance;
-	return( &ms_MainSingletonInstance );
+	if ( InterfaceInstance::mspMainInterfaceSingleton == NULL )
+	{
+		InterfaceInstance::mspMainInterfaceSingleton = new InterfaceInstance;
+	}
+	return( InterfaceInstance::mspMainInterfaceSingleton );
 }
 
 char	mszTextLimitReturnBuff[2048];

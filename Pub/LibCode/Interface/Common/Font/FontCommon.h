@@ -57,23 +57,7 @@ public:
 	int		GetTextureSizeX( void ) { return m_TextureSizeX; }
 	int		GetTextureSizeY( void ) { return m_TextureSizeY; }
 
-	void	FreeTexture( InterfaceInstance* pInterface )
-	{
-		if ( mhTexture != NOTFOUND )
-		{
-			// todo - FIX THIS.. NEEDS TO know the interface instance
-			InterfaceReleaseTexture( mhTexture );
-			mhTexture = NOTFOUND;
-		}
-#ifdef TUD9
-		if ( mpTexture != NULL )
-		{
-			mpTexture->Release();
-			mpTexture = NULL;
-		}
-#endif
-	}
-
+	void	FreeTexture( InterfaceInstance* pInterface );
 	void	SetTextureAsCurrent( InterfaceInstance* );
 
 	void	EnableFiltering( BOOL bEnable ) { m_bFilteringOn = bEnable; }
@@ -220,6 +204,9 @@ public:
 	int		GetStringWidth( const char* pcString, int nFont );
 	int		GetStringHeight( const char* pcString, int nFont );
 	int		TextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign);
+	
+	virtual void		ReleasePreGraphicsDeviceReset();
+	virtual void		RestorePostGraphicsDeviceReset();
 
 private:
 	void	InitialiseFontBuffersDX( void );

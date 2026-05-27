@@ -122,6 +122,9 @@ public:
 
 	void		ApplyWindowStyle();
 	void		SetWindowStyle(int type, BOOL bApply = TRUE );
+
+	static InterfaceInstance*		mspMainInterfaceSingleton;
+
 protected:
 	void		SetDevice( void* pDevice );		// oldschool
 	void		CreateD3DInstanceIfNeeded();

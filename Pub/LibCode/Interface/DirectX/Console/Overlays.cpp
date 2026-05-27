@@ -361,24 +361,29 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 	
 	pxContainer = maOverlayVertexBuffer + (nLayer % MAX_NUM_OVERLAY_LAYERS );
 	
-	if ( !pxContainer->mpxVertexBuffer ) return;
-
-	if ( pxContainer->mnNextOverlayVertex >= (NUM_OVERLAY_VERTICES-6) )
+	if ( pxContainer->mpxVertexBuffer ) 
 	{
-		PANIC_IF( TRUE, "Too many overlay vertices added" );
-		return;
-	}
-
-	if ( !pxContainer->mboBufferIsLocked )
-	{
-		if( FAILED( pxContainer->mpxVertexBuffer->Lock( 0, 0, (VERTEX_LOCKTYPE)&pxContainer->mpOverlayVertices, D3DLOCK_DISCARD ) ) )
+		if ( pxContainer->mnNextOverlayVertex >= (NUM_OVERLAY_VERTICES-6) )
 		{
+			PANIC_IF( TRUE, "Too many overlay vertices added" );
 			return;
 		}
-		pxContainer->mboBufferIsLocked = TRUE;
-	}
+
+		if ( !pxContainer->mboBufferIsLocked )
+		{
+			if( FAILED( pxContainer->mpxVertexBuffer->Lock( 0, 0, (VERTEX_LOCKTYPE)&pxContainer->mpOverlayVertices, D3DLOCK_DISCARD ) ) )
+			{
+				return;
+			}
+			pxContainer->mboBufferIsLocked = TRUE;
+		}
 	
-	pxContainer->mnNextOverlayVertex = AddOverlayVertices( pxContainer->mpOverlayVertices, nX + mpInterfaceInstance->GetDrawDimensions().x, nY + mpInterfaceInstance->GetDrawDimensions().y, nWidth, nHeight, ulCol, pxContainer->mnNextOverlayVertex, 0 );
+		pxContainer->mnNextOverlayVertex = AddOverlayVertices( pxContainer->mpOverlayVertices, nX + mpInterfaceInstance->GetDrawDimensions().x, nY + mpInterfaceInstance->GetDrawDimensions().y, nWidth, nHeight, ulCol, pxContainer->mnNextOverlayVertex, 0 );
+	}
+	else
+	{
+		PANIC_IF( TRUE, "Error: No valid vertex buffer pointer for overlay layer");
+	}
 }
 
 INTERFACE_API void	InterfaceTri( int nLayer, int nX1, int nY1, int nX2, int nY2, int nX3, int nY3, uint32 ulCol1, uint32 ulCol2, uint32 ulCol3 )
@@ -671,13 +676,6 @@ OVERLAY_VERTEX_BUFFER_CONTAINER*		pxContainer;
 
 } 
 
-/***************************************************************************
- * Function    : FreeOverlays
- ***************************************************************************/
-void FreeOverlays( void )
-{
-	InterfaceInstanceMain()->mpOverlays->Shutdown();
-}
 
 
 void Overlays::Shutdown( void )

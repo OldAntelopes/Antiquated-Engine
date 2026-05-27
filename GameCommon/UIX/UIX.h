@@ -21,6 +21,7 @@ class UIXShape;
 class UIXCustomRender;
 class UIXCheckbox;
 class UIXModalPopup;
+class UIXDial;
 class UIXMenu;
 class UIXPopupMenu;
 class UIXTabBar;
@@ -89,6 +90,7 @@ enum UIX_SLIDER_MODE
 	SLIDERMODE_PLUSMINUS_VALUE,
 	SLIDERMODE_VALUE_WITH_CONSTRAINTS,
 	SLIDERMODE_INTVALUE_WITH_CONSTRAINTS,
+	SLIDERMODE_INTVALUERANGE,
 };
 
 enum UIX_CHECKBOX_MODE
@@ -352,6 +354,7 @@ public:
 	static UIXTextBox*					AddTextBox( UIXObject* pxContainer, UIXRECT rect, int mode, const char* szDefaultText );
 	static UIXListBox*					AddListBox( UIXObject* pxContainer, UIXRECT rect, int mode = 0, BOOL bContentsDraggable = FALSE, int dragItemType = 0 );
 	static UIXSlider*					AddSlider( UIXObject* pxContainer, UIXRECT rect, UIX_SLIDER_MODE mode = SLIDERMODE_VALUE, uint32 ulUserParam = 0, float fMin = 0.0f, float fMax = 1.0f, float fInitial = 0.0f, float fMinStep = 0.1f, const char* szText = NULL, BOOL bShowTextBoxes = TRUE );
+	static UIXDial*						AddDial( UIXObject* pxContainer, UIXRECT rect, uint32 ulUserParam = 0, float fInitial = 0.0f );
 	static UIXDropdown*					AddDropdown( UIXObject* pxContainer, UIXRECT rect );
 	static UIXText*						AddText( UIXObject* pxContainer, UIXRECT rect, uint32 ulCol = 0xc0c0c0c0, int font = 0, UIX_TEXT_FLAGS fontFlags = NONE,  const char* szTitle = NULL, ... );
 	static UIXShape*					AddShape( UIXObject* pxContainer, UIXRECT rect, eUIXSHAPE_MODE mode = UIXSHAPE_SHADEDRECT, BOOL bBlocks = FALSE, uint32 ulCol1 = 0xC0C0C0C0, uint32 ulCol2 = 0xC0C0C0C0, uint32 ulButtonID = 0, uint32 ulButtonParam = 0 );

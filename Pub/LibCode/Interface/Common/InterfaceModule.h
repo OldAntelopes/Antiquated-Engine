@@ -20,6 +20,9 @@ public:
 		mpInterfaceD3DDevice = pDevice;
 	}
 
+	virtual void		ReleasePreGraphicsDeviceReset() {}
+	virtual void		RestorePostGraphicsDeviceReset() {}
+
 	LPGRAPHICSDEVICE		mpInterfaceD3DDevice;
 	InterfaceInstance*		mpInterfaceInstance;
 

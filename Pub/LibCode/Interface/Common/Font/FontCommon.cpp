@@ -495,6 +495,30 @@ void	FontSystem::Shutdown()
 	}
 }
 
+void	FontSystem::ReleasePreGraphicsDeviceReset()
+{
+	FreeResources(FALSE);
+	for ( int nFontNum  = 0; nFontNum < MAX_FONTS_IN_GAME; nFontNum++ )
+	{
+		if ( mpFontDefs[nFontNum] )
+		{
+			mpFontDefs[nFontNum]->FreeTexture(mpInterfaceInstance);
+		}
+	}
+}
+
+void	FontSystem::RestorePostGraphicsDeviceReset()
+{
+	InitialiseFontBuffers();
+	for ( int nFontNum  = 0; nFontNum < MAX_FONTS_IN_GAME; nFontNum++ )
+	{
+		if ( mpFontDefs[nFontNum] )
+		{
+			mpFontDefs[nFontNum]->LoadTexture(mpInterfaceInstance);
+		}
+	}
+}
+
 BOOL	FontSystem::LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags, int nGlobalVerticalOffset )
 {
 	if ( nFontNum < MAX_FONTS_IN_GAME )

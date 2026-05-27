@@ -12,6 +12,7 @@
 #include "UIXListBox.h"
 #include "UIXPage.h"
 #include "UIXSlider.h"
+#include "UIXDial.h"
 #include "UIXDropdown.h"
 #include "UIXShape.h"
 #include "UIXCheckbox.h"
@@ -1119,6 +1120,15 @@ UIXSlider*		pNewSlider = new UIXSlider( pxContainer, msulNextObjectID++, rect );
 	pNewSlider->Initialise( mode, ulUserParam, fMin, fMax, fInitial, fMinStep, szText, bShowTextBoxes );
 	pxContainer->mContainsList.push_back( pNewSlider );
 	return( pNewSlider );
+}
+
+UIXDial*			UIX::AddDial( UIXObject* pxContainer, UIXRECT rect, uint32 ulUserParam, float fInitial )
+{
+UIXDial*		pNewDial = new UIXDial( pxContainer, msulNextObjectID++, rect );
+
+	pNewDial->Initialise( ulUserParam, fInitial );
+	pxContainer->mContainsList.push_back( pNewDial );
+	return( pNewDial );
 }
 
 UIXDropdown*		UIX::AddDropdown( UIXObject* pxContainer, UIXRECT rect )

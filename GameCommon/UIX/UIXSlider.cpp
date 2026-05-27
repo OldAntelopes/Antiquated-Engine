@@ -160,6 +160,21 @@ void	UIXSlider::Initialise( UIX_SLIDER_MODE mode, uint32 ulUserParam, float fMin
 
 	switch( mMode )
 	{
+	case SLIDERMODE_INTVALUERANGE:
+		if ( mbShowValueTextBoxes )
+		{
+		int		nTextSectionW = 120;
+		int		nTextBoxW = (nTextSectionW / 2) - 8;
+		UIXRECT		textboxRect = UIXRECT(0, 0, nTextBoxW, GetLocalPositionRect().h - 2);
+			
+			sprintf( acVal, "%d", (int)mfMinVal );
+			mpRangeMinTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+
+			textboxRect.x += nTextBoxW + 14;
+			sprintf( acVal, "%d", (int)mfMaxVal );
+			mpRangeMaxTextBox = UIX::AddTextBox( this, textboxRect, 0, acVal );
+		} 
+		break;
 	case SLIDERMODE_VALUERANGE:
 		if ( mbShowValueTextBoxes )
 		{
@@ -441,6 +456,7 @@ uint32		ulCol = 0xf0505070;
 		break;
 
 	case SLIDERMODE_VALUERANGE:
+	case SLIDERMODE_INTVALUERANGE:
 		{
 		int		nTextAreaW = 120;
 
@@ -457,7 +473,11 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMinTextBox )
 			{
-				if ( ( mfMinVal <= -100.0f ) || ( mfMinVal >= 100.0f ) )
+				if ( mMode == SLIDERMODE_INTVALUERANGE )
+				{
+					sprintf( acVal, "%d", (int)mfMinVal );						
+				}
+				else if ( ( mfMinVal <= -100.0f ) || ( mfMinVal >= 100.0f ) )
 				{
 					sprintf( acVal, "%.1f", mfMinVal );			
 				}
@@ -473,7 +493,11 @@ uint32		ulCol = 0xf0505070;
 
 			if ( mpRangeMaxTextBox )
 			{
-				if ( ( mfMaxVal < -100.0f ) || ( mfMaxVal > 100.0f ) )
+				if ( mMode == SLIDERMODE_INTVALUERANGE )
+				{
+					sprintf( acVal, "%d", (int)mfMaxVal );						
+				}
+				else if ( ( mfMaxVal < -100.0f ) || ( mfMaxVal > 100.0f ) )
 				{
 					sprintf( acVal, "%.1f", mfMaxVal );
 				}
@@ -778,6 +802,9 @@ void		UIXSlider::OnUpdate( float fDelta )
 			if ( mfCurrentVal < mfMinVal ) mfCurrentVal = mfMinVal;
 			if ( mfCurrentVal > mfMaxVal ) mfCurrentVal = mfMaxVal;
 			mfCurrentVal = mValueUpdateFunc( GetID(), mfCurrentVal, mfMinVal, mfMaxVal, mulUserParam, mbIsHeld );
+			break;
+		case SLIDERMODE_INTVALUERANGE:
+			mfCurrentVal = (float)( (int)mValueUpdateFunc( GetID(), mfCurrentVal, mfMinVal, mfMaxVal, mulUserParam, mbIsHeld ) );
 			break;
 		case SLIDERMODE_VALUERANGE:
 			mfCurrentVal = mValueUpdateFunc( GetID(), mfCurrentVal, mfMinVal, mfMaxVal, mulUserParam, mbIsHeld );

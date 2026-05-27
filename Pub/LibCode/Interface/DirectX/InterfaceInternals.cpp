@@ -862,8 +862,8 @@ void InterfaceInstance::FreeAll( void )
 		InterfaceImagesFree();
 		ClearBufferedJpegs();
 		mpFontSystem->FreeResources( TRUE );
-		FreeTexturedOverlays();
-		FreeOverlays();
+		mpTexturedOverlays->Shutdown();
+		mpOverlays->Shutdown();
 		mboInterfaceInitialised = FALSE;
 	}
 }
@@ -874,15 +874,15 @@ void InterfaceInstance::ReleaseForDeviceReset( void )
 	mpInterfaceInternals->mpInterfaceD3DDevice->SetTexture(0, NULL);
 	InterfaceImagesFree();
 	ClearBufferedJpegs();
-	mpFontSystem->FreeResources( FALSE );
-	FreeTexturedOverlays();
-	FreeOverlays();
+	mpFontSystem->ReleasePreGraphicsDeviceReset();
+	mpTexturedOverlays->Shutdown();
+	mpOverlays->Shutdown();
 }
 
 
 void InterfaceInstance::RestorePostDeviceReset( void )
 {
-	mpFontSystem->InitialiseFontBuffers();
+	mpFontSystem->RestorePostGraphicsDeviceReset();
 	mpOverlays->Initialise();
 	mpTexturedOverlays->Initialise();
 //	InterfaceImagesInit();
