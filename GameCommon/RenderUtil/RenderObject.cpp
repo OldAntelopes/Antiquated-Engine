@@ -10,6 +10,7 @@
 
 RenderObjectLogStats			RenderObjectLog::msLastFrameStats = { 0 };
 RenderObjectLogStats			RenderObjectLog::msCurrentFrameStats = { 0 };
+int		RenderObjectGroup::msLastSetTexture = NOTFOUND;
 
 
 uint32		mulLastAppliedRenderFlags = 0;
@@ -104,8 +105,12 @@ int		instanceCount = 0;
 char	acLogBuff[512];
 BOOL	bShouldLogRO = TRUE;
 
-	// Apply texture for the group
-	EngineSetTexture( 0, mTextureHandle );
+	if ( mTextureHandle != msLastSetTexture )
+	{
+		// Apply texture for the group
+		EngineSetTexture( 0, mTextureHandle );
+		msLastSetTexture = mTextureHandle;
+	}
 	mulLastAppliedRenderFlags = 0;
 
 	for ( int nType = 0; nType < kNumRenderTypes; nType++ )
@@ -222,12 +227,14 @@ void	RenderObjectList::Flush( int channelLayer )
 		{
 			RENDER_GPU_SCOPE(L"Render");
 			RENDER_PROFILE_SCOPE("Flush/Render");
+			RenderObjectGroup::msLastSetTexture = NOTFOUND;
 			for (auto& texGroup : mRenderObjectGroupsByTextureHandle )
 			{
 				RenderObjectGroup* pGroup = texGroup.second;
 				pGroup->Render();
 				delete pGroup;
 			}	
+			RenderObjectGroup::msLastSetTexture = NOTFOUND;
 		}
 
 		mRenderObjectGroupsByTextureHandle.clear();

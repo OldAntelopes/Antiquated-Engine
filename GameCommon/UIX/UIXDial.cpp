@@ -32,13 +32,14 @@ uint32		ulCol = 0xf0505070;
 
 	mRenderRect = renderRect;
 
+	if ( 1 )
 	// TODO - Draw a dial UI here, first, using 'pInterface->Triangle'  to create a smooth render a partial border circle that stretches from the equivalent of 7 on a clock face round to 5
 	{
 		const float kPi          = 3.14159265f;
 		const float kDegToRad    = kPi / 180.0f;
 		const float kStartAngle  = 220.0f;   // 7 o'clock, degrees clockwise from 12
 		const float kTotalArc    = 280.0f;   // sweeps round to 5 o'clock
-		const int   kSegments    = 32;
+		const int   kSegments    = 20;
 
 		const int cx          = renderRect.x + renderRect.w / 2;
 		const int cy          = renderRect.y + renderRect.h / 2;

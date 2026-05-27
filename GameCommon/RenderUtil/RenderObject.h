@@ -113,6 +113,8 @@ public:
 
 	std::map<int, std::vector<RenderObject*>>	mRenderObjectsByType;
 	int		mTextureHandle = NOTFOUND;
+	static int		msLastSetTexture;
+
 };
 
 enum eRenderObjectLogStats
