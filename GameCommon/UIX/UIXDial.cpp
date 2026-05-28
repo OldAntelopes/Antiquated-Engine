@@ -39,7 +39,7 @@ uint32		ulCol = 0xf0505070;
 		const float kDegToRad    = kPi / 180.0f;
 		const float kStartAngle  = 220.0f;   // 7 o'clock, degrees clockwise from 12
 		const float kTotalArc    = 280.0f;   // sweeps round to 5 o'clock
-		const int   kSegments    = 20;
+		const int   kSegments    = 26;
 
 		const int cx          = renderRect.x + renderRect.w / 2;
 		const int cy          = renderRect.y + renderRect.h / 2;
