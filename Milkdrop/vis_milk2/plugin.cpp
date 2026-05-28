@@ -5613,8 +5613,8 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 	initcode[0] = 0;
 	code[0] = 0;
 	img[0] = 0;
-	swprintf(section, L"img%02d", nSpriteNum);
-	sprintf(sectionA, "img%02d", nSpriteNum);
+	swprintf_s(section, 64, L"img%02d", nSpriteNum);
+	sprintf_s(sectionA, 64, "img%02d", nSpriteNum);
 
 	// 1. read in image filename
 	GetPrivateProfileStringW(section, L"img", L"", img, sizeof(img)-1, m_szImgIniFile);
@@ -5631,7 +5631,7 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 		// it's not in the form "x:\blah\billy.jpg" so prepend plugin dir path.
 		wchar_t temp[512];
 		wcscpy(temp, img);
-		swprintf(img, L"%s%s", m_szMilkdrop2Path, temp);
+		swprintf_s(img, 512, L"%s%s", m_szMilkdrop2Path, temp);
 	}
 
 	// 2. get color key
