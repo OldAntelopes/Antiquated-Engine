@@ -216,7 +216,7 @@ VECT		xMidTangent;
 
 void	RibbonTrail::AddPos( const VECT* pxIn, BOOL bIsVisible )
 {
-uint32	ulCurrentTick = SysGetTick();
+uint32	ulCurrentTick = SysGetLastTick();
 VECT	xTangent(0.0f,0.0f,0.0f);
 VECT	xEmpty;
 
@@ -249,7 +249,7 @@ VECT	xEmpty;
 
 void	RibbonTrail::UpdateInternal( void )
 {
-uint32		ulCurrentTick = SysGetTick();
+uint32		ulCurrentTick = SysGetLastTick();
 
 	if ( maxTrailListInternal[ mnNextTrailPoint ].ulTimeAdded != 0 )
 	{
@@ -266,7 +266,7 @@ uint32		ulCurrentTick = SysGetTick();
 
 void	RibbonTrail::Update( const VECT* pxCurrentPos, uint32 ulPointGap, BOOL bDoDraw )
 {
-uint32	ulCurrentTick = SysGetTick();
+uint32	ulCurrentTick = SysGetLastTick();
 
 	if ( ulCurrentTick - mulLastInternalAddTick > ulPointGap )
 	{
@@ -312,7 +312,7 @@ int		blendCycle = 0;
 
 	if ( mhTrailVertexBuffer != NOTFOUND )
 	{
-	uint32	ulCurrentTick = SysGetTick();
+	uint32	ulCurrentTick = SysGetLastTick();
 
 		EngineVertexBufferLock( mhTrailVertexBuffer, FALSE );
 		pxVertices = EngineVertexBufferGetBufferPointer( mhTrailVertexBuffer, MAX_TRAIL_VERTICES );

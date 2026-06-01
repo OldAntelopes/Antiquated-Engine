@@ -104,14 +104,22 @@ int		SysGetFileSize( void* pFile )
 }
 */
 
+uint32	mulSystemLastStoredTick = 0;
+
+uint32	SysGetLastTick()
+{
+	return( mulSystemLastStoredTick );
+}
+
 float			SysGetFrameDelta()
 {
 	return( mfSysFrameDelta );
 }
 
-void				SysSetFrameDelta( float fDelta )
+void				SysSetFrameDelta( float fDelta, uint32 ulLastTick )
 {
 	mfSysFrameDelta = fDelta;
+	mulSystemLastStoredTick = ulLastTick;
 }
 
 // Returns time in seconds since 1-Jan-1970

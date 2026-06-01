@@ -919,7 +919,7 @@ int			count = 0;
 
 	mpSpriteList = NULL;
 	mnNumSpritesInList = 0;	
-	mulLastRenderTick = SysGetTick();
+	mulLastRenderTick = SysGetLastTick();
 	return( count );
 }
 

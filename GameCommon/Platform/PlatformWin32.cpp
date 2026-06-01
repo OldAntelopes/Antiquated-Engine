@@ -876,6 +876,8 @@ void		PlatformUpdateCursor( void )
 	
 }
 
+
+
 BOOL		PlatformUpdateFrame( void )
 {
 u64	ullCurrentTick = SysGetMicrosecondTick();
@@ -893,6 +895,7 @@ float	fDelta = ( (float)(ullCurrentTick - mullPlatformLastTick ) ) * 0.000001f;
 		}
 			 
 		mfFrameDelta = fDelta;
+		SysSetFrameDelta( mfFrameDelta, (uint32)( mullPlatformLastTick / 1000 ) );
 
 		mfKeyboardCursorFlashTimer += fDelta;
 		if ( mfKeyboardCursorFlashTimer > 0.5f )

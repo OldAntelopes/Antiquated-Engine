@@ -62,7 +62,8 @@ extern void				SysGetLocalTimeFromUnixTimestamp( uint32 ulUnixTime, SYS_LOCALTIM
 extern uint32			SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime );
 extern float			SysGetFrameDelta();
 
-extern void				SysSetFrameDelta( float fDelta );
+extern void				SysSetFrameDelta( float fDelta, uint32 ulLastTick );
+extern uint32			SysGetLastTick( void );		// last (cached) millisecond tick (updated when framedelta is set)
 
 // ----------------------------  Keyboard input
 enum					// See SysCheckKeyState, SysWasJustPressed 
