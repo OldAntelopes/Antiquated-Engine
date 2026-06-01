@@ -146,6 +146,8 @@ ParticleGraphic*		ParticleGraphicsFindTexHandle( int hTex, eRenderFlags renderFl
 {
 ParticleGraphic*		pParticleGraphic = mspParticleGraphics;
 
+	// TODO!! Need to change this to a unordered_map on TexHandle
+
 	while( pParticleGraphic )
 	{
 		if ( ( pParticleGraphic->GetTextureHandle() == hTex ) &&
