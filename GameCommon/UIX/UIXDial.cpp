@@ -147,6 +147,38 @@ uint32		ulCol = 0xf0505070;
 		}
 	}
 
+	if ( (GetUIDParam() != 0 ) &&
+		 (UIX::IsUISelectionModeActive() == TRUE) )
+	{
+		uint32		ulShadedCol = 0x40d0c040;
+		uint32		ulOutlineCol = 0x80e0d080;
+
+		if (UIX::GetFocusedObject() == this)
+		{
+			ulShadedCol = 0x806080d0;
+			ulOutlineCol = 0xB0a0b0f0;
+		}
+		else if (UIX::IsMouseHover(renderRect))
+		{
+			ulShadedCol = 0x60e0d060;
+			ulOutlineCol = 0xB0f0e0a0;
+			UIX::CheckForPress(this, renderRect, UIX_OBJECT_SELECT, 0);
+		}
+		else if (GetObjectSelectionText().empty() == false)
+		{
+			ulShadedCol = 0x60108020;
+			ulOutlineCol = 0xB020c060;
+		}
+
+		pInterface->Rect(2, renderRect.x, renderRect.y, renderRect.w, renderRect.h, ulShadedCol);
+		pInterface->OutlineBox(2, renderRect.x, renderRect.y, renderRect.w, renderRect.h, ulOutlineCol);
+
+		auto	selectionText = GetObjectSelectionText();
+		int		nFontHeight = 12;
+		int		lineY = renderRect.y + (renderRect.h / 2) - (nFontHeight / 2);
+		//		pInterface->TextCentre( 1, mRenderRect.x + (mRenderRect.w/2), lineY, 0xd0d0d0d0, 3, selectionText.c_str() );
+		pInterface->TextBox(1, renderRect.x, lineY, renderRect.w, 0xd0d0d0d0, 3, 0, selectionText.c_str());
+	}
 
 //	pInterface->Triangle(1, mRenderRect.x + (mRenderRect.w / 2), mRenderRect.y, mRenderRect.x + mRenderRect.w - 1, mRenderRect.y + mRenderRect.h - 1, mRenderRect.x + 1, mRenderRect.y + mRenderRect.h - 1, ulCol, ulCol, ulCol);
 
