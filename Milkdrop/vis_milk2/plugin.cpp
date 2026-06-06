@@ -744,6 +744,7 @@ bool ReadFileToString(const wchar_t* szBaseFilename, char* szDestText, int nMaxB
     if (!f)
     {
 	wchar_t buf[1024];
+		buf[0] = 0;
 		g_pCurrentPlugin->dumpmsg(buf);
 		SysDebugPrint( "Milk error: %s", buf );
 //TODO REIMPLEMENT        wchar_t buf[1024], title[64];

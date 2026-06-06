@@ -49,6 +49,9 @@
     <Filter Include="RenderScene">
       <UniqueIdentifier>{a03b6a19-2689-40cc-9af8-0e1bea27242e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\DirectX">
+      <UniqueIdentifier>{66f778e6-cf21-424f-9149-1146162ac745}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LibCode\Engine\CollisionMaths\collmathsdefines.h">
@@ -586,6 +589,24 @@
     </ClInclude>
     <ClInclude Include="..\Include\Engine.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\d3d9.h">
+      <Filter>Include\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\d3d9caps.h">
+      <Filter>Include\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\d3d9types.h">
+      <Filter>Include\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\d3dx.h">
+      <Filter>Include\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\d3dx9.h">
+      <Filter>Include\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DirectX\dxva.h">
+      <Filter>Include\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

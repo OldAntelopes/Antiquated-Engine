@@ -66,11 +66,10 @@
       <Filter>Milkdrop\ns-eel2</Filter>
     </ClCompile>
     <ClCompile Include="04_MilkdropPlayer\MilkPlayer.cpp" />
+    <ClCompile Include="04_MilkdropPlayer\MilkComponent.cpp" />
+    <ClCompile Include="04_MilkdropPlayer\AudioInModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="GameCommon">
-      <UniqueIdentifier>{f410401f-bd7a-423d-891e-136558c82d10}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Milkdrop">
       <UniqueIdentifier>{cc936cca-a567-41e6-8968-8fbefe410088}</UniqueIdentifier>
     </Filter>
@@ -152,5 +151,7 @@
       <Filter>Milkdrop\ns-eel2</Filter>
     </ClInclude>
     <ClInclude Include="04_MilkdropPlayer\MilkPlayer.h" />
+    <ClInclude Include="04_MilkdropPlayer\MilkComponent.h" />
+    <ClInclude Include="04_MilkdropPlayer\AudioInModule.h" />
   </ItemGroup>
 </Project>

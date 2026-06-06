@@ -12,6 +12,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Interface", "..\Pub\Projects\Interface.vcxproj", "{72F4B279-4610-4D51-B31C-C0334DD5F1CC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_MilkdropPlayer", "04_MilkdropPlayer.vcxproj", "{88846D91-AADC-45A4-BC13-BAC428780DAB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E} = {5124E687-0E41-4BAC-92E5-F70FEAA9B76E}
+		{72F4B279-4610-4D51-B31C-C0334DD5F1CC} = {72F4B279-4610-4D51-B31C-C0334DD5F1CC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "..\Pub\Projects\Engine.vcxproj", "{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +111,22 @@ Global
 		{88846D91-AADC-45A4-BC13-BAC428780DAB}.Tool Debug|Win32.Build.0 = Release|Win32
 		{88846D91-AADC-45A4-BC13-BAC428780DAB}.Tool Release|Win32.ActiveCfg = Release|Win32
 		{88846D91-AADC-45A4-BC13-BAC428780DAB}.Tool Release|Win32.Build.0 = Release|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug DX11|Win32.ActiveCfg = Debug DX11|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug DX11|Win32.Build.0 = Debug DX11|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug DX9|Win32.ActiveCfg = Debug DX9|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug DX9|Win32.Build.0 = Debug DX9|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug GL|Win32.ActiveCfg = Tool Debug|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug GL|Win32.Build.0 = Tool Debug|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug OpenGL|Win32.ActiveCfg = Debug OpenGL|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Debug OpenGL|Win32.Build.0 = Debug OpenGL|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Release DX9|Win32.ActiveCfg = Release DX9|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Release DX9|Win32.Build.0 = Release DX9|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Release OpenGL|Win32.ActiveCfg = Release OpenGL|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Release OpenGL|Win32.Build.0 = Release OpenGL|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Tool Debug|Win32.ActiveCfg = Tool Debug|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Tool Debug|Win32.Build.0 = Tool Debug|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Tool Release|Win32.ActiveCfg = Tool Release|Win32
+		{5124E687-0E41-4BAC-92E5-F70FEAA9B76E}.Tool Release|Win32.Build.0 = Tool Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

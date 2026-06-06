@@ -139,7 +139,9 @@ FILE*		pFile;
 	}
 	else
 	{
-		PANIC_IF( TRUE, "Shader file not found" );
+	char	acBuff[512];
+		sprintf(acBuff, "Shader file ('%s') not found. Is working folder set to correct Exe dir?", acShaderFilename);
+		PANIC_IF( TRUE, acBuff );
 	}
 	//------------ Init Pixel Shader
 	ret = D3DXCompileShaderFromFile(acShaderFilename,  //filepath

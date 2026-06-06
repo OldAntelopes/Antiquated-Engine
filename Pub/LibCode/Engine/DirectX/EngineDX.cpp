@@ -733,6 +733,20 @@ EngineVertBuffContainer*		pVertBuffContainer = EngineVertexBufferGetContainer( n
 	return( FALSE );
 }
 
+
+int  mshFullscreenQuadVB = NOTFOUND;
+
+void		EngineRenderFullscreenQuad()
+{
+	if ( mshFullscreenQuadVB == NOTFOUND )
+	{
+		mshFullscreenQuadVB = EngineCreateVertexBufferQuad( InterfaceGetWidth(), InterfaceGetHeight(), 0, NULL );
+	}
+	// TODO - Set up camera and render states to ensure quad is rendered correctly
+
+	// then render the quad
+}
+
 int		EngineGetNumVertexBuffersAllocated( void )
 {
 	return(	msnNumberOfVertexBuffersCreated );

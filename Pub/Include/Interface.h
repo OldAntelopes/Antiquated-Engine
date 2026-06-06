@@ -187,7 +187,7 @@ extern INTERFACE_API void	InterfaceOverlayRenderType( int nOverlayNum, INTF_REND
 
 // ------------- Textured overlay drawing functions - to draw sprites, rectangles and triangles
 extern INTERFACE_API void	InterfaceSprite( int nOverlayNum, int nX, int nY, float fTexGrid, int nTexGridNum, uint32 ulCol, float fRotation, float fScale );
-extern INTERFACE_API void	InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, float fU, float fV, float fU2, float fV2 );
+extern INTERFACE_API void	InterfaceTexturedRect( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol = 0xFFFFFFFF, float fU = 0.0f, float fV = 0.0f, float fU2 = 1.0f, float fV2 = 1.0f );
 extern INTERFACE_API void	InterfaceTexturedTri( int nOverlayNum, int* pnScreenCoords, float* pfTextureCoords, uint32 ulCol );
 extern INTERFACE_API void	InterfaceTexturedRectShaded( int nOverlayNum, int nX, int nY, int nWidth, int nHeight, uint32 ulCol, uint32 ulCol2, float fU, float fV, float fU2, float fV2 );
 

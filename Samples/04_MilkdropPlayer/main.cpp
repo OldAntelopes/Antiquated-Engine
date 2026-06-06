@@ -10,6 +10,9 @@
 #include "Interface.h"			// The 2d graphics interface library
 #include "Engine.h"				// The 3d graphics engine library
 
+
+#include "MilkPlayer.h"		// Sample milkdrop player
+
 //-----------------------------------------------------------------------------------------------------------------------
 
 
@@ -62,9 +65,9 @@ WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowsMsgProc, 0L, 0L,
 
 	// Create window
 #ifdef USING_OPENGL
-	InterfaceInitWindow( "Universal - Engine Library - BasicEngine sample [OpenGL]", (void*)&wc, TRUE );
+	InterfaceInitWindow( "Basic Milkdrop Player sample [OpenGL]", (void*)&wc, TRUE );
 #else
-	InterfaceInitWindow( "Universal - Milkdrop Player sample [DirectX9]", (void*)&wc, TRUE );
+	InterfaceInitWindow( "Basic Milkdrop Player sample [DirectX9]", (void*)&wc, TRUE );
 #endif
 	ghwndMain = InterfaceGetWindow();
 
@@ -92,29 +95,10 @@ void	MainInitialise( void )
 	// Now init the engine library
 	EngineInitFromInterface();
 
+	MilkPlayerSample::GetSingleton().Initialise();
+
 }
 
-
-//-------------------------------------------------------------------------
-// Function    : MainDrawBackground
-// Description : 
-//-------------------------------------------------------------------------
-void	MainDrawBackground( void )
-{
-int		width = InterfaceGetWidth();		// Get the width and height of the interface
-int		height = InterfaceGetHeight();
-
-	InterfaceBeginRender();
-
-	// Lets draw a shaded box over the entire background to give it a bit of colour
-	InterfaceShadedRect( 0, 0, 0, width, height, 0xFF101010, 0xFF101010, 0xFF303030, 0xFF303030 );  // dark red at the top, a slightly less dark red at the bottom
-
-	// Flush the Interface renderer
-	InterfaceDraw();
-			
-	// Signal end of this pass
-	InterfaceEndRender();
-}
 
 
 //-------------------------------------------------------------------------
@@ -126,16 +110,17 @@ void	MainUpdate( uint32 ulUpdateTime )
 {
 
 	EngineUpdate( TRUE );
+	MilkPlayerSample::GetSingleton().Update( ((float)ulUpdateTime) * 0.001f);
 
 	// New frame - clear the back buffer
 	InterfaceNewFrame( 0x80808080 );
-
-	MainDrawBackground();
 
 	// Signal start of rendering pass
 	InterfaceBeginRender();
 
 	// Draw stuff here
+	MilkPlayerSample::GetSingleton().Render();
+
 	InterfaceText( 0, 10, 10, "Basic Milkdrop Player Sample", 0xFFFFFFFF, 1 );
 
 	// Flush the Interface renderer

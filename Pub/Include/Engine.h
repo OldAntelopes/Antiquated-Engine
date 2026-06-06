@@ -4,7 +4,7 @@
 //------------------------------------
 //   Engine.h
 //
-// The intention for this module is to provide a generic layer of 'engine' functions
+// The intention for this module is to provide a generic layer of graphics 'engine' functions
 // that can be used for all the graphical stuff the game does, but without
 //  referring directly to DirectX functions. (Theoretically making conversion to other 
 //	rendering engines easier - In a theoretical imaginary world. )
@@ -438,6 +438,7 @@ extern BOOL		EngineVertexBufferSet( VERTEX_BUFFER_HANDLE, int, ENGINEBUFFERVERTE
 extern void		EngineVertexBufferAddVertsUsed( VERTEX_BUFFER_HANDLE, int nNumVertsUsed );
 extern BOOL		EngineVertexBufferUnlock( VERTEX_BUFFER_HANDLE );
 
+extern void		EngineRenderFullscreenQuad();
 //--------------------------------------------------------
 //------------ Index buffers
 //--------------------------------------------------------

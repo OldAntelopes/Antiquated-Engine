@@ -669,6 +669,12 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\DirectX\d3d9.h" />
+    <ClInclude Include="..\Include\DirectX\d3d9caps.h" />
+    <ClInclude Include="..\Include\DirectX\d3d9types.h" />
+    <ClInclude Include="..\Include\DirectX\d3dx.h" />
+    <ClInclude Include="..\Include\DirectX\d3dx9.h" />
+    <ClInclude Include="..\Include\DirectX\dxva.h" />
     <ClInclude Include="..\Include\EngineEx.h" />
     <ClInclude Include="..\Include\fbxsdk.h" />
     <ClInclude Include="..\Include\fbxsdk\core\fbxclassid.h" />
