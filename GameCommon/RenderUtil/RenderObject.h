@@ -53,14 +53,14 @@ public:
 	virtual int		OnPreRender() { return 0; };
 	virtual int		OnRender() = 0;
 	virtual const char* GetName() const { return "Unnamed RenderObject"; }
-	virtual void    GetDesc(char* szBufferOut) const { sprintf(szBufferOut, "%s ((%d) Tex: %d RFlags: %08x)", GetName(), GetRenderType(), GetTextureHandle(), GetBlendFlags() ); }
+	virtual void    GetDesc(char* szBufferOut) const { sprintf(szBufferOut, "%s ((%d) Tex: %d RFlags: %08x)", GetName(), GetRenderType(), GetTextureHandle(), GetRenderFlags() ); }
 
 	int		PreRender();
 	int		Render();
 
-	void	SetBlendFlags(uint32 ulBlendFlags) { mBlendFlags = ulBlendFlags; }	
+	void	SetRenderFlags(uint32 ulBlendFlags) { mRenderFlags = ulBlendFlags; }	
+	uint32	GetRenderFlags() const { return mRenderFlags; }	
 
-	uint32	GetBlendFlags() const { return mBlendFlags; }	
 	int		GetTextureHandle() const { return(mTextureHandle); }
 	int		GetRenderType() const { return(mRenderType); }
 protected:
@@ -70,7 +70,7 @@ protected:
 private:
 	void	ApplyRenderFlags( uint32 renderFlags );
 
-	uint32	mBlendFlags = 0;
+	uint32	mRenderFlags = 0;
 	int		mTextureHandle = NOTFOUND;
 	int		mRenderType = kRenderType_Sprite3d;
 };

@@ -12,14 +12,28 @@ void	UIXCustomRender::Initialise( fnCustomRenderCallback renderFunc, uint32 ulUs
 	mfnCustomDragHolderHandlerCallback = dragFunc;
 
 }
-	
+
+void		UIXCustomRender::OnPostRender( InterfaceInstance* pInterface, UIXRECT displayRect )
+{
+	if ( mbUsePostRender )
+	{
+	UIXRECT		renderRect = GetActualRenderRect( displayRect );
+
+		mfnRenderCallback( this, pInterface, renderRect, mulUserParam );
+	}
+
+}
+
 UIXRECT		UIXCustomRender::OnRender( InterfaceInstance* pInterface, UIXRECT displayRect )
 {
 UIXRECT		renderRect = GetActualRenderRect( displayRect );
 UIXRECT		occupyRect;
 
-// Note renderRect is passed as a ref here to allow the customrenderer to modify the region that would subsequently be checked for receiving drag items (e.g. if the custom renderer only draws in a portion of the displayRect, it can shrink the renderRect to that portion, and only that portion will be checked for receiving drag items)
-	occupyRect = mfnRenderCallback( this, pInterface, renderRect, mulUserParam );
+	if ( mbUsePostRender == FALSE )
+	{
+		// Note renderRect is passed as a ref here to allow the customrenderer to modify the region that would subsequently be checked for receiving drag items (e.g. if the custom renderer only draws in a portion of the displayRect, it can shrink the renderRect to that portion, and only that portion will be checked for receiving drag items)
+		occupyRect = mfnRenderCallback( this, pInterface, renderRect, mulUserParam );
+	}
 	
 	if (CheckDragHoverRegion(renderRect))
 	{

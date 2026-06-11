@@ -83,10 +83,10 @@ void	RenderObject::SetTextureHandle(int hTex)
 
 int		RenderObject::Render()
 {
-	if ( mBlendFlags != mulLastAppliedRenderFlags )
+	if ( mRenderFlags != mulLastAppliedRenderFlags )
 	{
-		ApplyRenderFlags( mBlendFlags );
-		mulLastAppliedRenderFlags = mBlendFlags;
+		ApplyRenderFlags( mRenderFlags );
+		mulLastAppliedRenderFlags = mRenderFlags;
 	}
 	return ( OnRender() );
 }

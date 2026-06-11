@@ -862,7 +862,7 @@ int			count = 0;
 
 		u64 ullEventID = SysProfileStartEvent( "SpriteGroup::Render", mhGroupNum );		
 		float		fAspectRatio = 1.0f;
-		uint32		ulRenderFlags = GetBlendFlags();
+		uint32		ulRenderFlags = GetRenderFlags();
 
 		while( pSprites )
 		{
@@ -992,7 +992,7 @@ SpriteGroup*	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eRenderFl
 	for ( auto pSpriteGroup : mspUnmanagedSpriteGroups )
 	{
 		if ( ( pSpriteGroup->GetTextureHandle() == nTextureHandle ) &&
-			 ( pSpriteGroup->GetBlendFlags() == nRenderFlags ) &&
+			 ( pSpriteGroup->GetRenderFlags() == nRenderFlags ) &&
 			 ( pSpriteGroup->mLayer == layer ) )
 		{
 			// TODO IncRef 
@@ -1005,7 +1005,7 @@ SpriteGroup*	 Sprites3DGetGroup( int nTextureHandle, float fGridScale, eRenderFl
 	mspUnmanagedSpriteGroups.push_back( pSpriteGroups );
 
 	pSpriteGroups->SetTexture( nTextureHandle );
-	pSpriteGroups->SetBlendFlags( nRenderFlags );
+	pSpriteGroups->SetRenderFlags( nRenderFlags );
 
 	pSpriteGroups->mLayer = layer;
 	pSpriteGroups->mhGroupNum = msnNextSpriteGroupNum++;
@@ -1027,7 +1027,7 @@ SPRITE_GROUP	 Sprites3DGetManagedGroupHandle( int nTextureHandle, float fGridSca
 	for ( auto pSpriteGroup : mspManagedSpriteGroups )
 	{
 		if ( ( pSpriteGroup->GetTextureHandle() == nTextureHandle ) &&
-			 ( pSpriteGroup->GetBlendFlags() == nRenderFlags ) &&
+			 ( pSpriteGroup->GetRenderFlags() == nRenderFlags ) &&
 			 ( pSpriteGroup->mLayer == layer ) )
 		{
 			return( pSpriteGroup->mhGroupNum );
@@ -1040,7 +1040,7 @@ SPRITE_GROUP	 Sprites3DGetManagedGroupHandle( int nTextureHandle, float fGridSca
 	mspManagedSpriteGroups.push_back( pSpriteGroups );
 
 	pSpriteGroups->SetTexture( nTextureHandle );
-	pSpriteGroups->SetBlendFlags( nRenderFlags );
+	pSpriteGroups->SetRenderFlags( nRenderFlags );
 	pSpriteGroups->mLayer = layer;
 	pSpriteGroups->mhGroupNum = msnNextSpriteGroupNum++;
 	pSpriteGroups->mfGridScale = fGridScale;
