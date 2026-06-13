@@ -946,6 +946,7 @@ BOOL	SysDeleteFile( const char* szFilename )
 /***************************************************************************
  * Function    : SysGetAllFilesInFolder
  * Params      :  Use *.* for szFilenameSearch to get all files, or specify a search string like *.txt to get just text files
+ *                 szFilenameSearch can also semi-colon delineated options ; e.g  "*.jpg;*.png;*.bmp"  to get images
  * Description : Calls the provided callback function once for each file in the specified folder, 
 				 providing the full path to the file as a parameter. Does not recurse into subfolders.
  ***************************************************************************/
@@ -977,37 +978,47 @@ BOOL fFinished = FALSE;
 					fFinished = TRUE;
 				}
 			}
-
+			FindClose(hSearch);
 		}
 
 	}
 
-	fFinished = FALSE;
-	sprintf( acString, "%s/%s", szSrcFolder, szFilenameSearch);
-	hSearch = FindFirstFile(acString, &FileData); 
+	// Tokenize szFilenameSearch on ';' and perform a separate search pass per token
+	char	acSearchCopy[256];
+	strncpy( acSearchCopy, szFilenameSearch, sizeof(acSearchCopy) - 1 );
+	acSearchCopy[sizeof(acSearchCopy) - 1] = '\0';
 
-	if (hSearch != INVALID_HANDLE_VALUE) 
-	{ 
-		while ( !fFinished )
+	char*	pcToken = strtok( acSearchCopy, ";" );
+	while ( pcToken != NULL )
+	{
+		fFinished = FALSE;
+		sprintf( acString, "%s/%s", szSrcFolder, pcToken );
+		hSearch = FindFirstFile(acString, &FileData); 
+
+		if (hSearch != INVALID_HANDLE_VALUE) 
 		{ 
-			if( ( !lstrcmp(FileData.cFileName, ".")  ) ||
-				( !lstrcmp(FileData.cFileName, "..") ) )
-			{
-				// Jus skip these
-			}
-			else
-			{
-				sprintf( acString, "%s\\%s", szSrcFolder, FileData.cFileName );
-				callback( acString, FALSE );
-			}
-	 
-		    if (!FindNextFile(hSearch, &FileData)) 
-		    {
-	            fFinished = TRUE; 
-		    }
-		} 
-		// Close the search handle.  
-		FindClose(hSearch);
+			while ( !fFinished )
+			{ 
+				if( ( !lstrcmp(FileData.cFileName, ".")  ) ||
+					( !lstrcmp(FileData.cFileName, "..") ) )
+				{
+					// Just skip these
+				}
+				else
+				{
+					sprintf( acString, "%s\\%s", szSrcFolder, FileData.cFileName );
+					callback( acString, FALSE );
+				}
+		 
+			    if (!FindNextFile(hSearch, &FileData)) 
+			    {
+		            fFinished = TRUE; 
+			    }
+			} 
+			FindClose(hSearch);
+		}
+
+		pcToken = strtok( NULL, ";" );
 	}
 }
 

@@ -7,6 +7,7 @@
 
 #include "Particle.h"
 #include "ParticleGraphics.h"
+#include "ParticleLayer.h"
 #include "ParticleManager.h"
 
 int			msnNextParticleTypeID = 5001;
@@ -181,7 +182,7 @@ void	ManagedParticleGroup::Render()
 {
 	for (Particle* pParticle : mpParticleList)
 	{
-		pParticle->Render();		
+		pParticle->RenderParticle( NULL, 0 );		
 	}
 
 	Sprites3DFlushLayer(mGroupLayerNum, FALSE );
@@ -191,20 +192,21 @@ void	ManagedParticleGroup::Render()
 
 //---------------------------------------
 
-void		ParticleManagerInitGraphics( void )
+void		ParticleManagerInitialiseGraphicsDeviceResources( void )
 {
-
+	ParticleLayer::InitialiseGraphicsDeviceResources();
 }
 
-void		ParticleManagerShutdownGraphics( void )
+void		ParticleManagerReleaseGraphicsDeviceResources( void )
 {
+	ParticleLayer::ReleaseGraphicsDeviceResources();
 
 }
 
 
 void		ParticleManagerInit( void )
 {
-
+	ParticleManagerInitialiseGraphicsDeviceResources();
 }
 
 int		msnParticleGroupLayerNum = 1000;
@@ -321,7 +323,7 @@ void		ParticleManagerRender( void )
 
 			while( pParticle )
 			{	
-				pParticle->Render();
+				pParticle->RenderParticle( NULL, 0 );
 				msnNumRenderedParticles++;
 				pParticle = pParticle->GetNext();
 			}

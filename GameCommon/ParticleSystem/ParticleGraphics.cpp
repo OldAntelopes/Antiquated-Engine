@@ -203,6 +203,17 @@ ParticleGraphic*		pParticleGraphic = ParticleGraphicsFindTexHandle( hTex, render
 	
 }
 
+uint32		ParticleGraphicsGetRenderFlags(int nParticleGraphicID)
+{
+	ParticleGraphic* pParticleGraphic = ParticleGraphicsFindFromID(nParticleGraphicID);
+
+	if (pParticleGraphic)
+	{
+		return( pParticleGraphic->GetRenderFlags() );
+	}
+	return( kRenderFlag_Rotated );
+}
+
 int		ParticleGraphicsGetTextureHandle(int nParticleGraphicID)
 {
 	ParticleGraphic* pParticleGraphic = ParticleGraphicsFindFromID(nParticleGraphicID);

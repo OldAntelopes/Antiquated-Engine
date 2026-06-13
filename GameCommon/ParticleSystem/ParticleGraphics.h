@@ -12,6 +12,7 @@ extern int		ParticleGraphicsCreateHandle( int hTex, float fGridScale, BOOL bUseR
 extern SpriteGroup*		ParticleGraphicsGetSpriteGroup( int nParticleGraphicID );
 
 extern int		ParticleGraphicsGetTextureHandle(int nParticleGraphicID);
+extern uint32	ParticleGraphicsGetRenderFlags(int nParticleGraphicID);
 
 extern void		ParticleGraphicsShutdown( );
 

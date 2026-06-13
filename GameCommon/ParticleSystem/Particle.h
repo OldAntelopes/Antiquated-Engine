@@ -7,6 +7,8 @@
 
 #include "../RenderUtil/Sprites3D.h"
 
+class MultiVertexBuffers;
+
 class Particle
 {
 public:
@@ -15,15 +17,17 @@ public:
 
 	virtual void		OnInit( int nInitParam, void* pUserObject ) {}
 	virtual void		OnUpdate( float delta ) {}
-	virtual void		OnRender( void ) {}
+	virtual void		OnRenderParticle( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags ) {}
+	virtual void		OnPreRenderParticle() {}
 
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 	virtual float		GetAlphaOverride( void ) { return -1.0f; }
 
 	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL, int nSpriteRenderLayer = 0 );
 	void	Update( float fDelta );
-	virtual void	Render( void );
-	
+	virtual void	RenderParticle( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
+	void	PreRender();
+
 	void	SetGraphic( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation = FALSE, eRenderFlags renderFlags = kRenderFlag_Default, int layer = 0 );
 	void	SetGraphicHandle( int hTex, float fGridScale, BOOL bUseRotation = FALSE, eRenderFlags renderFlags = kRenderFlag_Default, int layer = 0 );
 
@@ -61,6 +65,7 @@ public:
 	Particle*	GetNext( void ) { return( mpNext ); }
 	void		KillSelf() { mType = IN_MORGUE; }
 protected:
+	void		AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
 
 	float		mfTimeAlive = 0.0f;
 	int			mnParticleGraphicsNum;
@@ -79,8 +84,8 @@ protected:
 	int			mnSpriteRenderLayer = 0;
 
 private:
-	void		DefaultRender( void );
-	
+	void		DefaultRender( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
+
 	Particle*	mpNext;
 
 };

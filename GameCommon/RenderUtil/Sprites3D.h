@@ -101,6 +101,9 @@ extern void	Sprites3DFreeGroup( SPRITE_GROUP hGroup );
 
 extern void Sprites3DFlush( BOOL bUseZWrite );
 extern void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite );
+extern void Sprites3DCommonRenderSetup( BOOL bUseZWrite );
+extern void	Sprites3DCreateCamFacingOffsets( float fAspectRatio );
+
 
 
 

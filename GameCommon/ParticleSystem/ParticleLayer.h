@@ -11,6 +11,10 @@ class Particle;
 class ParticleLayer : public RenderObject
 {
 public:
+
+	static void		InitialiseGraphicsDeviceResources();
+	static void		ReleaseGraphicsDeviceResources();
+
 	ParticleLayer() {}
 	virtual ~ParticleLayer();
 
@@ -25,6 +29,8 @@ public:
 	Particle*		AddParticle( const char* szParticleTypeName, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL );
 
 private:
+	int		UpdateTextureHandle();
+
 	std::vector<Particle*>		mpParticleList;
 
 	int		mGroupLayerNum = 0;

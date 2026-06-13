@@ -55,6 +55,8 @@ public:
 	virtual const char* GetName() const { return "Unnamed RenderObject"; }
 	virtual void    GetDesc(char* szBufferOut) const { sprintf(szBufferOut, "%s ((%d) Tex: %d RFlags: %08x)", GetName(), GetRenderType(), GetTextureHandle(), GetRenderFlags() ); }
 
+	// TODO - Minor optimisation, we can probably remove PreRender now - it was only used for particle system to chuck out sprite3d (which were then rendered at the render stage)
+	//   but now its all done within ParticleLayer.. so probably no need for PreRender at all now.  Remove once we're content that the new way covers all cases
 	int		PreRender();
 	int		Render();
 
@@ -231,12 +233,7 @@ public:
 
 		mRenderObjectGroupsByTextureHandle[hTex]->AddRenderObject(pObject);
 	}
-
-
-
-
 private:
-
 	BOOL		mbIsFlushActive = FALSE;
 	// 
 	RenderObjectLog		mRenderLog;

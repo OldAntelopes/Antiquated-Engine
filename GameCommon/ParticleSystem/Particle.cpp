@@ -79,7 +79,41 @@ void	Particle::Update( float fDelta )
 }
 
 
-void	Particle::DefaultRender( void )
+void	Particle::AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags )
+{
+Sprite		xSprite;
+
+	xSprite.mfAspectRatio = mfSpriteAspect;
+	xSprite.mfRot = GetRot();
+	xSprite.mfScale = mfSpriteScale;
+	xSprite.mfScaleZ = mfSpriteScale;		// Check this..
+	xSprite.mnFrameNum = mnSpriteFrameNum;
+	xSprite.mulCol = mulCol;	
+	xSprite.mxPos = *GetPos();
+	
+	float	fGridScale = 1.0f;		// TODO - get this from the ParticleGraphics instead of assuming 1.0f
+
+	Sprites3DCreateCamFacingOffsets( mfSpriteAspect );
+	
+	if ( ulRenderFlags & kRenderFlag_Rotated )
+	{
+		if ( ulRenderFlags & kRenderFlag_SoftEdges )
+		{
+//			xSprite.RenderRotSoftEdges( &mxSprites3dBuffers, fGridScale, mRenderFlags );		
+			xSprite.RenderRotSoftEdgesComplex( pVertexBuff, fGridScale, ulRenderFlags );		
+		}
+		else
+		{
+			xSprite.RenderRot( pVertexBuff, fGridScale, ulRenderFlags );
+		}
+	}
+	else
+	{
+		xSprite.Render( pVertexBuff, fGridScale, ulRenderFlags );
+	}
+}
+
+void	Particle::DefaultRender( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags )
 {
 	if ( mnParticleGraphicsNum != NOTFOUND )
 	{
@@ -127,7 +161,11 @@ void	Particle::DefaultRender( void )
 				ulCol = GetColWithModifiedAlpha( mulCol, fAlpha );
 			}
 
-			if ( pSpriteGroup )
+			if ( pVertexBuff )
+			{
+				AddVertices( pVertexBuff, ulRenderFlags );
+			}
+			else if ( pSpriteGroup )
 			{
 				if (mfSpriteAspect != 1.0f )
 				{				
@@ -144,16 +182,18 @@ void	Particle::DefaultRender( void )
 	}
 }
 
-void	Particle::Render( void )
+void	Particle::RenderParticle( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags )
 {
-	OnRender();
+	OnRenderParticle( pVertexBuff, ulRenderFlags );
 
 	if ( UseDefaultRender() )
 	{
-		DefaultRender();
+		DefaultRender( pVertexBuff, ulRenderFlags );
 	}
-
 }
 
 
-
+void	Particle::PreRender()
+{
+	OnPreRenderParticle();
+}

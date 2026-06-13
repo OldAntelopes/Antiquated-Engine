@@ -48,4 +48,7 @@ extern Particle*	ParticleManagerCreateNewParticle( const char* szParticleTypeNam
 extern int		ParticleManagerGetRenderedParticleCount();
 extern void		ParticleManagerAddRenderedParticleCount( int count );
 
+extern void		ParticleManagerInitialiseGraphicsDeviceResources( void );
+extern void		ParticleManagerReleaseGraphicsDeviceResources( void );
+
 #endif
