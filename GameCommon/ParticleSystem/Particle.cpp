@@ -79,7 +79,7 @@ void	Particle::Update( float fDelta )
 }
 
 
-void	Particle::AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags )
+void	Particle::AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags, uint32 ulCol )
 {
 Sprite		xSprite;
 
@@ -88,7 +88,7 @@ Sprite		xSprite;
 	xSprite.mfScale = mfSpriteScale;
 	xSprite.mfScaleZ = mfSpriteScale;		// Check this..
 	xSprite.mnFrameNum = mnSpriteFrameNum;
-	xSprite.mulCol = mulCol;	
+	xSprite.mulCol = ulCol;	
 	xSprite.mxPos = *GetPos();
 	
 	float	fGridScale = 1.0f;		// TODO - get this from the ParticleGraphics instead of assuming 1.0f
@@ -163,7 +163,7 @@ void	Particle::DefaultRender( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFl
 
 			if ( pVertexBuff )
 			{
-				AddVertices( pVertexBuff, ulRenderFlags );
+				AddVertices( pVertexBuff, ulRenderFlags, ulCol );
 			}
 			else if ( pSpriteGroup )
 			{

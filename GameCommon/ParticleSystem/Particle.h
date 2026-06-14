@@ -65,7 +65,7 @@ public:
 	Particle*	GetNext( void ) { return( mpNext ); }
 	void		KillSelf() { mType = IN_MORGUE; }
 protected:
-	void		AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
+	void		AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags, uint32 ulCol );
 
 	float		mfTimeAlive = 0.0f;
 	int			mnParticleGraphicsNum;

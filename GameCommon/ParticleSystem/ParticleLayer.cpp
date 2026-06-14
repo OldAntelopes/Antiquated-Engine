@@ -125,12 +125,12 @@ int	ParticleLayer::OnRender( void )
 Sprite		xSprite;
 int		count = 0;
 
-	Sprites3DCommonRenderSetup(FALSE);
 	UpdateTextureHandle();
 
 	// DONT render if the texture hasn't loaded yet. We'd prefer nothing than big white squares
 	if ( EngineTextureIsFullyLoaded( GetTextureHandle() ) == TRUE )
 	{
+		Sprites3DCommonRenderSetup(FALSE);
 		mxParticleLayerSpriteBuffers.Lock();
 
 		u64 ullEventID = SysProfileStartEvent( "ParticleLayer::Render", mGroupLayerNum );		
@@ -157,6 +157,9 @@ int		count = 0;
 			
 		count++;
 
+		// TODO - Optimise: We could be cleverer here and only flush when we need to 
+			// (When channel/layers need to be completed or when the render state/texture changes)
+			// Which'd allow bigger batches of particles to be rendered in one go
 		mxParticleLayerSpriteBuffers.FlushWhenFull( 0, FALSE );
 		SysProfileEndEvent( ullEventID );		
 	}
