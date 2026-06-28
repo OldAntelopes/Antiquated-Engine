@@ -21,6 +21,8 @@
 #include "../Common/InterfaceInstance.h"
 #include "../Common/Font/FontCommon.h"
 
+//#include "stb_image.h"  // single-header decoder: https://github.com/nothings/stb
+
 //------------------------------------------------------------------------------------------------
 
 BOOL	mboInterfaceInitialised = FALSE;
