@@ -13,6 +13,7 @@ Particle::Particle()
 	mnParticleGraphicsNum = NOTFOUND;
 	memset( &mxPos, 0, sizeof( mxPos ) );
 	memset( &mxVel, 0, sizeof( mxVel ) );
+	memset( &mxDir, 0, sizeof( mxDir ) );
 	mfTimeAlive = 0.0f;
 	mfSpriteScale = 1.0f;
 	mnSpriteFrameNum = 0;

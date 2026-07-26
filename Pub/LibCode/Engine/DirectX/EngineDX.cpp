@@ -1361,6 +1361,14 @@ void	EngineSetBlendMode( int nBlendMode )
 		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
 		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		break;
+	case BLEND_MODE_MASK:
+		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHA);
+		break;
+	case BLEND_MODE_INVERSE_MASK:
+		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		break;
 	}
 #endif
 }

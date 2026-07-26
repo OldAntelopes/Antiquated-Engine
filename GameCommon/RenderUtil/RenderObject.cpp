@@ -21,6 +21,14 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 	{
 		EngineSetBlendMode( BLEND_MODE_DESTADD );
 	}
+	else if (renderFlags & kRenderFlag_Mask)
+	{
+		EngineSetBlendMode( BLEND_MODE_MASK);
+	}	
+	else if (renderFlags & kRenderFlag_InverseMask)
+	{
+		EngineSetBlendMode( BLEND_MODE_INVERSE_MASK);
+	}	
 	else if (renderFlags & kRenderFlag_DestInv)
 	{
 		EngineSetBlendMode( BLEND_MODE_DESTINV);

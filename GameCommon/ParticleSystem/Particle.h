@@ -33,11 +33,13 @@ public:
 
 	const VECT*	GetPos( void ) { return( &mxPos ); }
 	const VECT*	GetVel( void ) { return( &mxVel ); }
+	const VECT*	GetFacingDirection( void ) { return( &mxDir ); }
 	float		GetRot( void ) { return( mfRot ); }
 	float		GetRotSpeed( void ) { return( mfRotSpeed ); }
 
 	void	SetPos( const VECT* pxPos ) { mxPos = *pxPos; }
 	void	SetVel( const VECT* pxVel ) { mxVel = *pxVel; }
+	void	SetFacingDirection( const VECT* pxDir ) { mxDir = *pxDir; }
 	void	SetRot( float fRot ) { mfRot = fRot; }
 	void	SetRotSpeed( float fRotSpeed ) { mfRotSpeed = fRotSpeed; }
 	void	SetCol( uint32 ulCol ) { mulCol = ulCol; }
@@ -68,13 +70,14 @@ protected:
 	void		AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags, uint32 ulCol );
 
 	float		mfTimeAlive = 0.0f;
-	int			mnParticleGraphicsNum;
+	int			mnParticleGraphicsNum = NOTFOUND;
 	float		mfLongevity;
 	float		mfFadeInTime = 0.0f;
 	float		mfSpriteScale;
 	float		mfSpriteAspect = 1.0f;
 	VECT		mxPos;
 	VECT		mxVel;
+	VECT		mxDir;
 	int			mType;
 	uint32		mulCol;
 	float		mfRot = 0.0f;

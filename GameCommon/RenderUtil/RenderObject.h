@@ -31,6 +31,8 @@ enum
 	kRenderFlag_CustomAspect = 0x400,
 	kRenderFlag_DestInv = 0x800,
 	kRenderFlag_DestAdd = 0x1000,
+	kRenderFlag_Mask = 0x2000,
+	kRenderFlag_InverseMask = 0x4000,
 };
 
 #define eRenderFlags	uint32
@@ -230,9 +232,9 @@ public:
 			RenderObjectGroup* pNewGroup = new RenderObjectGroup( hTex );
 			mRenderObjectGroupsByTextureHandle[hTex] = pNewGroup;
 		}
-
 		mRenderObjectGroupsByTextureHandle[hTex]->AddRenderObject(pObject);
 	}
+
 private:
 	BOOL		mbIsFlushActive = FALSE;
 	// 
