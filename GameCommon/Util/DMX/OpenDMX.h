@@ -7,9 +7,13 @@
 //FTDI library
 #include "FTD2XX.H"
 
-//#define INCLUDE_FTD2XX
+#define INCLUDE_FTD2XX
 
 #ifdef INCLUDE_FTD2XX
+
+#define 	DMX_BUFFER_SIZE		513
+
+#include "../Mutex.h"
 
 //class OpenDMX based on C# code
 class OpenDMX
@@ -33,9 +37,17 @@ public:
 private:
 
 	static long	ReadingProcStatic(long);
-	long	ReadingProc(long);
+	static long WritingProcStatic(long);
 
-	BYTE buffer [513];
+	long	ReadingProc(long);
+	long	WritingProc(long);
+
+	BYTE m_activeBuffer[DMX_BUFFER_SIZE];
+	BYTE m_pendingWriteBuffer[DMX_BUFFER_SIZE];
+	
+	Mutex		mWriteBufferAccessMutex;
+	bool		m_bPendingWriteBufferReady = false;
+
 	int bufferLength; 
 	FT_HANDLE m_FThandle; 
 	bool done; 

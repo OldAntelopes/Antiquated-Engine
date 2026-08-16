@@ -17,16 +17,19 @@
 //----------------------------------------------------------------------------------------------------
 #ifdef INCLUDE_FTD2XX
 
+#define DMX_WRITE_THREADED
+
 OpenDMX*	mspSingleton = NULL;
 bool		msbOpenDMXKillThread = false;
 uint32		ms_hDMXReaderThread = 0;
+uint32		ms_hDMXWriterThread = 0;
 HANDLE		mhThreadEvent = 0;
 
 // Singleton constructor
 OpenDMX::OpenDMX(bool isVerbose)
 {
 	mspSingleton = this;
-	bufferLength = 513; //dmx 512
+	bufferLength = DMX_BUFFER_SIZE; //dmx 512
 	m_FThandle = 0;
 	done = false; 
 	connected = false; 
@@ -50,6 +53,55 @@ OpenDMX::OpenDMX(bool isVerbose)
 		SysDebugPrint( "Failed to load DMX library" );
 	}
 	
+}
+
+
+//---------------------------
+// WritingProc 
+// This is the thread procedure for writing data to the device. 
+long OpenDMX::WritingProc(long)
+{
+FT_STATUS res = NULL;
+
+	while(!msbOpenDMXKillThread)
+	{
+		// TODO Implement this (and remove the FT_Write from the main thread)
+
+		if ( m_bPendingWriteBufferReady )
+		{
+			mWriteBufferAccessMutex.WaitForMutex();
+
+			//Sets the BREAK condition for the device.
+			res = FT_SetBreakOn(m_FThandle);
+			if (verbose)
+			{
+				SysDebugPrint("Setting break condition..."); 
+				printErrorCode(res);
+			}
+	
+			//Resets the BREAK condition for the device.
+			res = FT_SetBreakOff(m_FThandle);
+			if (verbose)
+			{
+				SysDebugPrint("Resetting break condition..."); 
+				printErrorCode(res);
+			}
+
+			res = FT_Write(m_FThandle, m_pendingWriteBuffer, DWORD(bufferLength), &bytesWritten );
+			if (verbose)
+			{
+				SysDebugPrint( "Writing %d bytes.", bytesWritten ); 
+				printErrorCode(res);
+			}
+			
+			//	FT_STATUS res = FT_Purge(m_FThandle, purge_tx);
+
+			m_bPendingWriteBufferReady = false;
+			mWriteBufferAccessMutex.ReleaseMutex();
+		}
+		Sleep(1);
+	}
+	return 0;
 }
 
 //---------------------------
@@ -109,6 +161,12 @@ long OpenDMX::ReadingProc(long)
 	return 0;
 }
 
+long OpenDMX::WritingProcStatic(long param )
+{
+	return( mspSingleton->WritingProc( param ) );
+}
+
+
 long OpenDMX::ReadingProcStatic(long param )
 {
 	return( mspSingleton->ReadingProc( param ) );
@@ -125,8 +183,11 @@ void	OpenDMX::Shutdown()
 FT_STATUS res = NULL;
 bool runTimeLinkSuccess = FALSE;
 
-	ms_hDMXReaderThread = true;
+	msbOpenDMXKillThread = true;
 	SysSleep(20);
+
+	ms_hDMXReaderThread = 0;
+	ms_hDMXWriterThread = 0;
 
 	res = FT_Close( m_FThandle );
 	if (verbose)
@@ -163,7 +224,7 @@ bool OpenDMX::start()
 void OpenDMX::zerosDMXValue(){ 
 
 	for (int i = 0; i < bufferLength; i++){
-		buffer[i] = 0; 
+		m_activeBuffer[i] = 0; 
 	}
 }
 
@@ -171,7 +232,7 @@ void OpenDMX::zerosDMXValue(){
 void OpenDMX::setDMXValue(int channel, unsigned char value){
 
 	if (channel > 0 && channel <= bufferLength && value >= 0 && value <= 255){ //bounds checking for dmx 512
-		buffer[channel] = BYTE(value);
+		m_activeBuffer[channel] = BYTE(value);
 	}
 	else{
 		if (verbose)
@@ -211,20 +272,26 @@ int OpenDMX::write()
 		printErrorCode(res);
 	}
 
-	for ( int loop = 2; loop < bufferLength; loop++ )
-	{
-		buffer[loop] = buffer[1];
-	}
+	// For testing - make all channels use value of chan 1
+//	for ( int loop = 2; loop < bufferLength; loop++ )
+//	{
+//		buffer[loop] = buffer[1];
+//	}
 
-	//write some bytes
-	 res = FT_Write(m_FThandle, buffer, DWORD(bufferLength), &bytesWritten );
-	if (verbose)
+#ifdef DMX_WRITE_THREADED
+	// Dont bother writing if we cant immediately get hold of the buffer
+	if ( mWriteBufferAccessMutex.WaitForMutex(1) == true )
 	{
-		SysDebugPrint( "Writing %d bytes.", bytesWritten ); 
-		printErrorCode(res);
+		//write some bytes
+		memcpy(m_pendingWriteBuffer, m_activeBuffer, bufferLength);
+		m_bPendingWriteBufferReady = true;
+		mWriteBufferAccessMutex.ReleaseMutex();
 	}
-//	FT_STATUS res = FT_Purge(m_FThandle, purge_tx);
-	return bytesWritten; 
+#else
+	//write some bytes
+	 res = FT_Write(m_FThandle, m_activeBuffer, DWORD(bufferLength), &bytesWritten );
+#endif
+	return 1; 
 }
 
 
@@ -308,6 +375,7 @@ bool OpenDMX::initOpenDMX(){
 	}
 
 	ms_hDMXReaderThread = SysCreateThread( ReadingProcStatic, (void*)NULL, 0, 0);
+	ms_hDMXWriterThread = SysCreateThread( WritingProcStatic, (void*)NULL, 0, 0);
 
 	return false;
 }
