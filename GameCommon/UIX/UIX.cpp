@@ -514,6 +514,19 @@ BOOL	UIX::IsInActivePageRegion(int x, int y)
 	return(TRUE);
 }
 
+void		UIX::SetSelectedUIXObjectID( uint32 ulIDParam )
+{
+	auto it = msComponentIDMap.find( ulIDParam );
+	if ( it != msComponentIDMap.end() )
+	{
+	UIXObject* pObject = it->second;
+		mspFocusedSelectionObject = pObject;
+		if (msfnObjectSelectionHandler)
+		{
+			msfnObjectSelectionHandler(pObject);
+		}
+	}
+}
 //--------------------------------------------------------------------------------------------------
 // IDParam must always be UIXObject's unique ID ( obj->GetID() )  to use this handler
 //

@@ -406,6 +406,8 @@ public:
 	static uint32						GetNextObjectID();
 	static uint32						GetCurrentPressObjectID();
 	static void							RegisterObjectSelectionHandler( fnObjectSelectionCallback handler ) { msfnObjectSelectionHandler = handler; }  
+	static void							SetSelectedUIXObjectID( uint32 ulIDParam );
+
 protected:
 	static void							SetActivePageRegion(UIXRECT rect) { mxActivePageRegion = rect; }
 

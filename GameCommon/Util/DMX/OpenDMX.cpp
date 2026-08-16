@@ -254,6 +254,22 @@ void OpenDMX::writeData(){
 //writes buffer array (device)
 int OpenDMX::write()
 {
+	// For testing - make all channels use value of chan 1
+//	for ( int loop = 2; loop < bufferLength; loop++ )
+//	{
+//		buffer[loop] = buffer[1];
+//	}
+
+#ifdef DMX_WRITE_THREADED
+	// Dont bother writing if we cant immediately get hold of the buffer
+	if ( mWriteBufferAccessMutex.WaitForMutex(1) == true )
+	{
+		//write some bytes
+		memcpy(m_pendingWriteBuffer, m_activeBuffer, bufferLength);
+		m_bPendingWriteBufferReady = true;
+		mWriteBufferAccessMutex.ReleaseMutex();
+	}
+#else
 	FT_STATUS res;
 
 	//Sets the BREAK condition for the device.
@@ -272,22 +288,6 @@ int OpenDMX::write()
 		printErrorCode(res);
 	}
 
-	// For testing - make all channels use value of chan 1
-//	for ( int loop = 2; loop < bufferLength; loop++ )
-//	{
-//		buffer[loop] = buffer[1];
-//	}
-
-#ifdef DMX_WRITE_THREADED
-	// Dont bother writing if we cant immediately get hold of the buffer
-	if ( mWriteBufferAccessMutex.WaitForMutex(1) == true )
-	{
-		//write some bytes
-		memcpy(m_pendingWriteBuffer, m_activeBuffer, bufferLength);
-		m_bPendingWriteBufferReady = true;
-		mWriteBufferAccessMutex.ReleaseMutex();
-	}
-#else
 	//write some bytes
 	 res = FT_Write(m_FThandle, m_activeBuffer, DWORD(bufferLength), &bytesWritten );
 #endif

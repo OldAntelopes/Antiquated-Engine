@@ -81,6 +81,12 @@ UIXRECT		UIXButton::OnRender( InterfaceInstance* pInterface, UIXRECT displayRect
 {
 UIXRECT		localRect = GetLocalPositionRect();
 UIXRECT		drawRect = GetActualRenderRect( displayRect );
+uint32		ulDefaultCol = 0x90404040;
+		
+	if ( mulCol != 0 )
+	{
+		ulDefaultCol = mulCol;
+	}
 
 	SetDraggableRenderRect(drawRect);
 	
@@ -145,7 +151,7 @@ UIXRECT		drawRect = GetActualRenderRect( displayRect );
 		}
 		else
 		{
-			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, 0x90404040 );
+			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulDefaultCol );
 		}
 
 		if ( mulButtonID != 0 )
@@ -168,11 +174,17 @@ UIXRECT		drawRect = GetActualRenderRect( displayRect );
 			if ( hTexture != NOTFOUND )
 			{
 			int		nOverlay = pInterface->CreateNewTexturedOverlay( 0, hTexture );
-				pInterface->TexturedRect( nOverlay, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mulCol, 0.0f, 0.0f, 1.0f, 1.0f );
+			uint32	ulCol = 0xD0FFFFFF;
+
+				if ( mulCol != 0 )
+				{
+					ulCol = mulCol;
+				}
+				pInterface->TexturedRect( nOverlay, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulCol, 0.0f, 0.0f, 1.0f, 1.0f );
 			}
 			else
 			{
-				pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, 0x90404040 );
+				pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulDefaultCol );
 			}		
 		}
 		else if ( mhImageTexture != NOTFOUND )
@@ -182,7 +194,7 @@ UIXRECT		drawRect = GetActualRenderRect( displayRect );
 		}
 		else
 		{
-			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, 0x90404040 );
+			pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, ulDefaultCol );
 		}
 
 		if ( mulButtonID != 0 )
