@@ -19,11 +19,25 @@
 
 #define DMX_WRITE_THREADED
 
+
+//define the functions we need to send DMX commands, these will be loaded at runtime from ftd2xx.dll 
+typedef FT_STATUS (CALLBACK* FT_Open_Type)(int deviceNumber, FT_HANDLE *handle);
+typedef FT_STATUS (CALLBACK* FT_ResetDevice_Type)(FT_HANDLE handle); 
+typedef FT_STATUS (CALLBACK* FT_SetDivisor_Type)(FT_HANDLE handle, unsigned short usDivisor);
+typedef FT_STATUS (CALLBACK* FT_SetDataCharacteristics_Type)(FT_HANDLE handle, unsigned char word_length, unsigned char stop_bits, unsigned char parity); 
+typedef FT_STATUS (CALLBACK* FT_SetFlowControl_Type)(FT_HANDLE handle, unsigned short flow_none, unsigned char XonChar, unsigned char XoffChar);
+typedef FT_STATUS (CALLBACK* FT_ClrRts_Type)(FT_HANDLE handle); 
+typedef FT_STATUS (CALLBACK* FT_Purge_Type)(FT_HANDLE handle, unsigned long mask);
+typedef FT_STATUS (CALLBACK* FT_SetBreakOn_Type)(FT_HANDLE handle); 
+typedef FT_STATUS (CALLBACK* FT_SetBreakOff_Type)(FT_HANDLE handle); 
+typedef FT_STATUS (CALLBACK* FT_Write_Type)(FT_HANDLE handle, BYTE* buffer, DWORD bufferSize, DWORD *ptr_BytesWritten);
+
 OpenDMX*	mspSingleton = NULL;
 bool		msbOpenDMXKillThread = false;
 uint32		ms_hDMXReaderThread = 0;
 uint32		ms_hDMXWriterThread = 0;
 HANDLE		mhThreadEvent = 0;
+
 
 // Singleton constructor
 OpenDMX::OpenDMX(bool isVerbose)
@@ -45,14 +59,17 @@ OpenDMX::OpenDMX(bool isVerbose)
 	purge_tx = 1; 
 	verbose = isVerbose;
 
+	memset( m_activeBuffer, 0, DMX_BUFFER_SIZE );
+	memset( m_pendingWriteBuffer, 0, DMX_BUFFER_SIZE );
+	memset( m_queuedWriteBuffer, 0, DMX_BUFFER_SIZE );
+
 	//try to load DLL
 	m_dllHandle = LoadLibrary("ftd2xx.dll");
 
 	if ( m_dllHandle == NULL) 
 	{
 		SysDebugPrint( "Failed to load DMX library" );
-	}
-	
+	}	
 }
 
 
@@ -66,27 +83,15 @@ FT_STATUS res = NULL;
 	while(!msbOpenDMXKillThread)
 	{
 		// TODO Implement this (and remove the FT_Write from the main thread)
-
 		if ( m_bPendingWriteBufferReady )
 		{
 			mWriteBufferAccessMutex.WaitForMutex();
-/*
+
 			//Sets the BREAK condition for the device.
 			res = FT_SetBreakOn(m_FThandle);
-			if (verbose)
-			{
-				SysDebugPrint("Setting break condition..."); 
-				printErrorCode(res);
-			}
-	
 			//Resets the BREAK condition for the device.
 			res = FT_SetBreakOff(m_FThandle);
-			if (verbose)
-			{
-				SysDebugPrint("Resetting break condition..."); 
-				printErrorCode(res);
-			}
-*/
+
 			res = FT_Write(m_FThandle, m_pendingWriteBuffer, DWORD(bufferLength), &bytesWritten );
 			if (verbose)
 			{
@@ -96,6 +101,20 @@ FT_STATUS res = NULL;
 			
 			//	FT_STATUS res = FT_Purge(m_FThandle, purge_tx);
 
+			if ( m_bQueuedWriteBufferReady )
+			{
+				memcpy( m_pendingWriteBuffer, m_queuedWriteBuffer, bufferLength );
+				m_bQueuedWriteBufferReady = false;
+				res = FT_SetBreakOn(m_FThandle);
+				//Resets the BREAK condition for the device.
+				res = FT_SetBreakOff(m_FThandle);
+				res = FT_Write(m_FThandle, m_pendingWriteBuffer, DWORD(bufferLength), &bytesWritten );
+				if (verbose)
+				{
+					SysDebugPrint( "Writing %d bytes.", bytesWritten ); 
+					printErrorCode(res);
+				}
+			}
 			m_bPendingWriteBufferReady = false;
 			mWriteBufferAccessMutex.ReleaseMutex();
 		}
@@ -135,7 +154,6 @@ long OpenDMX::ReadingProc(long)
 
 			while(dwRead && !msbOpenDMXKillThread) 
 			{
-
 				status = FT_Read(handle, &b, 1, &dwRXBytes);
 				if(status != FT_OK) {
 	//				MessageBox::Show("RError");
@@ -276,10 +294,14 @@ int OpenDMX::write()
 
 		mWriteBufferAccessMutex.ReleaseMutex();
 	}
+	else if ( m_bQueuedWriteBufferReady == false )
+	{
+		memcpy(m_queuedWriteBuffer, m_activeBuffer, bufferLength);
+		m_bQueuedWriteBufferReady = true;
+	}
 #else
 	FT_STATUS res;
 
-	/*
 	//Sets the BREAK condition for the device.
 	res = FT_SetBreakOn(m_FThandle);
 	if (verbose)
@@ -295,7 +317,7 @@ int OpenDMX::write()
 		SysDebugPrint("Resetting break condition..."); 
 		printErrorCode(res);
 	}
-	*/
+
 	//write some bytes
 	 res = FT_Write(m_FThandle, m_activeBuffer, DWORD(bufferLength), &bytesWritten );
 #endif
@@ -303,17 +325,29 @@ int OpenDMX::write()
 }
 
 
-bool OpenDMX::initOpenDMX(){
+bool OpenDMX::initOpenDMX()
+{
 
 	FT_STATUS res = NULL; 
 
-	res = FT_ResetDevice(m_FThandle);
-	if (verbose)
-	{
-		SysDebugPrint("Resetting device..."); 
-		printErrorCode(res);
-	}
+	bool runTimeLinkSuccess = FALSE; 
+	FT_ResetDevice_Type FT_ResetDevice_Ptr = NULL;
+	FT_ResetDevice_Ptr = (FT_ResetDevice_Type)GetProcAddress(m_dllHandle, "FT_ResetDevice");
 
+	if ( runTimeLinkSuccess = (NULL != FT_ResetDevice_Ptr) )
+	{
+		res = FT_ResetDevice_Ptr(m_FThandle);
+		if (verbose)
+		{
+			SysDebugPrint("Resetting device..."); 
+			printErrorCode(res);
+		}
+	}
+	else
+	{
+		SysDebugPrint("FT DLL link error: Couldnt locate function FT_ResetDevice"); 
+		return true;
+	}
 	
 	//SET DIVISOR / baud rate
 	res = FT_SetDivisor(m_FThandle, unsigned short(12));
