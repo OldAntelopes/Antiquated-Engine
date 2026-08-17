@@ -70,7 +70,7 @@ FT_STATUS res = NULL;
 		if ( m_bPendingWriteBufferReady )
 		{
 			mWriteBufferAccessMutex.WaitForMutex();
-
+/*
 			//Sets the BREAK condition for the device.
 			res = FT_SetBreakOn(m_FThandle);
 			if (verbose)
@@ -86,7 +86,7 @@ FT_STATUS res = NULL;
 				SysDebugPrint("Resetting break condition..."); 
 				printErrorCode(res);
 			}
-
+*/
 			res = FT_Write(m_FThandle, m_pendingWriteBuffer, DWORD(bufferLength), &bytesWritten );
 			if (verbose)
 			{
@@ -231,7 +231,12 @@ void OpenDMX::zerosDMXValue(){
 //sets buffer array (host)
 void OpenDMX::setDMXValue(int channel, unsigned char value){
 
-	if (channel > 0 && channel <= bufferLength && value >= 0 && value <= 255){ //bounds checking for dmx 512
+	if (channel > 0 && channel <= bufferLength && value >= 0 && value <= 255)
+	{ //bounds checking for dmx 512
+		if ( m_activeBuffer[channel] != BYTE(value) )
+		{
+			m_bBufferDirty = true;
+		}
 		m_activeBuffer[channel] = BYTE(value);
 	}
 	else{
@@ -267,11 +272,14 @@ int OpenDMX::write()
 		//write some bytes
 		memcpy(m_pendingWriteBuffer, m_activeBuffer, bufferLength);
 		m_bPendingWriteBufferReady = true;
+		m_bBufferDirty = false;
+
 		mWriteBufferAccessMutex.ReleaseMutex();
 	}
 #else
 	FT_STATUS res;
 
+	/*
 	//Sets the BREAK condition for the device.
 	res = FT_SetBreakOn(m_FThandle);
 	if (verbose)
@@ -287,7 +295,7 @@ int OpenDMX::write()
 		SysDebugPrint("Resetting break condition..."); 
 		printErrorCode(res);
 	}
-
+	*/
 	//write some bytes
 	 res = FT_Write(m_FThandle, m_activeBuffer, DWORD(bufferLength), &bytesWritten );
 #endif
