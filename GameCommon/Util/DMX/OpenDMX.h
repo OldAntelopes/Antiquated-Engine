@@ -30,7 +30,7 @@ public:
 	void writeData();
 	int write(); 
 	bool initOpenDMX();
-
+	bool	IsDirty() { return m_bBufferDirty; }
 	void	GetDeviceInfo();
 
 
@@ -52,6 +52,7 @@ private:
 	FT_HANDLE m_FThandle; 
 	bool done; 
 	bool connected; 
+	bool  m_bBufferDirty = false;
 	DWORD bytesWritten;
 	FT_STATUS status;
 	HINSTANCE m_dllHandle;
