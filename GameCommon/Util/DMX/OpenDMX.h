@@ -44,9 +44,11 @@ private:
 
 	BYTE m_activeBuffer[DMX_BUFFER_SIZE];
 	BYTE m_pendingWriteBuffer[DMX_BUFFER_SIZE];
+	BYTE m_queuedWriteBuffer[DMX_BUFFER_SIZE];
 	
 	Mutex		mWriteBufferAccessMutex;
 	bool		m_bPendingWriteBufferReady = false;
+	bool		m_bQueuedWriteBufferReady = false;
 
 	int bufferLength; 
 	FT_HANDLE m_FThandle; 
