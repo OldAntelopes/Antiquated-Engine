@@ -116,6 +116,7 @@ uint32		ulDefaultCol = 0x90404040;
 	switch( mMode)
 	{
 	case UIXBUTTON_NORMAL:
+	case UIXBUTTON_DISABLED:
 	default:
 		{
 		eUIBUTTON_MODE_FLAGS		modeFlags = UIBUTTON_FLAG_SMALL_FONT;
@@ -124,7 +125,11 @@ uint32		ulDefaultCol = 0x90404040;
 			{
 				modeFlags = (eUIBUTTON_MODE_FLAGS)(modeFlags | UIBUTTON_FLAG_LABEL_EDIT);
 			}
-	
+			if ( mMode == UIXBUTTON_DISABLED )
+			{
+				modeFlags = (eUIBUTTON_MODE_FLAGS)(modeFlags | UIBUTTON_FLAG_DISABLED);
+			}
+
 			UIButtonDraw( mulButtonID, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mTitle.c_str(), modeFlags, mulButtonParam, GetID() );
 			if ( mulRightPressButtonID )
 			{
@@ -249,7 +254,7 @@ uint32		ulDefaultCol = 0x90404040;
 		drawRect.h = 19;
 		UIX::DrawIcon( pInterface, mIconNum, drawRect, 0xE0D0D0D0 );
 		break;		
-	case UIXBUTTON_PLAIN_RECT:
+	case UIXBUTTON_PLAIN_RECT_BOLD_TEXT:
 		pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mulCol );
 
 		if ( mulButtonID != 0 )
@@ -261,6 +266,23 @@ uint32		ulDefaultCol = 0x90404040;
 		}
 		// TODO - Properly centre the title
 		pInterface->Text( 1, drawRect.x + 6, drawRect.y + 1, 0xd0a0a0a0, 1, mTitle.c_str() );
+		break;
+	case UIXBUTTON_PLAIN_RECT:
+		pInterface->Rect( 0, drawRect.x, drawRect.y, drawRect.w, drawRect.h, mulCol );
+
+		if ( mulButtonID != 0 )
+		{
+			if ( UIX::CheckForPress( this, drawRect, mulButtonID, mulButtonParam ) )
+			{		
+				pInterface->Rect( 1, drawRect.x, drawRect.y, drawRect.w, drawRect.h, 0x20FFFFFF );				
+			}
+		}
+		if ( mulRightPressButtonID )
+		{
+			UIX::CheckForRightButtonPress( this, drawRect, mulRightPressButtonID, mulRightPressButtonParam );	
+		}
+		// TODO - Properly centre the title
+		pInterface->Text( 1, drawRect.x + 8, drawRect.y + 3, 0xd0a0a0a0, 3, mTitle.c_str() );
 		break;
 	case UIXBUTTON_TEXT_WITH_COLLAPSABLE:
 		{
