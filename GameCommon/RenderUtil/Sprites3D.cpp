@@ -25,6 +25,7 @@ extern void Sprites3DCommonRenderSetup( BOOL bUseZWrite );
 MultiVertexBuffers		mxSprites3dBuffers;
 
 float		msfSpriteOffsetsAppliedAspect = -1.0f;
+float		msfSpriteOffsetsAppliedCamValue = -1.0f;
 
 VECT		maxCamFacingSpriteOffsets[6];
 VECT		maxFlatSpriteOffsets[6];
@@ -116,15 +117,14 @@ void	Sprites3DCreateOffsetGroup( VECT* pxCamRight, VECT* pxCamDown, VECT* pxOffs
 
 void	Sprites3DCreateCamFacingOffsets( float fAspectRatio )
 {
-	if ( fAspectRatio != msfSpriteOffsetsAppliedAspect )
+VECT	xCamDown = *EngineCameraGetUpVect();
+VECT	xCamDir = *EngineCameraGetDirection();
+float	fCamVal = (xCamDir.x * 1000.0f) + (xCamDir.y * 100.0f) + (xCamDown.z * 10000.0f) + (xCamDown.x * 10.0f);
+
+	if ( ( fAspectRatio != msfSpriteOffsetsAppliedAspect ) ||
+		 ( fCamVal != msfSpriteOffsetsAppliedCamValue ) )
 	{
-
 	VECT	xCamRight;
-	VECT	xCamDown;
-	VECT	xCamDir;
-
-		xCamDir = *EngineCameraGetDirection();
-		xCamDown = *EngineCameraGetUpVect();
 
 		VectCross( &xCamRight, &xCamDir, &xCamDown );
 		VectScale( &xCamDown, &xCamDown, -1.0f );
@@ -160,6 +160,7 @@ void	Sprites3DCreateCamFacingOffsets( float fAspectRatio )
 		Sprites3DCreateOffsetGroup( &xCamRight, &xCamDown, maxYAxisSpriteOffsets, fAspectRatio );
 
 		msfSpriteOffsetsAppliedAspect = fAspectRatio;
+		msfSpriteOffsetsAppliedCamValue = fCamVal;
 	}
 }
 
