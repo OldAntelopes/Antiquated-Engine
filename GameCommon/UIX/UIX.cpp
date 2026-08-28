@@ -49,7 +49,7 @@ std::string					UIX::msTooltipText;
 int							UIX::msnTooltipPriority = NOTFOUND;
 BOOL						UIX::mbUISelectionModeActive = FALSE;
 fnObjectSelectionCallback	UIX::msfnObjectSelectionHandler = NULL;
-
+fnDefaultMousewheelCallback	UIX::msfnDefaultMousewheelHandler = NULL;
 
 uint32						UIX::msDragSourceParam = 0;
 //--------------------------------------------------------------------------------------
@@ -586,6 +586,10 @@ void		UIX::OnMouseWheel( float fOffset )
 	{
 		mspMousewheelHoverObject->OnMouseWheel( fOffset );
 	}
+	else if ( msfnDefaultMousewheelHandler )
+	{
+		msfnDefaultMousewheelHandler( fOffset );
+	}	
 }
 
 BOOL		UIX::SliderHoldHandler( int nButtonID, uint32 ulIndex, uint32 ulIDParam, BOOL bIsHeld, BOOL bFirstPress  )

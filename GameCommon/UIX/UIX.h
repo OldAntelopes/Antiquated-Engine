@@ -118,6 +118,7 @@ typedef	float(*fnValueUpdateCallback)( uint32 ulUIXObjectID, float fUIXValue, fl
 typedef	void(*fnDragReceiveCallback)( UIXObject* pxSourceObject, uint32 ulDragParam, UIXObject* pxDestObject, uint32 ulDragDestParam, const char* szDragDropFilename );
 typedef	void(*fnSelectedCallback)( UIXObject* pxSourceObject, uint32 ulSelectParam );
 typedef	void(*fnObjectSelectionCallback)( UIXObject* pxSelectedObject );
+typedef	void(*fnDefaultMousewheelCallback)( float );
 
 class UIStateData
 {
@@ -408,6 +409,7 @@ public:
 	static uint32						GetNextObjectID();
 	static uint32						GetCurrentPressObjectID();
 	static void							RegisterObjectSelectionHandler( fnObjectSelectionCallback handler ) { msfnObjectSelectionHandler = handler; }  
+	static void							RegisterDefaultMousewheelHandler(fnDefaultMousewheelCallback handler) { msfnDefaultMousewheelHandler = handler; }		
 	static void							SetSelectedUIXObjectID( uint32 ulIDParam );
 
 protected:
@@ -440,6 +442,7 @@ private:
 	static int							msnTooltipPriority;
 	static BOOL							mbUISelectionModeActive;		
 	static fnObjectSelectionCallback	msfnObjectSelectionHandler;
+	static fnDefaultMousewheelCallback	msfnDefaultMousewheelHandler;
 
 };
 
