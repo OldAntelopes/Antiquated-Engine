@@ -1,15 +1,16 @@
 #ifndef OPENDMX_H
 #define OPENDMX_H
 
+
+//#define INCLUDE_FTD2XX
+
+#ifdef INCLUDE_FTD2XX
+
 //required for DLL loading and some data types
 #include <windows.h>
 
 //FTDI library
 #include "FTD2XX.H"
-
-#define INCLUDE_FTD2XX
-
-#ifdef INCLUDE_FTD2XX
 
 #define 	DMX_BUFFER_SIZE		513
 
