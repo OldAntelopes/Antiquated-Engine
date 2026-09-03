@@ -155,8 +155,8 @@ float	fHitDist;
 BOOL		ModelRayTest( int nModelHandle, const VECT* pxPos, const VECT* pxRot, const VECT* pxRayStart, const VECT* pxRayEnd, VECT* pxHit, VECT* pxHitNormal, int* pnFaceNum, int flags )
 {
 ENGINEMATRIX		matRotation;
-ENGINEMATRIX		matInvRotation;
 VECT		xRay;
+VECT		xWorldRay;
 VECT		xRayVect;
 VECT		xBoundsMin;
 VECT		xBoundsMax;
@@ -170,26 +170,35 @@ float	fMinCollisionDist;
 		nModelHandle = maxModelRenderData[ nModelHandle ].xCollisionAttachData.nModelHandle;
 	}
 
-	// TODO TODOOO!
 	xRayVect.x = pxRayEnd->x - pxRayStart->x;
 	xRayVect.y = pxRayEnd->y - pxRayStart->y;
 	xRayVect.z = pxRayEnd->z - pxRayStart->z;
 	fMinCollisionDist = VectGetLength( &xRayVect );
-	EngineSetMatrixFromRotations( pxRot, &matRotation );
-	matInvRotation = matRotation;
-	EngineMatrixInverse( &matInvRotation );
-	xRay = xRayVect;
-	VectNormalize( &xRay );
+	xWorldRay = xRayVect;
+	VectNormalize( &xWorldRay );
 
-	VectTransform( &xRay, &xRay, &matInvRotation );
-	
 	xBoundsMin = ModelGetStats(nModelHandle)->xBoundMin;
 	xBoundsMax = ModelGetStats(nModelHandle)->xBoundMax;
 
 	xPoint.x = pxRayStart->x - pxPos->x;
 	xPoint.y = pxRayStart->y - pxPos->y;
 	xPoint.z = pxRayStart->z - pxPos->z;
-	VectTransform( &xPoint, &xPoint, &matInvRotation );
+
+	if ( pxRot )
+	{
+	ENGINEMATRIX		matInvRotation;
+	
+		EngineSetMatrixFromRotations( pxRot, &matRotation );
+		matInvRotation = matRotation;
+		EngineMatrixInverse( &matInvRotation );
+		VectTransform( &xRay, &xWorldRay, &matInvRotation );
+		VectTransform( &xPoint, &xPoint, &matInvRotation );
+	}
+	else
+	{
+		EngineMatrixIdentity(&matRotation);
+		xRay = xWorldRay;
+	}
 
 	// If the ray intersects with the bounding box of the model
 	if ( EngineCollisionBoxBoundProbe( &xBoundsMin, &xBoundsMax, &xPoint, &xRay ) == TRUE )
@@ -201,12 +210,13 @@ float	fMinCollisionDist;
 		else
 		{
 		BOOL	boCollision = FALSE;
-		float	fCollisionDist = 10000.0f;
+		float	fCollisionDist = 100000.0f;
 		EngineMesh*		pxBaseMesh;
 		uint32 	ulCollIndex;
 
 			pxBaseMesh = maxModelRenderData[ nModelHandle ].pxBaseMesh;
-			pxBaseMesh->RayTest( (VECT*)&xPoint, (VECT*)&xRay, &boCollision, &ulCollIndex, NULL, NULL, &fCollisionDist, NULL, NULL );
+			VectNormalize( &xRay );
+			pxBaseMesh->RayTest( &xPoint, &xRay, &boCollision, &ulCollIndex, NULL, NULL, &fCollisionDist, NULL, NULL );
 			if ( boCollision )
 			{
 	//			AddFontString( 300,220,"Is ray coll long", COL_WHITE );
@@ -218,14 +228,13 @@ float	fMinCollisionDist;
 						*pnFaceNum = (int)(ulCollIndex);
 					}
 					fMinCollisionDist = fCollisionDist;
-					VectTransform( &xRay, &xRay, &matRotation );
 					// Return the building num and details
-					VectScale( &xRay,&xRay, fMinCollisionDist );
+					VectScale( &xWorldRay,&xWorldRay, fMinCollisionDist );
 					if ( pxHit )
 					{
-						pxHit->x = pxRayStart->x + xRay.x;
-						pxHit->y = pxRayStart->y + xRay.y;
-						pxHit->z = pxRayStart->z + xRay.z;
+						pxHit->x = pxRayStart->x + xWorldRay.x;
+						pxHit->y = pxRayStart->y + xWorldRay.y;
+						pxHit->z = pxRayStart->z + xWorldRay.z;
 					}
 
 					if ( pxHitNormal )
