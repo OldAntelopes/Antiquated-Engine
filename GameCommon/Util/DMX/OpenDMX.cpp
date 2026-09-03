@@ -1,7 +1,4 @@
-#include "stdio.h"
-#include "OpenDMX.h"
-#include "StandardDef.h"
-#include <iostream>
+
 
 
 //----------------------------------------------------------------------------------------------------
@@ -16,6 +13,11 @@
 // - Call Shutdown when finished to close the device and stop the reader thread.
 //----------------------------------------------------------------------------------------------------
 #ifdef INCLUDE_FTD2XX
+
+#include "stdio.h"
+#include "OpenDMX.h"
+#include "StandardDef.h"
+#include <iostream>
 
 #define DMX_WRITE_THREADED
 
