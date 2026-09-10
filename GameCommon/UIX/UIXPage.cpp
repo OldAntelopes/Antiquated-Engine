@@ -22,6 +22,15 @@ BOOL		UIXPage::IsWithinPage(int x, int y)
 	return(FALSE);
 }
 
+void	UIXPage::OnUpdate( float delta )
+{
+	if ( ( mfnMousewheelCallback ) &&
+		 ( UIX::IsMouseHover( mPageRenderRect ) == TRUE ) )
+	{
+		UIX::SetMousewheelHoverObject( this );
+	}
+}
+
 UIXRECT		UIXPage::OnRender( InterfaceInstance* pInterface, UIXRECT displayRect )
 {
 UIXRECT		renderRect = GetActualRenderRect( displayRect );
