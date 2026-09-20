@@ -71,8 +71,8 @@ protected:
 	void	SetTextureHandle(int hTex);
 	void	SetRenderType(int nType) { mRenderType = nType; }
 
+	static void	ApplyRenderFlags( uint32 renderFlags );
 private:
-	void	ApplyRenderFlags( uint32 renderFlags );
 
 	uint32	mRenderFlags = 0;
 	int		mTextureHandle = NOTFOUND;

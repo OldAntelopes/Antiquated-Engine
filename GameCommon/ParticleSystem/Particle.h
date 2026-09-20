@@ -49,6 +49,7 @@ public:
 	void	SetSpriteAspect( float fAspectRatio ) { mfSpriteAspect = fAspectRatio; }
 	void	SetSpriteFrameNum( int nFrameNum ) { mnSpriteFrameNum = nFrameNum; }
 	void	SetParamChannel( uint32 nChannel ) { mulParamChannel = nChannel; }
+	void	SetBaseScale( float fScale ) { mfBaseScale = fScale; }
 
 	int		GetParticleGraphicNum( void ) { return( mnParticleGraphicsNum ); }
 
@@ -58,6 +59,7 @@ public:
 	float	GetLongevity( void ) const { return( mfLongevity ); }
 	float	GetTimeAlive( void ) const { return( mfTimeAlive ); }
 	float	GetSpriteScale( void ) const { return( mfSpriteScale ); }
+	float	GetBaseScale( void ) const { return( mfBaseScale ); }
 	float	GetSpriteAspect( void ) const { return( mfSpriteAspect ); }
 	uint32	GetCol( void ) const { return( mulCol ); }
 	uint32	GetParamChannel( void ) const { return( mulParamChannel ); }
@@ -74,6 +76,7 @@ protected:
 	float		mfLongevity;
 	float		mfFadeInTime = 0.0f;
 	float		mfSpriteScale;
+	float		mfBaseScale = 1.0f;
 	float		mfSpriteAspect = 1.0f;
 	VECT		mxPos;
 	VECT		mxVel;

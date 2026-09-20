@@ -1,5 +1,6 @@
 
-All paths here (in double-quotes) are relative to the root of the 'Antiquated' repository. On the author's PC that is D:\GameDev\Antiquated - this may be different on the current setup.
+All paths here (in double-quotes) are relative to the root of the 'Antiquated' repository (One layer up from this file). 
+On the author's PC that is D:\GameDev\Antiquated - this may be different on the current setup.
 
 **Overview**
 
