@@ -1,5 +1,5 @@
-
-All paths here (in double-quotes) are relative to the root of the 'Antiquated' repository. On the author's PC that is D:\GameDev\Antiquated - this may be different on the current setup.
+All paths here (in double-quotes) are relative to the root of the 'Antiquated' repository (One layer up from this file). 
+On the author's PC that is D:\GameDev\Antiquated - this may be different on the current setup.
 
 **Overview**
 
@@ -14,6 +14,8 @@ Interface project : "Pub\Projects\Interface.vcxproj"
 Most code files for the interface are kept in "Pub\LibCode\Interface"
 External headers are in "Pub\Include"
 
+The project generates as output "Pub\Libs\InterfaceD-DX9.lib" (DX9 debug version) or "Pubs\Libs\Interface-DX9.lib" (DX9 Release version)
+
 **Interface Dependencies**
 
 - The Interface project relies on the presence of the accompanying CodeUtil library:  "Pub\Projects\CodeUtil.vcxproj"
@@ -25,12 +27,13 @@ we should assume a dependency on DirectX 9.
 
 **Interface Headers**
 Read 
-- "Pub\Include\Interface.h" (this externs most of the Engine functionality)
-- "Pub\Include\EngineMaths.h" 
+- "Pub\Include\Interface.h" (this externs most of the base Interface functionality)
+- "Pub\Include\InterfaceEx.h"  (this externs core Interface functionality through a class interface, which is used by applications that require multiple interface instances (e.g. multiple windows on different graphics display devices)
 
-Functionality specific to rendering, animation and manipulation of 3d models is separated off into "Pub\Include\Rendering.h"
+**Interface Tests**
+There are no tests currently available for the Interface library.
 
-**Engine Sample**
-A basic example of using the engine is contained in Samples\02_BasicEngine.vcxproj
+**Interface Sample**
+A basic example of using the interface is contained in Samples\01_BasicInterface.vcxproj
 
 

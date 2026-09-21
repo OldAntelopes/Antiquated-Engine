@@ -23,6 +23,7 @@ public:
 	virtual int		OnRender();
 //	int		GetGroupLayerID() { return mGroupLayerNum; }
 	virtual const char* GetName() const { return "Particle Layer"; }
+	static void		StaticLayerFlush();
 
 	void		RenderAndFlush( int layerNum );
 

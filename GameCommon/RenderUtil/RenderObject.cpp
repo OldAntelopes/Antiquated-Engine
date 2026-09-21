@@ -66,7 +66,8 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 	{
 		if ( renderFlags & kRenderFlag_IncAlpha)
 		{
-			EngineSetBlendMode( BLEND_MODE_COLOUR_BOTHALPHA );		
+			EngineSetBlendMode( BLEND_MODE_COLOUR_SRCDEST );		
+//			EngineSetBlendMode( BLEND_MODE_COLOUR_BOTHALPHA );		
 		}
 		else
 		{

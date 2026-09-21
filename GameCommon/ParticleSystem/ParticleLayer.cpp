@@ -16,7 +16,9 @@
 //#define USE_SPRITES3D_FOR_PARTICLE_RENDERING
 
 #ifndef USE_SPRITES3D_FOR_PARTICLE_RENDERING
-MultiVertexBuffers		mxParticleLayerSpriteBuffers;
+MultiVertexBuffers		msxParticleLayerSpriteBuffers;
+int		mshParticleLayerBufferTexture = NOTFOUND;
+uint32	msuParticleLayerRenderFlags = 0;
 #endif
 
 ParticleLayer::~ParticleLayer()
@@ -83,7 +85,6 @@ void	ParticleLayer::RenderAndFlush( int layerNum )
 		pParticle->RenderParticle( NULL, 0 );
 	}
 	Sprites3DFlushLayer(layerNum, FALSE );
-
 }
 
 
@@ -107,12 +108,15 @@ int		ParticleLayer::UpdateTextureHandle()
 	if ( mpParticleList.size() > 0 )
 	{
 	int		nParticleGraphic = mpParticleList[0]->GetParticleGraphicNum();
+	int		hNextTexture = ParticleGraphicsGetTextureHandle( nParticleGraphic );
+	uint32		uNextRenderFlags = ParticleGraphicsGetRenderFlags( nParticleGraphic );
 
-		SetTextureHandle( ParticleGraphicsGetTextureHandle( nParticleGraphic ) );
-		SetRenderFlags( ParticleGraphicsGetRenderFlags( nParticleGraphic ) );
+		SetTextureHandle( hNextTexture );
+		SetRenderFlags( uNextRenderFlags );
 	}
 	return( NOTFOUND );
 }
+
 
 int	ParticleLayer::OnRender( void )
 {
@@ -131,9 +135,26 @@ int		count = 0;
 	if ( EngineTextureIsFullyLoaded( GetTextureHandle() ) == TRUE )
 	{
 		Sprites3DCommonRenderSetup(FALSE);
-		mxParticleLayerSpriteBuffers.Lock();
 
-		u64 ullEventID = SysProfileStartEvent( "ParticleLayer::Render", mGroupLayerNum );		
+		// If we've got particles left in our buffer to render
+		if ( msxParticleLayerSpriteBuffers.IsLocked() )
+		{
+			if ( ( msuParticleLayerRenderFlags != GetRenderFlags() ) ||
+				 ( mshParticleLayerBufferTexture != GetTextureHandle() ) )
+			{
+				EngineSetTexture( 0, mshParticleLayerBufferTexture );
+				ApplyRenderFlags( msuParticleLayerRenderFlags );
+				msxParticleLayerSpriteBuffers.FlushWhenFull( 0, TRUE );
+			}
+		}
+		else 
+		{
+			msxParticleLayerSpriteBuffers.Lock();
+		}
+		msuParticleLayerRenderFlags = GetRenderFlags();
+		mshParticleLayerBufferTexture = GetTextureHandle();
+
+//		u64 ullEventID = SysProfileStartEvent( "ParticleLayer::Render", mGroupLayerNum );		
 		float		fAspectRatio = 1.0f;
 		uint32		ulRenderFlags = GetRenderFlags();
 
@@ -150,7 +171,7 @@ int		count = 0;
 
 		for (Particle* pParticle : mpParticleList)
 		{	
-			pParticle->RenderParticle(&mxParticleLayerSpriteBuffers, ulRenderFlags);
+			pParticle->RenderParticle(&msxParticleLayerSpriteBuffers, ulRenderFlags);
 			count++;
 		}
 		ParticleManagerAddRenderedParticleCount(count);
@@ -160,20 +181,30 @@ int		count = 0;
 		// TODO - Optimise: We could be cleverer here and only flush when we need to 
 			// (When channel/layers need to be completed or when the render state/texture changes)
 			// Which'd allow bigger batches of particles to be rendered in one go
-		mxParticleLayerSpriteBuffers.FlushWhenFull( 0, FALSE );
-		SysProfileEndEvent( ullEventID );		
+//		msxParticleLayerSpriteBuffers.FlushWhenFull( 0, FALSE );
+//		SysProfileEndEvent( ullEventID );		
 	}
 	return( count );
 #endif
 }
 
+void	ParticleLayer::StaticLayerFlush()
+{
+	if ( msxParticleLayerSpriteBuffers.IsLocked() )
+	{
+		EngineSetTexture( 0, mshParticleLayerBufferTexture );
+		ApplyRenderFlags( msuParticleLayerRenderFlags );
+		msxParticleLayerSpriteBuffers.FlushWhenFull( 0, FALSE );
+	}
+}
+
 void	ParticleLayer::InitialiseGraphicsDeviceResources()
 {
-	mxParticleLayerSpriteBuffers.Init( NUM_PARTICLELAYER_VERTEX_BUFFERS, PARTICLE_LAYER_VERTEX_BUFFER_SIZE, "ParticlesVB" );
+	msxParticleLayerSpriteBuffers.Init( NUM_PARTICLELAYER_VERTEX_BUFFERS, PARTICLE_LAYER_VERTEX_BUFFER_SIZE, "ParticlesVB" );
 
 }
 
 void	ParticleLayer::ReleaseGraphicsDeviceResources()
 {
-	mxParticleLayerSpriteBuffers.Shutdown();
+	msxParticleLayerSpriteBuffers.Shutdown();
 }
