@@ -12,15 +12,22 @@ public:
 	void		Initialise( const char* szTitle, BOOL bUseClipping );
 	
 	virtual UIXRECT		OnRender( InterfaceInstance* pInterface, UIXRECT rect );
+	virtual void		OnUpdate(float delta);
 	virtual void		OnPostChildrenRender( InterfaceInstance* pInterface );
+	virtual void		OnMouseWheel(float fAmount);
 
 	UIXRECT		GetPageRenderRect() { return( mPageRenderRect ); }
 	BOOL		IsWithinPage(int x, int y);
+
+	void		SetWantsMouseWheel(BOOL bFlag) { mbWantsMouseWheel = bFlag; }
+	void		RegisterMousewheelHandler(fnDefaultMousewheelCallback handler) { mfnMouseWheelHandler = handler; }
 
 	const std::string& GetTitle() const { return mTitle; }	
 private:
 	UIXRECT		mPageRenderRect;
 	BOOL		mbUseClipping = FALSE;
+	BOOL		mbWantsMouseWheel = FALSE;
+	fnDefaultMousewheelCallback		mfnMouseWheelHandler = NULL;
 	std::string		mTitle;
 
 };
