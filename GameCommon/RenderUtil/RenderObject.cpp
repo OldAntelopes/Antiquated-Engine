@@ -5,6 +5,7 @@
 #include "StandardDef.h"
 #include "Engine.h"
 
+#include "../ParticleSystem/ParticleLayer.h"
 #include "RenderObject.h"
 
 
@@ -138,6 +139,11 @@ BOOL	bShouldLogRO = TRUE;
 					RenderObjectLog::AddStatCount(kRenderObjectInstances, instanceCount );
 				}
 			}
+		}
+
+		if (nType == kRenderType_Sprite3d)
+		{
+			ParticleLayer::StaticLayerFlush();
 		}
 	}
 	return count;

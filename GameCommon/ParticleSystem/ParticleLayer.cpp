@@ -17,8 +17,6 @@
 
 #ifndef USE_SPRITES3D_FOR_PARTICLE_RENDERING
 MultiVertexBuffers		msxParticleLayerSpriteBuffers;
-int		mshParticleLayerBufferTexture = NOTFOUND;
-uint32	msuParticleLayerRenderFlags = 0;
 #endif
 
 ParticleLayer::~ParticleLayer()
@@ -137,22 +135,10 @@ int		count = 0;
 		Sprites3DCommonRenderSetup(FALSE);
 
 		// If we've got particles left in our buffer to render
-		if ( msxParticleLayerSpriteBuffers.IsLocked() )
-		{
-			if ( ( msuParticleLayerRenderFlags != GetRenderFlags() ) ||
-				 ( mshParticleLayerBufferTexture != GetTextureHandle() ) )
-			{
-				EngineSetTexture( 0, mshParticleLayerBufferTexture );
-				ApplyRenderFlags( msuParticleLayerRenderFlags );
-				msxParticleLayerSpriteBuffers.FlushWhenFull( 0, TRUE );
-			}
-		}
-		else 
+		if ( msxParticleLayerSpriteBuffers.IsLocked() == FALSE )
 		{
 			msxParticleLayerSpriteBuffers.Lock();
 		}
-		msuParticleLayerRenderFlags = GetRenderFlags();
-		mshParticleLayerBufferTexture = GetTextureHandle();
 
 //		u64 ullEventID = SysProfileStartEvent( "ParticleLayer::Render", mGroupLayerNum );		
 		float		fAspectRatio = 1.0f;
@@ -192,8 +178,6 @@ void	ParticleLayer::StaticLayerFlush()
 {
 	if ( msxParticleLayerSpriteBuffers.IsLocked() )
 	{
-		EngineSetTexture( 0, mshParticleLayerBufferTexture );
-		ApplyRenderFlags( msuParticleLayerRenderFlags );
 		msxParticleLayerSpriteBuffers.FlushWhenFull( 0, FALSE );
 	}
 }

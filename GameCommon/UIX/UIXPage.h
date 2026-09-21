@@ -19,14 +19,12 @@ public:
 	UIXRECT		GetPageRenderRect() { return( mPageRenderRect ); }
 	BOOL		IsWithinPage(int x, int y);
 
-	void		SetWantsMouseWheel(BOOL bFlag) { mbWantsMouseWheel = bFlag; }
 	void		RegisterMousewheelHandler(fnDefaultMousewheelCallback handler) { mfnMouseWheelHandler = handler; }
 
 	const std::string& GetTitle() const { return mTitle; }	
 private:
 	UIXRECT		mPageRenderRect;
 	BOOL		mbUseClipping = FALSE;
-	BOOL		mbWantsMouseWheel = FALSE;
 	fnDefaultMousewheelCallback		mfnMouseWheelHandler = NULL;
 	std::string		mTitle;
 

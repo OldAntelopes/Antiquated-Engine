@@ -24,7 +24,7 @@ BOOL		UIXPage::IsWithinPage(int x, int y)
 
 void	UIXPage::OnUpdate(float delta)
 {
-	if ( mbWantsMouseWheel )
+	if ( mfnMouseWheelHandler )
 	{
 		if ( UIX::IsMouseHover( mPageRenderRect ) == TRUE )
 		{
@@ -35,12 +35,9 @@ void	UIXPage::OnUpdate(float delta)
 
 void		UIXPage::OnMouseWheel(float fAmount)
 {
-	if (mbWantsMouseWheel)
+	if (mfnMouseWheelHandler)
 	{
-		if (mfnMouseWheelHandler)
-		{
-			mfnMouseWheelHandler(fAmount);
-		}
+		mfnMouseWheelHandler(fAmount);
 	}
 }
 
