@@ -300,6 +300,17 @@ DirectX::XMVECTOR		xVect = DirectX::XMVectorSet( pVect->x, pVect->y, pVect->z, 0
 #endif
 }
 
+BOOL     VectEquals(const VECT* pVect1, const VECT* pVect2)
+{
+	if ((pVect1->x == pVect2->x) &&
+		(pVect1->y == pVect2->y) &&
+		(pVect1->z == pVect2->z))
+	{
+		return(TRUE);
+	}
+	return(FALSE);
+}
+
 float	VectDot( const VECT* pVect1, const VECT* pVect2 )
 {
 #ifdef TUD11

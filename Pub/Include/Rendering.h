@@ -79,6 +79,7 @@ extern void		ModelMoveVerts( int nModelHandle, float fX, float fY, float fZ );
 extern int		ModelCreate( int nNumFaces, int nNumVerts, int nFlags );
 extern int		ModelCreateCombinedModel( int nModelHandle );
 extern void		ModelRecalcBounds( int nModelHandle );
+extern void		ModelUpdateAnimationState(int nModelHandle);
 
 //--------------------------------------------------------------------------------------------
 

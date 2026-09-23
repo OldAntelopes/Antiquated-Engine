@@ -90,6 +90,7 @@ extern float	VectDistNoZ( const VECT*, const VECT* );
 extern float	VectGetLength( const VECT* );
 extern float	VectNormalize( VECT* );
 extern float	VectDot( const VECT*, const VECT* );
+extern BOOL     VectEquals(const VECT*, const VECT*);
 extern void		VectCross( VECT*, const VECT*, const VECT* );
 extern void		VectScale( VECT* pOut, const VECT* pSrc, float fScale );
 extern void		VectAdd( VECT* pOut, const VECT* pSrc, const VECT* pSrc2 );

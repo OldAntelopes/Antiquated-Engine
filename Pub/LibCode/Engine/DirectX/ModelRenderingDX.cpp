@@ -1163,6 +1163,23 @@ D3DXVECTOR3		xAttachPointTransformed;
 }
 
 
+void		ModelUpdateAnimationState(int nModelHandle)
+{
+MODEL_RENDER_DATA* pxModelData = &maxModelRenderData[nModelHandle];
+uint32		ulTick = mulLastRenderingTick;
+
+	if (pxModelData->bModelType == ASSETTYPE_KEYFRAME_ANIMATION)
+	{
+		if (pxModelData->xAnimationState.ulLastFrameTick == 0)
+		{
+			pxModelData->xAnimationState.ulLastFrameTick = ulTick;
+			pxModelData->xAnimationState.ulNextFrameTick = ulTick + 300;
+		}
+
+		ModelRenderKeyframeAnimationGenerateBaseMesh(pxModelData, ulTick);
+	}
+}
+
 /***************************************************************************
  * Function    : ModelRenderImplDX
  * Params      :
