@@ -154,6 +154,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\GameCommon\RenderUtil\RenderObject.h" />
     <ClInclude Include="..\GameCommon\RenderUtil\Sprites3D.h" />
     <ClInclude Include="..\GameCommon\Util\cJSON.h" />
     <ClInclude Include="ModelConverter\AddPrimitives\AddPrimitives.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="ModelConverter\UVUnwrap.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\GameCommon\RenderUtil\RenderObject.cpp" />
     <ClCompile Include="..\GameCommon\RenderUtil\Sprites3D.cpp" />
     <ClCompile Include="..\GameCommon\Util\cJSON.c" />
     <ClCompile Include="ModelConverter\AddPrimitives\AddPrimitives.cpp" />

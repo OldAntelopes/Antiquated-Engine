@@ -68,7 +68,7 @@ BOOL	RenderEffectParticle::Update( float fDelta )
 
 void	RenderEffectParticle::Render( void )
 {
-int		hSpriteGroup = Sprites3DGetGroup( mshRenderEffectsSmokeTexture, 1.0f, (eSpriteGroupRenderFlags)( kSpriteRender_Default | kSpriteRender_Rotated ) );
+SpriteGroup* pSpriteGroup = Sprites3DGetGroup( mshRenderEffectsSmokeTexture, 1.0f, kRenderFlag_Default | kRenderFlag_Rotated, 0 );
 uint32	ulCol = 0x80ffffff;
 float	fAlpha = 1.0f;
 float	fTimeLeft = mfExpiryTime - mfLifetime;
@@ -83,7 +83,7 @@ float	fTimeLeft = mfExpiryTime - mfLifetime;
 	}
 
 	ulCol = GetColWithModifiedAlpha( ulCol, fAlpha );
-	Sprites3DAddSpriteRot( hSpriteGroup, &mxPos, mfScale, ulCol, 0, 0, mfRotation );
+	pSpriteGroup->AddSpriteRot( &mxPos, mfScale, ulCol, 0, 0, mfRotation );
 	
 }
 

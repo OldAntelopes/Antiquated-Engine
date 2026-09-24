@@ -314,6 +314,8 @@ float	fSpeed = mfRotSpeed;
 int MouseCamWindowMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 POINTS points;
+VECT	xMouseDelta;
+VECT	xMouseDeltaFrame;
 
     switch( msg )
     {
@@ -341,9 +343,6 @@ POINTS points;
 		break;
 
     case WM_MOUSEMOVE:
-		VECT	xMouseDelta;
-		VECT	xMouseDeltaFrame;
-
 		points = MAKEPOINTS(lParam);
 
 		mxMousePos.x = points.x;

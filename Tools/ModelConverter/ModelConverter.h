@@ -44,8 +44,6 @@ extern void		ModelConverterDisplayFrame( BOOL bModelHasChanged );
 
 extern float	ModelConvGetScaleUnit( void );
 
-extern VECT		ModelConvGetScreenMoveVector( float fScreenXDelta, float fScreenYDelta, float fScale );
-
 extern void		ModelConvGetLastLoadFolder( char* szLoadFolder );
 
 extern int DevLog( int eLogType, const char *format, ... );
@@ -54,5 +52,6 @@ extern int DevLog( int eLogType, const char *format, ... );
 }
 #endif
 
+extern VECT		ModelConvGetScreenMoveVector( float fScreenXDelta, float fScreenYDelta, float fScale );
 
 #endif

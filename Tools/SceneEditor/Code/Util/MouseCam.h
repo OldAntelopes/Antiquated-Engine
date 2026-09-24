@@ -34,7 +34,6 @@ extern void	MouseCamSetMoveSpeed( float fSpeed );
 extern void	MouseCamSetRotSpeed( float fSpeed );
 extern void	MouseCamSetZoomSpeed( float fSpeed );
 
-extern VECT MouseCamGetMoveFromMouseDelta( float fScreenXDelta, float fScreenYDelta );
 
 extern void	MouseCamSet( VECT* pPos, VECT* pFocus );
 extern void MouseCamUpdateCameraMatrices( void );
@@ -44,6 +43,7 @@ extern void MouseCamUpdateCameraMatrices( void );
 }
 #endif
 
+extern VECT MouseCamGetMoveFromMouseDelta( float fScreenXDelta, float fScreenYDelta );
 
 
 #endif // MOUSE_CAM_H

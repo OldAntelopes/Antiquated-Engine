@@ -5728,7 +5728,7 @@ int	nVal;
 				DialogBox(ghInstance, (LPCTSTR)IDD_MODEL_TO_SCENE_DIALOG, NULL, (DLGPROC)ModelToSceneDlg );		
 				break;
 			case ID_SCENETOOLS_ADDPRIMITIVE_DISC:
-				AddDisc();
+				AddPrimitiveDisc();
 				ModelConverterDisplayFrame( TRUE );
 				break;
 			case ID_SCENETOOLS_ADDPRIMITIVE_WALLCIRCLE:

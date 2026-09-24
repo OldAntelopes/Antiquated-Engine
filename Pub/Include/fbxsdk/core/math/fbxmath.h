@@ -180,7 +180,7 @@ inline FbxULongLong FbxAbs(const FbxULongLong x)
 
 inline FbxFloat FbxAbs(const FbxFloat x)
 {
-	return fabs(x);
+	return (FbxFloat)fabs(x);
 }
 
 inline FbxDouble FbxAbs(const FbxDouble x)

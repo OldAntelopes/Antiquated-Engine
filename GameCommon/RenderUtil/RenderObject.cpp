@@ -143,7 +143,9 @@ BOOL	bShouldLogRO = TRUE;
 
 		if (nType == kRenderType_Sprite3d)
 		{
+#ifndef TOOL
 			ParticleLayer::StaticLayerFlush();
+#endif
 		}
 	}
 	return count;

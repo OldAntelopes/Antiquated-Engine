@@ -127,6 +127,9 @@
     <ClInclude Include="ModelConverter\AddPrimitives\Disc.h">
       <Filter>AddPrimitives</Filter>
     </ClInclude>
+    <ClInclude Include="..\GameCommon\RenderUtil\RenderObject.h">
+      <Filter>GameCommon\RenderUtil</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\GameCommon\Util\cJSON.c" />
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="ModelConverter\AddPrimitives\Disc.cpp">
       <Filter>AddPrimitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameCommon\RenderUtil\RenderObject.cpp">
+      <Filter>GameCommon\RenderUtil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
