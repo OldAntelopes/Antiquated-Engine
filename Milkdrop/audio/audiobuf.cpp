@@ -10,6 +10,7 @@ unsigned char pcmRightLpb[SAMPLE_SIZE_LPB]; // Circular buffer (right channel)
 bool pcmBufDrained = false; // Buffer drained by visualization thread and holds no new samples
 signed int pcmLen = 0; // Actual number of samples the buffer holds. Can be less than SAMPLE_SIZE_LPB
 signed int pcmPos = 0; // Position to write new data
+static int s_nLastSeenSampleRate = 0; // Cache the actual sample rate from WAVEFORMATEX
 
 void ResetAudioBuf() 
 {
@@ -106,9 +107,15 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
     int n = 0;
 
     int start = 0;
-    int len = 0;
+	int len = 0;
 
 	float	fInputSampleStride = 1.0f;
+
+	// Cache the actual sample rate from the audio format
+	if (pwfx != NULL && pwfx->nSamplesPerSec > 0)
+	{
+		s_nLastSeenSampleRate = (int)pwfx->nSamplesPerSec;
+	}
 
 	if ( pwfx->nSamplesPerSec > 48000 )
 	{
@@ -168,4 +175,11 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
     pcmLen = (pcmLen + len <= SAMPLE_SIZE_LPB) ? (pcmLen + len) : (SAMPLE_SIZE_LPB);
     pcmPos = (pcmPos + len) % SAMPLE_SIZE_LPB;
 
+}
+
+// Return the last known actual sample rate from the audio format
+// Returns 0 if no audio format has been seen yet
+int GetAudioBufActualSampleRate()
+{
+    return s_nLastSeenSampleRate;
 }
