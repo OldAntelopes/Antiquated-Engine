@@ -103,9 +103,9 @@ private:
 	void	RenderNormals( VECT* pxPos, VECT* pxRot );
 	void	ResetFaceList();
 
-	int						mnModelHandle;
-	TEXTURE_HANDLE			mhTexture;
-	VERTEX_BUFFER_HANDLE	mhFaceBuffer;
+	int						mnModelHandle = NOTFOUND;
+	TEXTURE_HANDLE			mhTexture = NOTFOUND;
+	VERTEX_BUFFER_HANDLE	mhFaceBuffer = NOTFOUND;
 	CViewInterface*			mpViewInterface;
 
 	BYTE*	mpbVertexSelections;

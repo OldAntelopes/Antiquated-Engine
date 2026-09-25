@@ -1,8 +1,12 @@
 
 #include <math.h>
+#include <windows.h>
+#include "../resource.h"
+
 #include "StandardDef.h"
 #include "Engine.h"
 #include "Rendering.h"
+
 #include "../../LibCode/Engine/ModelRendering.h"
 #include "../../LibCode/Engine/Loader.h"
 
@@ -11,10 +15,8 @@
 
 #include "../ModelConverter.h"
 
-#include "Disc.h"
 
-
-void	AddPrimitiveDisc()
+void		AddPrimitiveDisc( int nNumDivisions )
 {
 int		nNewHandle = ModelRenderGetNextHandle();
 MODEL_RENDER_DATA*		pxModelData;
@@ -23,54 +25,149 @@ CUSTOMVERTEX*		pVertexBufferBase;
 ushort*				puwIndexBuffer;
 float				fScale = 1.0f;
 int				nLoop;
-int				nNumSegments = 16;
-int				nNumVerts = nNumSegments + 1;
-int				nNumFaces = nNumSegments;
-float		fAngle = 0.0f;
-float		fAngleStep = A360 / nNumSegments;
+int				nTotalNumVerts;
+int				nTotalNumFaces;
+VECT			xVertPos;
+int				nIndexRowStart;
+int				nIndexCount;
+float			fAngle;
+float			fAngleSep;
+VECT			xNormal;
+float			fUFlip = 0.0f;
+float			fInnerRadius = 1.0f;
+
+	nTotalNumVerts = nNumDivisions + 1;
+	nTotalNumFaces = nNumDivisions;
 
 	pxModelData = maxModelRenderData + nNewHandle;
 	
-	ModelConvInitialiseBlankModel( pxModelData, nNumVerts, nNumFaces );
+	ModelConvInitialiseBlankModel( pxModelData, nTotalNumVerts, nTotalNumFaces );
 
 	pxModelData->pxBaseMesh->LockVertexBuffer( 0, (BYTE**)&pVertexBufferBase );
-
 	pVertexBuffer = pVertexBufferBase;
-	for( nLoop = 0; nLoop < nNumSegments; nLoop++ )
-	{
-		pVertexBuffer->position = VECT( sinf(fAngle), cosf(fAngle), 0.0f );
-		pVertexBuffer->color = 0xFFFFFFFF;
-		pVertexBuffer->tu = 0.0f;
-		pVertexBuffer->tv = 0.0f;
 
-		pVertexBuffer++;
-		fAngle += fAngleStep;
-	}
+	fAngle = 0.0f;
+	fAngleSep = A360 / nNumDivisions;
 
-	pVertexBuffer->position = VECT( 0.0f,0.0f, 0.0f );
+	xNormal.x = 0.0f;
+	xNormal.y = 0.0f;
+	xNormal.z = 1.0f;
+
+	// Initial vert at origin
+	xVertPos.x = 0.0f;
+	xVertPos.y = 0.0f;
+	xVertPos.z = 0.0f;
+
+	pVertexBuffer->position = xVertPos;
 	pVertexBuffer->color = 0xFFFFFFFF;
 	pVertexBuffer->tu = 0.5f;
 	pVertexBuffer->tv = 0.5f;
+	pVertexBuffer->normal = xNormal;
+	pVertexBuffer++;
+
+	// Create vertices
+	for ( nLoop = 0; nLoop < nNumDivisions; nLoop++ )
+	{
+		xVertPos.x = sinf( fAngle ) * fInnerRadius;
+		xVertPos.y = cosf( fAngle ) * fInnerRadius;
+		xVertPos.z = 0.0f;
+	
+		pVertexBuffer->position = xVertPos;
+		pVertexBuffer->color = 0xFFFFFFFF;
+		pVertexBuffer->tu = 0.5f + (xVertPos.x*0.5f);
+		pVertexBuffer->tv = 0.5f + (xVertPos.y*0.5f);
+		pVertexBuffer->normal = xNormal;
+		pVertexBuffer++;
+
+		fAngle += fAngleSep;
+	}
 
 	RenderingComputeBoundingBox( pVertexBufferBase, pxModelData->xStats.nNumVertices, &pxModelData->xStats.xBoundMin, &pxModelData->xStats.xBoundMax );
 	RenderingComputeBoundingSphere( pVertexBufferBase, pxModelData->xStats.nNumVertices, &pxModelData->xStats.xBoundSphereCentre, &pxModelData->xStats.fBoundSphereRadius );
 
 	pxModelData->pxBaseMesh->UnlockVertexBuffer();
-	
+
+	// Now generate indices
 	pxModelData->pxBaseMesh->LockIndexBuffer( 0, (BYTE**)&puwIndexBuffer );
-	for( nLoop = 0; nLoop < nNumFaces; nLoop++ )
+
+	nIndexRowStart = 0;
+	nIndexCount = 0;
+
+	for ( nLoop = 0; nLoop < nNumDivisions; nLoop++ )
 	{
-		puwIndexBuffer[(nLoop*3)] = nNumVerts - 1;
-		puwIndexBuffer[(nLoop*3)+1] = nLoop;
-		puwIndexBuffer[(nLoop*3)+2] = ( nLoop + 1 ) % (nNumVerts - 1);
+		puwIndexBuffer[0] = 0;
+
+		if ( nLoop == nNumDivisions - 1)
+		{
+			puwIndexBuffer[1] = 1;
+		}
+		else
+		{
+			puwIndexBuffer[1] = (ushort)( nLoop + 1 );
+		}
+		puwIndexBuffer[2] = (ushort)( nLoop );
+		puwIndexBuffer += 3;
 	}
 
 	pxModelData->pxBaseMesh->UnlockIndexBuffer();
 	
-	ModelConvSeparateVerts( nNewHandle );
-
-	ModelConvFixNormals( nNewHandle, FLAT_FACES );
+	// Calc normals
+//	ModelConvFixNormals( nNewHandle, FLAT_FACES );
 
 	ModelConvSetCurrentModel( nNewHandle );
+}
 
+
+LRESULT CALLBACK GenDiscDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+short wNotifyCode;
+//MODEL_RENDER_DATA*	pxModelData;
+
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		SetDlgItemText( hDlg, IDC_NUM_DIVISIONS, "64" );
+		return TRUE;
+	case WM_COMMAND:
+		wNotifyCode = HIWORD(wParam); 
+		switch ( wNotifyCode )
+		{
+		case BN_CLICKED:
+			switch( LOWORD(wParam) )
+			{
+			case IDOK:
+				{
+				char	acString[256];
+//				int		nVal;
+				int		nNumDivisions;
+
+					GetDlgItemText( hDlg, IDC_NUM_DIVISIONS, acString, 256 );
+					nNumDivisions = strtol( acString, NULL, 10 );
+
+					AddPrimitiveDisc( nNumDivisions );
+					EndDialog(hDlg, 0);
+				}
+				break;
+			case IDCANCEL:
+				EndDialog(hDlg, 0);
+				break;
+			}
+			break;
+		}
+		break;
+	case WM_CLOSE:
+		EndDialog(hDlg, LOWORD(wParam));
+		return( 0 );
+	case WM_DESTROY:
+		return(0);
+	default:
+		break;
+	}
+	return( FALSE );
+}
+
+
+void		AddDisc( void )
+{
+	DialogBox(ghInstance, (LPCTSTR)IDD_PRIMITIVES_DISC, NULL, (DLGPROC)GenDiscDlg );		
 }

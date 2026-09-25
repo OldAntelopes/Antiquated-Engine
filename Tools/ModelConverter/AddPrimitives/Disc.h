@@ -4,7 +4,7 @@
 
 
 
-extern void		AddPrimitiveDisc();
+extern void		AddDisc();
 
 
 
