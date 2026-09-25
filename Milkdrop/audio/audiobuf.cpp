@@ -1,6 +1,14 @@
 // audiobuf.cpp
 
 #include "audiobuf.h"
+#include <stdio.h>
+
+#include "../../Pub/Include/StandardDef.h"
+
+//#define		STORE_SAMPLES_FOR_TEST	
+
+static FILE*	s_pRecordFile = NULL;
+
 
 #define SAMPLE_SIZE_LPB 576 // Max number of audio samples stored in circular buffer. Should be no less than SAMPLE_SIZE. Expected sampling rate is 44100 Hz or 48000 Hz (samples per second).
 
@@ -10,7 +18,48 @@ unsigned char pcmRightLpb[SAMPLE_SIZE_LPB]; // Circular buffer (right channel)
 bool pcmBufDrained = false; // Buffer drained by visualization thread and holds no new samples
 signed int pcmLen = 0; // Actual number of samples the buffer holds. Can be less than SAMPLE_SIZE_LPB
 signed int pcmPos = 0; // Position to write new data
-static int s_nLastSeenSampleRate = 0; // Cache the actual sample rate from WAVEFORMATEX
+
+// Contiguous FIFO for analysis (e.g. BPM detection). Unlike the visualiser ring above - which
+// always hands back the *latest* SAMPLE_SIZE_LPB samples, overlapping from one read to the next -
+// every captured sample passes through this FIFO exactly once, so consumers can rely on each
+// block they read being the next consecutive chunk of real time.
+#define ANALYSIS_FIFO_SIZE	16384	// ~340ms @ 48khz - plenty of slack for a slow/stalled frame
+static unsigned char	s_aucFifoL[ANALYSIS_FIFO_SIZE];
+static unsigned char	s_aucFifoR[ANALYSIS_FIFO_SIZE];
+static int				s_nFifoRead = 0;
+static int				s_nFifoCount = 0;
+
+// Caller must hold pcmLpbMutex
+static void AnalysisFifoPush(unsigned char ucL, unsigned char ucR)
+{
+    if ( s_nFifoCount == ANALYSIS_FIFO_SIZE )
+    {
+        // Consumer has fallen too far behind - drop the oldest sample (stream is no longer contiguous)
+        s_nFifoRead = (s_nFifoRead + 1) % ANALYSIS_FIFO_SIZE;
+        s_nFifoCount--;
+    }
+    int	nWrite = (s_nFifoRead + s_nFifoCount) % ANALYSIS_FIFO_SIZE;
+    s_aucFifoL[nWrite] = ucL;
+    s_aucFifoR[nWrite] = ucR;
+    s_nFifoCount++;
+}
+
+bool GetAudioBufContiguous(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount)
+{
+    std::unique_lock<std::mutex> lock(pcmLpbMutex);
+    if ( s_nFifoCount < SamplesCount )
+    {
+        return false;
+    }
+    for ( int i = 0; i < SamplesCount; i++ )
+    {
+        pWaveL[i] = s_aucFifoL[s_nFifoRead];
+        pWaveR[i] = s_aucFifoR[s_nFifoRead];
+        s_nFifoRead = (s_nFifoRead + 1) % ANALYSIS_FIFO_SIZE;
+    }
+    s_nFifoCount -= SamplesCount;
+    return true;
+}
 
 void ResetAudioBuf() 
 {
@@ -19,6 +68,9 @@ void ResetAudioBuf()
     memset(pcmRightLpb, 0, SAMPLE_SIZE_LPB);
     pcmBufDrained = false;
     pcmLen = 0;
+    pcmPos = 0;
+    s_nFifoRead = 0;
+    s_nFifoCount = 0;
 }
 
 bool GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount) 
@@ -51,7 +103,7 @@ int8_t FltToInt(float flt)
         return -128; // 0x80
     }
     return (int8_t)(flt * 128);
-};
+}
 
 // Union type for sample conversion
 union u_type
@@ -81,6 +133,27 @@ int8_t GetChannelSample(const BYTE *pData, int BlockOffset, int ChannelOffset, c
     }
 }
 
+// Returns a normalized float sample in the range [-1.0f, +1.0f] for interpolation.
+float GetChannelSampleFloat(const BYTE *pData, int BlockOffset, int ChannelOffset, const bool bInt16)
+{
+    u_type sample;
+
+    sample.IntVar = 0;
+    sample.Bytes[0] = pData[BlockOffset + ChannelOffset + 0];
+    sample.Bytes[1] = pData[BlockOffset + ChannelOffset + 1];
+    if (!bInt16) {
+        sample.Bytes[2] = pData[BlockOffset + ChannelOffset + 2];
+        sample.Bytes[3] = pData[BlockOffset + ChannelOffset + 3];
+    }
+
+    if (!bInt16) {
+        return sample.FltVar; // Already normalized float [-1.0f .. +1.0f]
+    }
+    else {
+        return (float)sample.IntVar / 32768.0f; // int16_t [-32768 .. +32767] normalized to float
+    }
+}
+
 // Expecting pData holds:
 //   signed 16-bit (2 bytes) PCM, Little Endian
 //   or
@@ -103,73 +176,80 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
     //memset(pcmLeftLpb, 0, SAMPLE_SIZE_LPB);
     //memset(pcmRightLpb, 0, SAMPLE_SIZE_LPB);
 
-    int i = 0;
-    int n = 0;
-
-    int start = 0;
-	int len = 0;
-
 	float	fInputSampleStride = 1.0f;
-
-	// Cache the actual sample rate from the audio format
-	if (pwfx != NULL && pwfx->nSamplesPerSec > 0)
-	{
-		s_nLastSeenSampleRate = (int)pwfx->nSamplesPerSec;
-	}
+//	SysDebugPrint("SetAudioBuf: nSamplesPerSec = %u, nNumFramesToRead = %u, nBufferSize = %d", pwfx->nSamplesPerSec, nNumFramesToRead, nBufferSize); ")
 
 	if ( pwfx->nSamplesPerSec > 48000 )
 	{
 		fInputSampleStride = ((float)pwfx->nSamplesPerSec) / 48000;
 	}
 
-	// If we've got more frames than we've got space for, read the last SAMPLE_SIZE_LPB's worth
-    if (nNumFramesToRead >= SAMPLE_SIZE_LPB) 
-	{
-        n = 0;
-        len = SAMPLE_SIZE_LPB;
 
-		if ( (len * fInputSampleStride) > nNumFramesToRead )
-		{
-			len = (int)( nNumFramesToRead / fInputSampleStride );
-		}
-    }
-    else 
-	{
-        n = SAMPLE_SIZE_LPB - nNumFramesToRead;
-        len = nNumFramesToRead;
-    }
+	// Number of (48khz-resampled) output samples this packet yields. Using the stride here keeps
+	// every read inside pData - previously small packets used len = nNumFramesToRead regardless of
+	// the stride, which read past the end of the packet at >48khz device rates.
+	int	nOutputSamples = (int)( (float)nNumFramesToRead / fInputSampleStride );
 
-
-	float	fInputBlock = 0.0f;
+	// The visualiser ring only holds SAMPLE_SIZE_LPB samples - if this packet has more, keep the
+	// *newest* ones (the old code kept the oldest, contrary to its own comment).
+	int	nSkipForRing = ( nOutputSamples > SAMPLE_SIZE_LPB ) ? ( nOutputSamples - SAMPLE_SIZE_LPB ) : 0;
+	int	len = nOutputSamples - nSkipForRing;
 
 	// Read buffer
-    for ( int i = 0; i < len; i++ ) 
+	for ( int k = 0; k < nOutputSamples; k++ ) 
 	{
-		BlockOffset = (int)( fInputBlock ) * pwfx->nBlockAlign;
-		fInputBlock += fInputSampleStride;
-
-        // Left channel (number 0)
-        LeftSample8 = 0; // Init with silence
-        if (pwfx->nChannels >= 1) 
+		LeftSample8 = 0; // Init with silence (pData == NULL means a silent packet)
+		RightSample8 = 0;
+		if ( pData != NULL )
 		{
-            LeftSample8 = GetChannelSample(pData, BlockOffset, 0 * (pwfx->wBitsPerSample / 8), bInt16);
-        }
-
-        // Right channel (number 1)
-        RightSample8 = LeftSample8; // Init with left channel value just in case of Mono, 1 channel count
-        if (pwfx->nChannels >= 2) 
-		{
-            RightSample8 = GetChannelSample(pData, BlockOffset, 1 * (pwfx->wBitsPerSample / 8), bInt16);
-        }
+			// Box-filter (average) all input frames that map onto this output sample, rather than
+			// point-sampling every Nth frame - acts as a basic anti-alias filter when decimating
+			// (e.g. 192khz -> 48khz), which otherwise folds HF content into the analysed band
+			int	nFirst = (int)( (float)k * fInputSampleStride );
+			int	nLast = (int)( (float)(k + 1) * fInputSampleStride );
+			if ( nLast > (int)nNumFramesToRead ) nLast = (int)nNumFramesToRead;
+			if ( nLast <= nFirst ) nLast = nFirst + 1;
+			int	nSumL = 0;
+			int	nSumR = 0;
+			for ( int f = nFirst; f < nLast; f++ )
+			{
+				BlockOffset = f * pwfx->nBlockAlign;
+				int8_t	l = GetChannelSample(pData, BlockOffset, 0, bInt16);
+				int8_t	r = ( pwfx->nChannels >= 2 ) ? GetChannelSample(pData, BlockOffset, 1 * (pwfx->wBitsPerSample / 8), bInt16) : l;
+				nSumL += l;
+				nSumR += r;
+			}
+			LeftSample8 = (int8_t)( nSumL / (nLast - nFirst) );
+			RightSample8 = (int8_t)( nSumR / (nLast - nFirst) );
+		}
 
         // Saving audio data for visualizer
         // 8-bit signed integer in Two's Complement Representation stored in unsigned char array
         // int8_t[-128 .. + 127] stored into uint8_t[0 .. 255]
-        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = LeftSample8;
-        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = RightSample8;
+		// Every sample goes into the contiguous analysis FIFO (consumed exactly once by GetAudioBufContiguous)
+		AnalysisFifoPush( (unsigned char)LeftSample8, (unsigned char)RightSample8 );
 
-		n++;
-    }
+#ifdef STORE_SAMPLES_FOR_TEST
+		if ( s_pRecordFile == NULL )
+		{
+			fopen_s( &s_pRecordFile, "audiosamplerecord.dat", "wb" );
+		}
+		if ( s_pRecordFile != NULL )
+		{
+			unsigned char	ucSample = (unsigned char)LeftSample8;
+			fwrite( &ucSample, 1, 1, s_pRecordFile );
+		}
+#endif
+
+		// Visualiser ring: append *after* the newest data (previously small packets were written at
+		// pcmPos + (SAMPLE_SIZE_LPB - len), i.e. on top of the most recent samples).
+		if ( k >= nSkipForRing )
+		{
+			int	nRingIndex = (pcmPos + (k - nSkipForRing)) % SAMPLE_SIZE_LPB;
+			pcmLeftLpb[nRingIndex] = LeftSample8;
+			pcmRightLpb[nRingIndex] = RightSample8;
+		}
+	}
 
     pcmBufDrained = false;
     pcmLen = (pcmLen + len <= SAMPLE_SIZE_LPB) ? (pcmLen + len) : (SAMPLE_SIZE_LPB);
@@ -177,9 +257,12 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
 
 }
 
-// Return the last known actual sample rate from the audio format
-// Returns 0 if no audio format has been seen yet
-int GetAudioBufActualSampleRate()
+
+void	ShutdownAudioBuf()
 {
-    return s_nLastSeenSampleRate;
+	if ( s_pRecordFile != NULL )
+	{
+		fclose( s_pRecordFile );
+		s_pRecordFile = NULL;
+	}
 }

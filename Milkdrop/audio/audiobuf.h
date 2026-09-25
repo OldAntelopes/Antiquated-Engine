@@ -9,8 +9,11 @@ void ResetAudioBuf();
 // Return previously saved audio data for visualizer
 bool GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount);
 
+// Pop exactly SamplesCount *new, contiguous* 48khz samples for analysis (e.g. BPM detection).
+// Each captured sample is returned exactly once. Returns false if not enough new samples yet.
+bool GetAudioBufContiguous(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount);
+
 // Save audio data for visualizer
 void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFORMATEX *pwfx, const bool bInt16, int nBufferSize );
 
-// Get the actual sample rate from the last audio buffer that was set
-int GetAudioBufActualSampleRate();
+void	ShutdownAudioBuf();

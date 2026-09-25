@@ -263,11 +263,24 @@ HRESULT LoopbackCapture(
                 //return E_UNEXPECTED;
             }
 
-            if (bErrorInAudioData) 
+			if ( (dwFlags & AUDCLNT_BUFFERFLAGS_SILENT) && nNumFramesToRead > 0 )
 			{
-                // Glitch in audio detected so we reset audio buffer and avoid writing to the output .wav file
-                ResetAudioBuf();
-            }
+				// Silent packet - still represents real elapsed time, so feed silence rather than
+				// dropping it (dropping made the analysis stream / test recording non-contiguous)
+				SetAudioBuf(NULL, nNumFramesToRead, pwfx, bInt16, nNumFramesToRead * nBlockAlign);
+				*pnFrames += nNumFramesToRead;
+			}
+			else if (bErrorInAudioData && nNumFramesToRead == 0)
+			{
+				// Nothing to do
+			}
+			else if (bErrorInAudioData) 
+			{
+				// Discontinuity/timestamp glitch - the data itself is still valid audio, keep it so
+				// the stream's time base isn't broken (previously this reset the buffer and lost the packet)
+				SetAudioBuf(pData, nNumFramesToRead, pwfx, bInt16, nNumFramesToRead * nBlockAlign);
+				*pnFrames += nNumFramesToRead;
+			}
             else
             {
             LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
@@ -325,6 +338,7 @@ HRESULT LoopbackCapture(
         }
     }
 
+	ShutdownAudioBuf();
 	SysDebugPrint( "Audio capture thread exiting" );
     return hr;
 }
