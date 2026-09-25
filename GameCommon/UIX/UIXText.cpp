@@ -27,6 +27,10 @@ int			drawY = drawRect.y + (((drawRect.h - pInterface->GetStringHeight(mText.c_s
 		mText = acBuff;
 	}
 
+	if ( mFontFlags & SMALL )
+	{
+		pInterface->SetFontFlags( FONT_FLAG_SMALL );
+	}
 	// TODO - Use mFontFlags if set
 // TODO - These are bitflags and some should be combinable
 	switch( mFontFlags )
@@ -40,6 +44,11 @@ int			drawY = drawRect.y + (((drawRect.h - pInterface->GetStringHeight(mText.c_s
 	default:
 		pInterface->TextLimitWidth( 1, drawRect.x, drawY, drawRect.w, mulCol, mFont, mText.c_str() );
 		break;
+	}
+
+	if ( mFontFlags & SMALL )
+	{
+		pInterface->SetFontFlags( 0 );
 	}
 
 	displayRect.h = 0;//

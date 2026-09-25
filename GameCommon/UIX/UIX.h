@@ -81,6 +81,7 @@ enum UIX_TEXT_FLAGS
 	ALIGN_RIGHT = 0x1,
 	BOLD = 0x2,
 	ALIGN_CENTRE = 0x4,
+	SMALL = 0x8,
 };
 
 enum UIX_SLIDER_MODE
