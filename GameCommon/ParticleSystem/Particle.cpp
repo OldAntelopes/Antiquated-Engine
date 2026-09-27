@@ -16,7 +16,7 @@ Particle::Particle()
 	memset( &mxDir, 0, sizeof( mxDir ) );
 	mfTimeAlive = 0.0f;
 	mfSpriteScale = 1.0f;
-	mnSpriteFrameNum = 0;
+	muwSpriteFrameNum = 0;
 }
 
 Particle::~Particle()
@@ -33,8 +33,14 @@ void	Particle::SetGraphic( const char* szSpriteTextureName, float fGridScale, BO
 {
 	mnParticleGraphicsNum = ParticleGraphicsCreate( szSpriteTextureName, fGridScale, bUseRotation, renderFlags, layer );
 }
-	
-void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, uint32 ulInitParamChannel, void* pUserObject, int nSpriteRenderLayer)
+
+void	Particle::Finalise()
+{
+	SetBaseScale( mfSpriteScale );
+	SetBaseCol( mulCol );
+}	
+
+void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParam, ushort uwInitParamChannel, void* pUserObject, ushort uwSpriteRenderLayer)
 {
 	mType = typeID;
 	if ( pxPos )
@@ -46,9 +52,9 @@ void	Particle::Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ul
 		mxVel = *pxVel;
 	}
 	mulCol = ulCol;
-	mulParamChannel = ulInitParamChannel;
+	muwParamChannel = uwInitParamChannel;
 	mfLongevity = fLongevity;
-	mnSpriteRenderLayer = nSpriteRenderLayer;
+	muwSpriteRenderLayer = uwSpriteRenderLayer;
 	OnInit(nInitParam, pUserObject);
 }
 
@@ -88,7 +94,7 @@ Sprite		xSprite;
 	xSprite.mfRot = GetRot();
 	xSprite.mfScale = mfSpriteScale;
 	xSprite.mfScaleZ = mfSpriteScale;		// Check this..
-	xSprite.mnFrameNum = mnSpriteFrameNum;
+	xSprite.mnFrameNum = muwSpriteFrameNum;
 	xSprite.mulCol = ulCol;	
 	xSprite.mxPos = *GetPos();
 	
@@ -170,11 +176,11 @@ void	Particle::DefaultRender( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFl
 			{
 				if (mfSpriteAspect != 1.0f )
 				{				
-					pSpriteGroup->AddSpriteRotScaleXY( GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot(), mfSpriteAspect );			
+					pSpriteGroup->AddSpriteRotScaleXY( GetPos(), mfSpriteScale, ulCol, muwSpriteFrameNum, 0, GetRot(), mfSpriteAspect );			
 				}
 				else
 				{
-					pSpriteGroup->AddSpriteRot( GetPos(), mfSpriteScale, ulCol, mnSpriteFrameNum, 0, GetRot() );
+					pSpriteGroup->AddSpriteRot( GetPos(), mfSpriteScale, ulCol, muwSpriteFrameNum, 0, GetRot() );
 				}
 
 				RenderObjectList::GetCurrent().AddRenderObjectIfNotPresent( pSpriteGroup );

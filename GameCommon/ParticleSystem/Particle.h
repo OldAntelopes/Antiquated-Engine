@@ -1,7 +1,7 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#define		IN_MORGUE	-1
+#define		IN_MORGUE	0xFFFF
 
 #include <map>
 
@@ -16,6 +16,7 @@ public:
 	virtual ~Particle();
 
 	virtual void		OnInit( int nInitParam, void* pUserObject ) {}
+	virtual void		OnInitComplete( int nInitParam, void* pUserObject ) {}
 	virtual void		OnUpdate( float delta ) {}
 	virtual void		OnRenderParticle( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags ) {}
 	virtual void		OnPreRenderParticle() {}
@@ -23,7 +24,7 @@ public:
 	virtual BOOL		UseDefaultRender( void ) { return( TRUE ); }
 	virtual float		GetAlphaOverride( void ) { return -1.0f; }
 
-	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, uint32 ulInitParamChannel = 0, void* pUserObject = NULL, int nSpriteRenderLayer = 0 );
+	void	Init( int typeID, const VECT* pxPos, const VECT* pxVel, uint32 ulCol, float fLongevity, int nInitParm = 0, ushort uwInitParamChannel = 0, void* pUserObject = NULL, ushort uwSpriteRenderLayer = 0 );
 	void	Update( float fDelta );
 	virtual void	RenderParticle( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
 	void	PreRender();
@@ -31,15 +32,17 @@ public:
 	void	SetGraphic( const char* szSpriteTextureName, float fGridScale, BOOL bUseRotation = FALSE, eRenderFlags renderFlags = kRenderFlag_Default, int layer = 0 );
 	void	SetGraphicHandle( int hTex, float fGridScale, BOOL bUseRotation = FALSE, eRenderFlags renderFlags = kRenderFlag_Default, int layer = 0 );
 
-	const VECT*	GetPos( void ) { return( &mxPos ); }
-	const VECT*	GetVel( void ) { return( &mxVel ); }
-	const VECT*	GetFacingDirection( void ) { return( &mxDir ); }
-	float		GetRot( void ) { return( mfRot ); }
-	float		GetRotSpeed( void ) { return( mfRotSpeed ); }
+	const VECT*	GetPos( void ) const { return( &mxPos ); }
+	const VECT*	GetVel( void ) const { return( &mxVel ); }
+	const VECT*	GetFacingDirection( void ) const { return( &mxDir ); }
+	const VECT*	GetParamVect( void ) const { return( &mxParamVect ); }
+	float		GetRot( void ) const { return( mfRot ); }
+	float		GetRotSpeed( void ) const { return( mfRotSpeed ); }
 
 	void	SetPos( const VECT* pxPos ) { mxPos = *pxPos; }
 	void	SetVel( const VECT* pxVel ) { mxVel = *pxVel; }
 	void	SetFacingDirection( const VECT* pxDir ) { mxDir = *pxDir; }
+	void	SetParamVect( const VECT* pxParamVect ) { mxParamVect = *pxParamVect; }
 	void	SetRot( float fRot ) { mfRot = fRot; }
 	void	SetRotSpeed( float fRotSpeed ) { mfRotSpeed = fRotSpeed; }
 	void	SetCol( uint32 ulCol ) { mulCol = ulCol; }
@@ -47,50 +50,57 @@ public:
 	void	SetFadeInTime( float fTimeSecs ) { mfFadeInTime = fTimeSecs; }
 	void	SetSpriteScale( float fScale ) { mfSpriteScale = fScale; }
 	void	SetSpriteAspect( float fAspectRatio ) { mfSpriteAspect = fAspectRatio; }
-	void	SetSpriteFrameNum( int nFrameNum ) { mnSpriteFrameNum = nFrameNum; }
-	void	SetParamChannel( uint32 nChannel ) { mulParamChannel = nChannel; }
-	void	SetBaseScale( float fScale ) { mfBaseScale = fScale; }
+	void	SetSpriteFrameNum( ushort uwFrameNum ) { muwSpriteFrameNum = uwFrameNum; }
+	void	SetParamChannel( ushort uwChannel ) { muwParamChannel = uwChannel; }
 
-	int		GetParticleGraphicNum( void ) { return( mnParticleGraphicsNum ); }
+	int		GetParticleGraphicNum( void ) const { return( mnParticleGraphicsNum ); }
 
-	int		GetTypeID( void ) { return( mType ); }
-	void	SetTypeID( int type ) { mType = type; }
+	void	Finalise();		// Called at end of init process to store base values for things like scale and colour which can be modified by components
+
+	int		GetTypeID( void ) const { return( mType ); }
+	void	SetTypeID( ushort type ) { mType = type; }
 	
 	float	GetLongevity( void ) const { return( mfLongevity ); }
 	float	GetTimeAlive( void ) const { return( mfTimeAlive ); }
 	float	GetSpriteScale( void ) const { return( mfSpriteScale ); }
-	float	GetBaseScale( void ) const { return( mfBaseScale ); }
 	float	GetSpriteAspect( void ) const { return( mfSpriteAspect ); }
 	uint32	GetCol( void ) const { return( mulCol ); }
-	uint32	GetParamChannel( void ) const { return( mulParamChannel ); }
-	int		GetSpriteRenderLayer() const { return(mnSpriteRenderLayer); }
+	ushort	GetParamChannel( void ) const { return( muwParamChannel ); }
+	ushort	GetSpriteRenderLayer() const { return(muwSpriteRenderLayer); }
+
+	float	GetBaseScale( void ) const { return( mfBaseScale ); }
+	uint32	GetBaseCol(void) const { return(mulBaseCol); }	
 
 	void		SetNext( Particle* pNext ) { mpNext = pNext; }
-	Particle*	GetNext( void ) { return( mpNext ); }
+	Particle*	GetNext( void ) const { return( mpNext ); }
 	void		KillSelf() { mType = IN_MORGUE; }
 protected:
 	void		AddVertices( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags, uint32 ulCol );
 
-	float		mfTimeAlive = 0.0f;
 	int			mnParticleGraphicsNum = NOTFOUND;
+	float		mfTimeAlive = 0.0f;
 	float		mfLongevity;
 	float		mfFadeInTime = 0.0f;
 	float		mfSpriteScale;
-	float		mfBaseScale = 1.0f;
 	float		mfSpriteAspect = 1.0f;
 	VECT		mxPos;
 	VECT		mxVel;
 	VECT		mxDir;
-	int			mType;
+	VECT		mxParamVect;
 	uint32		mulCol;
 	float		mfRot = 0.0f;
 	float		mfRotSpeed = 0.0f;
-	int			mnSpriteFrameNum;
-	uint32		mulParamChannel;
-	int			mnSpriteRenderLayer = 0;
+	ushort		mType;
+	ushort		muwSpriteFrameNum;		
+	ushort		muwParamChannel;			
+	ushort		muwSpriteRenderLayer = 0;	
 
+	float		mfBaseScale = 1.0f;
+	uint32		mulBaseCol = 0;
 private:
 	void		DefaultRender( MultiVertexBuffers* pVertexBuff, uint32 ulRenderFlags );
+	void		SetBaseScale( float fScale ) { mfBaseScale = fScale; }
+	void		SetBaseCol(uint32 ulCol) { mulBaseCol = ulCol; }	
 
 	Particle*	mpNext;
 
