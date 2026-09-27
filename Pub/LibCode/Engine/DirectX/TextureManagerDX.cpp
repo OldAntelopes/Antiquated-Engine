@@ -211,6 +211,8 @@ int		nLoop = 1;
 	PANIC_IF( TRUE, "DX11 EngineCreateTexture TBI" );
 #else
 	D3DFORMAT	 d3dFormat;
+	BOOL		bUseManagedPool = TRUE;
+
 	switch ( format )
 	{
 	case 0:
@@ -218,13 +220,22 @@ int		nLoop = 1;
 		break;
 	case 2:
 		d3dFormat = D3DFMT_X8R8G8B8;
+		bUseManagedPool = FALSE;
+		break;
+	case 10: 
+		d3dFormat = D3DFMT_DXT1;
+		bUseManagedPool = FALSE;
+		break; 
+	case 11: 
+		d3dFormat = D3DFMT_DXT5;
+		bUseManagedPool = FALSE;
 		break;
 	default:
 		d3dFormat = D3DFMT_A8R8G8B8;
 		break;
 	}
 
-	if ( format == 2 )
+	if ( bUseManagedPool == FALSE )
 	{
 		mpEngineDevice->CreateTexture(nWidth,nHeight,1,D3DUSAGE_DYNAMIC,d3dFormat,D3DPOOL_DEFAULT, &pTexture, NULL );
 	}
