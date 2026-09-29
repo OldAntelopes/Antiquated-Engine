@@ -96,7 +96,7 @@ Sprite		xSprite;
 	xSprite.mfScaleZ = mfSpriteScale;		// Check this..
 	xSprite.mnFrameNum = muwSpriteFrameNum;
 	xSprite.mulCol = ulCol;	
-	xSprite.mxPos = *GetPos();
+	VectAdd( &xSprite.mxPos, &mxOffset, GetPos() );
 	
 	float	fGridScale = 1.0f;		// TODO - get this from the ParticleGraphics instead of assuming 1.0f
 

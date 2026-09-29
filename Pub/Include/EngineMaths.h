@@ -92,6 +92,7 @@ extern float	VectNormalize( VECT* );
 extern float	VectDot( const VECT*, const VECT* );
 extern BOOL     VectEquals(const VECT*, const VECT*);
 extern void		VectCross( VECT*, const VECT*, const VECT* );
+extern void		VectSet( VECT* pOut, float x, float y, float z );
 extern void		VectScale( VECT* pOut, const VECT* pSrc, float fScale );
 extern void		VectAdd( VECT* pOut, const VECT* pSrc, const VECT* pSrc2 );
 extern void		VectSub( VECT* pOut, const VECT* pSrc, const VECT* pSrc2 );
@@ -116,6 +117,8 @@ extern void	EngineMatrixIdentity( ENGINEMATRIX* pxMatrix );
 
 extern void EngineSetMatrixFromRotations( const VECT* pxRot, ENGINEMATRIX* pxMatrix );
 extern void EngineSetMatrixXYZ( ENGINEMATRIX* pxMatrix, float, float, float );
+extern void EngineSetMatrixXYZDegrees( ENGINEMATRIX* pxMatrix, float, float, float );
+extern void EngineSetMatrixDegrees( ENGINEMATRIX* pxMatrix, const VECT* pxDegreesRot );
 
 extern void EngineMatrixMultiply( ENGINEMATRIX* pxMatrix1, const ENGINEMATRIX* pMatrix2 );
 

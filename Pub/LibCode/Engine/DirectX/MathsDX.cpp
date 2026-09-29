@@ -75,6 +75,27 @@ void EngineSetMatrixXYZ( ENGINEMATRIX* pxMatrix, float fX, float fY, float fZ )
 #endif
 }
 
+void EngineSetMatrixXYZDegrees( ENGINEMATRIX* pxMatrix, float fX, float fY, float fZ )
+{
+#ifdef TUD11
+	DirectX::XMMATRIX	xMatrix = DirectX::XMMatrixRotationRollPitchYaw( DEGTORAD(fX), DEGTORAD(fY), DEGTORAD(fZ) );
+	DirectX::XMStoreFloat4x4( (DirectX::XMFLOAT4X4*)pxMatrix, xMatrix );
+#else
+	D3DXMatrixRotationYawPitchRoll( (D3DXMATRIX*)(pxMatrix), DEGTORAD(fY), DEGTORAD(fX), DEGTORAD(fZ) );
+#endif
+}
+
+void EngineSetMatrixDegrees( ENGINEMATRIX* pxMatrix, const VECT* pxDegreesRot )
+{
+#ifdef TUD11
+	DirectX::XMMATRIX	xMatrix = DirectX::XMMatrixRotationRollPitchYaw( DEGTORAD(pxDegreesRot->x), DEGTORAD(pxDegreesRot->y), DEGTORAD(pxDegreesRot->z) );
+	DirectX::XMStoreFloat4x4( (DirectX::XMFLOAT4X4*)pxMatrix, xMatrix );
+#else
+	D3DXMatrixRotationYawPitchRoll( (D3DXMATRIX*)(pxMatrix), DEGTORAD(pxDegreesRot->y), DEGTORAD(pxDegreesRot->x), DEGTORAD(pxDegreesRot->z) );
+#endif
+}
+
+
 void	VectProject( VECT* pxOut, const VECT* pxIn, ENGINEMATRIX* pxProjMat, ENGINEMATRIX* pxViewMat, ENGINEMATRIX* pxWorldMat )
 {
 	D3DXVec3Project( (D3DXVECTOR3*)pxOut, (D3DXVECTOR3*)pxIn, NULL, (D3DXMATRIX*)pxProjMat, (D3DXMATRIX*)pxViewMat, (D3DXMATRIX*)pxWorldMat );
@@ -333,6 +354,13 @@ void		VectSub( VECT* pOut, const VECT* pSrc, const VECT* pSrc2 )
 #else
 	D3DXVec3Subtract( (D3DXVECTOR3*)(pOut),(D3DXVECTOR3*)(pSrc), (D3DXVECTOR3*)(pSrc2) );
 #endif
+}
+
+void		VectSet( VECT* pOut, float x, float y, float z )
+{
+	pOut->x = x;
+	pOut->y = y;
+	pOut->z = z;
 }
 
 void		VectAdd( VECT* pOut, const VECT* pSrc, const VECT* pSrc2 )

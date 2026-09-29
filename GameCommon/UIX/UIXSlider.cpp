@@ -363,7 +363,20 @@ uint32		ulCol = 0xf0505070;
 				}
 				else
 				{
-					sprintf( acVal, "%.2f", mfMinVal );
+					if ( ( mfMinVal < -100.0f ) ||
+						 ( mfMinVal > 100.0f ) )
+					{
+						sprintf( acVal, "%d", (int)mfMinVal );
+					}
+					else if ( ( mfMinVal < -10.0f ) ||
+							  ( mfMinVal > 10.0f ) )
+					{
+						sprintf( acVal, "%.1f", mfMinVal );
+					}
+					else
+					{
+						sprintf( acVal, "%.2f", mfMinVal );			
+					}
 				}
 				mpRangeMinTextBox->SetText( acVal );
 				mpRangeMinTextBox->OnRender( pInterface, drawRect );
@@ -378,7 +391,20 @@ uint32		ulCol = 0xf0505070;
 				}
 				else
 				{
-					sprintf( acVal, "%.2f", mfMaxVal );
+					if ( ( mfMaxVal < -100.0f ) ||
+						 ( mfMaxVal > 100.0f ) )
+					{
+						sprintf( acVal, "%d", (int)mfMaxVal );
+					}
+					else if ( ( mfMaxVal < -10.0f ) ||
+							  ( mfMaxVal > 10.0f ) )
+					{
+						sprintf( acVal, "%.1f", mfMaxVal );
+					}
+					else
+					{
+						sprintf( acVal, "%.2f", mfMaxVal );
+					}
 				}
 				mpRangeMaxTextBox->SetText( acVal );
 				mpRangeMaxTextBox->OnRender( pInterface, drawRect );

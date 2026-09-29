@@ -393,6 +393,15 @@ typedef VECT		MVECT;
 #define	A180	(FLTPI)
 #define	A270	(FLTPI*1.5f)
 #define	A360	(FLTPI*2.0f)
+
+#endif
+
+#ifndef DEGTORAD
+#define		DEGTORAD(x)	((x*A360)/360.0f)
+#define		RADTODEG(x)	((x*360.0f)/A360)
+
+#define		DEGVECTORADVEC(u,w)	(w.x=DEGTORAD(u.x),w.y=DEGTORAD(u.y),w.z=DEGTORAD(u.z))
+#define		RADVECTODEGVEC(u,w) (w.x=RADTODEG(u.x),w.y=RADTODEG(u.y),w.z=RADTODEG(u.z))
 #endif
 
 typedef struct

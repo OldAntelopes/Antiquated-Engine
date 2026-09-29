@@ -3,6 +3,7 @@
 
 #define		IN_MORGUE	0xFFFF
 
+
 #include <map>
 
 #include "../RenderUtil/Sprites3D.h"
@@ -35,8 +36,11 @@ public:
 	const VECT*	GetPos( void ) const { return( &mxPos ); }
 	const VECT*	GetVel( void ) const { return( &mxVel ); }
 	const VECT*	GetFacingDirection( void ) const { return( &mxDir ); }
+	const VECT*	GetFacingUp( void ) const { return( &mxUp ); }
+	const VECT*	GetOffset( void ) const { return( &mxOffset ); }
 	const VECT*	GetParamVect( void ) const { return( &mxParamVect ); }
 	float		GetRot( void ) const { return( mfRot ); }
+	float		GetRotDeg( void ) const { return( RADTODEG(mfRot) ); }
 	float		GetRotSpeed( void ) const { return( mfRotSpeed ); }
 
 	void	SetPos( const VECT* pxPos ) { mxPos = *pxPos; }
@@ -44,7 +48,9 @@ public:
 	void	SetFacingDirection( const VECT* pxDir ) { mxDir = *pxDir; }
 	void	SetParamVect( const VECT* pxParamVect ) { mxParamVect = *pxParamVect; }
 	void	SetRot( float fRot ) { mfRot = fRot; }
+	void	SetRotDeg( float fRotDeg ) { mfRot = DEGTORAD(fRotDeg); }
 	void	SetRotSpeed( float fRotSpeed ) { mfRotSpeed = fRotSpeed; }
+	void	SetOffset( const VECT* pxOffset ) { mxOffset = *pxOffset; }
 	void	SetCol( uint32 ulCol ) { mulCol = ulCol; }
 
 	void	SetFadeInTime( float fTimeSecs ) { mfFadeInTime = fTimeSecs; }
@@ -86,6 +92,8 @@ protected:
 	VECT		mxPos;
 	VECT		mxVel;
 	VECT		mxDir;
+	VECT		mxUp = VECT(0.0f,-1.0f,0.0f);		// By default, particles are aligned so they face up in the negative y (they travel around in the XZ plane)
+	VECT		mxOffset;
 	VECT		mxParamVect;
 	uint32		mulCol;
 	float		mfRot = 0.0f;

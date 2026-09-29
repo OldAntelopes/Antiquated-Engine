@@ -281,8 +281,16 @@ uint32		ulDefaultCol = 0x90404040;
 		{
 			UIX::CheckForRightButtonPress( this, drawRect, mulRightPressButtonID, mulRightPressButtonParam );	
 		}
-		// TODO - Properly centre the title
-		pInterface->Text( 1, drawRect.x + 8, drawRect.y + 3, 0xd0a0a0a0, 3, mTitle.c_str() );
+		
+		if (mfnLabelEditCallback != NULL)
+		{
+			pInterface->Text( 1, drawRect.x + 8, drawRect.y + 3, 0xd0a0a0a0, 3, PlatformKeyboardGetInputString(TRUE) );
+		}
+		else
+		{
+			// TODO - Properly centre the title
+			pInterface->Text( 1, drawRect.x + 8, drawRect.y + 3, 0xd0a0a0a0, 3, mTitle.c_str() );
+		}
 		break;
 	case UIXBUTTON_TEXT_WITH_COLLAPSABLE:
 		{
