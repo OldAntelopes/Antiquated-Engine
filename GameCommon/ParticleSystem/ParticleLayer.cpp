@@ -51,6 +51,9 @@ void	ParticleLayer::Update( float delta )
 			return false;
 		});
 	mpParticleList.erase( newEnd, mpParticleList.end() );
+
+	// Refresh before the layer is added to the RenderObjectList, as that groups (and binds) by texture handle
+	UpdateTextureHandle();
 }
 
 
@@ -103,14 +106,20 @@ Particle*		pParticle = ParticleManagerCreateNewParticle( szParticleTypeName, pxP
 
 int		ParticleLayer::UpdateTextureHandle()
 {
-	if ( mpParticleList.size() > 0 )
+	// Use the newest particle whose texture is ready, so a changed sprite shows as soon as it has loaded
+	// (rather than waiting for all the particles using the old graphic to die off)
+	for ( auto it = mpParticleList.rbegin(); it != mpParticleList.rend(); ++it )
 	{
-	int		nParticleGraphic = mpParticleList[0]->GetParticleGraphicNum();
+	int		nParticleGraphic = (*it)->GetParticleGraphicNum();
 	int		hNextTexture = ParticleGraphicsGetTextureHandle( nParticleGraphic );
-	uint32		uNextRenderFlags = ParticleGraphicsGetRenderFlags( nParticleGraphic );
 
-		SetTextureHandle( hNextTexture );
-		SetRenderFlags( uNextRenderFlags );
+		if ( ( EngineTextureIsFullyLoaded( hNextTexture ) == TRUE ) ||
+			 ( it + 1 == mpParticleList.rend() ) )
+		{
+			SetTextureHandle( hNextTexture );
+			SetRenderFlags( ParticleGraphicsGetRenderFlags( nParticleGraphic ) );
+			return( hNextTexture );
+		}
 	}
 	return( NOTFOUND );
 }
