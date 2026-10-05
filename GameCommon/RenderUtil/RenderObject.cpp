@@ -20,7 +20,8 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 {
 	if (renderFlags & kRenderFlag_DestAdd )
 	{
-		EngineSetBlendMode( BLEND_MODE_DESTADD );
+//		EngineSetBlendMode( BLEND_MODE_COLOUR_ALPHA );	
+		EngineSetBlendMode( BLEND_MODE_DESTADD );		// This is 'Multiply'
 	}
 	else if (renderFlags & kRenderFlag_Mask)
 	{
@@ -56,7 +57,8 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 	{
 		if ( renderFlags & kRenderFlag_ColourBlend )
 		{
-			EngineSetBlendMode( BLEND_MODE_COLOUR_ADDITIVE );		
+			EngineSetBlendMode( BLEND_MODE_COLOUR_ALPHA );		
+//			EngineSetBlendMode( BLEND_MODE_COLOUR_ADDITIVE );				
 		}
 		else
 		{

@@ -1310,6 +1310,13 @@ void	EngineSetBlendMode( int nBlendMode )
 	mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	switch( nBlendMode )
 	{
+	case BLEND_MODE_COLOUR_ALPHA:
+		// Experimental.. no idea..
+		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+//		mpEngineDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
+		mpEngineDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+		mpEngineDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
+		break;		
 	case BLEND_MODE_SRCALPHA_ADDITIVE:
 		mpEngineDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		mpEngineDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE);
