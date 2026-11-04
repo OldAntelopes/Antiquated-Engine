@@ -14,7 +14,7 @@ Interface project : "Pub\Projects\Interface.vcxproj"
 Most code files for the interface are kept in "Pub\LibCode\Interface"
 External headers are in "Pub\Include"
 
-The project generates as output "Pub\Libs\InterfaceD-DX9.lib" (DX9 debug version) or "Pubs\Libs\Interface-DX9.lib" (DX9 Release version)
+The project generates as output "Pub\Libs\InterfaceD-DX9.lib" (DX9 debug version) or "Pub\Libs\Interface-DX9.lib" (DX9 Release version)
 
 **Interface Dependencies**
 

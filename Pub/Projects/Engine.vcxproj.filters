@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Skeleton">
+      <UniqueIdentifier>{7c3e9a51-2b64-4f0d-9d1a-5e8b2c4f6a17}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CollisionMaths">
       <UniqueIdentifier>{e385aee5-283b-44e4-8f96-7c7700bdaf68}</UniqueIdentifier>
     </Filter>
@@ -125,6 +128,18 @@
     <ClInclude Include="..\LibCode\Engine\ModelRendering.h" />
     <ClInclude Include="..\Include\Rendering.h" />
     <ClInclude Include="..\LibCode\Engine\SkinnedModel.h" />
+    <ClInclude Include="..\LibCode\Engine\Skeleton\ModelSkeleton.h">
+      <Filter>Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\Skeleton\ModelSkeletonFiles.h">
+      <Filter>Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\Skeleton\SkeletalAnimation.h">
+      <Filter>Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Engine\Skeleton\SkeletonMaths.h">
+      <Filter>Skeleton</Filter>
+    </ClInclude>
     <ClInclude Include="..\Include\fbxsdk.h">
       <Filter>Include</Filter>
     </ClInclude>
@@ -701,6 +716,15 @@
     <ClCompile Include="..\LibCode\Engine\ModelMaterialData.cpp" />
     <ClCompile Include="..\LibCode\Engine\ModelRendering.cpp" />
     <ClCompile Include="..\LibCode\Engine\SkinnedModel.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Skeleton\ModelSkeleton.cpp">
+      <Filter>Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\Skeleton\ModelSkeletonFiles.cpp">
+      <Filter>Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\Skeleton\SkeletalAnimation.cpp">
+      <Filter>Skeleton</Filter>
+    </ClCompile>
     <ClCompile Include="..\LibCode\Engine\Loader.cpp" />
     <ClCompile Include="..\LibCode\Engine\DirectX\PostProcessDX.cpp">
       <Filter>DirectX</Filter>
@@ -714,6 +738,12 @@
     <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp">
       <Filter>FileFormats</Filter>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Engine\FileFormats\fbxAnimation.cpp">
+      <Filter>FileFormats</Filter>
+    </ClCompile>
+    <ClInclude Include="..\LibCode\Engine\FileFormats\fbxAnimation.h">
+      <Filter>FileFormats</Filter>
+    </ClInclude>
     <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp">
       <Filter>FileFormats</Filter>
     </ClCompile>

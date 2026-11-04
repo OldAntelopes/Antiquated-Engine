@@ -13,6 +13,7 @@
 #include "BSPRender/BSPModel.h"
 #include "ModelArchive.h"
 #include "ModelMaterialData.h"
+#include "Skeleton/ModelSkeleton.h"
 
 
 #ifdef USING_OPENGL
@@ -637,6 +638,11 @@ MODEL_RENDER_DATA*		pxModelData;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
 
+	if ( pxModelData->pSkeleton )
+	{
+		pxModelData->pSkeleton->PlayAnimation( nAnimationUse, mulLastRenderingTick );
+	}
+
 	if ( nPriority >= pxModelData->xAnimationState.uwNextAnimPriority )
 	{
 		pxModelData->xAnimationState.nNextAnimUse = nAnimationUse;
@@ -698,6 +704,11 @@ int				nKeyframeNum;
 	if ( nModelHandle == NOTFOUND ) return;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
+
+	if ( pxModelData->pSkeleton )
+	{
+		pxModelData->pSkeleton->PlayAnimation( nAnimationUse, mulLastRenderingTick );
+	}
 
 	// If the new animation is a higher priority than the one we're currently playing
 	if ( pxModelData->xAnimationState.uwCurrentAnimPriority <= nPriority )
@@ -1113,11 +1124,120 @@ float	fAnimSpeed = 1.0f;
 
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// Animate once per frame (opt-in, EngineSetAnimateOncePerFrame)
+//
+// A keyframe-animated model's pose is written into its base mesh's vertex buffer by a CPU blend, every time it's
+// drawn. With shadow-map and reflection passes that's done up to three times a frame for the same pose. This cache
+// remembers, per vertex buffer, which model last blended into it, at which tick and from which animation state. If
+// the same model asks again with the same tick and the same state, the buffer already holds exactly that pose and the
+// blend (and the animation update, which would make no change) is skipped.
+//
+// Clones share their base mesh, so a clone blending in between makes the next model re-blend, as before. A hash
+// collision only evicts an entry, which also just means a re-blend. Off by default, so other apps see no change.
+//-------------------------------------------------------------------------------------------------------------------
+#define		ANIM_BLEND_CACHE_SIZE		64
+
+typedef struct
+{
+	const void*					pMesh;
+	const MODEL_RENDER_DATA*	pxWriter;
+	uint32						ulTick;
+	float						fAnimSpeedMod;
+	CURRENT_ANIMATION_STATE		xState;
+
+} ANIM_BLEND_CACHE_ENTRY;
+
+static ANIM_BLEND_CACHE_ENTRY	maxAnimBlendCache[ ANIM_BLEND_CACHE_SIZE ];
+static BOOL		msbEngineAnimateOncePerFrame = FALSE;
+static int		msnAnimBlendsDone = 0;
+static int		msnAnimBlendsSkipped = 0;
+
+static ANIM_BLEND_CACHE_ENTRY*	ModelAnimBlendCacheSlot( const void* pMesh )
+{
+	return( &maxAnimBlendCache[ ( ((uintptr_t)pMesh) >> 4 ) & ( ANIM_BLEND_CACHE_SIZE - 1 ) ] );
+}
+
+void	EngineSetAnimateOncePerFrame( BOOL bFlag )
+{
+	msbEngineAnimateOncePerFrame = bFlag;
+	memset( maxAnimBlendCache, 0, sizeof( maxAnimBlendCache ) );
+}
+
+BOOL	ModelRenderingAnimateOncePerFrame( void )
+{
+	return( msbEngineAnimateOncePerFrame );
+}
+
+// (Used by skeletal skinning, ModelSkeleton::UpdateAndSkin, which keeps its own same-frame check)
+void	ModelRenderingNoteAnimationBlend( BOOL bSkipped )
+{
+	if ( bSkipped )
+	{
+		msnAnimBlendsSkipped++;
+	}
+	else
+	{
+		msnAnimBlendsDone++;
+	}
+}
+
+void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkipped )
+{
+	if ( pnBlendsDone ) *pnBlendsDone = msnAnimBlendsDone;
+	if ( pnBlendsSkipped ) *pnBlendsSkipped = msnAnimBlendsSkipped;
+}
+
+// Something other than the keyframe blend wrote this mesh's vertices, so no cached pose is valid for it
+static void	ModelAnimBlendCacheForget( const void* pMesh )
+{
+ANIM_BLEND_CACHE_ENTRY*		pxEntry = ModelAnimBlendCacheSlot( pMesh );
+
+	if ( pxEntry->pMesh == pMesh )
+	{
+		pxEntry->pMesh = NULL;
+	}
+}
+
+static BOOL	ModelAnimBlendCacheIsCurrent( const MODEL_RENDER_DATA* pxModelData, uint32 ulTick )
+{
+ANIM_BLEND_CACHE_ENTRY*		pxEntry;
+
+	if ( msbEngineAnimateOncePerFrame == FALSE ) return( FALSE );
+
+	pxEntry = ModelAnimBlendCacheSlot( pxModelData->pxBaseMesh );
+	if ( ( pxEntry->pMesh == pxModelData->pxBaseMesh ) &&
+		 ( pxEntry->pxWriter == pxModelData ) &&
+		 ( pxEntry->ulTick == ulTick ) &&
+		 ( pxEntry->fAnimSpeedMod == pxModelData->fAnimSpeedMod ) &&
+		 ( memcmp( &pxEntry->xState, &pxModelData->xAnimationState, sizeof( CURRENT_ANIMATION_STATE ) ) == 0 ) )
+	{
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+static void	ModelAnimBlendCacheNoteWritten( const MODEL_RENDER_DATA* pxModelData, uint32 ulTick )
+{
+ANIM_BLEND_CACHE_ENTRY*		pxEntry;
+
+	if ( msbEngineAnimateOncePerFrame == FALSE ) return;
+
+	pxEntry = ModelAnimBlendCacheSlot( pxModelData->pxBaseMesh );
+	pxEntry->pMesh = pxModelData->pxBaseMesh;
+	pxEntry->pxWriter = pxModelData;
+	pxEntry->ulTick = ulTick;
+	pxEntry->fAnimSpeedMod = pxModelData->fAnimSpeedMod;
+	memcpy( &pxEntry->xState, &pxModelData->xAnimationState, sizeof( CURRENT_ANIMATION_STATE ) );	// (memcpy, so padding matches for the memcmp)
+}
+
+
 void ModelRenderKeyframeAnimationUpdateBaseMeshFromKeyframes( MODEL_RENDER_DATA* pxModelData, VECT* pxVertKeyframes )
 {
 CUSTOMVERTEX*	pxVertices = NULL;
 int				nVertLoop;
 
+	ModelAnimBlendCacheForget( pxModelData->pxBaseMesh );
 	pxModelData->pxBaseMesh->LockVertexBuffer( 0, (byte**)( &pxVertices ) );
 
 	if ( pxVertices )
@@ -1162,6 +1282,13 @@ uint32		ulTickGap;
 
 	if ( pxModelData->xStats.nNumVertKeyframes <= 0 )
 	{
+		return;
+	}
+
+	// Already blended this pose into the buffer this frame (opt-in, see EngineSetAnimateOncePerFrame)
+	if ( ModelAnimBlendCacheIsCurrent( pxModelData, ulTick ) == TRUE )
+	{
+		msnAnimBlendsSkipped++;
 		return;
 	}
 
@@ -1210,6 +1337,8 @@ uint32		ulTickGap;
 			pxLastVerts += pxModelData->xStats.nNumVertKeyframes;
 		}
 		pxModelData->pxBaseMesh->UnlockVertexBuffer();
+		msnAnimBlendsDone++;
+		ModelAnimBlendCacheNoteWritten( pxModelData, ulTick );
 	}
 }
 
@@ -1346,6 +1475,126 @@ MODEL_RENDER_DATA*		pxModelData;
 	if ( pxModelData->xLowLODAttachData.nModelHandle != NOTFOUND )
 	{
 		ModelSetWheelSpinRotation( pxModelData->xLowLODAttachData.nModelHandle, fVertRot );
+	}
+}
+
+static TURRET_ATTACH_DATA*	ModelGetWheelAttachData( MODEL_RENDER_DATA* pxModelData, int nWheelNum )
+{
+	switch( nWheelNum )
+	{
+	case 0:		return( &pxModelData->xWheel1AttachData );
+	case 1:		return( &pxModelData->xWheel2AttachData );
+	case 2:		return( &pxModelData->xWheel3AttachData );
+	case 3:		return( &pxModelData->xWheel4AttachData );
+	default:	break;
+	}
+	return( NULL );
+}
+
+/***************************************************************************
+ * Function    : ModelGetWheelAttachPoint
+ * Params      : nWheelNum 0-3 (front pair, then rear pair)
+ * Returns     : FALSE if there's no wheel model attached in that slot
+ * Description : Model-space position of the wheel's attach vertex, and the wheel radius
+ *               (half the height of the wheel model)
+ ***************************************************************************/
+BOOL		ModelGetWheelAttachPoint( int nModelHandle, int nWheelNum, VECT* pxAttachPoint, float* pfWheelRadius )
+{
+MODEL_RENDER_DATA*		pxModelData;
+MODEL_RENDER_DATA*		pxWheelModelData;
+TURRET_ATTACH_DATA*		pxWheelData;
+CUSTOMVERTEX*	pxVertices;
+
+	if ( nModelHandle == NOTFOUND ) return( FALSE );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	pxWheelData = ModelGetWheelAttachData( pxModelData, nWheelNum );
+
+	if ( ( pxWheelData == NULL ) ||
+		 ( pxWheelData->nModelHandle <= 0 ) ||
+		 ( pxWheelData->nAttachVertex <= 0 ) ||
+		 ( pxModelData->pxBaseMesh == NULL ) )
+	{
+		return( FALSE );
+	}
+
+	if ( pxAttachPoint )
+	{
+		pxModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
+		pxAttachPoint->x = pxVertices[ pxWheelData->nAttachVertex ].position.x;
+		pxAttachPoint->y = pxVertices[ pxWheelData->nAttachVertex ].position.y;
+		pxAttachPoint->z = pxVertices[ pxWheelData->nAttachVertex ].position.z;
+		pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	}
+
+	if ( pfWheelRadius )
+	{
+		pxWheelModelData = &maxModelRenderData[ pxWheelData->nModelHandle ];
+		*pfWheelRadius = ( pxWheelModelData->xStats.xBoundMax.z - pxWheelModelData->xStats.xBoundMin.z ) * 0.5f;
+
+		// The stored bounds aren't always filled in for sub-models, so measure the wheel mesh if needed
+		if ( ( *pfWheelRadius <= 0.0f ) &&
+			 ( pxWheelModelData->pxBaseMesh != NULL ) )
+		{
+		int		nNumVerts = pxWheelModelData->pxBaseMesh->GetNumVertices();
+		int		nLoop;
+		float	fMinZ = 0.0f;
+		float	fMaxZ = 0.0f;
+
+			if ( nNumVerts > 0 )
+			{
+				pxWheelModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly , (byte**)( &pxVertices ) );
+				fMinZ = pxVertices[0].position.z;
+				fMaxZ = fMinZ;
+				for ( nLoop = 1; nLoop < nNumVerts; nLoop++ )
+				{
+					if ( pxVertices[nLoop].position.z < fMinZ ) fMinZ = pxVertices[nLoop].position.z;
+					if ( pxVertices[nLoop].position.z > fMaxZ ) fMaxZ = pxVertices[nLoop].position.z;
+				}
+				pxWheelModelData->pxBaseMesh->UnlockVertexBuffer();
+			}
+			*pfWheelRadius = ( fMaxZ - fMinZ ) * 0.5f;
+		}
+	}
+	return( TRUE );
+}
+
+int			ModelGetWheelDisplayMode( int nModelHandle )
+{
+	if ( nModelHandle == NOTFOUND ) return( 0 );
+	return( maxModelRenderData[ nModelHandle ].bWheelDisplayMode );
+}
+
+/***************************************************************************
+ * Function    : ModelSetWheelRenderOffset
+ * Params      : nWheelNum 0-3, pxOffset model-space offset (NULL = none)
+ * Description : Moves a wheel away from its attach vertex when drawn. LOD models get the same offset.
+ ***************************************************************************/
+void		ModelSetWheelRenderOffset( int nModelHandle, int nWheelNum, const VECT* pxOffset )
+{
+MODEL_RENDER_DATA*		pxModelData;
+
+	if ( nModelHandle == NOTFOUND ) return;
+	if ( ( nWheelNum < 0 ) || ( nWheelNum > 3 ) ) return;
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+
+	if ( pxOffset )
+	{
+		pxModelData->axWheelRenderOffset[nWheelNum] = *pxOffset;
+	}
+	else
+	{
+		pxModelData->axWheelRenderOffset[nWheelNum].x = 0.0f;
+		pxModelData->axWheelRenderOffset[nWheelNum].y = 0.0f;
+		pxModelData->axWheelRenderOffset[nWheelNum].z = 0.0f;
+	}
+
+	if ( pxModelData->xMedLODAttachData.nModelHandle != NOTFOUND )
+	{
+		ModelSetWheelRenderOffset( pxModelData->xMedLODAttachData.nModelHandle, nWheelNum, pxOffset );
+	}
+	if ( pxModelData->xLowLODAttachData.nModelHandle != NOTFOUND )
+	{
+		ModelSetWheelRenderOffset( pxModelData->xLowLODAttachData.nModelHandle, nWheelNum, pxOffset );
 	}
 }
 
@@ -1855,6 +2104,12 @@ MODEL_RENDER_DATA*		pxModelData;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
 
+	if ( pxModelData->nCloneOfHandle == NOTFOUND )
+	{
+		SAFE_DELETE( pxModelData->pSkeleton );
+	}
+	pxModelData->pSkeleton = NULL;
+
 	if ( pxModelData->pModelArchive != NULL )
 	{
 		delete pxModelData->pModelArchive;
@@ -1944,6 +2199,7 @@ MODEL_RENDER_DATA*		pxModelData;
 		maxModelRenderData[pxModelData->nCloneOfHandle].nCloneCount--;
 		pxModelData->nCloneOfHandle = NOTFOUND;
 	}
+	ZeroMemory( pxModelData->axWheelRenderOffset, sizeof( pxModelData->axWheelRenderOffset ) );
 }
 
 

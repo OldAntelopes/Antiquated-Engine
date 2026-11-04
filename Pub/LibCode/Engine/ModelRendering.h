@@ -207,10 +207,13 @@ typedef struct
 	class	ModelArchive*	pModelArchive;
 	class	ModelMaterialData*		pMaterialData;
 	class	SkinnedModel*	pSkinnedModel;
+	class	ModelSkeleton*	pSkeleton;		// Skeletal animation data (bones, weights, anims) - NULL unless the model is skinned
 
 	float		fAnimSpeedMod;
 
 	fnCustomMeshRenderer	pfnCustomMeshRenderer;
+
+	VECT		axWheelRenderOffset[4];		// Model-space offsets added to the wheel attach points (ModelSetWheelRenderOffset)
 
 } MODEL_RENDER_DATA;
 
@@ -231,6 +234,10 @@ extern void		ModelRenderKeyframeAnimationGenerateBaseMesh(  MODEL_RENDER_DATA* p
 extern void		ModelSetGlobalProperties( int nModelHandle, GLOBAL_PROPERTIES_CHUNK* pxProperties );
 
 extern void		ModelRenderKeyframeAnimationUpdateBaseMeshFromKeyframes( MODEL_RENDER_DATA* pxModelData, VECT* pxVertKeyframes );
+
+// Animate once per frame (EngineSetAnimateOncePerFrame): whether it's on, and the skin/blend counters it reports
+extern BOOL		ModelRenderingAnimateOncePerFrame( void );
+extern void		ModelRenderingNoteAnimationBlend( BOOL bSkipped );
 //-------------------------------------------------------------------
 
 

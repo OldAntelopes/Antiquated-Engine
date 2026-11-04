@@ -114,6 +114,7 @@ public:
 	void		DrawAllElements( void );
 	float		GetFPS() { return( mfInterfaceFPS ); }
 	BOOL		HasWindowChanged() { return( mboHasWindowChanged );}
+	void		SetWindowHasChanged( BOOL bFlag ) { mboHasWindowChanged = bFlag; }
 	BOOL		WasFullscreen() { return( mboCurrentlyFullscreen ); }
 	void		RegisterDeviceResetCallbacks(fnInterfaceCallback fnPreReset, fnInterfaceCallback fnPostReset) { mfnPreDeviceResetCallback = fnPreReset; mfnPostDeviceResetCallback = fnPostReset; }
 	void*		GetRawTexture( int nHandle );

@@ -330,7 +330,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../Include;../Include/DirectX;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DXERR_INCLUDED;ENGINEDX;WIN32;_DEBUG;_LIB;TOOL;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Tool_Debug/Engine.pch</PrecompiledHeaderOutputFile>
@@ -389,7 +389,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;USING_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug_OpenGL/Engine.pch</PrecompiledHeaderOutputFile>
@@ -506,7 +506,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENGINEDX;WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.pch</PrecompiledHeaderOutputFile>
@@ -559,7 +559,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../Include;../LibOVR/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENGINEDX;WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;TUD11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\Objs\Debug\Engine___Win32_Client_Debug/Engine.pch</PrecompiledHeaderOutputFile>
@@ -851,6 +851,7 @@
     <ClInclude Include="..\LibCode\Engine\EngineModule.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\3dsLoader.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\fbxLoader.h" />
+    <ClInclude Include="..\LibCode\Engine\FileFormats\fbxAnimation.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\ObjLoader.h" />
     <ClInclude Include="..\LibCode\Engine\Loader.h" />
     <ClInclude Include="..\LibCode\Engine\RenderScene\RenderScene.h" />
@@ -1009,6 +1010,10 @@
     <ClInclude Include="..\LibCode\Engine\ModelRendering.h" />
     <ClInclude Include="..\Include\Rendering.h" />
     <ClInclude Include="..\LibCode\Engine\SkinnedModel.h" />
+    <ClInclude Include="..\LibCode\Engine\Skeleton\ModelSkeleton.h" />
+    <ClInclude Include="..\LibCode\Engine\Skeleton\ModelSkeletonFiles.h" />
+    <ClInclude Include="..\LibCode\Engine\Skeleton\SkeletalAnimation.h" />
+    <ClInclude Include="..\LibCode\Engine\Skeleton\SkeletonMaths.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LibCode\Engine\CollisionMaths\dist_pointline.cpp" />
@@ -1041,6 +1046,7 @@
     <ClCompile Include="..\LibCode\Engine\EngineModule.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\3dsLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp" />
+    <ClCompile Include="..\LibCode\Engine\FileFormats\fbxAnimation.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\Loader.cpp" />
     <ClCompile Include="..\LibCode\Engine\RenderScene\RenderScene.cpp" />
@@ -1206,6 +1212,9 @@
     <ClCompile Include="..\LibCode\Engine\ModelMaterialData.cpp" />
     <ClCompile Include="..\LibCode\Engine\ModelRendering.cpp" />
     <ClCompile Include="..\LibCode\Engine\SkinnedModel.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Skeleton\ModelSkeleton.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Skeleton\ModelSkeletonFiles.cpp" />
+    <ClCompile Include="..\LibCode\Engine\Skeleton\SkeletalAnimation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -42,6 +42,9 @@ enum
 	ATM_CHUNKID_TEXMATERIAL,	// TBI
 	ATM_CHUNKID_ATTRIBUTEDATA,	// TBI
 	ATM_CHUNKID_BASIC_CONTENTS,
+	ATM_CHUNKID_SKELETON,				// 0x1C - Bones (ATM_SKELETON_BONE_ENTRY per element)
+	ATM_CHUNKID_SKIN_WEIGHTS,			// 0x1D - Per-vertex bone weights (ATM_SKIN_WEIGHT_ENTRY per element)
+	ATM_CHUNKID_SKELETAL_ANIM_LINKS,	// 0x1E - Linked animation files (ATM_SKELETAL_ANIM_LINK_ENTRY per element)
 	ATM_MAX_CHUNKID,
 	
 	ATM_CHUNKID_MODEL_SEPARATOR = 255,		// Always at end of list
@@ -131,6 +134,33 @@ typedef struct
 	uint32	ulLockCode;
 
 } ATM_BASIC_CONTENTS;
+
+//-------------------------------------------------------------------- Skeletal animation chunks
+typedef struct
+{
+	char		acName[32];
+	short		wParentIndex;		// -1 for the root. Parents always precede children
+	ushort		uwFlags;			// Currently unused (0)
+	VECT		xBindPos;			// Joint position in model space, bind pose
+	ENGINEQUATERNION	xBindRot;	// Joint orientation in model space, bind pose. Currently always identity
+
+} ATM_SKELETON_BONE_ENTRY;				// 64 bytes
+
+typedef struct
+{
+	BYTE		abBoneIndex[4];
+	BYTE		abWeight[4];		// 0-255, normalised so they sum to 255
+
+} ATM_SKIN_WEIGHT_ENTRY;					// 8 bytes
+
+typedef struct
+{
+	char		acFilename[64];		// Animation file (.bvh) relative to the folder containing the .atm
+	ushort		uwAnimUse;			// ANIM_xxx enum value (ANIM_RUN etc)
+	ushort		uwFlags;			// Currently unused (0)
+	float		fSpeed;				// Playback speed multiplier (currently unused, 1.0)
+
+} ATM_SKELETAL_ANIM_LINK_ENTRY;			// 72 bytes
 
 extern void		ModelExportATM( int nModelHandle, const char* szFilename, uint32 ulSaveFlags, uint32 ulLockFlags );
 

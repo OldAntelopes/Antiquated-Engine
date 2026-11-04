@@ -36,13 +36,20 @@ being parsed. Once done, immediately following the ATM_FILE_HEADER will be the f
 
 ATM_CHUNK_HEADER
 ---------------
-    0x0		[1 byte] = Chunk code.  Defines the type of this chunk. (See individual chunk definitions later)
+    0x0		[1 byte] = Chunk header marker. Always 0x55 (ATM_CHUNK_HEADER_CODE) - the loader stops reading chunks if it isn't
     0x1		[1 byte] = Chunk Data Num.  	
-			Some chunks can appear multiple times within the ATM, this indicates which chunk number this is
-    0x2 	[2 byte] = ChunkID
+			Some chunks can appear multiple times within the ATM, this indicates which chunk number this is.
+			(For the 0xFF separator chunk this says what the following sub-model is - 1 horiz turret, 2 vert turret,
+			 3 front wheel, 4 rear wheel, 5 medium LOD, 6 low LOD, 7 collision model)
+    0x2 	[2 byte] = ChunkID. Defines the type of this chunk - the 'Chunk Codes' listed below
     0x4		[4 bytes] = Num Elements in Chunk
 			Some chunks contain many elements (e.g. a vertices chunk may contain 1000s of vertices.)
     0x8		[4 bytes] = Size of each element
+
+The chunk data (Num Elements x Size of each element bytes) follows the header. In version 2+ files the data is padded with
+zeros to a 4-byte boundary. Loaders skip chunk IDs they don't recognise, which is how new chunk types stay backwards compatible.
+Chunks are processed in three passes (basic contents first, then geometry and most other data, then colours and skin data),
+so chunk order within a model doesn't matter.
 
 Chunk Codes
 ------------
@@ -74,8 +81,21 @@ Chunk Codes
 	0x19	Texture Material
 	0x1A	Attribute Data
 	0x1B	Basic Contents
+	0x1C	Skeleton				(Experimental - see Pub\skeletalanimation.md)
+	0x1D	Skin Weights			(Experimental)
+	0x1E	Skeletal Animation Links	(Experimental)
 	
 	0xFF	Chunk Separator
+
+**Chunk ID register.** This file is the single register of ATM chunk IDs for every reader and writer of the format:
+Antiquated's Engine and ModelConverter, and MitGames' Shared\MitAtm (agreed with the developer, 31 Oct 2026).
+- Add a new chunk to the list above, with its layout below, *before* any code writes it. **0x1F is the next free ID.**
+- An ID means the same layout everywhere. Any reader may support a subset of the chunks and skip the rest, but no
+  one reuses an ID or gives it a different layout.
+- The same goes for reserved and unused fields (such as the flags fields, the skeleton's bind rotation and the
+  animation links' speed). Their meaning is defined here before anyone starts using them.
+- Change a layout only by appending fields to the end of an element. Loaders step by the stored element size,
+  so older readers keep working.
 
 ** Definition of data in each chunk by Chunk Codes **
 ----------------------------
@@ -325,3 +345,41 @@ Usually (but not necessarily) this will be the first chunk in the ATM file, and 
 	0x20	[2 bytes]		Currently unused
 	0x24	[4 bytes]		LockID
 	0x28	[4 bytes]		Lock Code
+
+
+0x1C	Skeleton  (Experimental)
+------------------------------------
+One element per bone (ChunkHeader -> SizeOfElement is currently 64; loaders step by the stored size so fields can be appended).
+Bones are ordered so that a parent always comes before its children.
+
+	0x0		[32 bytes]		Bone name (zero terminated). Animations are matched to bones by name - see Pub\skeletalanimation.md
+	0x20	[2 bytes]		Parent bone index (-1 for the root)
+	0x22	[2 bytes]		Flags (currently unused, 0)
+	0x24	[12 bytes]		Bind pose joint position X,Y,Z (floats, model space)
+	0x30	[16 bytes]		Bind pose joint orientation quaternion X,Y,Z,W (floats, model space). Currently always identity
+
+x number of bones. The bind pose is the pose the mesh's vertices are stored in.
+
+0x1D	Skin Weights  (Experimental)
+------------------------------------
+One element per vertex, in the same order as the vertex chunk (SizeOfElement = 8)
+
+	0x0		[4 bytes]		Bone index for each of up to 4 influences
+	0x4		[4 bytes]		Weight for each influence, 0-255 (the four weights sum to 255)
+
+x number of vertices
+
+0x1E	Skeletal Animation Links  (Experimental)
+------------------------------------
+One element per linked animation (SizeOfElement = 72). The animation files live in the same folder as the .atm and
+are loaded when the model is loaded. Currently they are .bvh files.
+
+	0x0		[64 bytes]		Animation filename, relative to the folder containing the .atm (zero terminated)
+	0x40	[2 bytes]		Animation use (the ANIM_xxx enum in Rendering.h - e.g. 2 = ANIM_RUN)
+	0x42	[2 bytes]		Flags (currently unused, 0)
+	0x44	[4 bytes]		Playback speed multiplier (float, currently unused - 1.0)
+
+x number of linked animations
+
+A skinned model is normally a static mesh (model type 0) with these three chunks added - older loaders ignore the
+chunks and show it in its bind pose.

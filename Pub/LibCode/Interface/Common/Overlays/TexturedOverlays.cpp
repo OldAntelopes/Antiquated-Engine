@@ -1431,7 +1431,10 @@ INTERFACE_API int  InterfaceCreateNewTexturedOverlay( int nLayer, int nTextureHa
 
 INTERFACE_API void InterfaceReleaseTexture( int nTextureHandle )
 {
-	InterfaceInstanceMain()->mpTexturedOverlays->ReleaseTexture( nTextureHandle );
+	if (InterfaceInstanceMain()->mpTexturedOverlays)
+	{
+		InterfaceInstanceMain()->mpTexturedOverlays->ReleaseTexture(nTextureHandle);
+	}
 }
 
 

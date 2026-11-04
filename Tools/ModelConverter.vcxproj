@@ -221,6 +221,7 @@
     <ClCompile Include="ModelConverter\MaterialBrowser.cpp" />
     <ClCompile Include="ModelConverter\ModelConverter.cpp" />
     <ClCompile Include="ModelConverter\SubModelBrowser.cpp" />
+    <ClCompile Include="ModelConverter\Skeletal\SkeletalTools.cpp" />
     <ClCompile Include="ModelConverter\UVUnwrap.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -241,4 +242,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project>

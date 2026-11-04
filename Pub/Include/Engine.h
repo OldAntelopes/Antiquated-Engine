@@ -123,6 +123,21 @@ extern void		EngineReloadShaders( void );
 extern	BOOL	EngineIsInitialised( void );
 
 extern	void	EngineDefaultState( void );
+// Opt-in: makes EngineDefaultState also set the alpha-test compare function (a D3DCMP_* value, e.g. D3DCMP_GREATEREQUAL).
+// EngineInitDX sets GREATEREQUAL once, but a device Reset puts it back to the D3D default (ALWAYS). Off (NOTFOUND)
+// by default, so EngineDefaultState behaves as before unless the app asks.
+extern	void	EngineSetDefaultStateAlphaFunc( int nCompareFunc );
+// Opt-in: animated models (keyframe blending and skeletal skinning) write their pose into the vertex buffer once per
+// frame, and later passes in the same frame (shadow map, reflection, second VR eye, shadow volumes) reuse it instead of
+// redoing it. Keyframe clones share a buffer, so a clone drawn in between still makes the next one re-blend.
+// Off by default (every draw animates, as before).
+extern	void	EngineSetAnimateOncePerFrame( BOOL bFlag );
+// Running totals of keyframe blends done and skipped (by the above). Compare two readings for a per-frame figure.
+extern	void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkipped );
+// Opt-in: the DX9 model renderer saves the stage-0 texture with GetTexture (which AddRefs) on every model draw and
+// never released it, leaking a reference per draw and keeping textures alive after they're freed. TRUE releases the
+// previous saved reference each time, so only one is held. Off by default, because it changes texture lifetimes.
+extern	void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag );
 
 extern	void	EngineSetBlendMode( int nBlendMode );
 extern	void	EngineSetColourMode( int nTexLayer, int nBlendMode );
@@ -237,6 +252,9 @@ extern void				EngineTextureSetBestFiltering( int nChannel, int nMaxAnisotropy )
 
 extern TEXTURE_HANDLE	EngineLoadTextureFromFileInMem( byte* pbMem, int nMipMode, int* pnErrorFlag, int nMemSize, const char* szOptionalFilename );
 extern TEXTURE_HANDLE	EngineLoadTextureFromMem( byte* pbMem, int nMemSize, int width, int height, int format, int nMipMode, int* pnErrorFlag );
+// Opt-in: on the D3D9Ex device D3DPOOL_MANAGED is invalid, so EngineLoadTextureFromFileInMem (and textures embedded
+// in .atm models) fail. TRUE makes it load into D3DPOOL_DEFAULT instead. Off by default, so existing apps see no change.
+extern void				EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag );
 extern TEXTURE_HANDLE	EngineCreateTexture( int nWidth, int nHeight, int format );
 extern BYTE*			EngineLockTexture( TEXTURE_HANDLE handle, int* pnPitch, BOOL bClear );
 extern void				EngineUnlockTexture( TEXTURE_HANDLE handle );

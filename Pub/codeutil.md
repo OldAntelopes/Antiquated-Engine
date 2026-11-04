@@ -12,7 +12,7 @@ CodeUtil project : "Pub\Projects\CodeUtil.vcxproj"
 Code files for the library are kept in "Pub\LibCode\CodeUtil"
 External headers are in "Pub\Include"
 
-The project generates as output "Pub\Libs\CodeUtilD.lib" (debug version) or "Pubs\Libs\CodeUtil.lib" (Release version)
+The project generates as output "Pub\Libs\CodeUtilD.lib" (debug version) or "Pub\Libs\CodeUtil.lib" (Release version)
 
 **CodeUtil Headers**
 Read 

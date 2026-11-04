@@ -52,7 +52,8 @@ enum eRenderFlags    // For ulRenderFlags parameter in ModelRender
 	RENDER_FLAGS_MATERIAL2_ONLY = 0x2000,
 	RENDER_FLAGS_MATERIAL3_ONLY = 0x4000,
 	RENDER_FLAGS_MATERIAL4_ONLY = 0x8000,
-	
+	RENDER_FLAGS_WHEELS_ONLY = 0x10000,		// Draw only the attached wheels (no base mesh, turrets or effects). Pair with a NO_FRONT_WHEELS|NO_REAR_WHEELS render of the chassis
+
 
 };
 
@@ -210,6 +211,13 @@ extern float	ModelGetVertTurretRotation( int nModelHandle );
 extern void		ModelRenderSetWheelDisplayMode( int nModelHandle, int nMode, float fThrottle );
 extern void		ModelSetWheelSpinRotation( int nModelHandle, float fVertRot );
 extern void		ModelSetFrontWheelTurnRotation( int nModelHandle, float fRot );
+// Wheel attach info, for games that move the wheels themselves (e.g. visual suspension).
+// nWheelNum 0-3 = front pair (1,2) then rear pair (3,4). Attach point is in model space; radius is half the wheel model's height.
+// Returns FALSE if the model has no wheel attached in that slot.
+extern BOOL		ModelGetWheelAttachPoint( int nModelHandle, int nWheelNum, VECT* pxAttachPoint, float* pfWheelRadius );
+extern int		ModelGetWheelDisplayMode( int nModelHandle );
+// Model-space offset added to a wheel's attach point when it is drawn (NULL resets it). Also applied to the LOD models
+extern void		ModelSetWheelRenderOffset( int nModelHandle, int nWheelNum, const VECT* pxOffset );
 
 // Misc other bits
 extern void		ModelSetMaterialEmissive( int nModelHandle, int nMaterialNum, const ENGINEMATERIAL_COLOUR* pxCol );
@@ -359,6 +367,91 @@ extern BOOL		ModelShadowsEnabled( int nModelHandle );
 
 extern int			ModelAnimationGetIDFromName( const char* szAnimName );
 extern const char*	ModelAnimationGetName( int nAnimID );
+
+//-------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------          Skeletal animation  (Experimental)
+//
+//  A model can carry a skeleton (bones with bind-pose joint positions) plus per-vertex bone weights, and
+//  links to animation files (.bvh, in the same folder as the .atm). Animations from any humanoid source
+//  skeleton are retargeted onto the model's bones by bone name at load time, then the mesh is skinned on
+//  the CPU each frame. The usual ModelSetAnimationImmediate/Next calls select which linked animation plays.
+//  See ATMFormat.md (chunks 0x1C-0x1E) and Pub\skeletalanimation.md.
+
+#define		MODEL_SKELETON_MAX_BONES		128
+#define		MODEL_SKELETON_BONE_NAME_LEN	32
+
+typedef struct
+{
+	char	acName[MODEL_SKELETON_BONE_NAME_LEN];
+	int		nParentIndex;			// NOTFOUND for the root. Parents must come before their children
+	VECT	xBindPos;				// Joint position in model space, in the bind pose (the pose of the base mesh)
+
+} MODEL_SKELETON_BONE;
+
+typedef struct
+{
+	BYTE	abBoneIndex[4];
+	float	afWeight[4];			// Sum to 1.0
+
+} MODEL_SKIN_WEIGHT;
+
+// The standard humanoid bone set (names follow the common Mixamo/CMU convention, minus any "mixamorig:" prefix)
+enum eHumanoidBones
+{
+	HUMANOID_HIPS = 0,
+	HUMANOID_SPINE,
+	HUMANOID_SPINE1,
+	HUMANOID_NECK,
+	HUMANOID_HEAD,
+	HUMANOID_LEFT_SHOULDER,
+	HUMANOID_LEFT_ARM,
+	HUMANOID_LEFT_FOREARM,
+	HUMANOID_LEFT_HAND,
+	HUMANOID_RIGHT_SHOULDER,
+	HUMANOID_RIGHT_ARM,
+	HUMANOID_RIGHT_FOREARM,
+	HUMANOID_RIGHT_HAND,
+	HUMANOID_LEFT_UPLEG,
+	HUMANOID_LEFT_LEG,
+	HUMANOID_LEFT_FOOT,
+	HUMANOID_LEFT_TOEBASE,
+	HUMANOID_RIGHT_UPLEG,
+	HUMANOID_RIGHT_LEG,
+	HUMANOID_RIGHT_FOOT,
+	HUMANOID_RIGHT_TOEBASE,
+
+	HUMANOID_NUM_BONES
+};
+
+extern const char*	ModelSkeletonGetHumanoidBoneName( int nHumanoidBone );
+
+extern BOOL		ModelHasSkeleton( int nModelHandle );
+extern BOOL		ModelSkeletonCreate( int nModelHandle, int nNumBones, const MODEL_SKELETON_BONE* pxBones );
+// Creates the standard humanoid skeleton. pxJointPositions is indexed by eHumanoidBones (model space)
+extern BOOL		ModelSkeletonCreateHumanoid( int nModelHandle, const VECT* pxJointPositions );
+// Guesses joint positions for a humanoid mesh from its bounds (Z up, facing +X, arms down/A-pose)
+extern void		ModelSkeletonEstimateHumanoidJoints( int nModelHandle, VECT* pxJointPositionsOut );
+extern void		ModelSkeletonFree( int nModelHandle );
+
+extern int		ModelSkeletonGetNumBones( int nModelHandle );
+extern const MODEL_SKELETON_BONE*	ModelSkeletonGetBone( int nModelHandle, int nBoneNum );
+
+extern void		ModelSkeletonSetVertexWeights( int nModelHandle, const MODEL_SKIN_WEIGHT* pxWeights );
+extern const MODEL_SKIN_WEIGHT*	ModelSkeletonGetVertexWeights( int nModelHandle, int* pnNumWeightsOut );
+extern void		ModelSkeletonAutoGenerateWeights( int nModelHandle, int nSmoothingPasses );
+
+// Loads an animation (.bvh) and makes it available as nAnimUse (ANIM_RUN etc). Relative filenames are looked
+// for in the model's folder. If bLinkInModel is set, the link is saved with the model by ModelExportATM.
+// Returns the animation slot or NOTFOUND
+extern int		ModelSkeletonAddAnimation( int nModelHandle, const char* szAnimFilename, int nAnimUse, BOOL bLinkInModel );
+extern int		ModelSkeletonGetNumAnimations( int nModelHandle );
+extern void		ModelSkeletonSetRootMotion( int nModelHandle, BOOL bKeepHorizontalRootMotion );
+
+// Converts a vertex-keyframe model into a static mesh (in its current base pose) ready for skinning
+extern void		ModelRemoveVertexAnimation( int nModelHandle );
+
+// Current (last rendered) model-space joint positions, for debug drawing. Returns number of bones written
+extern int		ModelSkeletonGetCurrentJointPositions( int nModelHandle, VECT* pxPositionsOut, int nMaxBones );
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------

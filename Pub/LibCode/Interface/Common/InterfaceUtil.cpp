@@ -96,3 +96,9 @@ INTERFACE_API int	InterfaceLoadTextureFromArchive( const char* szFilename, int n
 	return( InterfaceGetTextureInternal( szFilename, nFlags, nArchiveHandle, bAsync) );
 }
 
+// The (C-linkage) version declared in Interface.h
+INTERFACE_API int	InterfaceLoadTextureFromArchive( const char* szFilename, int nFlags, int nArchiveHandle )
+{
+	return( InterfaceGetTextureInternal( szFilename, nFlags, nArchiveHandle, FALSE ) );
+}
+

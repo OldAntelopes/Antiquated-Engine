@@ -178,6 +178,32 @@ INTERFACE_API int InterfaceGetWindowHeight( void )
 	return( InterfaceInstanceMain()->GetWindowHeight() );
 }
 
+// Public Interface.h wrappers (still used by The Universal)
+INTERFACE_API void InterfaceSetWindowPosition( int nLeft, int nTop )
+{
+	InterfaceInstanceMain()->SetWindowPosition( nLeft, nTop );
+}
+
+INTERFACE_API int InterfaceGetWindowPositionX( void )
+{
+	return( InterfaceInstanceMain()->GetWindowX() );
+}
+
+INTERFACE_API int InterfaceGetWindowPositionY( void )
+{
+	return( InterfaceInstanceMain()->GetWindowY() );
+}
+
+INTERFACE_API void InterfaceSetWindowHasChanged( BOOL bFlag )
+{
+	InterfaceInstanceMain()->SetWindowHasChanged( bFlag );
+}
+
+// The max render page width option went with the interface refactor - kept so existing callers still link
+INTERFACE_API void InterfaceSetMaximumFrontBufferWidth( int nMaxWidth )
+{
+}
+
 void	InterfaceInstance::SetWindowPosition(int nLeft, int nTop)
 {
 	mnWindowLeft = nLeft;

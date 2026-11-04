@@ -19,6 +19,7 @@
 #include "../Common/InterfaceUtil.h"
 #include "../Common/InterfaceCommon.h"
 #include "../Common/InterfaceInstance.h"
+#include "../Common/InterfaceOptions.h"		// So InterfaceSetFilteringModes/InterfaceSetMipMapBias get the C linkage they're declared with
 #include "../Common/Font/FontCommon.h"
 
 //#include "stb_image.h"  // single-header decoder: https://github.com/nothings/stb

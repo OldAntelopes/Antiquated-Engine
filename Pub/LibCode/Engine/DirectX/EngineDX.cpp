@@ -98,6 +98,7 @@ int							m_snNextIndexBufferHandle = 1;
 BOOL						m_sbUseAnisotropicFiltering = TRUE;
 
 int		mnEngineStateAlphaTest = NOTFOUND;
+int		msnEngineDefaultStateAlphaFunc = NOTFOUND;		// see EngineSetDefaultStateAlphaFunc
 
 /*
 typedef struct 
@@ -1640,7 +1641,23 @@ void	EngineDefaultState( void )
 		EngineEnableBlend( 1 );
 		EngineEnableTextureAddressClamp( 1 );
 		mpEngineDevice->SetRenderState( D3DRS_ALPHAREF, 0x1 );
+		if ( msnEngineDefaultStateAlphaFunc != NOTFOUND )
+		{
+			mpEngineDevice->SetRenderState( D3DRS_ALPHAFUNC, msnEngineDefaultStateAlphaFunc );
+		}
 	}
+}
+
+/***************************************************************************
+ * Function    : EngineSetDefaultStateAlphaFunc
+ * Params      : nCompareFunc - D3DCMP_* value, or NOTFOUND to leave the alpha func alone (the default)
+ * Description : Opt-in. EngineInitDX sets D3DRS_ALPHAFUNC once, but a device Reset (the Interface resets when
+ *               the window is set up or resized) puts it back to D3DCMP_ALWAYS, after which alpha test rejects
+ *               nothing. An app that relies on alpha test can have EngineDefaultState re-apply it.
+ ***************************************************************************/
+void	EngineSetDefaultStateAlphaFunc( int nCompareFunc )
+{
+	msnEngineDefaultStateAlphaFunc = nCompareFunc;
 }
 
 void	EngineRemoveDXDevice( )

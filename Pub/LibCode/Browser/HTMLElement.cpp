@@ -733,8 +733,8 @@ void HTMLText::CalcSize( void )
 void HTMLText::Display( void )
 {
 int		nWidthAvailable;
-char*	pcTextToDisplay = m_pszText;
-char*	pcEndOfFirstLine = NULL;
+const char*	pcTextToDisplay = m_pszText;
+const char*	pcEndOfFirstLine = NULL;
 int		nFontFlags = 0;
 uint32	ulCol = 0xD0E0E0E0;
 uint32	ulRealCol = 0xD0E0E0E0;

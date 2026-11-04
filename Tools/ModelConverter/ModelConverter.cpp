@@ -43,6 +43,7 @@
 #include "Tools/UVGenerate.h"
 #include "Tools/PlaneCutter.h"
 #include "Tools/VertexColours.h"
+#include "Skeletal/SkeletalTools.h"
 #include "Tools/VertexManipulate.h"
 #include "RenderEffects\RenderEffects.h"
 
@@ -5293,6 +5294,20 @@ int	nVal;
 			case ID_REMOVEALLANIMATIONS:
 				ModelConvRemoveAllAnimations();
 				break;
+			case ID_SKELETAL_AUTORIGHUMANOID:
+				SkeletalToolsAutoRigHumanoid( m_MainSceneObject.GetModelHandle() );
+				ModelConverterDisplayFrame( TRUE );
+				break;
+			case ID_SKELETAL_LINKANIMATION:
+				SkeletalToolsLinkAnimation( m_MainSceneObject.GetModelHandle() );
+				ModelConverterDisplayFrame( TRUE );
+				break;
+			case ID_SKELETAL_IMPORTFBXANIMATION:
+				SkeletalToolsImportFBXAnimation();
+				break;
+			case ID_SKELETAL_EXPORTBVHASFBX:
+				SkeletalToolsExportBVHAsFBX();
+				break;
 			case ID_ANIMATIONS_BUILDANIMATIONS:
 				DialogBox(ghInstance, (LPCTSTR)IDD_ANIMATION_BUILDER, hDlg, (DLGPROC)AnimationBuilderDlgProc );
 				break;
@@ -5865,6 +5880,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 FILE*	pFile;
 char	acString[256];
 char*	pcRunner;
+
+	// Command-line-only tools (no UI)
+	{
+	int		nExitCode = 0;
+
+		if ( SkeletalToolsHandleCommandLine( lpCmdLine, &nExitCode ) )
+		{
+			return( nExitCode );
+		}
+	}
 
 	ghInstance = hInstance;
 #ifdef SECURITY_FEATURES

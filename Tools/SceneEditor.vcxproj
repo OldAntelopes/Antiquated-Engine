@@ -68,7 +68,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Pub\Include;..\Pub\Include\DirectX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_DEBUG;_WINDOWS;TOOL;STANDALONE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\Objs\Tool_Debug/InteriorMapEditor.pch</PrecompiledHeaderOutputFile>

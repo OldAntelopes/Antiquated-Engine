@@ -15,10 +15,11 @@ void	InterfaceInstance::Shutdown()
 	mpFontSystem->Shutdown();
 	mpInterfaceInternals->Shutdown();
 
-	delete mpOverlays;
-	delete mpTexturedOverlays;
-	delete mpInterfaceInternals;
-	delete mpFontSystem;
+	SAFE_DELETE( mpOverlays );
+	SAFE_DELETE( mpTexturedOverlays );
+	SAFE_DELETE( mpInterfaceInternals );
+	SAFE_DELETE( mpFontSystem );
+
 }
 
 InterfaceInstance::InterfaceInstance()

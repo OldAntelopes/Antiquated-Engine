@@ -18,6 +18,7 @@
 #include "../ModelArchive.h"
 #include "../ModelMaterialData.h"
 #include "../ModelRendering.h"
+#include "../Skeleton/ModelSkeleton.h"
 
 #include "ShadowMapDX.h"
 #include "ShadowVolumeDX.h"
@@ -33,6 +34,15 @@ LPD3DXBUFFER	mpD3DXAdjacencyLoadBuffer = NULL;
 int			mnLastLoadNumMaterials = 1;
 
 IDirect3DBaseTexture9* 	mpRenderBaseTexture = NULL;
+
+// Opt-in (EngineSetModelRenderReleasesSavedTexture): ModelRenderImplDX saves the caller's stage-0 texture with
+// GetTexture, which AddRefs, and never released it, so every model draw leaked a reference.
+static BOOL		msbModelRenderReleasesSavedTexture = FALSE;
+
+void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag )
+{
+	msbModelRenderReleasesSavedTexture = bFlag;
+}
 
 
 void	ModelRenderingPlatformInit( void )
@@ -286,7 +296,8 @@ int		nHorizTurretAttachVertex = -1;
 				VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
 				VectTransform( &xOffsetTransformed, &pxModelData->xHorizTurretData.xAttachOffset, &matWorld );
 				VectAdd( &xAttachPointTransformed, &xAttachPointTransformed, &xOffsetTransformed );
-				pxModelData->pxBaseMesh->UnlockVertexBuffer();		
+				// (Unlock the buffer that was locked: this used to unlock the base model's, leaving the turret's locked)
+				pxHorizTurretModelData->pxBaseMesh->UnlockVertexBuffer();
 
 				// If the horizontal turret is also attached, we'll need to apply that transform to the position too
 				if ( pxModelData->xHorizTurretData.nAttachVertex != 0 )
@@ -313,7 +324,7 @@ int		nHorizTurretAttachVertex = -1;
 				pxVert = pxVertices + nHorizTurretAttachVertex;
 				xAttachPoint = pxVert->position;	
 				D3DXVec3TransformCoord( (D3DXVECTOR3*)&xAttachPointTransformed, (D3DXVECTOR3*)&pxVert->position, &matWorld );
-				pxModelData->pxBaseMesh->UnlockVertexBuffer();
+				pxHorizTurretModelData->pxBaseMesh->UnlockVertexBuffer();
 
 				// I believe we should really transform the attachpoint by the matrix thats applied to the horizontal turret, rather
 				// than just the rotation (and i believe thats why the vert turret floats a bit on the tank)
@@ -343,8 +354,27 @@ int		nHorizTurretAttachVertex = -1;
 			default:
 				break;
 			}
-			
-			VectTransform( &xAttachPointTransformed, &pxVert->position, &matWorld );
+
+			// Game-supplied wheel offsets (ModelSetWheelRenderOffset), e.g. for visual suspension
+			switch( nWhichAttachedModel )
+			{
+			case MODEL_ATTACHED_WHEEL_1:
+				VectAdd( &xAttachPoint, &xAttachPoint, &pxModelData->axWheelRenderOffset[0] );
+				break;
+			case MODEL_ATTACHED_WHEEL_2:
+				VectAdd( &xAttachPoint, &xAttachPoint, &pxModelData->axWheelRenderOffset[1] );
+				break;
+			case MODEL_ATTACHED_WHEEL_3:
+				VectAdd( &xAttachPoint, &xAttachPoint, &pxModelData->axWheelRenderOffset[2] );
+				break;
+			case MODEL_ATTACHED_WHEEL_4:
+				VectAdd( &xAttachPoint, &xAttachPoint, &pxModelData->axWheelRenderOffset[3] );
+				break;
+			default:
+				break;
+			}
+
+			VectTransform( &xAttachPointTransformed, &xAttachPoint, &matWorld );
 			pxModelData->pxBaseMesh->UnlockVertexBuffer();
 		}
 		else
@@ -1168,6 +1198,10 @@ void		ModelUpdateAnimationState(int nModelHandle)
 MODEL_RENDER_DATA* pxModelData = &maxModelRenderData[nModelHandle];
 uint32		ulTick = mulLastRenderingTick;
 
+	if ( pxModelData->pSkeleton )
+	{
+		pxModelData->pSkeleton->UpdateAndSkin( pxModelData, ulTick );
+	}
 	if (pxModelData->bModelType == ASSETTYPE_KEYFRAME_ANIMATION)
 	{
 		if (pxModelData->xAnimationState.ulLastFrameTick == 0)
@@ -1192,11 +1226,28 @@ uint32		ulTick = mulLastRenderingTick;
 D3DXMATRIX	matOriginalWorld;
 int		nPolyCount = 0;
 ENGINEMATRIX	matRestore;
+// RENDER_FLAGS_WHEELS_ONLY - the game draws the chassis itself, so skip everything but the attached wheels
+BOOL	bWheelsOnly = ( (ulRenderFlags & RENDER_FLAGS_WHEELS_ONLY) != 0 ) ? TRUE : FALSE;
 
-	mpEngineDevice->GetTexture( 0, &mpRenderBaseTexture );
+	if ( msbModelRenderReleasesSavedTexture )
+	{
+	IDirect3DBaseTexture9*	pPrevious = mpRenderBaseTexture;
+
+		// GetTexture AddRefs. Keep exactly one reference (the one in mpRenderBaseTexture) instead of leaking one per draw
+		mpEngineDevice->GetTexture( 0, &mpRenderBaseTexture );
+		if ( pPrevious != NULL )
+		{
+			pPrevious->Release();
+		}
+	}
+	else
+	{
+		mpEngineDevice->GetTexture( 0, &mpRenderBaseTexture );
+	}
 
 	if ( pxModelData->pSkinnedModel )
 	{
+		if ( bWheelsOnly ) return( 0 );
 		return( ModelRenderDXRenderSkinnedModel( nModelHandle, pxPos, pxRot, ulRenderFlags, pxQuat ) );
 	}
 	else if ( pxModelData->pxBaseMesh == NULL )
@@ -1251,7 +1302,8 @@ ENGINEMATRIX	matRestore;
 
 	
 	// If theres an effect attached - render it
-	if ( pxModelData->bHasEffect != 0 )
+	if ( ( pxModelData->bHasEffect != 0 ) &&
+		 ( bWheelsOnly == FALSE ) )
 	{
 		if ( (ulRenderFlags & RENDER_FLAGS_NO_EFFECTS) == 0 )
 		{
@@ -1260,7 +1312,8 @@ ENGINEMATRIX	matRestore;
 	}
 
 	// If theres a weapon attach vertex, store its transformed position
-	if ( pxModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex != 0 )
+	if ( ( pxModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex != 0 ) &&
+		 ( bWheelsOnly == FALSE ) )
 	{
 		ModelRenderDXUpdateWeaponAttachTransform( pxModelData, &matOriginalWorld );
 	}
@@ -1271,7 +1324,18 @@ ENGINEMATRIX	matRestore;
 		EngineEnableLighting( FALSE );
 	}
 
-	switch( pxModelData->bModelType )
+	// Skeletal animation - skin the base mesh for this frame
+	if ( ( pxModelData->pSkeleton ) &&
+		 ( bWheelsOnly == FALSE ) )
+	{
+		pxModelData->pSkeleton->UpdateAndSkin( pxModelData, ulTick );
+	}
+
+	if ( bWheelsOnly )
+	{
+		// No base mesh
+	}
+	else switch( pxModelData->bModelType )
 	{
 	case ASSETTYPE_KEYFRAME_ANIMATION:
 		// Very ropey timing stuff on the animation here - just temp!!!
@@ -1320,11 +1384,13 @@ ENGINEMATRIX	matRestore;
 		{
 			nPolyCount += ModelRenderAttachedModel( pxModelData, pxPos, pxRot, ulRenderFlags, matOriginalWorld, MODEL_ATTACHED_WHEEL_4, pxQuat );
 		}
-		if ( pxModelData->xHorizTurretData.nModelHandle > 0 )
+		if ( ( pxModelData->xHorizTurretData.nModelHandle > 0 ) &&
+			 ( bWheelsOnly == FALSE ) )
 		{
 			nPolyCount += ModelRenderAttachedModelBasic( pxModelData, pxPos, pxRot, ulRenderFlags, matOriginalWorld, MODEL_ATTACHED_TURRET_HORIZ );
 		}
-		if ( pxModelData->xVertTurretData.nModelHandle > 0 )
+		if ( ( pxModelData->xVertTurretData.nModelHandle > 0 ) &&
+			 ( bWheelsOnly == FALSE ) )
 		{
 			nPolyCount += ModelRenderAttachedModel( pxModelData, pxPos, pxRot, ulRenderFlags, matOriginalWorld, MODEL_ATTACHED_TURRET_VERT, pxQuat );
 		}

@@ -31,6 +31,8 @@
 #include "ModelArchive.h"
 #include "ModelMaterialData.h"
 #include "SkinnedModel.h"
+#include "Skeleton/ModelSkeleton.h"
+#include "Skeleton/ModelSkeletonFiles.h"
 
 #ifdef ENGINEDX
 #ifndef CONSOLE_SERVER
@@ -1782,6 +1784,12 @@ byte*		ModelExportBuildChunk( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int
 {
 	switch( nChunkNum )
 	{
+	case ATM_CHUNKID_SKELETON:
+		return( ModelSkeletonExportChunkBones( pxModelData, pnSize, pnElements ) );
+	case ATM_CHUNKID_SKIN_WEIGHTS:
+		return( ModelSkeletonExportChunkWeights( pxModelData, pnSize, pnElements ) );
+	case ATM_CHUNKID_SKELETAL_ANIM_LINKS:
+		return( ModelSkeletonExportChunkAnimLinks( pxModelData, pnSize, pnElements ) );
 	case ATM_CHUNKID_BASIC_CONTENTS:
 		return( ModelExportChunkBasicContents( pxModelData, nChunkNum, pnSize, pnElements ) );
 		break;
@@ -2170,10 +2178,17 @@ ATM_FILE_HEADER		xFileHeader;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
 
+	// Skinned models must be saved in their bind pose (not whatever pose they were last rendered in)
+	if ( pxModelData->pSkeleton )
+	{
+		pxModelData->pSkeleton->RestoreBindPose( pxModelData );
+	}
+
 	ModelExportRemoveRepeatedKeyframeTracks( pxModelData );
 
 	// If no anims and no attachments
 	if ( ( pxModelData->pxVertexKeyframes == NULL ) &&
+		 ( pxModelData->pSkeleton == NULL ) &&			// (welding would invalidate the skin weights)
 		 ( pxModelData->xAttachData.xGenericWeaponFireAttach.nAttachVertex <= 0 ) &&
 		 ( pxModelData->xEffectAttachData.nAttachVertex <= 0 ) &&
 		 ( pxModelData->xHorizTurretData.nModelHandle <= 0 ) &&
@@ -3176,6 +3191,12 @@ void	ModelLoadProcessATMChunkPass3( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HE
 {
 	switch( pxChunkHeader->uwChunkID )
 	{
+	case ATM_CHUNKID_SKIN_WEIGHTS:
+		ModelSkeletonLoadChunkWeights( pxModelData, pxChunkHeader, pbMem );
+		break;
+	case ATM_CHUNKID_SKELETAL_ANIM_LINKS:
+		ModelSkeletonLoadChunkAnimLinks( pxModelData, pxChunkHeader, pbMem );
+		break;
 	case ATM_CHUNKID_COLOURS:
 		ModelLoadProcessChunkVertColours( pxModelData, pxChunkHeader, pbMem );
 #ifdef ATM_LOADER_VERBOSE_DEBUG
@@ -3194,6 +3215,9 @@ void	ModelLoadProcessATMChunkPass2( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HE
 {
 	switch( pxChunkHeader->uwChunkID )
 	{
+	case ATM_CHUNKID_SKELETON:
+		ModelSkeletonLoadChunkBones( pxModelData, pxChunkHeader, pbMem );
+		break;
 	case ATM_CHUNKID_COMPRESSED_VERTS:
 		ModelLoadProcessChunkCompressedVerts( pxModelData, pxChunkHeader, pbMem );
 		break;
@@ -3320,6 +3344,11 @@ int			nLoop;
 int			nLoop2;
 DWORD*		pulVertexRemap = (DWORD*)pVertexRemapData;
 int			nNewVertexIndex;
+
+	if ( pxModelData->pSkeleton )
+	{
+		pxModelData->pSkeleton->RemapVertices( pxModelData->xStats.nNumVertices, pulVertexRemap );
+	}
 
 	if ( pxModelData->xStats.nNumVertKeyframes > 0 )
 	{

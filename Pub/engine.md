@@ -14,7 +14,7 @@ Engine project : "Pub\Projects\Engine.vcxproj"
 Most code files for the engine are kept in "Pub\LibCode\Engine"
 External headers are in "Pub\Include"
 
-The project generates as output "Pub\Libs\EngineD-DX9.lib" (DX9 debug version) or "Pubs\Libs\Engine-DX9.lib" (DX9 Release version)
+The project generates as output "Pub\Libs\EngineD-DX9.lib" (DX9 debug version) or "Pub\Libs\Engine-DX9.lib" (DX9 Release version)
 
 
 **Engine Dependencies**
@@ -29,6 +29,9 @@ Read
 - "Pub\Include\EngineMaths.h" 
 
 Functionality specific to rendering, animation and manipulation of 3d models is separated off into "Pub\Include\Rendering.h"
+
+Experimental skeletal animation (skeletons, skin weights, retargeted .bvh animations, stored in the .atm) is described in
+"Pub\skeletalanimation.md". The code is in "Pub\LibCode\Engine\Skeleton".
 
 **Engine Sample**
 A basic example of using the engine is contained in Samples\02_BasicEngine.vcxproj

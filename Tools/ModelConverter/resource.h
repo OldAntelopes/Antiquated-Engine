@@ -418,6 +418,10 @@
 #define IDM_SCALE_MATCH                 40166
 #define IDM_FIX_OLD_VEHICLE             40167
 #define ID_SCENETOOLS_ADDPRIMITIVE_DISC 40168
+#define ID_SKELETAL_IMPORTFBXANIMATION  40169
+#define ID_SKELETAL_EXPORTBVHASFBX      40170
+#define ID_SKELETAL_AUTORIGHUMANOID     40171
+#define ID_SKELETAL_LINKANIMATION       40172
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -425,7 +429,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         40169
+#define _APS_NEXT_COMMAND_VALUE         40173
 #define _APS_NEXT_CONTROL_VALUE         1119
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

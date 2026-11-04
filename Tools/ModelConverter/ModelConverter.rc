@@ -926,6 +926,15 @@ BEGIN
         END
         MENUITEM "Remove All Animations",       ID_REMOVEALLANIMATIONS
         MENUITEM SEPARATOR
+        POPUP "&Skeletal (Experimental)"
+        BEGIN
+            MENUITEM "Auto-rig as Humanoid",        ID_SKELETAL_AUTORIGHUMANOID
+            MENUITEM "Link Animation (.bvh)...",    ID_SKELETAL_LINKANIMATION
+            MENUITEM SEPARATOR
+            MENUITEM "Import FBX Animation as .bvh...", ID_SKELETAL_IMPORTFBXANIMATION
+            MENUITEM "Export .bvh as FBX...",       ID_SKELETAL_EXPORTBVHASFBX
+        END
+        MENUITEM SEPARATOR
         MENUITEM "Set Generic Weapon Attach point", ID_SPECIAL_SETGUNFIREATTACHVERTEX
         MENUITEM "Set Effect Attach Point",     ID_SPECIAL_SETEFFECTATTACHPOINT
         MENUITEM "Set Secondary Fire Attach Point", ID_SPECIAL_SETGUNFIREATTACHVERTEX, GRAYED

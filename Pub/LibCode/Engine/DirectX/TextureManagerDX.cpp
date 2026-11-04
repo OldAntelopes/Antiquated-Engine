@@ -890,6 +890,19 @@ int		nMipLevels = 1;
 
 }
 
+BOOL	msbEngineLoadFromFileInMemUsesDefaultPool = FALSE;
+
+/***************************************************************************
+ * Function    : EngineSetLoadTextureFromFileInMemUsesDefaultPool
+ * Params      : bFlag - TRUE to load into D3DPOOL_DEFAULT on the D3D9Ex device
+ * Description : Opt-in. On D3D9Ex, D3DPOOL_MANAGED is invalid, so EngineLoadTextureFromFileInMem (and the
+ *               embedded textures in .atm models, which load through it) fail and return 0. Off by default.
+ ***************************************************************************/
+void	EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag )
+{
+	msbEngineLoadFromFileInMemUsesDefaultPool = bFlag;
+}
+
 TEXTURE_HANDLE	EngineLoadTextureFromFileInMem( byte* pbMem, int nMipMode, int* pnErrorFlag, int nMemSize, const char* szOptionalFilename )
 {
 int	nRet;
@@ -911,12 +924,23 @@ int		nMipLevels = 1;
 	int		nMipFilter = D3DX_FILTER_NONE;
 	EngineLoadTextureGetParams( nMipMode, &nFilter, &nMipFilter, &nMipLevels );
 
+	// The D3D9Ex device (always used now) rejects D3DPOOL_MANAGED, so both creates fail and the texture comes back
+	// as handle 0. Apps that opt in (EngineSetLoadTextureFromFileInMemUsesDefaultPool) get the same pool choice as
+	// EngineTextureLoadFromThreadBuffer. Off by default so existing apps see no change.
+	_D3DPOOL	nPoolType = D3DPOOL_MANAGED;
+#ifdef USE_D3DEX_INTERFACE
+	if ( msbEngineLoadFromFileInMemUsesDefaultPool )
+	{
+		nPoolType = D3DPOOL_DEFAULT;
+	}
+#endif
+
 //	nRet = D3DXCreateTextureFromFileInMemory( mpEngineDevice, pbMem, nMemSize, &pxTexture );
-	nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, pbMem, nMemSize,0,0,nMipLevels,0,D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+	nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, pbMem, nMemSize,0,0,nMipLevels,0,D3DFMT_A8R8G8B8, nPoolType, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 	if( FAILED( nRet ) )
 	{
 	D3DFORMAT	dxFormat = EngineDXGetGraphicsFormat( mnLastSuccessFormat );
-		nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, pbMem, nMemSize,0,0,nMipLevels,0,dxFormat, D3DPOOL_MANAGED, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
+		nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, pbMem, nMemSize,0,0,nMipLevels,0,dxFormat, nPoolType, nFilter,nMipFilter, 0xFF0000FF, NULL,NULL, &pxTexture );
 		if( FAILED( nRet ) )
 		{
 			pxTexture = NULL;
@@ -1363,6 +1387,7 @@ int	nRet = 0;
 		{
 		uint32		ulChromaKeyCol = 0xFF0000FF;
 		IGRAPHICSFORMAT	d3dtextureFormat = EngineDXGetGraphicsFormat( mnLoadThreadBufferFormat );
+		DWORD		dwUsage = 0;
 
 			if ( pTextureReference->nMode & NO_CHROMAKEY )
 			{
@@ -1372,14 +1397,22 @@ int	nRet = 0;
 			{
 				d3dtextureFormat = D3DFMT_A8R8G8B8;
 			}
-
+			// REMOVE_ALPHA edits the texture after loading, so it has to be lockable. With the D3D9Ex device the
+			// pool is D3DPOOL_DEFAULT, where only dynamic textures can be locked.
+			if ( ( pTextureReference->nMode & REMOVE_ALPHA ) &&
+				 ( nPoolType == D3DPOOL_DEFAULT ) )
+			{
+				dwUsage = D3DUSAGE_DYNAMIC;
+			}
 
 			nRet = D3DXCreateTextureFromFileInMemoryEx( mpEngineDevice, mpbLoadThreadBuffer, mnLoadThreadBufferSize,
-													0,0,mnLoadThreadBufferMipLevels,0, d3dtextureFormat, nPoolType,mnLoadThreadBufferFilter, mnLoadThreadBufferMipFilter,
+													0,0,mnLoadThreadBufferMipLevels,dwUsage, d3dtextureFormat, nPoolType,mnLoadThreadBufferFilter, mnLoadThreadBufferMipFilter,
 													ulChromaKeyCol, NULL, NULL,
 													&pxTexture );
 
-			if ( pTextureReference->nMode & REMOVE_ALPHA )
+			if ( ( pTextureReference->nMode & REMOVE_ALPHA ) &&
+				 ( !FAILED( nRet ) ) &&
+				 ( pxTexture != NULL ) )
 			{
 			int			nPitch;
 			uint32*		pulColours;
@@ -1394,21 +1427,26 @@ int	nRet = 0;
 				pxTexture->GetLevelDesc( 0, &xSurface );
 				nImageW = xSurface.Width;
 				nImageH = xSurface.Height;
-				pxTexture->LockRect( 0, &xLockedRectDest, NULL, 0 );//&xDestRect, 0 );
-				nPitch = xLockedRectDest.Pitch;
-				pbRow = (BYTE*)xLockedRectDest.pBits;
 
-				for ( nLoopY = 0; nLoopY < nImageH; nLoopY++ )
+				// The loop below assumes 32 bits per pixel
+				if ( ( ( xSurface.Format == D3DFMT_A8R8G8B8 ) || ( xSurface.Format == D3DFMT_X8R8G8B8 ) ) &&
+					 ( !FAILED( pxTexture->LockRect( 0, &xLockedRectDest, NULL, 0 ) ) ) )
 				{
-					pulColours = (uint32*)pbRow;
-					for ( nLoopX = 0; nLoopX < nImageW; nLoopX++ )
+					nPitch = xLockedRectDest.Pitch;
+					pbRow = (BYTE*)xLockedRectDest.pBits;
+
+					for ( nLoopY = 0; nLoopY < nImageH; nLoopY++ )
 					{
-						*pulColours = ((*pulColours) & 0x00FFFFFF);
-						pulColours++;
+						pulColours = (uint32*)pbRow;
+						for ( nLoopX = 0; nLoopX < nImageW; nLoopX++ )
+						{
+							*pulColours = ((*pulColours) & 0x00FFFFFF);
+							pulColours++;
+						}
+						pbRow += nPitch;
 					}
-					pbRow += nPitch;
+					pxTexture->UnlockRect(0);
 				}
-				pxTexture->UnlockRect(0);
 			}
 
 			if ( msnTextureReductionMode == 1 )

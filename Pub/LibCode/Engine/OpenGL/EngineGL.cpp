@@ -22,8 +22,18 @@ void	EngineInitFromInterface( void )
 
 void	EngineDefaultState( void )
 {
- 
 
+
+}
+
+void	EngineSetDefaultStateAlphaFunc( int nCompareFunc )
+{
+	// todo (DX9 only for now, see EngineDX.cpp)
+}
+
+void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag )
+{
+	// Nothing to do here (the DX9 model renderer's GetTexture leak, see ModelRenderingDX.cpp)
 }
 
 void	EngineSetRenderTargetTexture( TEXTURE_HANDLE hTexture, uint32 ulClearCol, BOOL bClear )
@@ -224,6 +234,11 @@ void	EngineEnableLighting( int nFlag )
 TEXTURE_HANDLE	EngineLoadTextureFromFileInMem( byte* pbMem, int nMipMode, int* pnErrorFlag, int nMemSize, const char* szOptionalFilename )
 {
 	return( (TEXTURE_HANDLE)InterfaceGetTextureFromFileInMem( "temp.jpg", pbMem, nMemSize, 0 ) );
+}
+
+void	EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag )
+{
+	// Nothing to do here (D3D9Ex only, see TextureManagerDX.cpp)
 }
 
 
