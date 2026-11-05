@@ -236,6 +236,20 @@ void		ModelMaterialsEnableLighting( BOOL bLightingEnable )
 #endif
 }
 
+// Public (ModelMaterialData.h): set a float4 constant by name on the model material pixel shader, if it declares one
+void		ModelMaterialsShaderSetFloat4( const char* szConstantName, const float* pafValues )
+{
+	if ( mpNormalMapRenderPSConstantTable )
+	{
+	D3DXHANDLE handle = mpNormalMapRenderPSConstantTable->GetConstantByName( NULL, szConstantName );
+
+		if ( handle )
+		{
+			mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, pafValues, 4 );
+		}
+	}
+}
+
 void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay )
 {
 	if ( mpNormalMapRenderPSConstantTable )
