@@ -151,6 +151,8 @@ extern void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay );
 // Sets a float4 constant by name on the model material pixel shader, if the shader declares it (otherwise nothing
 // happens). For app-specific additions to an app's own ATMMaterial.psh, e.g. The Universal's landscape materials.
 extern void		ModelMaterialsShaderSetFloat4( const char* szConstantName, const float* pafValues );
+// The same for the model material vertex shader (ATMMaterial.vsh), e.g. The Universal's tree wind sway.
+extern void		ModelMaterialsVertexShaderSetFloat4( const char* szConstantName, const float* pafValues );
 
 extern void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATERIAL_COLOUR* pxAmbient, MATERIAL_COLOUR* pxSpecular, MATERIAL_COLOUR* pxEmissive, float fSpecularPower );
 extern void		ModelMaterialsEnableLighting( BOOL bLightingEnable );
