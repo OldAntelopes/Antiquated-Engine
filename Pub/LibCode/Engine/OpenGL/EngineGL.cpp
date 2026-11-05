@@ -31,6 +31,37 @@ void	EngineSetDefaultStateAlphaFunc( int nCompareFunc )
 	// todo (DX9 only for now, see EngineDX.cpp)
 }
 
+void	EngineSceneShadowsGetLightViewProjection( ENGINEMATRIX* pxMatrixOut )
+{
+	// No shadow maps in the OpenGL back-end yet
+	EngineMatrixIdentity( pxMatrixOut );
+}
+
+void	EngineSceneShadowsSetTexelSnap( BOOL bFlag )
+{
+	// No shadow maps in the OpenGL back-end yet
+}
+
+void	EngineSceneShadowsSetCascades( int nCascades, float fNearScale )
+{
+	// No shadow maps in the OpenGL back-end yet
+}
+
+int		EngineSceneShadowsGetCascades( void )
+{
+	return( 1 );
+}
+
+void	EngineSceneShadowsBeginCascade( int nCascade )
+{
+	// No shadow maps in the OpenGL back-end yet
+}
+
+void	EngineSceneShadowsSetCascadeBlend( float fBand )
+{
+	// No shadow maps in the OpenGL back-end yet
+}
+
 void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag )
 {
 	// Nothing to do here (the DX9 model renderer's GetTexture leak, see ModelRenderingDX.cpp)

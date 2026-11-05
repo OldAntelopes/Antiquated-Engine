@@ -748,18 +748,22 @@ TEXTURED_RECT_DEF* pxRectDef;
 int  TexturedOverlays::GetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags )
 {
 int		nHandle;
+BOOL	bReadable;
 
+	// INTERFACE_TEXTURE_FROM_MEM_READABLE: the caller will InterfaceLockTexture it to read the pixels, so it goes in a
+	// lockable pool (the D3D9Ex default pool can't be locked). Without the flag, behaviour is as before
+	bReadable = ( ( nFlags & INTERFACE_TEXTURE_FROM_MEM_READABLE ) != 0 ) ? TRUE : FALSE;
 	nHandle = GetNewInternalTextureHandle();
 
 	if ( nHandle != NOTFOUND )
 	{
 		if ( (nFlags & 0x1) == 0 )
 		{
-			maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureFromFileInMemDX( szFilename, pbMem, nMemSize, 1, 1, FALSE );
+			maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureFromFileInMemDX( szFilename, pbMem, nMemSize, 1, 1, bReadable );
 		}
 		else
 		{
-			maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureFromFileInMemDX( szFilename, pbMem, nMemSize, 0, 0, FALSE );
+			maxInternalTextures[ nHandle ].pTexture = mpInterfaceInstance->mpInterfaceInternals->LoadTextureFromFileInMemDX( szFilename, pbMem, nMemSize, 0, 0, bReadable );
 		}
 
 		// Load failed

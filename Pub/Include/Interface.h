@@ -150,6 +150,9 @@ extern INTERFACE_API int	InterfaceLoadTextureFromArchive( const char* szFilename
 extern INTERFACE_API int	InterfaceCreateBlankTexture( int nWidth, int nHeight, int Mode);
 extern INTERFACE_API int	InterfaceGetTexture( const char* szFilename, int nFlags );
 extern INTERFACE_API int	InterfaceGetTextureAsync(const char* szFilename, int nFlags);
+// nFlags: 0x1 = no reduce/mip filtering; INTERFACE_TEXTURE_FROM_MEM_READABLE = load it so InterfaceLockTexture can read
+// the pixels (DX9: the system-memory pool; the D3D9Ex default pool can't be locked). Only for reading, not for drawing
+#define INTERFACE_TEXTURE_FROM_MEM_READABLE		0x2
 extern INTERFACE_API int	InterfaceGetTextureFromFileInMem( const char* szFilename, unsigned char* pbMem, int nMemSize, int nFlags );
 extern INTERFACE_API int	InterfaceGetTextureSize( int nTextureHandle, int* pnW, int* pnH );
 extern INTERFACE_API BYTE*	InterfaceLockTexture( int nTextureHandle, int* pnPitch, int* pnFormat, int nFlags );

@@ -30,6 +30,9 @@ extern float	EngineShadowMapGetStrength( void );
 
 extern void		EngineShadowMapSetSizeOption( int nSizeOption );
 
+// For receiver shaders' gShadowCascadeInfo: x = cascades, y = near scale, z = 1 / atlas width, w = cascade blend band
+extern void		EngineShadowMapGetCascadeInfo( float* pafOut4 );
+
 #ifdef __cplusplus
 }
 #endif

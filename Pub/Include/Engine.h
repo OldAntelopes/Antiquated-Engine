@@ -211,6 +211,22 @@ extern void		EngineSceneShadowsSetRenderParams( float fLightCamTargetDist, float
 extern void		EngineSceneShadowsInitShadowPass( const VECT* pxCamTarget );
 extern void		EngineSceneShadowsInitShadowPassAutoTarget( float fTargetDist );
 extern void		EngineSceneShadowsEndShadowPass( void );
+// The light's view-projection (orthographic) for the current shadow pass, valid after EngineSceneShadowsInitShadowPass.
+// Lets the app cull shadow casters against the light's volume rather than the camera's.
+extern void		EngineSceneShadowsGetLightViewProjection( ENGINEMATRIX* pxMatrixOut );
+// Opt-in (default off): snap the shadow map's centre to whole shadow-map texels in the light's view, so shadow edges
+// don't crawl and shimmer as the camera moves. Takes effect from the next EngineSceneShadowsInitShadowPass.
+extern void		EngineSceneShadowsSetTexelSnap( BOOL bFlag );
+// Opt-in (default 1, as before): 2 cascades puts a second, fNearScale times smaller view of the same light and centre
+// beside the usual one (a 2:1 atlas), for sharper shadows close to the centre. Draw the casters once per cascade, calling
+// EngineSceneShadowsBeginCascade( n ) before each, between InitShadowPass and EndShadowPass. Receiver shaders need the
+// gShadowCascadeInfo constant to use it (EngineShadowMapGetCascadeInfo; see The Universal's Shadows.psh).
+extern void		EngineSceneShadowsSetCascades( int nCascades, float fNearScale );
+extern int		EngineSceneShadowsGetCascades( void );
+extern void		EngineSceneShadowsBeginCascade( int nCascade );
+// Width of the band where receivers mix the two cascades, as a fraction of the near view's half-width (default 0.2;
+// 0 = a hard border). Passed to receiver shaders in gShadowCascadeInfo.w.
+extern void		EngineSceneShadowsSetCascadeBlend( float fBand );
 extern void		EngineShadowMapActivateTexture( BOOL bFlag );
 extern BOOL		EngineShadowMapTexturesAreActive( void );
 

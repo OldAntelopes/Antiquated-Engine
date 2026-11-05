@@ -389,6 +389,15 @@ D3DXMATRIX	matLightViewProj;
 			float		fShadowEpsilon = mfShadowEpsilon;
 				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, fShadowEpsilon );
 			}
+
+			// Shadow cascades (EngineSceneShadowsSetCascades); only shaders that declare it use it
+			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gShadowCascadeInfo");
+			if ( handle )
+			{
+			float		afCascadeInfo[4];
+				EngineShadowMapGetCascadeInfo( afCascadeInfo );
+				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, afCascadeInfo, 4 );
+			}
 		
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gHasNormalMap");
 			if ( handle )
