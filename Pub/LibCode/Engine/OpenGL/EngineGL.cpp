@@ -62,6 +62,16 @@ void	EngineSceneShadowsSetCascadeBlend( float fBand )
 	// No shadow maps in the OpenGL back-end yet
 }
 
+void	EngineSetFogExtras( const float* pafHeight4, const float* pafSunColour4, const float* pafSunDir4 )
+{
+	// Shader fog extras are DX9-only for now
+}
+
+void	EngineSetFogSky( const ENGINEMATRIX* pxViewProj, const float* pafInfo4 )
+{
+	// Shader fog extras are DX9-only for now
+}
+
 void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag )
 {
 	// Nothing to do here (the DX9 model renderer's GetTexture leak, see ModelRenderingDX.cpp)

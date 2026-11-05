@@ -1749,6 +1749,32 @@ D3DXHANDLE handle;
 uint32		mulEngineFogCol = 0;
 float		mfEngineFogStart = 0.0f;
 float		mfEngineFogEnd = 0.0f;
+static float	msafEngineFogHeight[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+static float	msafEngineFogSunColour[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+static float	msafEngineFogSunDir[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+
+static ENGINEMATRIX	msxEngineFogSkyViewProj;
+static float		msafEngineFogSkyInfo[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+// Public (Engine.h): opt-in fog coloured by the rendered sky, for shaders that declare gFogSkyViewProj/gFogSkyInfo
+void	EngineSetFogSky( const ENGINEMATRIX* pxViewProj, const float* pafInfo4 )
+{
+	if ( ( pxViewProj == NULL ) || ( pafInfo4 == NULL ) )
+	{
+		msafEngineFogSkyInfo[0] = 0.0f;
+		return;
+	}
+	msxEngineFogSkyViewProj = *pxViewProj;
+	memcpy( msafEngineFogSkyInfo, pafInfo4, sizeof( msafEngineFogSkyInfo ) );
+}
+
+// Public (Engine.h): opt-in height fog and sun-tinted fog, for shaders that declare gFogHeight/gFogSunColour/gFogSunDir
+void	EngineSetFogExtras( const float* pafHeight4, const float* pafSunColour4, const float* pafSunDir4 )
+{
+	if ( pafHeight4 ) memcpy( msafEngineFogHeight, pafHeight4, sizeof( msafEngineFogHeight ) );
+	if ( pafSunColour4 ) memcpy( msafEngineFogSunColour, pafSunColour4, sizeof( msafEngineFogSunColour ) );
+	if ( pafSunDir4 ) memcpy( msafEngineFogSunDir, pafSunDir4, sizeof( msafEngineFogSunDir ) );
+}
 
 void	EngineSetFogColour( uint32 uARGB )
 {
@@ -1796,6 +1822,36 @@ D3DXHANDLE handle;
 	{
 	float	fFogEnd = mfEngineFogEnd;
 		pShaderPSConstantTable->SetFloat( mpEngineDevice, handle, fFogEnd );
+	}
+
+	// Opt-in extras (EngineSetFogExtras); shaders that don't declare them never see them
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gFogHeight");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, msafEngineFogHeight, 4 );
+	}
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gFogSunColour");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, msafEngineFogSunColour, 4 );
+	}
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gFogSunDir");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, msafEngineFogSunDir, 4 );
+	}
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gFogSkyInfo");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, msafEngineFogSkyInfo, 4 );
+		if ( msafEngineFogSkyInfo[0] > 0.0f )
+		{
+			handle = pShaderPSConstantTable->GetConstantByName(NULL, "gFogSkyViewProj");
+			if ( handle )
+			{
+				pShaderPSConstantTable->SetMatrix( mpEngineDevice, handle, (D3DXMATRIX*)( &msxEngineFogSkyViewProj ) );
+			}
+		}
 	}
 
 

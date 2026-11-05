@@ -167,6 +167,14 @@ extern void		EngineRestoreViewport( void );
 extern	void	EngineSetZBias( int Value );
 extern	void	EngineSetFog( uint32 ulFogCol, float fFogStart, float fFogEnd );
 extern	void	EngineSetFogColour( uint32 uARGB );
+// Opt-in fog extras for shaders that declare them (all zeros = off, the default): pafHeight4 = (base height, falloff per
+// unit, density per unit, 1 = on) -> gFogHeight; pafSunColour4 = (r, g, b, strength) -> gFogSunColour; pafSunDir4 =
+// (x, y, z towards the sun, 0) -> gFogSunDir. Passed on by the same code that sets gFogStart/gFogEnd. NULL keeps a value.
+extern	void	EngineSetFogExtras( const float* pafHeight4, const float* pafSunColour4, const float* pafSunDir4 );
+// Opt-in: fog that takes the colour of the sky rendered behind each pixel. The app copies the frame after drawing the
+// sky to a texture on sampler 12 and passes the main camera's view-projection (-> gFogSkyViewProj) and pafInfo4 =
+// (1 = on, horizon v in the copy, 0, 0) (-> gFogSkyInfo). NULL matrix or info = off (the default).
+extern	void	EngineSetFogSky( const ENGINEMATRIX* pxViewProj, const float* pafInfo4 );
 
 extern  void	EngineSetPointRenderSize( float fPointSize );
 extern void		EngineClearZBuffer( void );
