@@ -250,6 +250,19 @@ void		ModelMaterialsShaderSetFloat4( const char* szConstantName, const float* pa
 	}
 }
 
+// Public (ModelMaterialData.h): set a float4 constant by name on the model material vertex shader, if it declares one
+void		ModelMaterialsVertexShaderSetFloat4( const char* szConstantName, const float* pafValues )
+{
+	if ( mpNormalMapRenderConstantTable )
+	{
+	D3DXHANDLE handle = mpNormalMapRenderConstantTable->GetConstantByName( NULL, szConstantName );
+
+		if ( handle )
+		{
+			mpNormalMapRenderConstantTable->SetFloatArray( mpEngineDevice, handle, pafValues, 4 );
+		}
+	}
+}
 void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay )
 {
 	if ( mpNormalMapRenderPSConstantTable )
