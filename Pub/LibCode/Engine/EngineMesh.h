@@ -13,6 +13,20 @@ enum
 
 #ifdef __cplusplus
 
+// A copy of a mesh's triangles in ordinary memory, for CPU collision tests. Reading a mesh back through a lock is very
+// slow, because its buffers are in write-combined memory (D3D9Ex meshes can't be in the managed pool).
+typedef struct
+{
+	VECT	xBoundCentre;		// Bounding sphere of each triangle
+	float	fBoundRadius;
+} ENGINEMESH_TRI_BOUND;
+
+typedef struct
+{
+	int						nNumTris;
+	ENGINEMESH_TRI_BOUND*	pxBounds;		// nNumTris of these
+	VECT*					pxVerts;		// nNumTris * 3 of these, in the mesh's index order
+} ENGINEMESH_COLLISION_TRIS;
 
 class EngineMesh
 {
@@ -44,12 +58,20 @@ public:
 
 	BOOL	Is32BitIndexBuffer( void );
 
+	// The mesh's first nNumIndices/3 triangles. Built on first use, and again after anything locks the mesh to write to it
+	const ENGINEMESH_COLLISION_TRIS*	GetCollisionTris( int nNumIndices );
+
 	//------------------------
 	void	CreateFromPlatformMeshImpl( void* pDXPlatformMesh );		// TEMP!
 	void*	GetPlatformMeshImpl( void );		// TEMP!
 private:
 
+	void	FreeCollisionTris( void );
+
 	BaseMesh*	mpBaseMesh;
+
+	ENGINEMESH_COLLISION_TRIS	mxCollisionTris;
+	BOOL						mbCollisionTrisValid;
 
 };
 

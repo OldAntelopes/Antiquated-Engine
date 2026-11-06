@@ -1,4 +1,5 @@
 
+#include <math.h>
 #include <StandardDef.h>
 #include <Engine.h>
 #include <Rendering.h>
@@ -140,17 +141,15 @@ VECT	xEdge2;
 BOOL	EngineCollisionSphereSweepTest( float fMovingSphereRadius, VECT* pxPos1, VECT* pxPos2, int nStaticModel, VECT* pxStaticPos, VECT* pxRot, int nFlags )
 {
 MODEL_RENDER_DATA*	pxStaticModel;
-CUSTOMVERTEX*	pxVertices;
-CUSTOMVERTEX*	pxVert1;
-CUSTOMVERTEX*	pxVert2;
-CUSTOMVERTEX*	pxVert3;
+const ENGINEMESH_COLLISION_TRIS*	pxTris;
 VECT			axVerts[3];
-ushort*			puwIndices;
 int				nLoop;
 VECT		xHit;
 VECT		xNormal;
 VECT		xRotated1;
 VECT		xRotated2;
+VECT		xLocalStart;
+float		fReach;
 
 	// TODO - Do a quick sphere test between the expanded movement sphere and the static model bounds, just
 	// to see if its worth even checking the triangles in it 
@@ -226,17 +225,33 @@ VECT		xRotated2;
 
 	// Go through all the triangles in the static model and compare them with the swept sphere
 	// First hit will return true and collision response values
-	pxStaticModel->pxBaseMesh->LockVertexBuffer(kLock_ReadOnly, (byte**)( &pxVertices ) );
-	pxStaticModel->pxBaseMesh->LockIndexBuffer(kLock_ReadOnly, (byte**)( &puwIndices ) );
+	// Reading the mesh itself here cost about 5us a triangle (its buffers are write-combined memory), so we use the mesh's
+	// copy in ordinary memory, and reject most triangles in model space before touching them. That rejection is deliberately
+	// a little generous, so the exact checks below still decide, in the same order, as they did when they saw every triangle.
+	pxTris = pxStaticModel->pxBaseMesh->GetCollisionTris( pxStaticModel->xStats.nNumIndices );
+	if ( pxTris == NULL ) return( FALSE );
+
+	VectSub( &xLocalStart, pxPos1, pxStaticPos );
+	fReach = fMovingSphereRadius + VectDist( pxPos1, pxPos2 ) + 0.01f;
+	fReach += ( fabsf( pxPos1->x ) + fabsf( pxPos1->y ) + fabsf( pxPos1->z ) + fabsf( pxStaticPos->x ) + fabsf( pxStaticPos->y ) + fabsf( pxStaticPos->z ) ) * 0.00001f;
+
 	// For each of the tris in model 1
-	for ( nLoop = 0; nLoop < pxStaticModel->xStats.nNumIndices; nLoop += 3 )
+	for ( nLoop = 0; nLoop < pxTris->nNumTris; nLoop++ )
 	{
-		pxVert1 = pxVertices + puwIndices[ nLoop ];
-		pxVert2 = pxVertices + puwIndices[ nLoop+1 ];
-		pxVert3 = pxVertices + puwIndices[ nLoop+2 ];
-		VectAdd( &axVerts[0],(VECT*)&pxVert1->position, pxStaticPos );
-		VectAdd( &axVerts[1],(VECT*)&pxVert2->position, pxStaticPos );
-		VectAdd( &axVerts[2],(VECT*)&pxVert3->position, pxStaticPos );
+	const ENGINEMESH_TRI_BOUND*		pxBound = pxTris->pxBounds + nLoop;
+	float	fX = xLocalStart.x - pxBound->xBoundCentre.x;
+	float	fY = xLocalStart.y - pxBound->xBoundCentre.y;
+	float	fZ = xLocalStart.z - pxBound->xBoundCentre.z;
+	float	fRange = fReach + pxBound->fBoundRadius;
+
+		if ( ( fX * fX ) + ( fY * fY ) + ( fZ * fZ ) >= ( fRange * fRange ) )
+		{
+			continue;
+		}
+
+		VectAdd( &axVerts[0], &pxTris->pxVerts[ nLoop*3 ], pxStaticPos );
+		VectAdd( &axVerts[1], &pxTris->pxVerts[ (nLoop*3) + 1 ], pxStaticPos );
+		VectAdd( &axVerts[2], &pxTris->pxVerts[ (nLoop*3) + 2 ], pxStaticPos );
 
 		// If the quick bounds check succeeds...
 		if ( SweepSphereTriBoundsCheck( &axVerts[0], &axVerts[1], &axVerts[2], pxPos1, pxPos2, fMovingSphereRadius ) == TRUE )
@@ -287,16 +302,12 @@ VECT		xRotated2;
 					// todo rotate pos
 				}
 
-				pxStaticModel->pxBaseMesh->UnlockVertexBuffer();
-				pxStaticModel->pxBaseMesh->UnlockIndexBuffer();
 				return( TRUE );
 			}
 
 		}
 	}
 
-	pxStaticModel->pxBaseMesh->UnlockVertexBuffer();
-	pxStaticModel->pxBaseMesh->UnlockIndexBuffer();
 	return( FALSE );
 }
 
