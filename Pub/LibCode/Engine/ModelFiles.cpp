@@ -116,6 +116,7 @@ typedef enum
 {
 	MATFLAGS_HASCUSTOMMATERIALPROPS = 0x1,
 	MATFLAGS_ISDOUBLESIDED = 0x2,
+	MATFLAGS_CUSTOMPROPS_NIGHT_ONLY = 0x4,		// The custom props only apply at night (ATMFormat.md, chunk 0x19)
 } eMaterialFlags;
 
 typedef struct
@@ -144,6 +145,27 @@ typedef struct
 	int		nSizeOfSpecularMapTextureData;
 
 } TEXMATERIAL_CHUNK;
+
+typedef struct
+{
+	BYTE	bNumEntries;
+	BYTE	bSizeOfHeader;
+	BYTE	bPad3;
+	BYTE	bPad4;
+
+} MATERIAL_RELIEF_CHUNKHEADER;
+
+typedef struct
+{
+	BYTE	bMaterialNum;
+	BYTE	bFlags;
+	ushort	uwPad;
+	float	fDepth;
+	ushort	uwTextureWidth;
+	ushort	uwTextureHeight;
+	int		nSizeOfData;
+
+} MATERIAL_RELIEF_ENTRY;
 
 
 typedef struct
@@ -750,6 +772,10 @@ int			texchancount = 0;
 			{
 				pChunk->bMaterialFlags |= MATFLAGS_ISDOUBLESIDED;
 			}
+			if ( pModelMaterialData->IsMaterialPropertiesNightOnly() )
+			{
+				pChunk->bMaterialFlags |= MATFLAGS_CUSTOMPROPS_NIGHT_ONLY;
+			}
 			pChunk->bNumTextures = texchancount;
 
 			for ( texchanloop = 0; texchanloop < MAX_NUM_TEX_CHANNELS; texchanloop++ )
@@ -948,6 +974,75 @@ int			nNumFaces;
 	}
 	return( NULL );
 }
+
+/***************************************************************************
+ * Function    : ModelExportChunkMaterialRelief
+ * Description : Writes back the height maps a model was loaded with. Only tools keep the source data
+ *				 (SetReliefSource), so there's nothing to write otherwise.
+ ***************************************************************************/
+byte*		ModelExportChunkMaterialRelief( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int* pnSize, int* pnElements )
+{
+ModelMaterialData*	pMaterial;
+MATERIAL_RELIEF_CHUNKHEADER*	pHeader;
+MATERIAL_RELIEF_ENTRY*			pEntry;
+byte*	pbChunkMem;
+byte*	pbRunner;
+byte*	pbSource;
+int		nLoop;
+int		nSourceSize;
+int		nTotalSize = sizeof( MATERIAL_RELIEF_CHUNKHEADER );
+int		nNumEntries = 0;
+
+	for ( nLoop = 0; nLoop < pxModelData->xStats.nNumMaterials; nLoop++ )
+	{
+		pMaterial = FindMaterial( pxModelData, nLoop );
+		if ( pMaterial )
+		{
+			pbSource = pMaterial->GetReliefSource( &nSourceSize );
+			if ( pbSource )
+			{
+				nTotalSize += sizeof( MATERIAL_RELIEF_ENTRY ) + nSourceSize;
+				nNumEntries++;
+			}
+		}
+	}
+	if ( nNumEntries == 0 )
+	{
+		return( NULL );
+	}
+
+	pbChunkMem = (byte*)( SystemMalloc( nTotalSize ) );
+	memset( pbChunkMem, 0, nTotalSize );
+	pHeader = (MATERIAL_RELIEF_CHUNKHEADER*)( pbChunkMem );
+	pHeader->bNumEntries = (BYTE)nNumEntries;
+	pHeader->bSizeOfHeader = sizeof( MATERIAL_RELIEF_CHUNKHEADER );
+	pbRunner = pbChunkMem + sizeof( MATERIAL_RELIEF_CHUNKHEADER );
+
+	for ( nLoop = 0; nLoop < pxModelData->xStats.nNumMaterials; nLoop++ )
+	{
+		pMaterial = FindMaterial( pxModelData, nLoop );
+		if ( pMaterial )
+		{
+			pbSource = pMaterial->GetReliefSource( &nSourceSize );
+			if ( pbSource )
+			{
+				pEntry = (MATERIAL_RELIEF_ENTRY*)( pbRunner );
+				pEntry->bMaterialNum = (BYTE)nLoop;
+				pEntry->fDepth = pMaterial->GetReliefDepth();
+				pEntry->uwTextureWidth = (ushort)pMaterial->GetReliefTextureWidth();
+				pEntry->uwTextureHeight = (ushort)pMaterial->GetReliefTextureHeight();
+				pEntry->nSizeOfData = nSourceSize;
+				pbRunner += sizeof( MATERIAL_RELIEF_ENTRY );
+				memcpy( pbRunner, pbSource, nSourceSize );
+				pbRunner += nSourceSize;
+			}
+		}
+	}
+	*pnSize = nTotalSize;
+	*pnElements = 1;
+	return( pbChunkMem );
+}
+
 
 /***************************************************************************
  * Function    : ModelExportChunkAttachData
@@ -1790,6 +1885,8 @@ byte*		ModelExportBuildChunk( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int
 		return( ModelSkeletonExportChunkWeights( pxModelData, pnSize, pnElements ) );
 	case ATM_CHUNKID_SKELETAL_ANIM_LINKS:
 		return( ModelSkeletonExportChunkAnimLinks( pxModelData, pnSize, pnElements ) );
+	case ATM_CHUNKID_MATERIAL_RELIEF:
+		return( ModelExportChunkMaterialRelief( pxModelData, nChunkNum, pnSize, pnElements ) );
 	case ATM_CHUNKID_BASIC_CONTENTS:
 		return( ModelExportChunkBasicContents( pxModelData, nChunkNum, pnSize, pnElements ) );
 		break;
@@ -2556,6 +2653,7 @@ int		nTexFiledataSize;
 				pMaterialData->SetBlendType( (ModelMaterialData::eBLEND_TYPES)pChunk->bBlendType );
 				pMaterialData->SetActiveMaterialProperties( (pChunk->bMaterialFlags & MATFLAGS_HASCUSTOMMATERIALPROPS) ? true : false );
 				pMaterialData->SetDoubleSided( (pChunk->bMaterialFlags & MATFLAGS_ISDOUBLESIDED) ? true : false );
+				pMaterialData->SetMaterialPropertiesNightOnly( (pChunk->bMaterialFlags & MATFLAGS_CUSTOMPROPS_NIGHT_ONLY) ? true : false );
 	//			pChunk->bNumTextures = 1;
 
 				// Add to the modeldata linked list of materials
@@ -2574,6 +2672,7 @@ int		nTexFiledataSize;
 				pMaterialData->SetBlendType( (ModelMaterialData::eBLEND_TYPES)pChunk->bBlendType );
 				pMaterialData->SetActiveMaterialProperties( (pChunk->bMaterialFlags & MATFLAGS_HASCUSTOMMATERIALPROPS) ? true : false );
 				pMaterialData->SetDoubleSided( (pChunk->bMaterialFlags & MATFLAGS_ISDOUBLESIDED) ? true : false );
+				pMaterialData->SetMaterialPropertiesNightOnly( (pChunk->bMaterialFlags & MATFLAGS_CUSTOMPROPS_NIGHT_ONLY) ? true : false );
 
 				for ( texchanloop = 0; texchanloop < MAX_NUM_TEX_CHANNELS; texchanloop++ )
 				{
@@ -2631,6 +2730,51 @@ int		nTexFiledataSize;
 			}
 		}
 		pxModelData->xStats.nNumEmbeddedTextures = nNumEmbeddedTextures;
+	}
+}
+
+
+/***************************************************************************
+ * Function    : ModelLoadProcessChunkMaterialRelief
+ * Description : Height maps for materials (ATMFormat.md, chunk 0x1F). Comes after the material chunk has been loaded
+ ***************************************************************************/
+void	ModelLoadProcessChunkMaterialRelief( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HEADER* pxChunkHeader, byte* pbMem )
+{
+MATERIAL_RELIEF_CHUNKHEADER*	pHeader = (MATERIAL_RELIEF_CHUNKHEADER*)( pbMem );
+MATERIAL_RELIEF_ENTRY*			pEntry;
+ModelMaterialData*				pMaterial;
+byte*	pbRunner = pbMem + pHeader->bSizeOfHeader;
+byte*	pbEnd = pbMem + ( pxChunkHeader->nNumElementsInChunk * pxChunkHeader->nSizeOfElement );
+int		nLoop;
+
+	for ( nLoop = 0; nLoop < pHeader->bNumEntries; nLoop++ )
+	{
+		if ( ( pbRunner + sizeof( MATERIAL_RELIEF_ENTRY ) ) > pbEnd )
+		{
+			return;
+		}
+		pEntry = (MATERIAL_RELIEF_ENTRY*)( pbRunner );
+		pbRunner += sizeof( MATERIAL_RELIEF_ENTRY );
+		if ( ( pEntry->nSizeOfData <= 0 ) ||
+			 ( ( pbRunner + pEntry->nSizeOfData ) > pbEnd ) )
+		{
+			return;
+		}
+		// Walks the list itself: FindMaterial finds nothing on a model with one plain material, until it has its relief
+		pMaterial = pxModelData->pMaterialData;
+		while ( ( pMaterial ) && ( pMaterial->GetAttrib() != pEntry->bMaterialNum ) )
+		{
+			pMaterial = pMaterial->GetNext();
+		}
+		if ( pMaterial )
+		{
+#ifdef TOOL
+			// In the modelconv etc, store the source data so it can be re-exported if necc
+			pMaterial->SetReliefSource( pbRunner, pEntry->nSizeOfData );
+#endif
+			pMaterial->LoadReliefFromMem( pbRunner, pEntry->nSizeOfData, pEntry->fDepth, pEntry->uwTextureWidth, pEntry->uwTextureHeight );
+		}
+		pbRunner += pEntry->nSizeOfData;
 	}
 }
 
@@ -3196,6 +3340,9 @@ void	ModelLoadProcessATMChunkPass3( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HE
 		break;
 	case ATM_CHUNKID_SKELETAL_ANIM_LINKS:
 		ModelSkeletonLoadChunkAnimLinks( pxModelData, pxChunkHeader, pbMem );
+		break;
+	case ATM_CHUNKID_MATERIAL_RELIEF:
+		ModelLoadProcessChunkMaterialRelief( pxModelData, pxChunkHeader, pbMem );
 		break;
 	case ATM_CHUNKID_COLOURS:
 		ModelLoadProcessChunkVertColours( pxModelData, pxChunkHeader, pbMem );

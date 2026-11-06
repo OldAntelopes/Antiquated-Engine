@@ -132,6 +132,11 @@ extern	void	EngineSetDefaultStateAlphaFunc( int nCompareFunc );
 // redoing it. Keyframe clones share a buffer, so a clone drawn in between still makes the next one re-blend.
 // Off by default (every draw animates, as before).
 extern	void	EngineSetAnimateOncePerFrame( BOOL bFlag );
+// Opt-in: draw the height maps a model's materials carry (ATMFormat.md, chunk 0x1F), as parallax and surface lighting. Needs
+// the app's ATMMaterial pixel shader to have the relief path. Off by default, so such models draw plain. fDepthScale scales
+// each material's depth, fMaxSteps is the most parallax steps per pixel, fNormalStrength how much it tilts the lighting
+// (0 = parallax only), and it fades out between fFadeStart and fFadeEnd world units from the camera.
+extern	void	EngineSetModelRelief( BOOL bEnable, float fDepthScale, float fMaxSteps, float fNormalStrength, float fFadeStart, float fFadeEnd );
 // Running totals of keyframe blends done and skipped (by the above). Compare two readings for a per-frame figure.
 extern	void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkipped );
 // Opt-in: the DX9 model renderer saves the stage-0 texture with GetTexture (which AddRefs) on every model draw and
@@ -395,6 +400,8 @@ typedef struct
 extern void		EngineActivateLight( int lightNum, ENGINE_LIGHT* pLight );
 extern void		EngineActivateSimpleLight( int lightNum, int mode, unsigned int ulCol, VECT* pxVect );
 extern void		EngineDeactivateLight( int lightNum );
+// Opt-in, off by default: lights keep one slot each in what shaders are given, and deactivating really removes them (EngineDX.cpp)
+extern void		EngineSetLightSlotTracking( BOOL bFlag );
 extern void		EngineGetPrimaryLight( ENGINE_LIGHT* pxOut );
 extern void		EngineResetLighting( void );
 
@@ -600,6 +607,7 @@ public:
 	virtual void			AddLight( VECT* pxPos, float, float, float, float R, float G, float B ) {}
 
 	virtual void			DebugPrint( int level, const char* szText ) {}
+	virtual bool			IsDaytime( void ) { return( false ); }		// For night-only effects (type 7) and night-only materials. An app that doesn't say gets them all the time, as it always did
 
 private:
 	VECT			mxNullPos;

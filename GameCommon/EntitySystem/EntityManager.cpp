@@ -92,7 +92,7 @@ RegisteredEntityList*	pRegisteredEntityList = mspRegisteredEntityList;
 
 void	EntityManagerDeleteEntity( Entity* pEntity )
 {
-	pEntity->SetTypeID( IN_MORGUE );
+	pEntity->SetTypeID(ENT_IN_MORGUE);
 }
 
 void	EntityManagerDeleteAllEntities( void )
@@ -157,7 +157,7 @@ RegisteredEntityList*	pRegisteredEntityList = mspRegisteredEntityList;
 		{
 			pNext = pEntity->GetNext();
 
-			if ( pEntity->GetTypeID() == IN_MORGUE )
+			if ( pEntity->GetTypeID() == ENT_IN_MORGUE)
 			{
 				if ( pLast )
 				{

@@ -531,6 +531,13 @@ int		loop;
 	m_BlendType = NONE;
 	m_bDoubleSided = false;
 	m_bMaterialPropertiesActive = false;
+	m_bMaterialPropertiesNightOnly = false;
+	m_hReliefTexture = NOTFOUND;
+	m_fReliefDepth = 0.0f;
+	m_nReliefTextureWidth = 0;
+	m_nReliefTextureHeight = 0;
+	m_pReliefSource = NULL;
+	m_nReliefSourceSize = 0;
 	m_nCloneTextureMaterial = NOTFOUND;
 
 	for ( loop = 0; loop < NUM_COLOUR_CHANNELS; loop++ )
@@ -569,6 +576,71 @@ int		loop;
 			m_aTexChannels[loop].m_pSourceData = NULL;
 		}
 	}
+
+	if ( m_hReliefTexture != NOTFOUND )
+	{
+		EngineReleaseTexture( &m_hReliefTexture );
+	}
+	if ( m_pReliefSource != NULL )
+	{
+		SystemFree( m_pReliefSource );
+		m_pReliefSource = NULL;
+	}
+}
+
+void	ModelMaterialData::LoadReliefFromMem( byte* pbMem, int nMemSize, float fDepth, int nTextureWidth, int nTextureHeight )
+{
+	if ( m_hReliefTexture != NOTFOUND )
+	{
+		EngineReleaseTexture( &m_hReliefTexture );
+	}
+	m_hReliefTexture = EngineLoadTextureFromFileInMem( pbMem, 0, NULL, nMemSize, NULL );
+	m_fReliefDepth = fDepth;
+	m_nReliefTextureWidth = nTextureWidth;
+	m_nReliefTextureHeight = nTextureHeight;
+}
+
+void	ModelMaterialData::SetReliefSource( byte* pbMem, int nMemSize )
+{
+	if ( m_pReliefSource != NULL )
+	{
+		SystemFree( m_pReliefSource );
+	}
+	m_pReliefSource = (byte*)( SystemMalloc( nMemSize ) );
+	m_nReliefSourceSize = nMemSize;
+	memcpy( m_pReliefSource, pbMem, nMemSize );
+}
+
+//----------------------------------------------------------------------------------------------------
+// Relief on model materials (opt-in, EngineSetModelRelief). It needs the app's ATMMaterial pixel shader to have the
+// relief path: The Universal's does. It shares gLandRelief and sampler s6 with that shader's landscape relief, with
+// gLandRelief.w = 2 saying it's a model, gLandReliefEdge = fade start, fade end, then texel sizes.
+
+static BOOL		msbModelReliefEnabled = FALSE;
+static float	msfModelReliefDepthScale = 1.0f;
+static float	msfModelReliefMaxSteps = 16.0f;
+static float	msfModelReliefNormalStrength = 1.0f;
+static float	msfModelReliefFadeStart = 40.0f;
+static float	msfModelReliefFadeEnd = 90.0f;
+
+void	EngineSetModelRelief( BOOL bEnable, float fDepthScale, float fMaxSteps, float fNormalStrength, float fFadeStart, float fFadeEnd )
+{
+	msbModelReliefEnabled = bEnable;
+	msfModelReliefDepthScale = fDepthScale;
+	msfModelReliefMaxSteps = fMaxSteps;
+	msfModelReliefNormalStrength = fNormalStrength;
+	msfModelReliefFadeStart = fFadeStart;
+	msfModelReliefFadeEnd = fFadeEnd;
+}
+
+void	ModelMaterialsEndRelief( void )
+{
+#ifdef TUD9
+static const float	safOff[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	ModelMaterialsShaderSetFloat4( "gLandRelief", safOff );
+	EngineSetTexture( 6, NOTFOUND );
+#endif
 }
 
 int		ModelMaterialData::Apply( void )
@@ -587,6 +659,46 @@ int	ret = NO_CHANGES;
 	if ( ModelRenderingIsShadowPass() == TRUE )
 	{
 		return ret;
+	}
+
+	// Relief, only when this draw is using the shader that has it (the reflection pass's statics are fixed function)
+	if ( ( m_hReliefTexture != NOTFOUND ) &&
+		 ( msbModelReliefEnabled ) &&
+		 ( m_fReliefDepth > 0.0f ) &&
+		 ( m_nReliefTextureWidth > 0 ) &&
+		 ( m_nReliefTextureHeight > 0 ) &&
+		 ( mpNormalMapRenderPixelShader != NULL ) )
+	{
+	LPGRAPHICSPIXELSHADER	pCurrentShader = NULL;
+
+		mpEngineDevice->GetPixelShader( &pCurrentShader );
+		if ( pCurrentShader == mpNormalMapRenderPixelShader )
+		{
+		float	afRelief[4];
+		float	afReliefEdge[4];
+
+			afRelief[0] = m_fReliefDepth * msfModelReliefDepthScale;
+			afRelief[1] = msfModelReliefMaxSteps;
+			afRelief[2] = msfModelReliefNormalStrength;
+			afRelief[3] = 2.0f;
+			afReliefEdge[0] = msfModelReliefFadeStart;
+			afReliefEdge[1] = msfModelReliefFadeEnd;
+			afReliefEdge[2] = 1.0f / (float)m_nReliefTextureWidth;
+			afReliefEdge[3] = 1.0f / (float)m_nReliefTextureHeight;
+			EngineSetTexture( 6, m_hReliefTexture );
+			mpEngineDevice->SetSamplerState( 6, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP );
+			mpEngineDevice->SetSamplerState( 6, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP );
+			mpEngineDevice->SetSamplerState( 6, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
+			mpEngineDevice->SetSamplerState( 6, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
+			mpEngineDevice->SetSamplerState( 6, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR );
+			ModelMaterialsShaderSetFloat4( "gLandRelief", afRelief );
+			ModelMaterialsShaderSetFloat4( "gLandReliefEdge", afReliefEdge );
+			ret |= RELIEF_ACTIVATED;
+		}
+		if ( pCurrentShader != NULL )
+		{
+			pCurrentShader->Release();
+		}
 	}
 
 	// Probably not needed?
@@ -643,7 +755,8 @@ int	ret = NO_CHANGES;
 		EngineEnableCulling( 1 );
 	}
 	
-	if ( m_bMaterialPropertiesActive )
+	if ( ( m_bMaterialPropertiesActive ) &&
+		 ( ( m_bMaterialPropertiesNightOnly == false ) || ( EngineGetGameInterface()->IsDaytime() == false ) ) )
 	{
 		if ( m_BlendType != NONE )
 		{
@@ -903,7 +1016,8 @@ ModelMaterialData*		pMaterial = pxModelData->pMaterialData;
 	if ( pMaterial )
 	{
 		if ( ( pMaterial->GetNext() == NULL ) &&
-			 ( pMaterial->HasActiveMaterialProperties() == FALSE ) )
+			 ( pMaterial->HasActiveMaterialProperties() == FALSE ) &&
+			 ( pMaterial->HasRelief() == false ) )
 		{
 			return( NULL );
 		}

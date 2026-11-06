@@ -265,6 +265,11 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 	// todo
 }
 
+void	EngineSetLightSlotTracking( BOOL bFlag )
+{
+	// todo
+}
+
 void	EngineEnableLighting( int nFlag )
 {
 	// todo

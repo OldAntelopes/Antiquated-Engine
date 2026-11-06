@@ -1989,9 +1989,8 @@ uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 			EngineGetGameInterface()->AddParticle( 4, pxPos );
 		}
 		break;
-	case 7:	// TODO - Soft-light, nighttime only
-		// TODO -
-//		if ( EngineGetGameInterface()->IsDaytime() == FALSE )
+	case 7:	// Soft-light, nighttime only
+		if ( EngineGetGameInterface()->IsDaytime() == false )
 		{
 		MVECT	xPos;
 		float	fR,fG,fB;

@@ -1072,6 +1072,10 @@ ENGINEMATERIAL		xBaseMaterial;
 				{
 					EngineEnableCulling( 1 );
 				}
+				if ( ret & ModelMaterialData::RELIEF_ACTIVATED )
+				{
+					ModelMaterialsEndRelief();
+				}
 
 			}
 		} // end material for loop

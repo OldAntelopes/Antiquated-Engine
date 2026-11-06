@@ -1698,8 +1698,21 @@ void	EngineFinaliseRender( void )
 	ShadowVolumeRender();
 }
 
+// Declared here for EngineDeactivateLight; see EngineSetLightSlotTracking
+static BOOL		msbEngineLightSlotTracking = FALSE;
+static void		EngineLightSlotsRemove( int nLightNum, int nKeepType );
+static BOOL		EngineLightIsInFixedFunctionRange( int nLightNum );
+
 void		EngineDeactivateLight( int lightNum )
 {
+	if ( msbEngineLightSlotTracking == TRUE )
+	{
+		EngineLightSlotsRemove( lightNum, NOTFOUND );
+		if ( EngineLightIsInFixedFunctionRange( lightNum ) == FALSE )
+		{
+			return;
+		}
+	}
 	mpEngineDevice->LightEnable(lightNum, FALSE);
 }
 
@@ -1719,7 +1732,81 @@ VECT				maxSpotLightDirections[SHADER_MAX_NUM_SPOT_LIGHTS];
 VECT				maxSpotLightColours[SHADER_MAX_NUM_SPOT_LIGHTS];
 int					mnNumActiveSpotLights = 0;
 int					manSpotLightSlotNums[SHADER_MAX_NUM_SPOT_LIGHTS] = { 0 };
-//float				mafPointLightRangeSquared[SHADER_MAX_NUM_POINT_LIGHTS];
+float				mafSpotLightRange[SHADER_MAX_NUM_SPOT_LIGHTS];
+
+/***************************************************************************
+ * Function    : EngineSetLightSlotTracking
+ * Params      : bFlag - TRUE to turn it on. It's off by default, which behaves as it always has
+ * Description : Opt-in. Without it, the lists of lights handed to shaders only ever grow during a frame: a light activated
+ *				 twice is listed twice (and drawn twice as bright), the last slot is overwritten and never counted (so 7 lights
+ *				 at most), and EngineDeactivateLight leaves a light in the lists. With it, a light keeps its slot when activated
+ *				 again, all the slots count, a light that won't fit is ignored rather than overwriting another, and deactivating
+ *				 removes it. Lights above the device's fixed-function limit (usually 8) only go to shaders.
+ ***************************************************************************/
+void	EngineSetLightSlotTracking( BOOL bFlag )
+{
+	msbEngineLightSlotTracking = bFlag;
+}
+
+static BOOL		EngineLightIsInFixedFunctionRange( int nLightNum )
+{
+static DWORD	sdwMaxActiveLights = 0;
+
+	if ( sdwMaxActiveLights == 0 )
+	{
+	D3DCAPS9	xCaps;
+
+		sdwMaxActiveLights = 8;
+		if ( SUCCEEDED( mpEngineDevice->GetDeviceCaps( &xCaps ) ) && ( xCaps.MaxActiveLights > 0 ) )
+		{
+			sdwMaxActiveLights = xCaps.MaxActiveLights;
+		}
+	}
+	return( ( (DWORD)nLightNum < sdwMaxActiveLights ) ? TRUE : FALSE );
+}
+
+// Takes a light out of the shader lists, closing the gap, except from the list for nKeepType (NOTFOUND = both)
+static void		EngineLightSlotsRemove( int nLightNum, int nKeepType )
+{
+int		nLoop;
+int		nLast;
+
+	if ( nKeepType != POINT_LIGHT )
+	{
+		for ( nLoop = 0; nLoop < mnNumActivePointLights; nLoop++ )
+		{
+			if ( manPointLightSlotNums[nLoop] == nLightNum )
+			{
+				nLast = mnNumActivePointLights - 1;
+				maxPointLightPositions[nLoop] = maxPointLightPositions[nLast];
+				maxPointLightColours[nLoop] = maxPointLightColours[nLast];
+				mafPointLightRangeSquared[nLoop] = mafPointLightRangeSquared[nLast];
+				manPointLightSlotNums[nLoop] = manPointLightSlotNums[nLast];
+				manPointLightSlotNums[nLast] = NOTFOUND;
+				mnNumActivePointLights = nLast;
+				break;
+			}
+		}
+	}
+	if ( nKeepType != SPOT_LIGHT )
+	{
+		for ( nLoop = 0; nLoop < mnNumActiveSpotLights; nLoop++ )
+		{
+			if ( manSpotLightSlotNums[nLoop] == nLightNum )
+			{
+				nLast = mnNumActiveSpotLights - 1;
+				maxSpotLightPositions[nLoop] = maxSpotLightPositions[nLast];
+				maxSpotLightDirections[nLoop] = maxSpotLightDirections[nLast];
+				maxSpotLightColours[nLoop] = maxSpotLightColours[nLast];
+				mafSpotLightRange[nLoop] = mafSpotLightRange[nLast];
+				manSpotLightSlotNums[nLoop] = manSpotLightSlotNums[nLast];
+				manSpotLightSlotNums[nLast] = NOTFOUND;
+				mnNumActiveSpotLights = nLast;
+				break;
+			}
+		}
+	}
+}
 
 
 void		PixelShaderSetSpotLights( LPD3DXCONSTANTTABLE pShaderPSConstantTable )
@@ -1742,6 +1829,19 @@ D3DXHANDLE handle;
 	if ( handle )
 	{
 		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)maxSpotLightDirections, 3 * mnNumActiveSpotLights);
+	}
+
+	// Only shaders that really use them have these in their constant tables
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gSpotLightColours");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)maxSpotLightColours, 3 * mnNumActiveSpotLights);
+	}
+
+	handle = pShaderPSConstantTable->GetConstantByName(NULL, "gSpotLightRanges");
+	if ( handle )
+	{
+		pShaderPSConstantTable->SetFloatArray( mpEngineDevice, handle, mafSpotLightRange, mnNumActiveSpotLights);
 	}
 	
 }
@@ -1920,6 +2020,11 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 
 	if ( pLight )
 	{
+		if ( msbEngineLightSlotTracking == TRUE )
+		{
+			EngineLightSlotsRemove( nLightNum, (int)pLight->Type );
+		}
+
 		// Store light info to be passed to shaders..
 		switch ( pLight->Type )
 		{
@@ -1945,17 +2050,32 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 				else
 				{
 					nSlot = mnNumActivePointLights;
-					if ( mnNumActivePointLights < (SHADER_MAX_NUM_POINT_LIGHTS - 1) )
+					if ( msbEngineLightSlotTracking == TRUE )
+					{
+						if ( nSlot < SHADER_MAX_NUM_POINT_LIGHTS )
+						{
+							manPointLightSlotNums[nSlot] = nLightNum;
+							mnNumActivePointLights++;
+						}
+						else
+						{
+							nSlot = NOTFOUND;		// No room: whoever's calling should hand over the most important lights first
+						}
+					}
+					else if ( mnNumActivePointLights < (SHADER_MAX_NUM_POINT_LIGHTS - 1) )
 					{
 						mnNumActivePointLights++;
 					}
 				}
-				maxPointLightPositions[nSlot] = pLight->Position;
-				fRange = pLight->Range * 0.2f;
-				mafPointLightRangeSquared[nSlot] = fRange * fRange;
-				maxPointLightColours[nSlot].x = pLight->Diffuse.r;
-				maxPointLightColours[nSlot].y = pLight->Diffuse.g;
-				maxPointLightColours[nSlot].z = pLight->Diffuse.b;
+				if ( nSlot != NOTFOUND )
+				{
+					maxPointLightPositions[nSlot] = pLight->Position;
+					fRange = pLight->Range * 0.2f;
+					mafPointLightRangeSquared[nSlot] = fRange * fRange;
+					maxPointLightColours[nSlot].x = pLight->Diffuse.r;
+					maxPointLightColours[nSlot].y = pLight->Diffuse.g;
+					maxPointLightColours[nSlot].z = pLight->Diffuse.b;
+				}
 			}
 			break;
 		case SPOT_LIGHT:
@@ -1980,24 +2100,41 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 				else
 				{
 					nSlot = mnNumActiveSpotLights;
-					if ( mnNumActiveSpotLights < (SHADER_MAX_NUM_SPOT_LIGHTS - 1) )
+					if ( msbEngineLightSlotTracking == TRUE )
+					{
+						if ( nSlot < SHADER_MAX_NUM_SPOT_LIGHTS )
+						{
+							manSpotLightSlotNums[nSlot] = nLightNum;
+							mnNumActiveSpotLights++;
+						}
+						else
+						{
+							nSlot = NOTFOUND;
+						}
+					}
+					else if ( mnNumActiveSpotLights < (SHADER_MAX_NUM_SPOT_LIGHTS - 1) )
 					{
 						mnNumActiveSpotLights++;
 					}
 				}
-				maxSpotLightPositions[nSlot] = pLight->Position;
-//				fRange = pLight->Range * 0.2f;
-//				mafPointLightRangeSquared[nSlot] = fRange * fRange;
-				maxSpotLightColours[nSlot].x = pLight->Diffuse.r;
-				maxSpotLightColours[nSlot].y = pLight->Diffuse.g;
-				maxSpotLightColours[nSlot].z = pLight->Diffuse.b;
-				maxSpotLightDirections[nSlot] = pLight->Direction;
+				if ( nSlot != NOTFOUND )
+				{
+					maxSpotLightPositions[nSlot] = pLight->Position;
+					mafSpotLightRange[nSlot] = pLight->Range;
+					maxSpotLightColours[nSlot].x = pLight->Diffuse.r;
+					maxSpotLightColours[nSlot].y = pLight->Diffuse.g;
+					maxSpotLightColours[nSlot].z = pLight->Diffuse.b;
+					maxSpotLightDirections[nSlot] = pLight->Direction;
+				}
 			}
 			break;
 		}
 
-		mpEngineDevice->SetLight(nLightNum, (GRAPHICSLIGHT*)pLight );
-		mpEngineDevice->LightEnable(nLightNum, TRUE);
+		if ( ( msbEngineLightSlotTracking == FALSE ) || ( EngineLightIsInFixedFunctionRange( nLightNum ) == TRUE ) )
+		{
+			mpEngineDevice->SetLight(nLightNum, (GRAPHICSLIGHT*)pLight );
+			mpEngineDevice->LightEnable(nLightNum, TRUE);
+		}
 	}
 	else
 	{

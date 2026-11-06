@@ -84,12 +84,13 @@ Chunk Codes
 	0x1C	Skeleton				(Experimental - see Pub\skeletalanimation.md)
 	0x1D	Skin Weights			(Experimental)
 	0x1E	Skeletal Animation Links	(Experimental)
+	0x1F	Material Relief
 	
 	0xFF	Chunk Separator
 
 **Chunk ID register.** This file is the single register of ATM chunk IDs for every reader and writer of the format:
 Antiquated's Engine and ModelConverter, and MitGames' Shared\MitAtm (agreed with the developer, 31 Oct 2026).
-- Add a new chunk to the list above, with its layout below, *before* any code writes it. **0x1F is the next free ID.**
+- Add a new chunk to the list above, with its layout below, *before* any code writes it. **0x20 is the next free ID.**
 - An ID means the same layout everywhere. Any reader may support a subset of the chunks and skip the rest, but no
   one reuses an ID or gives it a different layout.
 - The same goes for reserved and unused fields (such as the flags fields, the skeleton's bind rotation and the
@@ -318,13 +319,45 @@ TBD
 
 0x19	Texture Material
 ------------------------------------
+ChunkHeader -> NumElements = 1  
+ChunkHeader -> SizeOfElement = The size of the whole chunk  
 
-TBD
+Chunk starts with a custom header :  
+
+	0x0		[1 byte]		Number of materials (must equal the count in Basic Contents, or the loader panics)
+	0x1		[1 byte]		Size of this header (4)
+	0x2		[2 bytes]		Unused
+
+This header is followed, for each material, by :  
+
+	0x0		[16 bytes]		Diffuse colour R,G,B,A (floats)
+	0x10	[16 bytes]		Specular colour R,G,B,A (floats)
+	0x20	[16 bytes]		Emissive colour R,G,B,A (floats)
+	0x30	[16 bytes]		Ambient colour R,G,B,A (floats)
+	0x40	[1 byte]		Material number
+	0x41	[1 byte]		Number of textures
+	0x42	[1 byte]		Blend type (ModelMaterialData::eBLEND_TYPES)
+	0x43	[1 byte]		Flags : 0x1 = use this material's colours and blend type (otherwise they're ignored), 0x2 = double sided,
+							0x4 = only use them at night (EngineGameInterface::IsDaytime), for lit windows and lamps. By day the faces draw
+							as if 0x1 weren't set. A reader that doesn't know this flag uses them all the time
+	0x44	[4 bytes]		Size of the texture filename
+	0x48	[4 bytes]		Size of the embedded texture data
+	0x4C	[4 bytes]		Specular power (float)
+	0x50	[4 bytes]		Size of the embedded normal map data
+	0x54	[1 byte]		Share the diffuse texture of another material : its number + 1 (0 = none)
+	0x55	[1 byte]		The same for the second texture
+	0x56	[1 byte]		Size of the normal map filename
+	0x57	[1 byte]		Size of the specular map filename
+	0x58	[4 bytes]		Size of the embedded specular map data
+
+	followed by the filename and then the data of the diffuse, normal and specular textures, for each that has both
+
+A material with no texture of its own leaves the texture the caller set, so a game can supply it per use. A surface colour is
+texture x lighting + texture x emissive, so a material with diffuse and ambient 0 and emissive 1 draws as its plain texture colour.
 
 0x1A	Attribute Data
 ------------------------------------
-
-TBD
+One byte per face, in the order of the Face Indices chunk : the number of the material that face uses.
 
 
 0x1B	Basic Contents
@@ -383,3 +416,31 @@ x number of linked animations
 
 A skinned model is normally a static mesh (model type 0) with these three chunks added - older loaders ignore the
 chunks and show it in its bind pose.
+
+0x1F	Material Relief
+------------------------------------
+A height map for a material, for parallax and for lighting that follows the surface. Needs a level of detail of its own
+to apply to: each sub-model carries its own, usually only the nearest. A reader that doesn't know it draws the plain model.
+ChunkHeader -> NumElements = 1  
+ChunkHeader -> SizeOfElement = The size of the whole chunk  
+
+Chunk starts with a custom header :  
+
+	0x0		[1 byte]		Number of entries
+	0x1		[1 byte]		Size of this header (4)
+	0x2		[2 bytes]		Unused
+
+This header is followed, for each entry, by :  
+
+	0x0		[1 byte]		Material number
+	0x1		[1 byte]		Flags (currently unused, 0)
+	0x2		[2 bytes]		Unused
+	0x4		[4 bytes]		Depth of the relief in world units (float), after any scale the model is drawn at
+	0x8		[2 bytes]		Width of the height map in pixels
+	0xA		[2 bytes]		Height of the height map in pixels
+	0xC		[4 bytes]		Size of the image file data
+
+	followed by the image file data. An image with an alpha channel, in the material's UV layout: alpha 255 is the surface,
+	0 is the full depth below it. The colour channels are unused
+
+Only drawn when the app turns it on (EngineSetModelRelief) and its pixel shader supports it.

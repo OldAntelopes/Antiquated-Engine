@@ -3,7 +3,7 @@
 
 #include "Components\Component.h"
 
-#define		IN_MORGUE	-1
+#define		ENT_IN_MORGUE	-1
 
 class Entity
 {

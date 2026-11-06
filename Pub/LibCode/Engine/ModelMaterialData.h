@@ -57,6 +57,7 @@ public:
 		NORMALMAP_ACTIVATED = 0x8,
 		SPECULARMAP_ACTIVATED = 0x10,
 		DOUBLESIDED_ACTIVATED = 0x20,
+		RELIEF_ACTIVATED = 0x40,
 	};
 
 	typedef struct
@@ -109,6 +110,20 @@ public:
 	bool			HasActiveMaterialProperties( void ) { return( m_bMaterialPropertiesActive ); }
 	void			SetActiveMaterialProperties( bool bFlag ) { m_bMaterialPropertiesActive = bFlag; }
 
+	// The active material properties only apply at night (EngineGameInterface::IsDaytime). For lit windows and lamps.
+	bool			IsMaterialPropertiesNightOnly( void ) { return( m_bMaterialPropertiesNightOnly ); }
+	void			SetMaterialPropertiesNightOnly( bool bFlag ) { m_bMaterialPropertiesNightOnly = bFlag; }
+
+	// A height map for parallax and surface lighting (ATMFormat.md, chunk 0x1F; EngineSetModelRelief)
+	void			LoadReliefFromMem( byte* pbMem, int nMemSize, float fDepth, int nTextureWidth, int nTextureHeight );
+	bool			HasRelief( void ) { return( m_hReliefTexture != NOTFOUND ); }
+	float			GetReliefDepth( void ) { return( m_fReliefDepth ); }
+	int				GetReliefTextureWidth( void ) { return( m_nReliefTextureWidth ); }
+	int				GetReliefTextureHeight( void ) { return( m_nReliefTextureHeight ); }
+	// Tools keep the file data, so they can save it again
+	void			SetReliefSource( byte* pbMem, int nMemSize );
+	byte*			GetReliefSource( int* pnSize ) { *pnSize = m_nReliefSourceSize; return( m_pReliefSource ); }
+
 	TEXTURE_HANDLE	GetTexture( int texnum ) { return( m_aTexChannels[texnum].mhTexture ); }
 
 	int				GetCloneTextureMaterialIndex( int texnum ) { return( m_nCloneTextureMaterial ); }
@@ -119,6 +134,7 @@ public:
 
 private:
 	bool			m_bMaterialPropertiesActive;
+	bool			m_bMaterialPropertiesNightOnly;
 
 	ModelMaterialData*		m_pNext;
 	int		m_nAttrib;
@@ -133,6 +149,13 @@ private:
 	MATERIAL_COLOUR		m_aColours[NUM_COLOUR_CHANNELS];
 	float				m_specularPower;
 	bool				m_bDoubleSided;
+
+	TEXTURE_HANDLE		m_hReliefTexture;
+	float				m_fReliefDepth;
+	int					m_nReliefTextureWidth;
+	int					m_nReliefTextureHeight;
+	byte*				m_pReliefSource;
+	int					m_nReliefSourceSize;
 };
 
 extern ModelMaterialData*		FindMaterialFromHandle( int nModelHandle, int nAttrib );
@@ -156,6 +179,8 @@ extern void		ModelMaterialsVertexShaderSetFloat4( const char* szConstantName, co
 
 extern void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATERIAL_COLOUR* pxAmbient, MATERIAL_COLOUR* pxSpecular, MATERIAL_COLOUR* pxEmissive, float fSpecularPower );
 extern void		ModelMaterialsEnableLighting( BOOL bLightingEnable );
+// Puts things back after a draw with a relief material (Apply returned RELIEF_ACTIVATED)
+extern void		ModelMaterialsEndRelief( void );
 
 #ifdef TOOL
 extern void	ModelDeleteAllMaterials( int nModelHandle );
