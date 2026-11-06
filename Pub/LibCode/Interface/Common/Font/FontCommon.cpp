@@ -745,7 +745,12 @@ int		nWidth = GetStringWidth( szString, font );
 
 const char* InterfaceTextLimitWidth( int nLayer, int nX, int nY, const char* szString, int ulCol, int nFont, int nMaxWidth )
 {
-	return( InterfaceInstanceMain()->TextLimitWidth( nLayer, nX, nY, nMaxWidth, ulCol, nFont, szString ) );
+	// szString is plain text, which can hold anything (a chat line, a player's name). Never use it as the format
+	if ( szString == NULL )
+	{
+		return( NULL );
+	}
+	return( InterfaceInstanceMain()->TextLimitWidth( nLayer, nX, nY, nMaxWidth, ulCol, nFont, "%s", szString ) );
 }
 
 
@@ -877,12 +882,19 @@ int		nPreBackstepPos;
 
 const char* InterfaceTextLimitWidthCentred( int nLayer, int nX, int nY, const char* szString, int ulCol, int nFont, int nMaxWidth )
 {
-	return( InterfaceInstanceMain()->TextLimitWidthCentred( nLayer, nX, nY, nMaxWidth, ulCol, nFont, szString ) );
+	if ( szString == NULL )
+	{
+		return( NULL );
+	}
+	return( InterfaceInstanceMain()->TextLimitWidthCentred( nLayer, nX, nY, nMaxWidth, ulCol, nFont, "%s", szString ) );
 }
 
 void InterfaceText( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
-	InterfaceInstanceMain()->Text( nLayer, nX, nY, ulCol, nFont, szString );
+	if ( szString != NULL )
+	{
+		InterfaceInstanceMain()->Text( nLayer, nX, nY, ulCol, nFont, "%s", szString );
+	}
 }
 
 void FontSystem::Text( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
@@ -1046,7 +1058,10 @@ char*	pcTextBuffer;
  ***************************************************************************/
 void InterfaceTextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )
 {
-	InterfaceInstanceMain()->TextRight( nLayer, nX, nY, ulCol, nFont, szString );
+	if ( szString != NULL )
+	{
+		InterfaceInstanceMain()->TextRight( nLayer, nX, nY, ulCol, nFont, "%s", szString );
+	}
 }
 
 void FontSystem::TextRight( int nLayer, int nX, int nY, const char* szString, uint32 ulCol, int nFont )

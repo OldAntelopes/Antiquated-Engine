@@ -40,7 +40,8 @@ ATM_CHUNK_HEADER
     0x1		[1 byte] = Chunk Data Num.  	
 			Some chunks can appear multiple times within the ATM, this indicates which chunk number this is.
 			(For the 0xFF separator chunk this says what the following sub-model is - 1 horiz turret, 2 vert turret,
-			 3 front wheel, 4 rear wheel, 5 medium LOD, 6 low LOD, 7 collision model)
+			 3 front wheel, 4 rear wheel, 5 medium LOD, 6 low LOD, 7 collision model. The loader attaches a collision
+			 model to the level it follows, and only one on the base model is used, so it goes before 5 and 6)
     0x2 	[2 byte] = ChunkID. Defines the type of this chunk - the 'Chunk Codes' listed below
     0x4		[4 bytes] = Num Elements in Chunk
 			Some chunks contain many elements (e.g. a vertices chunk may contain 1000s of vertices.)
@@ -85,12 +86,13 @@ Chunk Codes
 	0x1D	Skin Weights			(Experimental)
 	0x1E	Skeletal Animation Links	(Experimental)
 	0x1F	Material Relief
+	0x20	Material Channels
 	
 	0xFF	Chunk Separator
 
 **Chunk ID register.** This file is the single register of ATM chunk IDs for every reader and writer of the format:
 Antiquated's Engine and ModelConverter, and MitGames' Shared\MitAtm (agreed with the developer, 31 Oct 2026).
-- Add a new chunk to the list above, with its layout below, *before* any code writes it. **0x20 is the next free ID.**
+- Add a new chunk to the list above, with its layout below, *before* any code writes it. **0x21 is the next free ID.**
 - An ID means the same layout everywhere. Any reader may support a subset of the chunks and skip the rest, but no
   one reuses an ID or gives it a different layout.
 - The same goes for reserved and unused fields (such as the flags fields, the skeleton's bind rotation and the
@@ -444,3 +446,37 @@ This header is followed, for each entry, by :
 	0 is the full depth below it. The colour channels are unused
 
 Only drawn when the app turns it on (EngineSetModelRelief) and its pixel shader supports it.
+
+0x20	Material Channels
+------------------------------------
+Materials that light up with something the model's owner is doing, such as a vehicle's brake lamps. Goes with the sub-model whose
+materials it names. A reader that doesn't know it draws those materials with their ordinary colours, so give them the look of an
+unlit lamp in the Texture Material chunk.
+ChunkHeader -> NumElements = 1  
+ChunkHeader -> SizeOfElement = The size of the whole chunk  
+
+Chunk starts with a custom header :  
+
+	0x0		[1 byte]		Number of entries
+	0x1		[1 byte]		Size of this header (4)
+	0x2		[1 byte]		Size of each entry (16). Loaders step by this, so fields can be appended
+	0x3		[1 byte]		Unused
+
+This header is followed, for each entry, by :  
+
+	0x0		[1 byte]		Material number
+	0x1		[1 byte]		Channel, 1 to 8 (below)
+	0x2		[1 byte]		Flags (currently unused, 0)
+	0x3		[1 byte]		Unused
+	0x4		[12 bytes]		Emissive colour R,G,B while the channel is on (floats). Multiplied by the channel's strength and, in the
+							shader, by the texture, so values over 1 are normal
+
+While the app has the channel's strength above 0 (EngineSetModelMaterialChannel), the material uses its own colours whatever its flags,
+with this as its emissive colour. Strengths apply to the draw, not the model, so clones can differ.
+
+	Channel 1	Headlights
+	Channel 2	Brake. The Universal also lights these in white for reversing, with a colour it sets for the draw (EngineSetModelMaterialChannelColour)
+	Channel 3	Left indicator (reserved, nothing sets it yet)
+	Channel 4	Right indicator (reserved, nothing sets it yet)
+
+The numbers are the same for every model and app. Add new ones to this list.

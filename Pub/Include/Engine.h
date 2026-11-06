@@ -137,6 +137,18 @@ extern	void	EngineSetAnimateOncePerFrame( BOOL bFlag );
 // each material's depth, fMaxSteps is the most parallax steps per pixel, fNormalStrength how much it tilts the lighting
 // (0 = parallax only), and it fades out between fFadeStart and fFadeEnd world units from the camera.
 extern	void	EngineSetModelRelief( BOOL bEnable, float fDepthScale, float fMaxSteps, float fNormalStrength, float fFadeStart, float fFadeEnd );
+// State channels (ATMFormat.md, chunk 0x20): a model's material can be tagged with a channel, 1 to MODEL_MATERIAL_NUM_CHANNELS, and a
+// lit colour, multiplied by fStrength while fStrength is above 0. It's for lamps that follow what their owner is doing, like a
+// vehicle's brake lamps. The strengths apply to whatever is drawn while they're set, so clones sharing a model's materials can
+// differ: set them just before drawing the model, and clear them straight after. All 0 by default, so nothing is lit.
+#define		MODEL_MATERIAL_NUM_CHANNELS		8
+extern	void	EngineSetModelMaterialChannel( int nChannel, float fStrength );
+// The same, but lit in this colour for this draw instead of the one in the model. For lamps that do two jobs, like brake and reverse
+extern	void	EngineSetModelMaterialChannelColour( int nChannel, float fStrength, float fRed, float fGreen, float fBlue );
+extern	void	EngineClearModelMaterialChannels( void );
+// How many separate lamps the model has on this channel, with the middle and facing of up to nMax of them in model space. Faces touching
+// at a corner are one lamp. Reads the mesh, so call it once per model, not per frame.
+extern	int		ModelGetMaterialChannelLamps( int nModelHandle, int nChannel, VECT* pxPositions, VECT* pxNormals, int nMax );
 // Running totals of keyframe blends done and skipped (by the above). Compare two readings for a per-frame figure.
 extern	void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkipped );
 // Opt-in: the DX9 model renderer saves the stage-0 texture with GetTexture (which AddRefs) on every model draw and

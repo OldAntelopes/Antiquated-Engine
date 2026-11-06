@@ -114,6 +114,11 @@ public:
 	bool			IsMaterialPropertiesNightOnly( void ) { return( m_bMaterialPropertiesNightOnly ); }
 	void			SetMaterialPropertiesNightOnly( bool bFlag ) { m_bMaterialPropertiesNightOnly = bFlag; }
 
+	// Lit by a state channel (ATMFormat.md, chunk 0x20; EngineSetModelMaterialChannel). 0 = no channel
+	int				GetChannel( void ) { return( m_nChannel ); }
+	MATERIAL_COLOUR	GetChannelEmissive( void ) { return( m_xChannelEmissive ); }
+	void			SetChannel( int nChannel, float fRed, float fGreen, float fBlue );
+
 	// A height map for parallax and surface lighting (ATMFormat.md, chunk 0x1F; EngineSetModelRelief)
 	void			LoadReliefFromMem( byte* pbMem, int nMemSize, float fDepth, int nTextureWidth, int nTextureHeight );
 	bool			HasRelief( void ) { return( m_hReliefTexture != NOTFOUND ); }
@@ -135,6 +140,9 @@ public:
 private:
 	bool			m_bMaterialPropertiesActive;
 	bool			m_bMaterialPropertiesNightOnly;
+
+	int				m_nChannel;
+	MATERIAL_COLOUR	m_xChannelEmissive;
 
 	ModelMaterialData*		m_pNext;
 	int		m_nAttrib;

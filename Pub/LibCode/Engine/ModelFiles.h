@@ -46,6 +46,7 @@ enum
 	ATM_CHUNKID_SKIN_WEIGHTS,			// 0x1D - Per-vertex bone weights (ATM_SKIN_WEIGHT_ENTRY per element)
 	ATM_CHUNKID_SKELETAL_ANIM_LINKS,	// 0x1E - Linked animation files (ATM_SKELETAL_ANIM_LINK_ENTRY per element)
 	ATM_CHUNKID_MATERIAL_RELIEF,		// 0x1F - Height maps for materials (see ATMFormat.md)
+	ATM_CHUNKID_MATERIAL_CHANNELS,		// 0x20 - Materials lit by a state channel, e.g. a vehicle's brake lamps (see ATMFormat.md)
 	ATM_MAX_CHUNKID,
 	
 	ATM_CHUNKID_MODEL_SEPARATOR = 255,		// Always at end of list

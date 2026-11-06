@@ -532,6 +532,8 @@ int		loop;
 	m_bDoubleSided = false;
 	m_bMaterialPropertiesActive = false;
 	m_bMaterialPropertiesNightOnly = false;
+	m_nChannel = 0;
+	m_xChannelEmissive.fRed = m_xChannelEmissive.fGreen = m_xChannelEmissive.fBlue = m_xChannelEmissive.fAlpha = 0.0f;
 	m_hReliefTexture = NOTFOUND;
 	m_fReliefDepth = 0.0f;
 	m_nReliefTextureWidth = 0;
@@ -631,6 +633,194 @@ void	EngineSetModelRelief( BOOL bEnable, float fDepthScale, float fMaxSteps, flo
 	msfModelReliefNormalStrength = fNormalStrength;
 	msfModelReliefFadeStart = fFadeStart;
 	msfModelReliefFadeEnd = fFadeEnd;
+}
+
+//----------------------------------------------------------------------------------------------------
+// State channels (ATMFormat.md, chunk 0x20). A material tagged with a channel gets its lit colour while the app has set
+// that channel's strength above 0. The strengths belong to the draw, not the model, so clones sharing these materials can
+// differ: the app sets them before drawing a model and clears them after. All 0 unless an app sets them.
+
+static float	msafModelMaterialChannels[MODEL_MATERIAL_NUM_CHANNELS] = { 0.0f };
+static BOOL		msabModelMaterialChannelHasColour[MODEL_MATERIAL_NUM_CHANNELS] = { FALSE };
+static MATERIAL_COLOUR	msaxModelMaterialChannelColours[MODEL_MATERIAL_NUM_CHANNELS];
+
+void	EngineSetModelMaterialChannel( int nChannel, float fStrength )
+{
+	if ( ( nChannel >= 1 ) && ( nChannel <= MODEL_MATERIAL_NUM_CHANNELS ) )
+	{
+		msafModelMaterialChannels[nChannel - 1] = fStrength;
+		msabModelMaterialChannelHasColour[nChannel - 1] = FALSE;
+	}
+}
+
+void	EngineSetModelMaterialChannelColour( int nChannel, float fStrength, float fRed, float fGreen, float fBlue )
+{
+	if ( ( nChannel >= 1 ) && ( nChannel <= MODEL_MATERIAL_NUM_CHANNELS ) )
+	{
+		msafModelMaterialChannels[nChannel - 1] = fStrength;
+		msabModelMaterialChannelHasColour[nChannel - 1] = TRUE;
+		msaxModelMaterialChannelColours[nChannel - 1].fRed = fRed;
+		msaxModelMaterialChannelColours[nChannel - 1].fGreen = fGreen;
+		msaxModelMaterialChannelColours[nChannel - 1].fBlue = fBlue;
+		msaxModelMaterialChannelColours[nChannel - 1].fAlpha = 1.0f;
+	}
+}
+
+void	EngineClearModelMaterialChannels( void )
+{
+int		nLoop;
+
+	for ( nLoop = 0; nLoop < MODEL_MATERIAL_NUM_CHANNELS; nLoop++ )
+	{
+		msafModelMaterialChannels[nLoop] = 0.0f;
+		msabModelMaterialChannelHasColour[nLoop] = FALSE;
+	}
+}
+
+void	ModelMaterialData::SetChannel( int nChannel, float fRed, float fGreen, float fBlue )
+{
+	if ( ( nChannel >= 1 ) && ( nChannel <= MODEL_MATERIAL_NUM_CHANNELS ) )
+	{
+		m_nChannel = nChannel;
+		m_xChannelEmissive.fRed = fRed;
+		m_xChannelEmissive.fGreen = fGreen;
+		m_xChannelEmissive.fBlue = fBlue;
+		m_xChannelEmissive.fAlpha = 1.0f;
+	}
+}
+
+/***************************************************************************
+ * Function    : ModelGetMaterialChannelLamps
+ * Params      : pxPositions, pxNormals - nMax of each, filled in with the middle and the facing of each lamp, in model space,
+ *				 after any scale or rotation the model was loaded with. A front face has cross( b - a, c - a ) along its normal
+ * Returns     : How many lamps. A lamp is a set of the channel's faces touching at a corner
+ * Description : Reads the mesh, so call it once per model and keep the answer, not per frame
+ ***************************************************************************/
+int		ModelGetMaterialChannelLamps( int nModelHandle, int nChannel, VECT* pxPositions, VECT* pxNormals, int nMax )
+{
+#define		MAX_LAMP_FACES		64
+MODEL_RENDER_DATA*		pxModelData;
+ModelMaterialData*		pMaterial;
+const ENGINEMESH_COLLISION_TRIS*	pxTris;
+DWORD*	pulAttributes = NULL;
+int		anFaces[MAX_LAMP_FACES];
+int		anGroup[MAX_LAMP_FACES];
+int		nNumFaces = 0;
+int		nNumLamps = 0;
+int		nFace;
+int		nOther;
+int		nCorner;
+int		nOtherCorner;
+int		nLoop;
+BOOL	bAnyMaterial = FALSE;
+BOOL	abHasChannel[256];
+
+	if ( nModelHandle == NOTFOUND ) return( 0 );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->pxBaseMesh == NULL ) return( 0 );
+
+	memset( abHasChannel, 0, sizeof( abHasChannel ) );
+	pMaterial = pxModelData->pMaterialData;
+	while ( pMaterial )
+	{
+		if ( ( pMaterial->GetChannel() == nChannel ) &&
+			 ( pMaterial->GetAttrib() >= 0 ) &&
+			 ( pMaterial->GetAttrib() < 256 ) )
+		{
+			abHasChannel[ pMaterial->GetAttrib() ] = TRUE;
+			bAnyMaterial = TRUE;
+		}
+		pMaterial = pMaterial->GetNext();
+	}
+	if ( bAnyMaterial == FALSE ) return( 0 );
+
+	pxTris = pxModelData->pxBaseMesh->GetCollisionTris( pxModelData->xStats.nNumIndices );
+	if ( pxTris == NULL ) return( 0 );
+
+	pxModelData->pxBaseMesh->LockAttributeBuffer( kLock_ReadOnly, (BYTE**)&pulAttributes );
+	if ( pulAttributes == NULL ) return( 0 );
+	for ( nFace = 0; ( nFace < pxTris->nNumTris ) && ( nNumFaces < MAX_LAMP_FACES ); nFace++ )
+	{
+		if ( ( pulAttributes[nFace] < 256 ) &&
+			 ( abHasChannel[ pulAttributes[nFace] ] ) )
+		{
+			anFaces[nNumFaces] = nFace;
+			anGroup[nNumFaces] = nNumFaces;
+			nNumFaces++;
+		}
+	}
+	pxModelData->pxBaseMesh->UnlockAttributeBuffer();
+
+	// Faces with a corner in the same place are the same lamp
+	for ( nFace = 0; nFace < nNumFaces; nFace++ )
+	{
+		for ( nOther = 0; nOther < nFace; nOther++ )
+		{
+		BOOL	bTouching = FALSE;
+
+			for ( nCorner = 0; nCorner < 3; nCorner++ )
+			{
+				for ( nOtherCorner = 0; nOtherCorner < 3; nOtherCorner++ )
+				{
+					if ( VectDist( &pxTris->pxVerts[ (anFaces[nFace]*3) + nCorner ], &pxTris->pxVerts[ (anFaces[nOther]*3) + nOtherCorner ] ) < 0.001f )
+					{
+						bTouching = TRUE;
+					}
+				}
+			}
+			if ( ( bTouching ) && ( anGroup[nFace] != anGroup[nOther] ) )
+			{
+			int		nOldGroup = anGroup[nFace];
+
+				for ( nLoop = 0; nLoop < nNumFaces; nLoop++ )
+				{
+					if ( anGroup[nLoop] == nOldGroup ) anGroup[nLoop] = anGroup[nOther];
+				}
+			}
+		}
+	}
+
+	for ( nLoop = 0; ( nLoop < nNumFaces ) && ( nNumLamps < nMax ); nLoop++ )
+	{
+		if ( anGroup[nLoop] == nLoop )		// (Each group is named after its first face)
+		{
+		VECT	xSum = { 0.0f, 0.0f, 0.0f };
+		VECT	xNormal = { 0.0f, 0.0f, 0.0f };
+		int		nCorners = 0;
+
+			for ( nFace = 0; nFace < nNumFaces; nFace++ )
+			{
+				if ( anGroup[nFace] == nLoop )
+				{
+				const VECT*		pxCorners = &pxTris->pxVerts[ anFaces[nFace]*3 ];
+				VECT	xEdge1;
+				VECT	xEdge2;
+				VECT	xCross;
+
+					for ( nCorner = 0; nCorner < 3; nCorner++ )
+					{
+						xSum.x += pxCorners[nCorner].x;
+						xSum.y += pxCorners[nCorner].y;
+						xSum.z += pxCorners[nCorner].z;
+						nCorners++;
+					}
+					VectSub( &xEdge1, &pxCorners[1], &pxCorners[0] );
+					VectSub( &xEdge2, &pxCorners[2], &pxCorners[0] );
+					VectCross( &xCross, &xEdge1, &xEdge2 );
+					xNormal.x += xCross.x;
+					xNormal.y += xCross.y;
+					xNormal.z += xCross.z;
+				}
+			}
+			VectNormalize( &xNormal );
+			pxPositions[nNumLamps].x = xSum.x / nCorners;
+			pxPositions[nNumLamps].y = xSum.y / nCorners;
+			pxPositions[nNumLamps].z = xSum.z / nCorners;
+			pxNormals[nNumLamps] = xNormal;
+			nNumLamps++;
+		}
+	}
+	return( nNumLamps );
 }
 
 void	ModelMaterialsEndRelief( void )
@@ -755,8 +945,11 @@ int	ret = NO_CHANGES;
 		EngineEnableCulling( 1 );
 	}
 	
-	if ( ( m_bMaterialPropertiesActive ) &&
-		 ( ( m_bMaterialPropertiesNightOnly == false ) || ( EngineGetGameInterface()->IsDaytime() == false ) ) )
+	float	fChannelStrength = ( m_nChannel > 0 ) ? msafModelMaterialChannels[m_nChannel - 1] : 0.0f;
+
+	if ( ( fChannelStrength > 0.0f ) ||
+		 ( ( m_bMaterialPropertiesActive ) &&
+		   ( ( m_bMaterialPropertiesNightOnly == false ) || ( EngineGetGameInterface()->IsDaytime() == false ) ) ) )
 	{
 		if ( m_BlendType != NONE )
 		{
@@ -857,6 +1050,16 @@ int	ret = NO_CHANGES;
 		xDXMaterial.Emissive.g = m_aColours[EMISSIVE].fGreen;
 		xDXMaterial.Emissive.b = m_aColours[EMISSIVE].fBlue;
 		xDXMaterial.Emissive.a = m_aColours[EMISSIVE].fAlpha;
+
+		if ( fChannelStrength > 0.0f )
+		{
+			const MATERIAL_COLOUR*	pxLit = msabModelMaterialChannelHasColour[m_nChannel - 1] ? &msaxModelMaterialChannelColours[m_nChannel - 1] : &m_xChannelEmissive;
+
+			xDXMaterial.Emissive.r = pxLit->fRed * fChannelStrength;
+			xDXMaterial.Emissive.g = pxLit->fGreen * fChannelStrength;
+			xDXMaterial.Emissive.b = pxLit->fBlue * fChannelStrength;
+			xDXMaterial.Emissive.a = 1.0f;
+		}
 
 		EngineSetMaterial(&xDXMaterial);
 		ret |= MATERIAL_CHANGED;

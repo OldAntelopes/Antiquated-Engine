@@ -167,6 +167,25 @@ typedef struct
 
 } MATERIAL_RELIEF_ENTRY;
 
+typedef struct
+{
+	BYTE	bNumEntries;
+	BYTE	bSizeOfHeader;
+	BYTE	bSizeOfEntry;		// Loaders step by this, so fields can be appended to an entry
+	BYTE	bPad;
+
+} MATERIAL_CHANNEL_CHUNKHEADER;
+
+typedef struct
+{
+	BYTE	bMaterialNum;
+	BYTE	bChannel;			// 1 to MODEL_MATERIAL_NUM_CHANNELS
+	BYTE	bFlags;				// Currently unused, 0
+	BYTE	bPad;
+	float	afEmissive[3];		// R,G,B emissive colour while the channel is on, at strength 1
+
+} MATERIAL_CHANNEL_ENTRY;
+
 
 typedef struct
 {
@@ -1045,6 +1064,63 @@ int		nNumEntries = 0;
 
 
 /***************************************************************************
+ * Function    : ModelExportChunkMaterialChannels
+ * Description : Writes back which materials are lit by a state channel (ATMFormat.md, chunk 0x20)
+ ***************************************************************************/
+byte*		ModelExportChunkMaterialChannels( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int* pnSize, int* pnElements )
+{
+ModelMaterialData*	pMaterial;
+MATERIAL_CHANNEL_CHUNKHEADER*	pHeader;
+MATERIAL_CHANNEL_ENTRY*			pEntry;
+byte*	pbChunkMem;
+int		nLoop;
+int		nTotalSize;
+int		nNumEntries = 0;
+
+	for ( nLoop = 0; nLoop < pxModelData->xStats.nNumMaterials; nLoop++ )
+	{
+		pMaterial = FindMaterial( pxModelData, nLoop );
+		if ( ( pMaterial ) && ( pMaterial->GetChannel() > 0 ) )
+		{
+			nNumEntries++;
+		}
+	}
+	if ( nNumEntries == 0 )
+	{
+		return( NULL );
+	}
+
+	nTotalSize = sizeof( MATERIAL_CHANNEL_CHUNKHEADER ) + ( nNumEntries * sizeof( MATERIAL_CHANNEL_ENTRY ) );
+	pbChunkMem = (byte*)( SystemMalloc( nTotalSize ) );
+	memset( pbChunkMem, 0, nTotalSize );
+	pHeader = (MATERIAL_CHANNEL_CHUNKHEADER*)( pbChunkMem );
+	pHeader->bNumEntries = (BYTE)nNumEntries;
+	pHeader->bSizeOfHeader = sizeof( MATERIAL_CHANNEL_CHUNKHEADER );
+	pHeader->bSizeOfEntry = sizeof( MATERIAL_CHANNEL_ENTRY );
+	pEntry = (MATERIAL_CHANNEL_ENTRY*)( pbChunkMem + sizeof( MATERIAL_CHANNEL_CHUNKHEADER ) );
+
+	for ( nLoop = 0; nLoop < pxModelData->xStats.nNumMaterials; nLoop++ )
+	{
+		pMaterial = FindMaterial( pxModelData, nLoop );
+		if ( ( pMaterial ) && ( pMaterial->GetChannel() > 0 ) )
+		{
+		MATERIAL_COLOUR		xEmissive = pMaterial->GetChannelEmissive();
+
+			pEntry->bMaterialNum = (BYTE)nLoop;
+			pEntry->bChannel = (BYTE)pMaterial->GetChannel();
+			pEntry->afEmissive[0] = xEmissive.fRed;
+			pEntry->afEmissive[1] = xEmissive.fGreen;
+			pEntry->afEmissive[2] = xEmissive.fBlue;
+			pEntry++;
+		}
+	}
+	*pnSize = nTotalSize;
+	*pnElements = 1;
+	return( pbChunkMem );
+}
+
+
+/***************************************************************************
  * Function    : ModelExportChunkAttachData
  * Params      :
  * Description : 
@@ -1887,6 +1963,8 @@ byte*		ModelExportBuildChunk( MODEL_RENDER_DATA* pxModelData, int nChunkNum, int
 		return( ModelSkeletonExportChunkAnimLinks( pxModelData, pnSize, pnElements ) );
 	case ATM_CHUNKID_MATERIAL_RELIEF:
 		return( ModelExportChunkMaterialRelief( pxModelData, nChunkNum, pnSize, pnElements ) );
+	case ATM_CHUNKID_MATERIAL_CHANNELS:
+		return( ModelExportChunkMaterialChannels( pxModelData, nChunkNum, pnSize, pnElements ) );
 	case ATM_CHUNKID_BASIC_CONTENTS:
 		return( ModelExportChunkBasicContents( pxModelData, nChunkNum, pnSize, pnElements ) );
 		break;
@@ -2780,6 +2858,45 @@ int		nLoop;
 
 
 /***************************************************************************
+ * Function    : ModelLoadProcessChunkMaterialChannels
+ * Description : Materials lit by a state channel (ATMFormat.md, chunk 0x20). Comes after the material chunk has been loaded
+ ***************************************************************************/
+void	ModelLoadProcessChunkMaterialChannels( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HEADER* pxChunkHeader, byte* pbMem )
+{
+MATERIAL_CHANNEL_CHUNKHEADER*	pHeader = (MATERIAL_CHANNEL_CHUNKHEADER*)( pbMem );
+MATERIAL_CHANNEL_ENTRY*			pEntry;
+ModelMaterialData*				pMaterial;
+byte*	pbRunner = pbMem + pHeader->bSizeOfHeader;
+byte*	pbEnd = pbMem + ( pxChunkHeader->nNumElementsInChunk * pxChunkHeader->nSizeOfElement );
+int		nLoop;
+
+	if ( pHeader->bSizeOfEntry < sizeof( MATERIAL_CHANNEL_ENTRY ) )
+	{
+		return;
+	}
+	for ( nLoop = 0; nLoop < pHeader->bNumEntries; nLoop++ )
+	{
+		if ( ( pbRunner + pHeader->bSizeOfEntry ) > pbEnd )
+		{
+			return;
+		}
+		pEntry = (MATERIAL_CHANNEL_ENTRY*)( pbRunner );
+		pbRunner += pHeader->bSizeOfEntry;
+
+		pMaterial = pxModelData->pMaterialData;
+		while ( ( pMaterial ) && ( pMaterial->GetAttrib() != pEntry->bMaterialNum ) )
+		{
+			pMaterial = pMaterial->GetNext();
+		}
+		if ( pMaterial )
+		{
+			pMaterial->SetChannel( pEntry->bChannel, pEntry->afEmissive[0], pEntry->afEmissive[1], pEntry->afEmissive[2] );
+		}
+	}
+}
+
+
+/***************************************************************************
  * Function    : ModelLoadProcessChunkAttributes
  * Params      : 
  * Description : The attributes chunk is a list of bytes, 1 per face, which defines the 
@@ -3343,6 +3460,9 @@ void	ModelLoadProcessATMChunkPass3( MODEL_RENDER_DATA* pxModelData, ATM_CHUNK_HE
 		break;
 	case ATM_CHUNKID_MATERIAL_RELIEF:
 		ModelLoadProcessChunkMaterialRelief( pxModelData, pxChunkHeader, pbMem );
+		break;
+	case ATM_CHUNKID_MATERIAL_CHANNELS:
+		ModelLoadProcessChunkMaterialChannels( pxModelData, pxChunkHeader, pbMem );
 		break;
 	case ATM_CHUNKID_COLOURS:
 		ModelLoadProcessChunkVertColours( pxModelData, pxChunkHeader, pbMem );
