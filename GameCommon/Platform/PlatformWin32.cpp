@@ -708,8 +708,7 @@ LRESULT WINAPI WindowsMsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 //			SaveConfig();			
 			break;
 		case SIZE_RESTORED:
-			if ( ( InterfaceIsFullscreen() == FALSE ) /*&&
-				 ( InterfaceDoesNeedChanging() == FALSE )*/ )
+			// (Also when leaving fullscreen: the size is applied at WM_EXITSIZEMOVE, which is what turns fullscreen off)
 			{			
 				mbPlatformWin32IsResizingWindow = true;
 				mnPlatformWin32ResizeW = LOWORD(lParam);

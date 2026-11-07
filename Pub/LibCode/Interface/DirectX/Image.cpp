@@ -74,7 +74,7 @@ int		nHandle = GetFreeImageHandle();
 	{
 		if ( uFlags & 1 ) 
 		{
-			m_apImageSurfaces[ nHandle ] = LoadJpegDirect( szFilename, InterfaceGetWidth(), InterfaceGetHeight(), (int)uFlags );
+			m_apImageSurfaces[ nHandle ] = LoadJpegDirect( szFilename, InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), (int)uFlags );
 		}
 		else
 		{
@@ -93,7 +93,7 @@ int		nHandle = GetFreeImageHandle();
 	{
 		if ( uFlags & 1 ) 
 		{
-			m_apImageSurfaces[ nHandle ] = LoadJpegDirectArchive( szFilename, InterfaceGetWidth(), InterfaceGetHeight(), (int)uFlags, nArchive );
+			m_apImageSurfaces[ nHandle ] = LoadJpegDirectArchive( szFilename, InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), (int)uFlags, nArchive );
 		}
 		else
 		{

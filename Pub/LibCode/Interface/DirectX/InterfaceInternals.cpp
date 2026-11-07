@@ -493,15 +493,7 @@ char	acString[512];
 			break;
 		}
 		
-		if ( ( InterfaceIsFullscreen() == TRUE ) &&
-		     ( mpLegacyInterfaceD3DDeviceSingleton != NULL ) )
-		{
-			if ( InterfaceShowFullscreenPanic( acString ) == TRUE )
-			{
-				mboDontShowAnyMoreLoadErrors = TRUE;
-			}
-		}
-		else
+		// Fullscreen is a borderless window on a windowed device (DX9Device.cpp), so the message box shows in every mode
 		{
 			nRet = MessageBox( mhwndInterfaceMain, acString, "Error message", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION);
 			if ( nRet == IDIGNORE )

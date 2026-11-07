@@ -250,7 +250,7 @@ void		EngineCameraGetCurrentProjectionSettings( float* pfFOV, float* pfNearClip,
 void		EngineCameraSetProjection( float fFOV, float fNearClip, float fFarClip )
 {
 D3DXMATRIX matProj;
-float	fAspect = (float)(InterfaceGetWidth()) / (float)(InterfaceGetHeight());
+float	fAspect = (float)(InterfaceGetRenderWidth()) / (float)(InterfaceGetRenderHeight());
 
 	if ( mfAspectOverride != 0.0f )
 	{
@@ -272,7 +272,7 @@ void		EngineCameraInitDX( void )
 	float fFOV = A30;
 
     D3DXMATRIX matProj;
-	float	fAspect = (float)(InterfaceGetWidth()) / (float)(InterfaceGetHeight());
+	float	fAspect = (float)(InterfaceGetRenderWidth()) / (float)(InterfaceGetRenderHeight());
 		D3DXMatrixPerspectiveFovLH( &matProj, fFOV, fAspect, fNearClipPlane, fFarClipPlane );
 		EngineSetProjectionMatrix( &matProj );
 

@@ -876,7 +876,7 @@ float		fScaleMod = 0.8f * fScale;
 			xColor = (D3DCOLOR)( 0 );// 0xFFFFFFFF );
 			mpEngineDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, xColor, 1.0f, 0 );
 			// Set the projection matrix
-			float	fAspect = (float)(InterfaceGetWidth()) / (float)(InterfaceGetHeight());
+			float	fAspect = (float)(InterfaceGetRenderWidth()) / (float)(InterfaceGetRenderHeight());
 			D3DXMatrixPerspectiveFovLH( &matProj, fFOV, fAspect, fNearClipPlane, fFarClipPlane );
 			EngineSetProjectionMatrix( &matProj );
 

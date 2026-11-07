@@ -741,7 +741,7 @@ void		EngineRenderFullscreenQuad()
 {
 	if ( mshFullscreenQuadVB == NOTFOUND )
 	{
-		mshFullscreenQuadVB = EngineCreateVertexBufferQuad( InterfaceGetWidth(), InterfaceGetHeight(), 0, NULL );
+		mshFullscreenQuadVB = EngineCreateVertexBufferQuad( InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), 0, NULL );
 	}
 	// TODO - Set up camera and render states to ensure quad is rendered correctly
 

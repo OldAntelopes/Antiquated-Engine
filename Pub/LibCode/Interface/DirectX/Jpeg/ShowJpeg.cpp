@@ -369,6 +369,21 @@ RECT			xDestRect;
  ***************************************************************************/
 void DrawJpegDirect( int nLayer, IGRAPHICSSURFACE* pxTexture, int nX, int nY, int nWidth, int nHeight, int nFlags )
 {
+float	fUIScale = InterfaceGetUIScale();
+
+	// These go straight to the back buffer, so a UI-scaled position and size have to become pixels here
+	if ( ( fUIScale != 1.0f ) && ( pxTexture != NULL ) )
+	{
+	D3DSURFACE_DESC		xDesc;
+
+		pxTexture->GetDesc( &xDesc );
+		if ( nWidth == 0 ) nWidth = xDesc.Width;
+		if ( nHeight == 0 ) nHeight = xDesc.Height;
+		nX = (int)( nX * fUIScale );
+		nY = (int)( nY * fUIScale );
+		nWidth = (int)( nWidth * fUIScale );
+		nHeight = (int)( nHeight * fUIScale );
+	}
 	maxBufferedJpegs[ mnNextBufferedJpeg ].nLayer = nLayer;
 	maxBufferedJpegs[ mnNextBufferedJpeg ].pxTexture = pxTexture;
 	maxBufferedJpegs[ mnNextBufferedJpeg ].nX = nX;
@@ -468,13 +483,13 @@ IGRAPHICSSURFACE*		pxSurface = NULL;
 				xRect.right = xSrcDesc.Width - 1;
 				xRect.bottom = xSrcDesc.Height - 1;
  
-				if ( xRect.right >= InterfaceGetWidth() )
+				if ( xRect.right >= InterfaceGetRenderWidth() )
 				{
-					xRect.right = InterfaceGetWidth() - 1;
+					xRect.right = InterfaceGetRenderWidth() - 1;
 				}
-				if ( xRect.bottom >= InterfaceGetHeight() )
+				if ( xRect.bottom >= InterfaceGetRenderHeight() )
 				{
-					xRect.bottom = InterfaceGetHeight() - 1;
+					xRect.bottom = InterfaceGetRenderHeight() - 1;
 				}
 				/** And finally copy the merged results back to the back buffer **/
 #ifdef TUD9
@@ -590,13 +605,13 @@ D3DSURFACE_DESC		xDestDesc;
 				xRect.right = nWidth - 1;
 				xRect.bottom = nHeight - 1;
  
-				if ( xRect.right >= InterfaceGetWidth() )
+				if ( xRect.right >= InterfaceGetRenderWidth() )
 				{
-					xRect.right = InterfaceGetWidth() - 1;
+					xRect.right = InterfaceGetRenderWidth() - 1;
 				}
-				if ( xRect.bottom >= InterfaceGetHeight() )
+				if ( xRect.bottom >= InterfaceGetRenderHeight() )
 				{
-					xRect.bottom = InterfaceGetHeight() - 1;
+					xRect.bottom = InterfaceGetRenderHeight() - 1;
 				}
 				/** And finally copy the merged results back to the back buffer **/
 #ifdef TUD9

@@ -68,18 +68,9 @@ void PanicImpl( const char* szErrorString )
 	{	 
 		mboMessageBoxActive = TRUE;
 
-		if ( InterfaceIsFullscreen() == FALSE )
-		{
-			PanicImplShowDialog( szErrorString );
-			mboMessageBoxActive = FALSE;
-		}
-		else
-		{
-//			if ( InterfaceShowFullscreenPanic( szErrorString ) == TRUE )
-			{
-				mboDontShowAnyMoreWarnings = TRUE;
-			}
-		}
+		// Fullscreen is a borderless window on a windowed device (DX9Device.cpp), so the dialog shows in every mode
+		PanicImplShowDialog( szErrorString );
+		mboMessageBoxActive = FALSE;
 	}
 
 } 
@@ -278,7 +269,7 @@ void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
  ***************************************************************************/
 INTERFACE_API BOOL InterfaceIsFullscreen ( void )
 {
-	return( FALSE );
+	return( InterfaceInstanceMain()->IsFullscreen() );
 }
 
 /***************************************************************************

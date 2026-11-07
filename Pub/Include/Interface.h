@@ -249,6 +249,15 @@ extern INTERFACE_API int InterfaceGetHeight( void );
 extern INTERFACE_API int InterfaceGetCentreX( void );		// Just doing my bit for the olde english spelling 
 extern INTERFACE_API int InterfaceGetCentreY( void );
 
+// UI scale. InterfaceGetWidth/Height (and the centre calls) report the 2D coordinate space: the back buffer's size divided by
+// the UI scale. All 2D drawing uses that space, so it comes out bigger with no change to the code that draws it. Default 1.0,
+// where nothing changes. Code that needs actual pixels (render targets, shader pixel sizes, 3D aspect) uses
+// InterfaceGetRenderWidth/Height. The app must convert the mouse to the 2D space.
+extern INTERFACE_API int	InterfaceGetRenderWidth( void );
+extern INTERFACE_API int	InterfaceGetRenderHeight( void );
+extern INTERFACE_API void	InterfaceSetUIScale( float fScale );
+extern INTERFACE_API float	InterfaceGetUIScale( void );
+
 
 extern INTERFACE_API BOOL InterfaceIsFullscreen ( void );
 extern INTERFACE_API BOOL InterfaceIsSmall ( void );

@@ -80,6 +80,10 @@ public:
 	int			GetWidth( void );
 	int			GetCentreX( void );
 	int			GetCentreY( void );
+	int			GetRenderHeight( void );
+	int			GetRenderWidth( void );
+	void		SetUIScale( float fScale ) { mfUIScale = ( fScale > 0.0f ) ? fScale : 1.0f; }
+	float		GetUIScale( void ) { return( mfUIScale ); }
 	BOOL		IsFullscreen() { return(mboFullScreen); }	
 
 	void		SetTextureAsCurrentDirect( void* pTexture );
@@ -160,6 +164,7 @@ protected:
 
 	int		mnRequestedMonitorNum = NOTFOUND;
 	DWORD		mdwWindowStyle = 0;
+	float		mfUIScale = 1.0f;			// See InterfaceSetUIScale
 
 
 };

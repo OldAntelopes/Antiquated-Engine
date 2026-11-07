@@ -92,6 +92,26 @@ INTERFACE_API int InterfaceGetHeight( void )
 }
 
 
+INTERFACE_API int InterfaceGetRenderWidth( void )
+{
+	return( InterfaceInstanceMain()->GetRenderWidth() );
+}
+
+INTERFACE_API int InterfaceGetRenderHeight( void )
+{
+	return( InterfaceInstanceMain()->GetRenderHeight() );
+}
+
+INTERFACE_API void InterfaceSetUIScale( float fScale )
+{
+	InterfaceInstanceMain()->SetUIScale( fScale );
+}
+
+INTERFACE_API float InterfaceGetUIScale( void )
+{
+	return( InterfaceInstanceMain()->GetUIScale() );
+}
+
 INTERFACE_API int InterfaceGetCentreX( void )
 {
 	return( InterfaceInstanceMain()->GetCentreX() );
@@ -108,11 +128,33 @@ void	InterfaceInstance::SetRenderBufferSize(int nWidth, int nHeight)
 	mnRenderSurfaceHeight = nHeight;
 }
 
+int InterfaceInstance::GetRenderHeight( void )
+{
+	if ( m_DrawRect.h != 0 )
+	{
+		return( m_DrawRect.h );
+	}
+	return( mnRenderSurfaceHeight );
+}
+
+int		InterfaceInstance::GetRenderWidth( void )
+{
+	if ( m_DrawRect.w != 0 )
+	{
+		return( m_DrawRect.w );
+	}
+	return( mnRenderSurfaceWidth );
+}
+
 int InterfaceInstance::GetHeight( void )
 {
 	if ( m_DrawRect.h != 0 )
 	{
 		return( m_DrawRect.h );
+	}
+	if ( mfUIScale != 1.0f )
+	{
+		return( (int)( ( mnRenderSurfaceHeight / mfUIScale ) + 0.5f ) );
 	}
 	return( mnRenderSurfaceHeight );
 }
@@ -123,6 +165,10 @@ int		InterfaceInstance::GetWidth( void )
 	{
 		return( m_DrawRect.w );
 	}
+	if ( mfUIScale != 1.0f )
+	{
+		return( (int)( ( mnRenderSurfaceWidth / mfUIScale ) + 0.5f ) );
+	}
 	return( mnRenderSurfaceWidth );
 }
 
@@ -132,7 +178,7 @@ int InterfaceInstance::GetCentreX( void )
 	{
 		return( m_DrawRect.w / 2 );
 	}
-	return( mnRenderSurfaceWidth / 2 );
+	return( GetWidth() / 2 );
 }
 
 int InterfaceInstance::GetCentreY( void )
@@ -141,7 +187,7 @@ int InterfaceInstance::GetCentreY( void )
 	{
 		return( m_DrawRect.h / 2 );
 	}
-	return( mnRenderSurfaceHeight / 2 );
+	return( GetHeight() / 2 );
 }
 
 
@@ -333,6 +379,11 @@ void InterfaceTurnOnTextureFiltering( int nMode )
 
 void InterfaceInstance::EnableTextureFiltering( BOOL bFlag )
 {
+	// A scaled UI always resamples its textures and glyphs, so unfiltered would give them stepped edges
+	if ( mfUIScale != 1.0f )
+	{
+		bFlag = TRUE;
+	}
 	if ( bFlag == FALSE )
 	{
 		mpInterfaceInternals->mpInterfaceD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER,   D3DTEXF_POINT );
@@ -409,8 +460,8 @@ void	InterfaceInternalsDX::SetRenderCanvas()
 	if ( mspInterfaceRenderCanvas == NULL )
 	{
 	D3DDISPLAYMODE d3ddm;
-	int		surfaceW = mpInterfaceInstance->GetWidth();
-	int		surfaceH = mpInterfaceInstance->GetHeight();
+	int		surfaceW = mpInterfaceInstance->GetRenderWidth();
+	int		surfaceH = mpInterfaceInstance->GetRenderHeight();
 
 		mpD3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm );
 
@@ -974,9 +1025,19 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 		if( ( mboFullScreen == FALSE ) &&
 			( mboCurrentlyFullscreen == TRUE ) )
 		{	
+		RECT	xWindowRect;
+
+			// mnWindowWidth/Height are the client size, and SetWindowPos wants the size with the frame. Without this the client
+			// comes out smaller than the back buffer, and the picture and mouse positions are squashed to fit
+			xWindowRect.left = mnWindowLeft;
+			xWindowRect.top = mnWindowTop;
+			xWindowRect.right = mnWindowLeft + mnWindowWidth;
+			xWindowRect.bottom = mnWindowTop + mnWindowHeight;
+			AdjustWindowRect( &xWindowRect, GetWindowLong( hWindow, GWL_STYLE ), FALSE );
+
 			SetWindowPos( hWindow, HWND_NOTOPMOST,
-							mnWindowLeft, mnWindowTop,
-							mnWindowWidth, mnWindowHeight,
+							xWindowRect.left, xWindowRect.top,
+							xWindowRect.right - xWindowRect.left, xWindowRect.bottom - xWindowRect.top,
 							SWP_SHOWWINDOW );
 		}
 

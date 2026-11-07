@@ -217,7 +217,7 @@ void		EnginePostProcessDoBloomPass( void )
 		{
 			EngineShaderConstantsSetFloat( mpBlurFullPSConstantTable, "fBlurRange", mfFullBlurAmount );
 		}
-		EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+		EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 		EngineSetPixelShader( mpBlurFullPixelShader, NULL );
 		EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 		EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST );
@@ -226,7 +226,7 @@ void		EnginePostProcessDoBloomPass( void )
 	else if ( !mboPostProcessShowDebugBlurPassOutput )
 	{
 		// *** This renders the post-process render target onto the backbuffer
-		EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+		EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 		EngineSetPixelShader( NULL, NULL );
 		EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 		if ( EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST ) == FALSE )
@@ -246,7 +246,7 @@ void		EnginePostProcessDoBloomPass( void )
 	EngineVertexBufferRender( mhPostProcessSmallQuadVertexBuffer, TRIANGLE_LIST );
 	EngineRestoreRenderTarget();
 
-	EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+	EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 	EngineSetPixelShader(mpBasicPixelShader, "Basic");
 	if ( mboPostProcessShowDebugBlurPassOutput )
 	{
@@ -317,6 +317,12 @@ int		nDebugIndicators = 0;
 	{
 	D3DXMATRIX matWorld, matView, matProj;
 
+		// The device still holds what the last InterfaceDraw set. With a UI scale that's the 2D space, not the size of the
+		// screen quads, which would then come out zoomed
+		if ( InterfaceGetUIScale() != 1.0f )
+		{
+			EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
+		}
 		mpEngineDevice->GetTransform(D3DTS_WORLD, &matWorld);
 		mpEngineDevice->GetTransform(D3DTS_VIEW, &matView);
 		mpEngineDevice->GetTransform(D3DTS_PROJECTION, &matProj);
@@ -350,7 +356,7 @@ void	EnginePostProcessEndSceneTestMode( void )
 	EngineEnableBlend( FALSE );
 	EngineEnableFog( 0 );
 	EngineEnableTextureAddressClamp( 1 );
-	EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+	EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 	EngineSetPixelShader( NULL, NULL );
 	EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 	if ( EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST ) == FALSE )
@@ -394,7 +400,7 @@ void		EnginePostProcessEndScene( void )
 			EngineEnableBlend( FALSE );
 			EngineEnableFog( 0 );
 
-			EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+			EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 			EngineSetPixelShader(NULL, NULL);
 			EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 			EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST );
@@ -429,7 +435,7 @@ void		EnginePostProcessEndScene( void )
 			else
 			{
 				// ** This stage copies the game output directly onto the main back buffer
-				EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+				EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 				EngineSetPixelShader(mpBasicPixelShader, "Basic");
 				EngineSetTextureNoDebugOverride( 0, mhPostProcessRenderTarget );
 				if ( EngineVertexBufferRender( mhPostProcessOutputVertexBuffer, TRIANGLE_LIST ) == FALSE )
@@ -443,7 +449,7 @@ void		EnginePostProcessEndScene( void )
 			if ( mhPostProcessGrabScreenTexture != NOTFOUND )
 			{
 				EngineRestoreRenderTarget();  // Render target is now back buffer
-				EngineSetOrthogonalCameraView( InterfaceGetWidth(), InterfaceGetHeight() );
+				EngineSetOrthogonalCameraView( InterfaceGetRenderWidth(), InterfaceGetRenderHeight() );
 				EngineSetPixelShader(mpBasicPixelShader, "Basic");
 				EngineEnableBlend( FALSE );
 				EngineSetTextureNoDebugOverride( 0, mhPostProcessGrabScreenTexture );
@@ -491,10 +497,10 @@ uint32		ulCol;
 		else
 		{
 			InterfaceSetDrawRegion( 0, 0, 0, 0 );
-			InterfaceSetDrawRegion( 0, 0, InterfaceGetWidth()/2, InterfaceGetHeight() );
+			InterfaceSetDrawRegion( 0, 0, InterfaceGetRenderWidth()/2, InterfaceGetRenderHeight() );
 		}
 	}
-	mhPostProcessOutputVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetWidth(), InterfaceGetHeight(), 0xFFFFFFFF );
+	mhPostProcessOutputVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), 0xFFFFFFFF );
 	if ( mhPostProcessOutputVertexBuffer == NOTFOUND )
 	{
 #ifdef INCLUDE_DEBUG_INDICATORS
@@ -509,7 +515,7 @@ uint32		ulCol;
 #endif
 	}
 	ulCol = GetColWithModifiedAlpha( 0xffffffff, msfPostProcessDefaultBloomValue );
-	mhPostProcessOutputAlphaVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetWidth(), InterfaceGetHeight(), ulCol );
+	mhPostProcessOutputAlphaVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), ulCol );
 	if ( mhPostProcessOutputAlphaVertexBuffer == NOTFOUND )
 	{
 #ifdef INCLUDE_DEBUG_INDICATORS
@@ -524,10 +530,10 @@ BOOL		EnginePostProcessInitGraphics( void )
 {
 	if ( mhPostProcessRenderTarget == NOTFOUND )
 	{
-		mnSmallTargetW = InterfaceGetWidth() / mnBlurQualityMod;
-		mnSmallTargetH = InterfaceGetHeight() / mnBlurQualityMod;
+		mnSmallTargetW = InterfaceGetRenderWidth() / mnBlurQualityMod;
+		mnSmallTargetH = InterfaceGetRenderHeight() / mnBlurQualityMod;
 
-		mhPostProcessRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetWidth(), InterfaceGetHeight(), 1, "PostProcess" );	
+		mhPostProcessRenderTarget = EngineCreateRenderTargetTexture( InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), 1, "PostProcess" );	
 		if ( mhPostProcessRenderTarget == NOTFOUND )
 		{
 			mboPostProcessEnabled = FALSE;
@@ -612,11 +618,11 @@ void		EnginePostProcessSetValue( const char* szName, float fValue )
 				}
 				else
 				{	InterfaceSetDrawRegion( 0, 0, 0, 0 );
-					InterfaceSetDrawRegion( 0, 0, InterfaceGetWidth()/2, InterfaceGetHeight() );
+					InterfaceSetDrawRegion( 0, 0, InterfaceGetRenderWidth()/2, InterfaceGetRenderHeight() );
 				}
 			}
 			EngineVertexBufferFree( mhPostProcessOutputAlphaVertexBuffer );
-			mhPostProcessOutputAlphaVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetWidth(), InterfaceGetHeight(), ulCol );
+			mhPostProcessOutputAlphaVertexBuffer = EnginePostProcessGenerateQuad( InterfaceGetRenderWidth(), InterfaceGetRenderHeight(), ulCol );
 			InterfaceSetDrawRegion( 0, 0, 0, 0 );
 		}
 		else

@@ -405,7 +405,7 @@ void		ShadowRenderList::RenderAll( void )
 {
 ShadowRenderList*		pList = m_pShadowRenderList;
 D3DXMATRIX	matProj;
-float	fAspect = (float)(InterfaceGetWidth())/(float)(InterfaceGetHeight());
+float	fAspect = (float)(InterfaceGetRenderWidth())/(float)(InterfaceGetRenderHeight());
 
 	EngineCameraUpdate();
 	EngineDefaultState();
@@ -684,8 +684,8 @@ int		ShadowVolumeInitDX( void )
 			return -1;
 
 		SHADOWVERTEX* v;
-		FLOAT sx = (FLOAT)InterfaceGetWidth();
-		FLOAT sy = (FLOAT)InterfaceGetHeight();
+		FLOAT sx = (FLOAT)InterfaceGetRenderWidth();
+		FLOAT sy = (FLOAT)InterfaceGetRenderHeight();
 		m_pBigSquareVB->Lock( 0, 0, (VERTEX_LOCKTYPE)&v, 0 );
 		v[0].p = D3DXVECTOR4(  0, sy, 0.0f, 1.0f );
 		v[1].p = D3DXVECTOR4(  0,  0, 0.0f, 1.0f );
