@@ -287,6 +287,11 @@ void	EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag )
 	// Nothing to do here (D3D9Ex only, see TextureManagerDX.cpp)
 }
 
+void	EngineSetCreateTextureUsesDefaultPool( BOOL bFlag )
+{
+	// Nothing to do here (D3D9Ex only, see TextureManagerDX.cpp)
+}
+
 
 void				EngineSetPixelShader( LPGRAPHICSPIXELSHADER, const char* szShaderName )
 {

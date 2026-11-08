@@ -340,11 +340,84 @@ MODEL_RENDER_DATA		maxModelRenderData[ MAX_MODELS_LOADED ];
 
 //----------------------------------------------------------------------------------------------------
 
+// TRUE for each slot handed out by ModelRenderGetNextHandle and not yet given back by ModelFree
+static BOOL		msabModelSlotInUse[ MAX_MODELS_LOADED ];
+
+/***************************************************************************
+ * Function    : ModelRenderResetSlot
+ * Params      :
+ * Description : Puts a model slot back to the state ModelRenderingInit leaves it in
+ *				 (no mesh, no clone link, every attached sub-model handle NOTFOUND)
+ ***************************************************************************/
+static void		ModelRenderResetSlot( int nHandle )
+{
+MODEL_RENDER_DATA*		pxModelData = &maxModelRenderData[ nHandle ];
+
+	ZeroMemory( pxModelData, sizeof(MODEL_RENDER_DATA) );
+	pxModelData->xAnimationState.nNextAnimUse = NOTFOUND;
+	pxModelData->nCloneOfHandle = NOTFOUND;
+	pxModelData->xHorizTurretData.nModelHandle = NOTFOUND;
+	pxModelData->xVertTurretData.nModelHandle = NOTFOUND;
+	pxModelData->xWheel1AttachData.nModelHandle = NOTFOUND;
+	pxModelData->xWheel2AttachData.nModelHandle = NOTFOUND;
+	pxModelData->xWheel3AttachData.nModelHandle = NOTFOUND;
+	pxModelData->xWheel4AttachData.nModelHandle = NOTFOUND;
+	pxModelData->xLowLODAttachData.nModelHandle = NOTFOUND;
+	pxModelData->xMedLODAttachData.nModelHandle = NOTFOUND;
+	pxModelData->xCollisionAttachData.nModelHandle = NOTFOUND;
+}
+
+/***************************************************************************
+ * Function    : ModelRenderReleaseHandle
+ * Params      :
+ * Description : Marks a slot as free for ModelRenderGetNextHandle to hand out again
+ ***************************************************************************/
+void		ModelRenderReleaseHandle( int nHandle )
+{
+	if ( ( nHandle >= 0 ) && ( nHandle < MAX_MODELS_LOADED ) )
+	{
+		msabModelSlotInUse[ nHandle ] = FALSE;
+	}
+}
+
+/***************************************************************************
+ * Function    : ModelRenderGetNextHandle
+ * Params      :
+ * Description : Hands out the next free model slot, reset to its ModelRenderingInit state.
+ *				 Until the table first wraps this is the same sequence as always (0, 1, 2...).
+ *				 After that it skips slots still in use (not yet ModelFree'd), and never hands
+ *				 out slot 0 again, since sub-model links treat handle 0 as 'none'.
+ *				 If every slot is in use it falls back to the old behaviour and reuses the
+ *				 next one in turn, untouched, with a warning.
+ ***************************************************************************/
 int		ModelRenderGetNextHandle( void )
 {
-int		nHandle = mnNextModelData++;
+int		nHandle = mnNextModelData;
+int		nTries;
 
-	mnNextModelData %= MAX_MODELS_LOADED;
+	for ( nTries = 0; nTries < MAX_MODELS_LOADED; nTries++ )
+	{
+		if ( msabModelSlotInUse[ nHandle ] == FALSE )
+		{
+			break;
+		}
+		nHandle++;
+		if ( nHandle >= MAX_MODELS_LOADED ) nHandle = 1;
+	}
+
+	if ( nTries == MAX_MODELS_LOADED )
+	{
+		nHandle = mnNextModelData;
+		SysDebugPrint( "ModelRenderGetNextHandle: all %d model slots in use, reusing slot %d\n", MAX_MODELS_LOADED, nHandle );
+	}
+	else
+	{
+		ModelRenderResetSlot( nHandle );
+	}
+
+	msabModelSlotInUse[ nHandle ] = TRUE;
+	mnNextModelData = nHandle + 1;
+	if ( mnNextModelData >= MAX_MODELS_LOADED ) mnNextModelData = 1;
 	return( nHandle );
 }
 
@@ -894,6 +967,14 @@ int		nVertsTotal;
 				pxVerts->z = (pxVerts->z * fZ);
 				pxVerts++;
 			}
+		}
+		// A sign lamp (effect type 14) is placed by its offset and reaches by its range, both in model units, so they scale with the mesh
+		if ( pxModelData->xEffectAttachData.nEffectType == 14 )
+		{
+			pxModelData->xEffectAttachData.xAttachOffset.x *= fX;
+			pxModelData->xEffectAttachData.xAttachOffset.y *= fY;
+			pxModelData->xEffectAttachData.xAttachOffset.z *= fZ;
+			pxModelData->xEffectAttachData.ulEffectParam1 = (uint32)( (float)( pxModelData->xEffectAttachData.ulEffectParam1 ) * ( ( fX + fY + fZ ) / 3.0f ) );
 		}
 		if ( pxModelData->xVertTurretData.nModelHandle != NOTFOUND )
 		{
@@ -1880,10 +1961,49 @@ float	fVal = fVal1 + fVal2 + fVal3 + fVal4 + fVal5;
 
 void	ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos )
 {
+	ModelRenderingAddEffectScaled( pxModelData, pxPos, 1.0f );
+}
+
+/***************************************************************************
+ * Function    : ModelRenderingAddEffectScaled
+ * Params      : fModelScale - the scale the model is drawn at. Only effect types that say so use it
+ * Description : Adds the model's attached effect (chunk 0x18) at pxPos, in world space
+ ***************************************************************************/
+void	ModelRenderingAddEffectScaled( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, float fModelScale )
+{
 uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 
 	switch( pxModelData->xEffectAttachData.nEffectType )
 	{
+	case 14:	// Sign lamp, nighttime only : a small warm pool of light (ATMFormat.md, Effect Data)
+		if ( EngineGetGameInterface()->IsDaytime() == false )
+		{
+		uint32	ulRangeCm = pxModelData->xEffectAttachData.ulEffectParam1;
+		uint32	ulColour = pxModelData->xEffectAttachData.ulEffectParam2;
+		float	fRange;
+		float	fR, fG, fB;
+
+			if ( ulRangeCm == 0 )
+			{
+				ulRangeCm = 800;
+			}
+			// Range in hundredths of a model unit, so it grows with the model's scale
+			fRange = ( (float)( ulRangeCm ) * 0.01f ) * fModelScale;
+			if ( ulColour == 0 )
+			{
+				fR = 0.75f;
+				fG = 0.6f;
+				fB = 0.4f;
+			}
+			else
+			{
+				fR = (float)( ( ulColour >> 16 ) & 0xFF ) / 255.0f;
+				fG = (float)( ( ulColour >> 8 ) & 0xFF ) / 255.0f;
+				fB = (float)( ulColour & 0xFF ) / 255.0f;
+			}
+			EngineGetGameInterface()->AddLight( pxPos, fRange, 0.0f, 4.0f, fR, fG, fB );
+		}
+		break;
 	case 1:	// black smoke
 		if ( ulTimeGap == 0 )
 		{
@@ -1912,6 +2032,11 @@ uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 		float	fR, fG, fB;
 		float	fBrightness = msfFlickerBrightness;
 
+			// The app may draw the fire itself (EngineGameInterface::AddFire); by default it doesn't
+			if ( EngineGetGameInterface()->AddFire( pxPos, 3, fModelScale, pxModelData->xEffectAttachData.ulEffectParam1 ) == true )
+			{
+				break;
+			}
 			if ( ulTimeGap == 0 )
 			{
 				ulTimeGap = 200;
@@ -2102,6 +2227,7 @@ MODEL_RENDER_DATA*		pxModelData;
 	if ( nModelHandle == NOTFOUND ) return;
 
 	pxModelData = &maxModelRenderData[ nModelHandle ];
+	ModelRenderReleaseHandle( nModelHandle );
 
 	if ( pxModelData->nCloneOfHandle == NOTFOUND )
 	{
@@ -2172,6 +2298,12 @@ MODEL_RENDER_DATA*		pxModelData;
 			pxModelData->xWheel3AttachData.nModelHandle = NOTFOUND;
 			pxModelData->xWheel4AttachData.nModelHandle = NOTFOUND;
 		}
+		if ( pxModelData->xCollisionAttachData.nModelHandle > 0 )
+		{
+			ModelFree( pxModelData->xCollisionAttachData.nModelHandle );
+		}
+		pxModelData->xCollisionAttachData.nModelHandle = NOTFOUND;
+		pxModelData->xStats.nNumCollisionMaps = 0;
 
 		if ( pxModelData->pxBaseVertices != NULL )
 		{
@@ -2249,7 +2381,8 @@ void		ModelRenderingInit( void )
 int		nLoop;
 
 	ZeroMemory( maxModelRenderData, sizeof(MODEL_RENDER_DATA) * MAX_MODELS_LOADED );
-	
+	ZeroMemory( msabModelSlotInUse, sizeof( msabModelSlotInUse ) );
+
 	for ( nLoop = 0; nLoop < MAX_MODELS_LOADED; nLoop++ )
 	{
 		maxModelRenderData[ nLoop ].xAnimationState.nNextAnimUse = NOTFOUND;

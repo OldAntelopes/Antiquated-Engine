@@ -316,8 +316,18 @@ TBD
 
 0x18	Effect Data
 ------------------------------------
+ChunkHeader -> NumElements = 1  
+ChunkHeader -> SizeOfElement = 28  
 
-TBD
+	0x0		[4 bytes]		Attach vertex: the effect sits at this vertex (0 = the model's origin)
+	0x4		[4 bytes]		Effect type (ModelRenderingAddEffectScaled, ModelRendering.cpp): 1 black smoke, 2 white smoke, 3 camp fire,
+							4 flashing neon, 5 soft light, 6/8 grey smoke, 7 soft light at night, 9-12 fountains, 13 refinery flame, 14 sign lamp
+	0x8		[4 bytes]		Param 1 (type 3: particle colour; type 14: light range in hundredths of a model unit, 0 = 800)
+	0xC		[4 bytes]		Param 2 (smoke and fire types: ms between particles; type 14: light colour 0xRRGGBB, 0 = warm white)
+	0x10	[12 bytes]		Offset X,Y,Z (floats). Only type 14 uses it: with attach vertex 0 it places the light, in model units
+
+Type 14, sign lamp: a point light from 20:00 to 06:00 (EngineGameInterface::IsDaytime). Its offset and range scale with the model
+(ModelScale, or a scale in the world matrix). One effect per model.
 
 0x19	Texture Material
 ------------------------------------

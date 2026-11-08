@@ -196,6 +196,19 @@ IGRAPHICSSURFACE*		EngineGetDepthStencilSurfaceDirectDX( TEXTURE_HANDLE hTexture
 
 
 
+static BOOL	msbEngineCreateTextureUsesDefaultPool = FALSE;
+
+/***************************************************************************
+ * Function    : EngineSetCreateTextureUsesDefaultPool
+ * Params      : bFlag - TRUE to create every EngineCreateTexture format in D3DPOOL_DEFAULT (dynamic)
+ * Description : Opt-in. On D3D9Ex, D3DPOOL_MANAGED is invalid, so formats 0 and 1 (and any other value
+ *               that takes the default case) fail and return 0. Off by default, so existing apps see no change.
+ ***************************************************************************/
+void	EngineSetCreateTextureUsesDefaultPool( BOOL bFlag )
+{
+	msbEngineCreateTextureUsesDefaultPool = bFlag;
+}
+
 TEXTURE_HANDLE	EngineCreateTexture( int nWidth, int nHeight, int format )
 {
 LPGRAPHICSTEXTURE	pTexture = NULL;
@@ -233,6 +246,11 @@ int		nLoop = 1;
 	default:
 		d3dFormat = D3DFMT_A8R8G8B8;
 		break;
+	}
+
+	if ( msbEngineCreateTextureUsesDefaultPool )
+	{
+		bUseManagedPool = FALSE;
 	}
 
 	if ( bUseManagedPool == FALSE )

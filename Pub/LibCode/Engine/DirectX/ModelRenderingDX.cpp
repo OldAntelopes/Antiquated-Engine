@@ -1159,16 +1159,33 @@ D3DXVECTOR3		xAttachPointTransformed;
 		xTransformedPos.y = xAttachPointTransformed.y + pxMatOriginalWorld->_42;
 		xTransformedPos.z = xAttachPointTransformed.z + pxMatOriginalWorld->_43;		
 	}
+	else if ( pxModelData->xEffectAttachData.nEffectType == 14 )
+	{
+	D3DXMATRIX	matOriginalWorld2;
+
+		// The sign lamp is placed by the chunk's offset, in model units, so nothing reads the vertex buffer each frame
+		matOriginalWorld2 = *pxMatOriginalWorld;
+		matOriginalWorld2._41 = 0.0f;
+		matOriginalWorld2._42 = 0.0f;
+		matOriginalWorld2._43 = 0.0f;
+		D3DXVec3TransformCoord( &xAttachPointTransformed, (D3DXVECTOR3*)&pxModelData->xEffectAttachData.xAttachOffset, &matOriginalWorld2 );
+		xTransformedPos.x = xAttachPointTransformed.x + pxMatOriginalWorld->_41;
+		xTransformedPos.y = xAttachPointTransformed.y + pxMatOriginalWorld->_42;
+		xTransformedPos.z = xAttachPointTransformed.z + pxMatOriginalWorld->_43;
+	}
 	else
 	{
 		xTransformedPos.x = pxMatOriginalWorld->_41;
 		xTransformedPos.y = pxMatOriginalWorld->_42;
-		xTransformedPos.z = pxMatOriginalWorld->_43;		
+		xTransformedPos.z = pxMatOriginalWorld->_43;
 	}
 
 	if ( ModelRenderingIsShadowPass() == FALSE )
 	{
-		ModelRenderingAddEffect( pxModelData, (VECT*)&xTransformedPos );
+	// The scale the model is drawn at: the length of the world matrix's first row
+	float	fModelScale = sqrtf( ( pxMatOriginalWorld->_11 * pxMatOriginalWorld->_11 ) + ( pxMatOriginalWorld->_12 * pxMatOriginalWorld->_12 ) + ( pxMatOriginalWorld->_13 * pxMatOriginalWorld->_13 ) );
+
+		ModelRenderingAddEffectScaled( pxModelData, (VECT*)&xTransformedPos, fModelScale );
 	}
 
 }

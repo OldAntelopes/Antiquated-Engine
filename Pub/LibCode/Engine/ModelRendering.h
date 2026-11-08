@@ -220,12 +220,14 @@ typedef struct
 //--------------------------------------------------------------------
 
 extern int		ModelRenderGetNextHandle( void );
+extern void		ModelRenderReleaseHandle( int nHandle );		// Gives a slot back without freeing its data (ModelFree calls it)
 
 extern BOOL		ModelRenderDidCastShadow( void );
 
 extern void		ModelRenderLODOverride( int nModelHandle, int nVal );
 
 extern void		ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos );
+extern void		ModelRenderingAddEffectScaled( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, float fModelScale );
 
 extern void		ModelRenderingProcessStaticEffects( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, int nUserParam );
 

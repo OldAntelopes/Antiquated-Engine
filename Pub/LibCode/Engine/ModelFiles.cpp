@@ -4300,6 +4300,8 @@ BOOL	bLoadSuccess = FALSE;
 			}
 			return( nHandle );
 		}
+		// Load failed: give the slot back (it's reset when next handed out)
+		ModelRenderReleaseHandle( nHandle );
 	}
 	return( NOTFOUND );
 }

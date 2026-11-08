@@ -823,6 +823,29 @@ BOOL	abHasChannel[256];
 	return( nNumLamps );
 }
 
+/***************************************************************************
+ * Function    : ModelGetTriangles
+ * Params      : ppxVerts - set to the triangles' corners, three VECTs each, in model space
+ * Returns     : How many triangles (0, with *ppxVerts NULL, if there's no mesh or it couldn't be read)
+ * Description : The mesh's copy in ordinary memory (EngineMesh::GetCollisionTris). The first call reads the mesh, so call it
+ *				 once per model and keep what you work out, not per frame. Added for The Universal's contact shadows.
+ ***************************************************************************/
+int		ModelGetTriangles( int nModelHandle, const VECT** ppxVerts )
+{
+MODEL_RENDER_DATA*		pxModelData;
+const ENGINEMESH_COLLISION_TRIS*	pxTris;
+
+	*ppxVerts = NULL;
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) ) return( 0 );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->pxBaseMesh == NULL ) return( 0 );
+
+	pxTris = pxModelData->pxBaseMesh->GetCollisionTris( pxModelData->xStats.nNumIndices );
+	if ( ( pxTris == NULL ) || ( pxTris->pxVerts == NULL ) ) return( 0 );
+	*ppxVerts = pxTris->pxVerts;
+	return( pxTris->nNumTris );
+}
+
 void	ModelMaterialsEndRelief( void )
 {
 #ifdef TUD9

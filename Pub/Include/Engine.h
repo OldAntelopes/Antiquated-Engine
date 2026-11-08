@@ -149,6 +149,10 @@ extern	void	EngineClearModelMaterialChannels( void );
 // How many separate lamps the model has on this channel, with the middle and facing of up to nMax of them in model space. Faces touching
 // at a corner are one lamp. Reads the mesh, so call it once per model, not per frame.
 extern	int		ModelGetMaterialChannelLamps( int nModelHandle, int nChannel, VECT* pxPositions, VECT* pxNormals, int nMax );
+// The model's triangles in model space: returns how many, with *ppxVerts pointing at three corners each. They're the mesh's own copy in
+// ordinary memory (the one collision uses), read from the mesh on first use, so call it once per model, not per frame. Valid until the
+// model is freed. 0 (and NULL) if there's no mesh or it couldn't be read.
+extern	int		ModelGetTriangles( int nModelHandle, const VECT** ppxVerts );
 // Running totals of keyframe blends done and skipped (by the above). Compare two readings for a per-frame figure.
 extern	void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkipped );
 // Opt-in: the DX9 model renderer saves the stage-0 texture with GetTexture (which AddRefs) on every model draw and
@@ -296,6 +300,10 @@ extern TEXTURE_HANDLE	EngineLoadTextureFromMem( byte* pbMem, int nMemSize, int w
 // Opt-in: on the D3D9Ex device D3DPOOL_MANAGED is invalid, so EngineLoadTextureFromFileInMem (and textures embedded
 // in .atm models) fail. TRUE makes it load into D3DPOOL_DEFAULT instead. Off by default, so existing apps see no change.
 extern void				EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag );
+// Opt-in: EngineCreateTexture's formats 0 and 1 ask for D3DPOOL_MANAGED, which the D3D9Ex device rejects (it returns 0).
+// TRUE creates every format in D3DPOOL_DEFAULT with D3DUSAGE_DYNAMIC instead. Off by default, so existing apps see no change.
+extern void				EngineSetCreateTextureUsesDefaultPool( BOOL bFlag );
+// Returns 0 (not NOTFOUND) if the texture couldn't be created.
 extern TEXTURE_HANDLE	EngineCreateTexture( int nWidth, int nHeight, int format );
 extern BYTE*			EngineLockTexture( TEXTURE_HANDLE handle, int* pnPitch, BOOL bClear );
 extern void				EngineUnlockTexture( TEXTURE_HANDLE handle );
@@ -620,6 +628,10 @@ public:
 
 	virtual void			DebugPrint( int level, const char* szText ) {}
 	virtual bool			IsDaytime( void ) { return( false ); }		// For night-only effects (type 7) and night-only materials. An app that doesn't say gets them all the time, as it always did
+	// A model's fire effect (chunk 0x18 type 3, campfire) at pxPos in world space, called every frame the model draws, outside the shadow
+	// pass. fScale is the model's drawn scale, ulParam the effect's param1. Return true if the app draws the fire itself: the engine then
+	// adds none of its own particles or light. An app that doesn't override it gets the engine's fire, as it always did
+	virtual bool			AddFire( const VECT* pxPos, int nFireType, float fScale, uint32 ulParam ) { return( false ); }
 
 private:
 	VECT			mxNullPos;
