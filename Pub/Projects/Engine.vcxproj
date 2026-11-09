@@ -851,7 +851,6 @@
     <ClInclude Include="..\LibCode\Engine\EngineModule.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\3dsLoader.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\fbxLoader.h" />
-    <ClInclude Include="..\LibCode\Engine\FileFormats\fbxAnimation.h" />
     <ClInclude Include="..\LibCode\Engine\FileFormats\ObjLoader.h" />
     <ClInclude Include="..\LibCode\Engine\Loader.h" />
     <ClInclude Include="..\LibCode\Engine\RenderScene\RenderScene.h" />
@@ -1046,7 +1045,6 @@
     <ClCompile Include="..\LibCode\Engine\EngineModule.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\3dsLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp" />
-    <ClCompile Include="..\LibCode\Engine\FileFormats\fbxAnimation.cpp" />
     <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp" />
     <ClCompile Include="..\LibCode\Engine\Loader.cpp" />
     <ClCompile Include="..\LibCode\Engine\RenderScene\RenderScene.cpp" />

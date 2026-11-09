@@ -738,12 +738,6 @@
     <ClCompile Include="..\LibCode\Engine\FileFormats\fbxLoader.cpp">
       <Filter>FileFormats</Filter>
     </ClCompile>
-    <ClCompile Include="..\LibCode\Engine\FileFormats\fbxAnimation.cpp">
-      <Filter>FileFormats</Filter>
-    </ClCompile>
-    <ClInclude Include="..\LibCode\Engine\FileFormats\fbxAnimation.h">
-      <Filter>FileFormats</Filter>
-    </ClInclude>
     <ClCompile Include="..\LibCode\Engine\FileFormats\ObjLoader.cpp">
       <Filter>FileFormats</Filter>
     </ClCompile>
