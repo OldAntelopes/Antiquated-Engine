@@ -101,6 +101,9 @@ public:
 
 	InterfaceInstance*		GetInterfaceInstance();
 
+	// Presses a button as a click on it would (controller focus; see UISetControllerSelectableHook)
+	BOOL		ControllerPressButton( int nButtonID, uint32 ulParam, uint32 ulIDParam );
+
 	// Just for ease of transferring from the old static model
 	// (Should be able to move them back to protected once the msTempSingleton is removed)
 	UIButtonImpl*		mpUIButtonImpl = NULL;
@@ -226,5 +229,46 @@ extern uint32	UIGetCurrentHoverIDIndexParam();
 extern uint32	UIGetCurrentPressIDIndexParam();
 
 extern uint32	UIGetGlowColour();
+
+//----------------------------------------------------------------------------
+//---------------------- Controller (pad) focus hook --------------------------
+// Optional, and off unless the app installs a hook. An app that gives a pad focus over its UI installs one with
+// UISetControllerSelectableHook; then each control that takes input reports itself to the hook as it's drawn (what it
+// is, its rect, its IDs), and the app calls UIControllerSelectableActivate (A) or UIControllerSelectableStep
+// (left / right) on whichever one has focus. With no hook installed nothing is reported and the controls behave
+// exactly as before. UIX buttons, checkboxes and dropdown entries draw through UIButtonDraw, so they report too.
+enum eUICONTROLLER_SELECTABLE_KIND
+{
+	UICONTROLLERSELECTABLE_BUTTON = 0,		// UIButtonDraw / UIButtonDrawAlpha / UIButtonRegion (not disabled): activate presses it
+	UICONTROLLERSELECTABLE_CHECKBOX,		// CheckboxDraw, or a UIBUTTON_FLAG_CHECKBOX button: activate presses it
+	UICONTROLLERSELECTABLE_SLIDER,			// UISliderDraw: step moves it by about a twentieth of its range
+	UICONTROLLERSELECTABLE_DROPDOWN,		// UIDropdownRender: activate opens or closes the list, step chooses the previous / next entry
+	UICONTROLLERSELECTABLE_TEXTBOX,			// UITextBoxRender: activate starts editing it, as a click would
+};
+
+struct UIControllerSelectable
+{
+	int				nKind;		// eUICONTROLLER_SELECTABLE_KIND
+	int				nX;
+	int				nY;
+	int				nW;
+	int				nH;
+	int				nID;		// The button ID, or the slider, dropdown or text box handle
+	uint32			ulParam;
+	uint32			ulIDParam;
+	UIInstance*		pUIInstance;	// The instance a button or text box was drawn with (NULL for sliders and dropdowns)
+};
+
+// Called once for each control as it's drawn; copy what you need, the pointer is only valid during the call
+typedef	void(*fnUIControllerSelectableHook)( const UIControllerSelectable* pSelectable );
+
+extern void		UISetControllerSelectableHook( fnUIControllerSelectableHook fnHook );		// NULL (the default) turns it off
+extern fnUIControllerSelectableHook		UIGetControllerSelectableHook( void );
+// Return TRUE if the control took the press or the step. nDirection is -1 (left) or +1 (right)
+extern BOOL		UIControllerSelectableActivate( const UIControllerSelectable* pSelectable );
+extern BOOL		UIControllerSelectableStep( const UIControllerSelectable* pSelectable, int nDirection );
+
+// UI internal: the controls call this as they draw
+extern void		UIControllerSelectableReport( int nKind, int nX, int nY, int nW, int nH, int nID, uint32 ulParam, uint32 ulIDParam, UIInstance* pUIInstance );
 
 #endif

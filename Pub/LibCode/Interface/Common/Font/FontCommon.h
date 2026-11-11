@@ -106,6 +106,7 @@ public:
 	float	GetTrueTypeBaseline( void ) const { return( mfTrueTypeBaseline ); }
 	float	GetTrueTypeBakedScaleX( void ) const { return( mfTrueTypeBakedScaleX ); }
 	float	GetTrueTypeBakedScaleY( void ) const { return( mfTrueTypeBakedScaleY ); }
+	BOOL	GetTrueTypeInkExtent( const char* szString, float* pfAbove, float* pfBelow );
 
 	int			mnFontOccupyWidthReduction;
 	int			mnFontOccupyHeightReduction;
@@ -237,6 +238,7 @@ public:
 	BOOL	LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags, int nGlobalVerticalOffset = 0 );
 	BOOL	LoadTrueTypeFont( int nFontNum, const char* szTTFFilename, const INTERFACE_TRUETYPE_PARAMS* pxParams );
 	BOOL	IsFontTrueType( int nFontNum );
+	BOOL	GetTrueTypeInkExtent( int nFontNum, const char* szString, float* pfAbove, float* pfBelow );
 	void	InitialiseFontBuffers( void );
 	HRESULT	InitialiseFonts( BOOL bUseDefaultFonts );
 	
@@ -262,6 +264,7 @@ public:
 	int		ChopTextWidth( char* pcString, int nWidth, int nFont );
 	int		GetStringWidth( const char* pcString, int nFont );
 	int		GetStringHeight( const char* pcString, int nFont );
+	BOOL	GetStringGlyphExtent( const char* pcString, int nFont, float* pfTop, float* pfBottom );
 	int		TextBoxMaxHeight(int nLayer, int nX, int nY, const char* szString, int ulCol, int font, int nMaxWidth, int nMaxHeight, BOOL bLeftAlign);
 	
 	virtual void		ReleasePreGraphicsDeviceReset();

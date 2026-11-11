@@ -32,6 +32,7 @@ public:
 
 	void		EndCurrentEdit( void );
 	BOOL		OnRelease( UIInstance* pUI, int X, int Y );
+	BOOL		ControllerBeginEdit( UIInstance* pUI, int nHandle );		// Starts editing a box as a click on it would
 
 
 private:

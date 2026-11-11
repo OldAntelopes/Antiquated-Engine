@@ -262,6 +262,7 @@ void	UIButtonImpl::DrawCheckbox(UIInstance* pUIInstance, int nButtonID, int nX, 
 	{
 		pUIInstance->PressIDSet(nButtonID, ulParam, ulIDParam);
 	}
+	UIControllerSelectableReport( UICONTROLLERSELECTABLE_CHECKBOX, nX, nY, nWidth, nHeight, nButtonID, ulParam, ulIDParam, pUIInstance );
 }
 
 void UIButtonImpl::Draw( UIInstance* pUIInstance, int nButtonID, int nX, int nY, int nWidth, int nHeight, const char* szText, eUIBUTTON_MODE_FLAGS modeFlags, uint32 ulParam, uint32 ulIDParam, float fAlpha )
@@ -292,6 +293,7 @@ BOOL	bEnabled = TRUE;
 		{
 			pUIInstance->PressIDSet( nButtonID, ulParam, ulIDParam );
 		}
+		UIControllerSelectableReport( UICONTROLLERSELECTABLE_BUTTON, nX, nY, nWidth, nHeight, nButtonID, ulParam, ulIDParam, pUIInstance );
 	}
 
 }
@@ -311,6 +313,7 @@ BOOL	bIsHovered = UIHoverItem( nX, nY, nWidth, nHeight );
 	{
 		UIPressIDSet( nButtonID, ulParam, ulIDParam );
 	}
+	UIControllerSelectableReport( UICONTROLLERSELECTABLE_BUTTON, nX, nY, nWidth, nHeight, nButtonID, ulParam, ulIDParam, mspTempSingleton );
 	return( bIsHovered );
 }
 

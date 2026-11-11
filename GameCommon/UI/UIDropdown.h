@@ -16,6 +16,10 @@ extern int			UIDropdownOnRelease( int X, int Y );
 
 extern void			UIDropdownNewFrame( void );
 
+// Controller focus (UISetControllerSelectableHook)
+extern BOOL			UIDropdownControllerToggleList( int nHandle );
+extern BOOL			UIDropdownControllerStep( int nHandle, int nDirection );
+
 //extern void		UIDropdownUpdate( float fDelta );
 
 

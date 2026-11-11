@@ -15,6 +15,7 @@
 
 extern BOOL		UISliderOnPress( int X, int Y );
 extern BOOL		UISliderOnRelease( int X, int Y, BOOL bFocused );
+extern BOOL		UISliderControllerStep( int nHandle, int nDirection );		// Controller focus: left / right
 
 
 

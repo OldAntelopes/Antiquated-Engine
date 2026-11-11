@@ -249,6 +249,7 @@ int				nHoldX, nHoldY;
 				PlatformSetMouseOverCursor( TRUE );
 			}
 			pTextBox->Render( pUIInstance->GetInterfaceInstance(), nScreenX, nScreenY, nScreenW, nScreenH );
+			UIControllerSelectableReport( UICONTROLLERSELECTABLE_TEXTBOX, nScreenX, nScreenY, nScreenW, nScreenH, nHandle, 0, 0, pUIInstance );
 
 			if ( pTextBox == mspFocusedTextBox )
 			{
@@ -434,6 +435,34 @@ BOOL		UITextBoxImpl::OnRelease( UIInstance* pUI, int X, int Y )
 	}
 	return( FALSE );
 
+}
+
+//-------------------------------------------------------------------------
+// UITextBoxImpl::ControllerBeginEdit
+//  Controller focus: starts editing a text box, as OnRelease does for the box under the mouse
+//
+BOOL		UITextBoxImpl::ControllerBeginEdit( UIInstance* pUI, int nHandle )
+{
+UITextBox*		pTextBox = mspTextBoxList;
+
+	while( pTextBox )
+	{
+		if ( pTextBox->GetHandle() == nHandle )
+		{
+		UITextBox*		pOldHover = mspTextBoxHover;
+		BOOL			bRet;
+
+			mspTextBoxHover = pTextBox;
+			bRet = OnRelease( pUI, 0, 0 );
+			if ( pOldHover != pTextBox )
+			{
+				mspTextBoxHover = pOldHover;
+			}
+			return( bRet );
+		}
+		pTextBox = pTextBox->GetNext();
+	}
+	return( FALSE );
 }
 
 BOOL		UITextBoxOnRelease( int X, int Y )

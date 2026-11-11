@@ -969,10 +969,29 @@ int	ret = NO_CHANGES;
 	}
 	
 	float	fChannelStrength = ( m_nChannel > 0 ) ? msafModelMaterialChannels[m_nChannel - 1] : 0.0f;
+	float	fNightStrength = 1.0f;
+
+	if ( ( m_bMaterialPropertiesActive ) &&
+		 ( m_bMaterialPropertiesNightOnly ) )
+	{
+#ifdef TUD9
+	ENGINEMATRIX	xWorld;
+	VECT			xOrigin;
+
+		// The model's origin (the world matrix is already set for this draw), so each lamp can switch at its own moment
+		EngineGetWorldMatrix( &xWorld );
+		xOrigin.x = xWorld._41;
+		xOrigin.y = xWorld._42;
+		xOrigin.z = xWorld._43;
+		fNightStrength = EngineGetGameInterface()->GetNightLightStrength( &xOrigin );
+#else
+		fNightStrength = EngineGetGameInterface()->IsDaytime() ? 0.0f : 1.0f;
+#endif
+	}
 
 	if ( ( fChannelStrength > 0.0f ) ||
 		 ( ( m_bMaterialPropertiesActive ) &&
-		   ( ( m_bMaterialPropertiesNightOnly == false ) || ( EngineGetGameInterface()->IsDaytime() == false ) ) ) )
+		   ( ( m_bMaterialPropertiesNightOnly == false ) || ( fNightStrength > 0.0f ) ) ) )
 	{
 		if ( m_BlendType != NONE )
 		{
@@ -1082,6 +1101,22 @@ int	ret = NO_CHANGES;
 			xDXMaterial.Emissive.g = pxLit->fGreen * fChannelStrength;
 			xDXMaterial.Emissive.b = pxLit->fBlue * fChannelStrength;
 			xDXMaterial.Emissive.a = 1.0f;
+		}
+		else if ( fNightStrength < 1.0f )
+		{
+		float	fOff = 1.0f - fNightStrength;
+
+			// A night-only material part way on (warming up, flickering): its glow scaled down, and its diffuse and ambient
+			// part way back to the plain white faces it draws as when off
+			xDXMaterial.Emissive.r *= fNightStrength;
+			xDXMaterial.Emissive.g *= fNightStrength;
+			xDXMaterial.Emissive.b *= fNightStrength;
+			xDXMaterial.Diffuse.r += ( 1.0f - xDXMaterial.Diffuse.r ) * fOff;
+			xDXMaterial.Diffuse.g += ( 1.0f - xDXMaterial.Diffuse.g ) * fOff;
+			xDXMaterial.Diffuse.b += ( 1.0f - xDXMaterial.Diffuse.b ) * fOff;
+			xDXMaterial.Ambient.r += ( 1.0f - xDXMaterial.Ambient.r ) * fOff;
+			xDXMaterial.Ambient.g += ( 1.0f - xDXMaterial.Ambient.g ) * fOff;
+			xDXMaterial.Ambient.b += ( 1.0f - xDXMaterial.Ambient.b ) * fOff;
 		}
 
 		EngineSetMaterial(&xDXMaterial);

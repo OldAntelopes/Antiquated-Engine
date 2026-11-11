@@ -1185,7 +1185,14 @@ D3DXVECTOR3		xAttachPointTransformed;
 	// The scale the model is drawn at: the length of the world matrix's first row
 	float	fModelScale = sqrtf( ( pxMatOriginalWorld->_11 * pxMatOriginalWorld->_11 ) + ( pxMatOriginalWorld->_12 * pxMatOriginalWorld->_12 ) + ( pxMatOriginalWorld->_13 * pxMatOriginalWorld->_13 ) );
 
+	VECT	xModelOrigin;
+
+		xModelOrigin.x = pxMatOriginalWorld->_41;
+		xModelOrigin.y = pxMatOriginalWorld->_42;
+		xModelOrigin.z = pxMatOriginalWorld->_43;
+		ModelRenderingSetEffectModelOrigin( &xModelOrigin );
 		ModelRenderingAddEffectScaled( pxModelData, (VECT*)&xTransformedPos, fModelScale );
+		ModelRenderingSetEffectModelOrigin( NULL );
 	}
 
 }

@@ -85,6 +85,118 @@ uint32	col;
 	return col;
 }
 
+//----------------------------------------------------------------------------
+// Controller (pad) focus hook. Off (NULL) unless the app installs one: see UI.h
+static fnUIControllerSelectableHook		msfnUIControllerSelectableHook = NULL;
+
+void		UISetControllerSelectableHook( fnUIControllerSelectableHook fnHook )
+{
+	msfnUIControllerSelectableHook = fnHook;
+}
+
+fnUIControllerSelectableHook		UIGetControllerSelectableHook( void )
+{
+	return( msfnUIControllerSelectableHook );
+}
+
+void		UIControllerSelectableReport( int nKind, int nX, int nY, int nW, int nH, int nID, uint32 ulParam, uint32 ulIDParam, UIInstance* pUIInstance )
+{
+	if ( msfnUIControllerSelectableHook != NULL )
+	{
+	UIControllerSelectable		xSelectable;
+
+		xSelectable.nKind = nKind;
+		xSelectable.nX = nX;
+		xSelectable.nY = nY;
+		xSelectable.nW = nW;
+		xSelectable.nH = nH;
+		xSelectable.nID = nID;
+		xSelectable.ulParam = ulParam;
+		xSelectable.ulIDParam = ulIDParam;
+		xSelectable.pUIInstance = pUIInstance;
+		msfnUIControllerSelectableHook( &xSelectable );
+	}
+}
+
+//-------------------------------------------------------------------------
+// UIInstance::ControllerPressButton
+//  Does what OnRelease does for a pressed button: its press handler, or failing that its hold handler as a click
+//
+BOOL		UIInstance::ControllerPressButton( int nButtonID, uint32 ulParam, uint32 ulIDParam )
+{
+std::map<int, UIButtonHandler>::iterator	itButton = msButtonHandlerList.find( nButtonID );
+std::map<int, UIHoldHandler>::iterator		itHold;
+
+	if ( ( itButton != msButtonHandlerList.end() ) &&
+		 ( itButton->second != NULL ) )
+	{
+		// As a click: pressing another button ends any text box edit in progress first
+		if ( mpUITextBoxImpl )
+		{
+			mpUITextBoxImpl->EndCurrentEdit();
+		}
+		itButton->second( nButtonID, ulParam, ulIDParam );
+		return( TRUE );
+	}
+	itHold = msHoldHandlerList.find( nButtonID );
+	if ( ( itHold != msHoldHandlerList.end() ) &&
+		 ( itHold->second != NULL ) )
+	{
+		itHold->second( nButtonID, ulParam, ulIDParam, FALSE, FALSE );
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+BOOL		UIControllerSelectableActivate( const UIControllerSelectable* pSelectable )
+{
+UIInstance*		pUIInstance;
+
+	if ( pSelectable == NULL )
+	{
+		return( FALSE );
+	}
+	pUIInstance = ( pSelectable->pUIInstance != NULL ) ? pSelectable->pUIInstance : mspTempSingleton;
+
+	switch( pSelectable->nKind )
+	{
+	case UICONTROLLERSELECTABLE_BUTTON:
+	case UICONTROLLERSELECTABLE_CHECKBOX:
+		return( pUIInstance->ControllerPressButton( pSelectable->nID, pSelectable->ulParam, pSelectable->ulIDParam ) );
+	case UICONTROLLERSELECTABLE_DROPDOWN:
+		return( UIDropdownControllerToggleList( pSelectable->nID ) );
+	case UICONTROLLERSELECTABLE_TEXTBOX:
+		if ( pUIInstance->mpUITextBoxImpl )
+		{
+			return( pUIInstance->mpUITextBoxImpl->ControllerBeginEdit( pUIInstance, pSelectable->nID ) );
+		}
+		break;
+	case UICONTROLLERSELECTABLE_SLIDER:
+	default:
+		break;
+	}
+	return( FALSE );
+}
+
+BOOL		UIControllerSelectableStep( const UIControllerSelectable* pSelectable, int nDirection )
+{
+	if ( pSelectable == NULL )
+	{
+		return( FALSE );
+	}
+
+	switch( pSelectable->nKind )
+	{
+	case UICONTROLLERSELECTABLE_SLIDER:
+		return( UISliderControllerStep( pSelectable->nID, nDirection ) );
+	case UICONTROLLERSELECTABLE_DROPDOWN:
+		return( UIDropdownControllerStep( pSelectable->nID, nDirection ) );
+	default:
+		break;
+	}
+	return( FALSE );
+}
+
 void		UIUpdate( float fDelta )
 {
 	msfGlowSin += fDelta * 4.0f;

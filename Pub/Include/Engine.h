@@ -303,6 +303,9 @@ extern void				EngineSetLoadTextureFromFileInMemUsesDefaultPool( BOOL bFlag );
 // Opt-in: EngineCreateTexture's formats 0 and 1 ask for D3DPOOL_MANAGED, which the D3D9Ex device rejects (it returns 0).
 // TRUE creates every format in D3DPOOL_DEFAULT with D3DUSAGE_DYNAMIC instead. Off by default, so existing apps see no change.
 extern void				EngineSetCreateTextureUsesDefaultPool( BOOL bFlag );
+// Opt-in: EngineLoadTextureFromMem asks for D3DPOOL_MANAGED, which the D3D9Ex device rejects (it then returns a slot with no texture).
+// TRUE creates it in D3DPOOL_DEFAULT with D3DUSAGE_DYNAMIC instead, so it can still be locked. Off by default, so existing apps see no change.
+extern void				EngineSetLoadTextureFromMemUsesDefaultPool( BOOL bFlag );
 // Returns 0 (not NOTFOUND) if the texture couldn't be created.
 extern TEXTURE_HANDLE	EngineCreateTexture( int nWidth, int nHeight, int format );
 extern BYTE*			EngineLockTexture( TEXTURE_HANDLE handle, int* pnPitch, BOOL bClear );
@@ -632,6 +635,10 @@ public:
 	// pass. fScale is the model's drawn scale, ulParam the effect's param1. Return true if the app draws the fire itself: the engine then
 	// adds none of its own particles or light. An app that doesn't override it gets the engine's fire, as it always did
 	virtual bool			AddFire( const VECT* pxPos, int nFireType, float fScale, uint32 ulParam ) { return( false ); }
+	// How far a night-only light (effect types 7 and 14, night-only materials) is switched on, 0 to 1. pxPos is the model's origin in
+	// world space, so an app can switch each light at its own moment, warm it up or flicker it. The default is fully on whenever IsDaytime
+	// says it isn't day, as it always was
+	virtual float			GetNightLightStrength( const VECT* pxPos ) { return( IsDaytime() ? 0.0f : 1.0f ); }
 
 private:
 	VECT			mxNullPos;

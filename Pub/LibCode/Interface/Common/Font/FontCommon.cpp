@@ -1620,6 +1620,118 @@ int FontSystem::GetStringWidth( const char* pcString, int nFont )
 	}
 }
 
+/***************************************************************************
+ * Function    : InterfaceTextGetGlyphExtent
+ * Params      : pfTop, pfBottom - out: the top and bottom of the glyphs the string draws, in 2D units
+ *               down from the nY it's drawn at, for the current font flags (InterfaceSetFontFlags)
+ * Returns     : FALSE if the string draws no glyph
+ * Description : For centring text on its ink, e.g. "H" gives the cap height and the baseline.
+ *               Follows FontDrawText / FontDrawChar / FontDrawTrueTypeChar, leaving out the drop
+ *               shadow. A bitmap font that isn't bottom aligned only knows its char cells, so for
+ *               one of those it's the cell
+ ***************************************************************************/
+BOOL	InterfaceTextGetGlyphExtent( const char* szString, int nFont, float* pfTop, float* pfBottom )
+{
+	return( InterfaceInstanceMain()->mpFontSystem->GetStringGlyphExtent( szString, nFont, pfTop, pfBottom ) );
+}
+
+BOOL	FontSystem::GetStringGlyphExtent( const char* pcString, int nFont, float* pfTop, float* pfBottom )
+{
+CFontDef*			pFontDef;
+const FONT_TTGLYPH*	pxGlyph;
+FONT_UVCHAR			uvChar;
+float				fFlagScale = GetFontFlagScaling( mnCurrentFontFlags );
+float				fAlignScale = 1.0f;
+float				fTextureHeightScale;
+float				fTop;
+float				fBottom;
+float				fMinTop = 0.0f;
+float				fMaxBottom = 0.0f;
+BOOL				bFound = FALSE;
+BYTE				cChar;
+
+	if ( ( pcString == NULL ) ||
+		 ( nFont < 0 ) ||
+		 ( nFont >= MAX_FONTS_IN_GAME ) ||
+		 ( mpFontDefs[nFont] == NULL ) )
+	{
+		return( FALSE );
+	}
+	pFontDef = mpFontDefs[nFont];
+
+	// As FontDrawChar: only the tiny size scales a bottom-aligned font's baseline
+	if ( ( ( mnCurrentFontFlags & FONT_FLAG_SMALL ) == 0 ) &&
+		 ( mnCurrentFontFlags & FONT_FLAG_TINY ) )
+	{
+		fAlignScale = 0.25f;
+	}
+	fTextureHeightScale = GetFontTextureHeight( nFont ) * fFlagScale;
+
+	while ( *pcString != 0 )
+	{
+		cChar = *( (BYTE*)pcString );
+		pcString++;
+
+		if ( ( cChar != 163 ) &&
+			 ( ( cChar < 33 ) || ( cChar > 140 ) ) )
+		{
+			continue;
+		}
+
+		if ( pFontDef->IsTrueType() )
+		{
+		float	fScaleY = pFontDef->GetTrueTypeBakedScaleY();
+
+			pxGlyph = pFontDef->GetTrueTypeGlyph( cChar );
+			if ( ( pxGlyph->nWidth <= 0 ) ||
+				 ( pxGlyph->nHeight <= 0 ) ||
+				 ( fScaleY <= 0.0f ) )
+			{
+				continue;
+			}
+			fTop = ( pFontDef->GetTrueTypeBaseline() + ( pxGlyph->nY0 / fScaleY ) ) * fFlagScale;
+			fBottom = fTop + ( ( pxGlyph->nHeight / fScaleY ) * fFlagScale );
+		}
+		else
+		{
+			if ( ( FontLookupChar( nFont, (char)cChar, &uvChar ) == FALSE ) ||
+				 ( uvChar.h <= 0.0f ) )
+			{
+				continue;
+			}
+			fTop = 0.0f;
+			if ( pFontDef->IsBottomAligned() )
+			{
+				fTop += ( pFontDef->mnFontOverallSize + ( pFontDef->mnFontOccupyHeightReduction * 2 ) ) * fAlignScale;
+				fTop -= uvChar.originY * fTextureHeightScale;
+			}
+			fBottom = fTop + (float)( (int)( uvChar.h * fTextureHeightScale ) );
+		}
+
+		fTop += (float)( pFontDef->GetGlobalVerticalOffset() + pFontDef->mnFontDrawOffsetY );
+		fBottom += (float)( pFontDef->GetGlobalVerticalOffset() + pFontDef->mnFontDrawOffsetY );
+
+		if ( ( bFound == FALSE ) ||
+			 ( fTop < fMinTop ) )
+		{
+			fMinTop = fTop;
+		}
+		if ( ( bFound == FALSE ) ||
+			 ( fBottom > fMaxBottom ) )
+		{
+			fMaxBottom = fBottom;
+		}
+		bFound = TRUE;
+	}
+
+	if ( bFound )
+	{
+		*pfTop = fMinTop;
+		*pfBottom = fMaxBottom;
+	}
+	return( bFound );
+}
+
 int GetStringHeight( const char* pcString, int nFont )
 {
 	return( InterfaceInstanceMain()->mpFontSystem->GetStringHeight( pcString, nFont ) );

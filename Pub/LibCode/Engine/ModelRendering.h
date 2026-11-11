@@ -228,6 +228,9 @@ extern void		ModelRenderLODOverride( int nModelHandle, int nVal );
 
 extern void		ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos );
 extern void		ModelRenderingAddEffectScaled( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, float fModelScale );
+// The origin of the model whose effect is added next (NULL = none known: the effect's own position is used). Night-only lights ask the
+// game how far they're on by the model's origin, so a lamp's light and its glowing glass switch together
+extern void		ModelRenderingSetEffectModelOrigin( const VECT* pxOrigin );
 
 extern void		ModelRenderingProcessStaticEffects( MODEL_RENDER_DATA* pxModelData, VECT* pxPos, int nUserParam );
 

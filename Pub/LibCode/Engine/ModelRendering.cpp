@@ -1964,6 +1964,37 @@ void	ModelRenderingAddEffect( MODEL_RENDER_DATA* pxModelData, VECT* pxPos )
 	ModelRenderingAddEffectScaled( pxModelData, pxPos, 1.0f );
 }
 
+static VECT		msxEffectModelOrigin;
+static BOOL		msbEffectModelOriginSet = FALSE;
+
+/***************************************************************************
+ * Function    : ModelRenderingSetEffectModelOrigin
+ * Params      : pxOrigin - the model's origin in world space, or NULL
+ * Description : Where the model whose effect is added next sits, for night-only lights (EngineGameInterface::GetNightLightStrength)
+ ***************************************************************************/
+void	ModelRenderingSetEffectModelOrigin( const VECT* pxOrigin )
+{
+	if ( pxOrigin != NULL )
+	{
+		msxEffectModelOrigin = *pxOrigin;
+		msbEffectModelOriginSet = TRUE;
+	}
+	else
+	{
+		msbEffectModelOriginSet = FALSE;
+	}
+}
+
+/***************************************************************************
+ * Function    : ModelRenderingGetNightLightStrength
+ * Params      : pxPos - the effect's position
+ * Returns     : How far a night-only effect is on, 0 to 1
+ ***************************************************************************/
+static float	ModelRenderingGetNightLightStrength( const VECT* pxPos )
+{
+	return( EngineGetGameInterface()->GetNightLightStrength( ( msbEffectModelOriginSet == TRUE ) ? &msxEffectModelOrigin : pxPos ) );
+}
+
 /***************************************************************************
  * Function    : ModelRenderingAddEffectScaled
  * Params      : fModelScale - the scale the model is drawn at. Only effect types that say so use it
@@ -1976,7 +2007,10 @@ uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 	switch( pxModelData->xEffectAttachData.nEffectType )
 	{
 	case 14:	// Sign lamp, nighttime only : a small warm pool of light (ATMFormat.md, Effect Data)
-		if ( EngineGetGameInterface()->IsDaytime() == false )
+		{
+		float	fStrength = ModelRenderingGetNightLightStrength( pxPos );
+
+		if ( fStrength > 0.0f )
 		{
 		uint32	ulRangeCm = pxModelData->xEffectAttachData.ulEffectParam1;
 		uint32	ulColour = pxModelData->xEffectAttachData.ulEffectParam2;
@@ -2001,7 +2035,8 @@ uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 				fG = (float)( ( ulColour >> 8 ) & 0xFF ) / 255.0f;
 				fB = (float)( ulColour & 0xFF ) / 255.0f;
 			}
-			EngineGetGameInterface()->AddLight( pxPos, fRange, 0.0f, 4.0f, fR, fG, fB );
+			EngineGetGameInterface()->AddLight( pxPos, fRange, 0.0f, 4.0f, fR * fStrength, fG * fStrength, fB * fStrength );
+		}
 		}
 		break;
 	case 1:	// black smoke
@@ -2115,11 +2150,11 @@ uint32	ulTimeGap = pxModelData->xEffectAttachData.ulEffectParam2;
 		}
 		break;
 	case 7:	// Soft-light, nighttime only
-		if ( EngineGetGameInterface()->IsDaytime() == false )
+		if ( ModelRenderingGetNightLightStrength( pxPos ) > 0.0f )
 		{
 		MVECT	xPos;
 		float	fR,fG,fB;
-		float	fBrightness = 0.2f;
+		float	fBrightness = 0.2f * ModelRenderingGetNightLightStrength( pxPos );
 			xPos = *( (MVECT*)pxPos );
 			fR = 0.8f * fBrightness;
 			fG = 0.8f * fBrightness;

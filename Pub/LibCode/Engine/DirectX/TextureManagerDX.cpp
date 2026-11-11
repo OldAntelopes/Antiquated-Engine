@@ -835,6 +835,19 @@ int		nLoop = EngineGetFreeTextureHandle();
 }
 
 
+static BOOL	msbEngineLoadFromMemUsesDefaultPool = FALSE;
+
+/***************************************************************************
+ * Function    : EngineSetLoadTextureFromMemUsesDefaultPool
+ * Params      : bFlag - TRUE to create EngineLoadTextureFromMem's textures in D3DPOOL_DEFAULT (dynamic)
+ * Description : Opt-in. On D3D9Ex, D3DPOOL_MANAGED is invalid, so EngineLoadTextureFromMem's create fails and
+ *               the slot it returns has no texture. Off by default, so existing apps see no change.
+ ***************************************************************************/
+void	EngineSetLoadTextureFromMemUsesDefaultPool( BOOL bFlag )
+{
+	msbEngineLoadFromMemUsesDefaultPool = bFlag;
+}
+
 TEXTURE_HANDLE	EngineLoadTextureFromMem( byte* pbMem, int nMemSize, int width, int height, int format, int nMipMode, int* pnErrorFlag )
 {
 int	nRet;
@@ -851,13 +864,25 @@ int		nMipLevels = 1;
 
 	EngineLoadTextureGetParams( nMipMode, &nFilter, &nMipFilter, &nMipLevels );
 
+	// The D3D9Ex device rejects D3DPOOL_MANAGED. Apps that opt in (EngineSetLoadTextureFromMemUsesDefaultPool) get a
+	// dynamic default-pool texture, which can still be locked below. Off by default so existing apps see no change.
+	_D3DPOOL	nPoolType = D3DPOOL_MANAGED;
+	DWORD		ulUsage = 0;
+#ifdef USE_D3DEX_INTERFACE
+	if ( msbEngineLoadFromMemUsesDefaultPool )
+	{
+		nPoolType = D3DPOOL_DEFAULT;
+		ulUsage = D3DUSAGE_DYNAMIC;
+	}
+#endif
+
 	if ( nMipMode == 1 )
 	{
-		nRet = D3DXCreateTexture( mpEngineDevice, width, height, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pxTexture );
+		nRet = D3DXCreateTexture( mpEngineDevice, width, height, 0, ulUsage, D3DFMT_A8R8G8B8, nPoolType, &pxTexture );
 	}
 	else
 	{
-		nRet = D3DXCreateTexture( mpEngineDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pxTexture );
+		nRet = D3DXCreateTexture( mpEngineDevice, width, height, 1, ulUsage, D3DFMT_A8R8G8B8, nPoolType, &pxTexture );
 	}
 
 	if ( pxTexture )

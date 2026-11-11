@@ -25,6 +25,8 @@ public:
 	void		SetLimits( int nMin, int nMax );
 
 	int			GetHandle( void ) { return( mnSliderHandle ); }
+	int			GetMin( void ) { return( mnMin ); }
+	int			GetMax( void ) { return( mnMax ); }
 private:
 	void		UpdateHold( void );
 
@@ -337,7 +339,31 @@ UISlider*	pSlider = UISliderFindHandle( nHandle );
 	if ( pSlider )
 	{
 		pSlider->Draw( nX, nY, nWidth, nHeight, nFlags, fGlobalAlpha );
+		UIControllerSelectableReport( UICONTROLLERSELECTABLE_SLIDER, nX, nY, nWidth, nHeight, nHandle, 0, 0, NULL );
 	}
+}
+
+//-------------------------------------------------------------------------
+// UISliderControllerStep
+//  Moves a slider by about a twentieth of its range (at least 1), as left / right on a pad does when it has focus
+//
+BOOL		UISliderControllerStep( int nHandle, int nDirection )
+{
+UISlider*	pSlider = UISliderFindHandle( nHandle );
+int			nStep;
+int			nValue;
+
+	if ( pSlider == NULL )
+	{
+		return( FALSE );
+	}
+	nStep = ( pSlider->GetMax() - pSlider->GetMin() ) / 20;
+	if ( nStep < 1 ) nStep = 1;
+	nValue = pSlider->GetValue() + ( ( nDirection < 0 ) ? -nStep : nStep );
+	if ( nValue < pSlider->GetMin() ) nValue = pSlider->GetMin();
+	if ( nValue > pSlider->GetMax() ) nValue = pSlider->GetMax();
+	pSlider->SetValue( nValue );
+	return( TRUE );
 }
 
 void		UISliderSetValue( int nHandle, int nValue )

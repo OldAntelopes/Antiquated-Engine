@@ -89,6 +89,8 @@ public:
 
 	BOOL			OnMouseWheelMove( float fOffset );
 	BOOL			OnRelease( int X, int Y );
+	void			ToggleList( void ) { m_bIsShowingList = !m_bIsShowingList; }
+	BOOL			StepSelection( int nDirection );
 	BOOL			HasMouseFocus( void );
 
 	void			SetHandle( int nHandle ) { m_Handle = nHandle; }
@@ -545,7 +547,68 @@ UIDropdown*		pDropdown = DropdownFind( nHandle );
 	if ( pDropdown )
 	{
 		pDropdown->Render( X, Y, W, H, nFullH, fAlpha );
+		UIControllerSelectableReport( UICONTROLLERSELECTABLE_DROPDOWN, X, Y, W, H, nHandle, 0, 0, NULL );
 	}
+}
+
+//-------------------------------------------------------------------------
+// UIDropdown::StepSelection
+//  Selects the entry before (-1) or after (+1) the selected one, stopping at the ends
+//
+BOOL		UIDropdown::StepSelection( int nDirection )
+{
+UIDropdownListItem*	pItem = m_pItems;
+UIDropdownListItem*	pPrev = NULL;
+
+	while ( pItem )
+	{
+		if ( pItem == m_pSelectedItem )
+		{
+			if ( nDirection < 0 )
+			{
+				if ( pPrev == NULL ) return( FALSE );
+				m_pSelectedItem = pPrev;
+			}
+			else
+			{
+				if ( pItem->GetNext() == NULL ) return( FALSE );
+				m_pSelectedItem = pItem->GetNext();
+			}
+			return( TRUE );
+		}
+		pPrev = pItem;
+		pItem = pItem->GetNext();
+	}
+	// Nothing selected yet: start at the first entry
+	if ( m_pItems )
+	{
+		m_pSelectedItem = m_pItems;
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+BOOL		UIDropdownControllerToggleList( int nHandle )
+{
+UIDropdown*		pDropdown = DropdownFind( nHandle );
+
+	if ( pDropdown )
+	{
+		pDropdown->ToggleList();
+		return( TRUE );
+	}
+	return( FALSE );
+}
+
+BOOL		UIDropdownControllerStep( int nHandle, int nDirection )
+{
+UIDropdown*		pDropdown = DropdownFind( nHandle );
+
+	if ( pDropdown )
+	{
+		return( pDropdown->StepSelection( nDirection ) );
+	}
+	return( FALSE );
 }
 
 

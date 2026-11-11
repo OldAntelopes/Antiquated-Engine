@@ -297,10 +297,14 @@ void StripWhiteSpaceRight( char* pcLine )
 {
 int		nLen;
 	nLen = (int)strlen( pcLine ) - 1;
-	while ( ( pcLine[nLen] == ' ' ) ||
-			( pcLine[nLen] == '\r' ) ||
-			( pcLine[nLen] == '\n' ) ||
-			( pcLine[nLen] == '\t' ) )
+	// nLen >= 0: an empty string (or a single whitespace char) used to read and write pcLine[-1], the byte before
+	// the buffer. In an optimised build that's often part of a saved pointer (The Universal's script parser,
+	// "Function Foo( )"). Only that out-of-bounds case changes; every in-bounds result is the same as before.
+	while ( ( nLen >= 0 ) &&
+			( ( pcLine[nLen] == ' ' ) ||
+			  ( pcLine[nLen] == '\r' ) ||
+			  ( pcLine[nLen] == '\n' ) ||
+			  ( pcLine[nLen] == '\t' ) ) )
 	{
 		pcLine[nLen] = 0;
 		nLen--;

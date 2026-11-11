@@ -118,7 +118,10 @@ extern INTERFACE_API int	InterfaceFormattedTextBox( int nLayer, int nX, int nY, 
 
 extern INTERFACE_API int	InterfaceTextGetWidth( const char* pcString, int nFont );
 extern INTERFACE_API int	InterfaceTextGetHeight( const char* pcString, int nFont );
-
+// The top and bottom of the glyphs a string draws with the current font flags, in 2D units down from the nY it's
+// drawn at (no drop shadow). For centring text on its ink: "H" gives the cap height and the baseline. A bitmap font
+// that isn't bottom aligned only knows its char cells, so that gives the cell. FALSE if the string draws nothing
+extern INTERFACE_API BOOL	InterfaceTextGetGlyphExtent( const char* szString, int nFont, float* pfTop, float* pfBottom );
 // Alternative versions that let you format string too
 extern INTERFACE_API void	InterfaceTxt( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* szString, ... );
 extern INTERFACE_API void	InterfaceTxtRight( int nLayer, int nX, int nY, uint32 ulCol, int font, const char* szString, ... );
@@ -337,6 +340,9 @@ typedef struct
 
 extern INTERFACE_API BOOL	InterfaceFontLoadTrueType( int nFontNum, const char* szTTFFilename, const INTERFACE_TRUETYPE_PARAMS* pxParams );
 extern INTERFACE_API BOOL	InterfaceFontIsTrueType( int nFontNum );
+// How far the outlines of a string's chars reach above and below the baseline, in 2D units at normal size,
+// from the font file (so the same at every UI scale). FALSE if the slot isn't TrueType or no char has an outline
+extern INTERFACE_API BOOL	InterfaceFontGetTrueTypeInkExtent( int nFontNum, const char* szString, float* pfAboveBaseline, float* pfBelowBaseline );
 
 /**********************************************************
  ***** Fancy stuff			                        *******
