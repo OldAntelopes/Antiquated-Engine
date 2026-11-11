@@ -546,6 +546,7 @@
     <ClCompile Include="..\LibCode\Interface\Common\Canvas.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\cJSON.c" />
     <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp" />
+    <ClCompile Include="..\LibCode\Interface\Common\Font\FontTrueType.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceInstance.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceModule.cpp" />
     <ClCompile Include="..\LibCode\Interface\Common\InterfaceOptions.cpp" />
@@ -671,6 +672,7 @@
     </CustomBuild>
     <ClInclude Include="..\Include\InterfaceEx.h" />
     <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h" />
+    <ClInclude Include="..\LibCode\Interface\Common\Font\stb_truetype.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceInstance.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceModule.h" />
     <ClInclude Include="..\LibCode\Interface\Common\InterfaceOptions.h" />

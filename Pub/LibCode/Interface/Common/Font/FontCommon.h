@@ -15,12 +15,40 @@ typedef struct
 
 } FLOATRECT;
 
+// One glyph of a TrueType font (InterfaceFontLoadTrueType)
+typedef struct
+{
+	int		nX0;			// Bitmap's offset from the pen, in baked pixels
+	int		nY0;			// Bitmap's offset from the baseline, in baked pixels (negative is up)
+	int		nWidth;			// Bitmap size in baked pixels (0 for a space)
+	int		nHeight;
+	int		nAdvance;		// Whole 2D units, the same at every scale
+	int		nGlyphIndex;	// In the font file, 0 if it hasn't got one
+	BOOL	bFromFallback;	// Drawn from the fallback bitmap font instead, from this rect of its image:
+	int		nFallbackX;
+	int		nFallbackY;
+	int		nFallbackW;
+	int		nFallbackH;
+
+} FONT_TTGLYPH;
+
 //------------------------------------------------------------------------------------------------------
 class CFontDef
 {
 public:
 	CFontDef()
 	{
+		mbIsTrueType = FALSE;
+		mpbTrueTypeData = NULL;
+		mpTrueTypeInfo = NULL;
+		mfTrueTypeScale = 1.0f;
+		mfTrueTypeBakedScaleX = 0.0f;
+		mfTrueTypeBakedScaleY = 0.0f;
+		mnTrueTypeCellHeight = 0;
+		mfTrueTypeBaseline = 0.0f;
+		mpbFallbackCoverage = NULL;
+		mnFallbackWidth = 0;
+		mnFallbackHeight = 0;
 		m_TextureSizeX = 0;
 		m_TextureSizeY = 0;
 		mhTexture = NOTFOUND;
@@ -40,6 +68,7 @@ public:
 	~CFontDef()
 	{
 		FreeTexture( NULL );
+		FreeTrueType();
 	}
 	void 	Initialise( const char* szDefName, int nGlobalVerticalOffset );
 
@@ -67,6 +96,17 @@ public:
 	BOOL	IsBottomAligned( void ) const { return( m_bIsBottomAligned ); }
 	int		GetGlobalVerticalOffset( void ) const { return( m_GlobalVerticalOffset );}
 
+	// TrueType fonts (FontTrueType.cpp)
+	BOOL	InitialiseTrueType( InterfaceInstance* pInterfaceInstance, const char* szTTFFilename, const INTERFACE_TRUETYPE_PARAMS* pxParams );
+	BOOL	BakeTrueType( InterfaceInstance* pInterfaceInstance, float fScaleX, float fScaleY );
+	BOOL	IsTrueType( void ) const { return( mbIsTrueType ); }
+	BOOL	TrueTypeNeedsBake( float fScaleX, float fScaleY ) const { return( ( fScaleX != mfTrueTypeBakedScaleX ) || ( fScaleY != mfTrueTypeBakedScaleY ) ); }
+	const FONT_TTGLYPH*	GetTrueTypeGlyph( BYTE cChar ) const { return( &maTrueTypeGlyphs[cChar] ); }
+	int		GetTrueTypeCellHeight( void ) const { return( mnTrueTypeCellHeight ); }
+	float	GetTrueTypeBaseline( void ) const { return( mfTrueTypeBaseline ); }
+	float	GetTrueTypeBakedScaleX( void ) const { return( mfTrueTypeBakedScaleX ); }
+	float	GetTrueTypeBakedScaleY( void ) const { return( mfTrueTypeBakedScaleY ); }
+
 	int			mnFontOccupyWidthReduction;
 	int			mnFontOccupyHeightReduction;
 	int			mnFontOverallSize;
@@ -76,6 +116,23 @@ public:
 private:
 	void			ReadFontrastFile( const char* szFontDefinitionFilename );
 	void			ReadJSONLayoutFile( const char* szFontDefinitionFilename );
+	void			FreeTrueType( void );
+	BOOL			CreateTextureFromAlpha( InterfaceInstance* pInterfaceInstance, const byte* pbAlpha, int nWidth, int nHeight );
+	byte*			LoadCoverageImage( InterfaceInstance* pInterfaceInstance, const char* szFilename, int* pnWidth, int* pnHeight );
+	void			InitialiseTrueTypeFallback( InterfaceInstance* pInterfaceInstance, const char* szImage, const char* szLayout );
+
+	BOOL			mbIsTrueType;
+	byte*			mpbTrueTypeData;			// The .ttf file, kept for re-baking
+	void*			mpTrueTypeInfo;				// stbtt_fontinfo
+	float			mfTrueTypeScale;			// Font units to 2D units
+	float			mfTrueTypeBakedScaleX;		// Render pixels per 2D unit the texture was made for
+	float			mfTrueTypeBakedScaleY;
+	int				mnTrueTypeCellHeight;
+	float			mfTrueTypeBaseline;
+	FONT_TTGLYPH	maTrueTypeGlyphs[256];
+	byte*			mpbFallbackCoverage;		// The fallback bitmap font's image as coverage, kept for re-baking
+	int				mnFallbackWidth;
+	int				mnFallbackHeight;
 
 	FONT_UVCHAR		maFontLookup[256];
 	int			mhTexture; 
@@ -178,6 +235,8 @@ public:
 	void	Shutdown();
 
 	BOOL	LoadFont( int nFontNum, const char* pcImageFileName, const char* pcLayoutFile, uint32 ulFlags, int nGlobalVerticalOffset = 0 );
+	BOOL	LoadTrueTypeFont( int nFontNum, const char* szTTFFilename, const INTERFACE_TRUETYPE_PARAMS* pxParams );
+	BOOL	IsFontTrueType( int nFontNum );
 	void	InitialiseFontBuffers( void );
 	HRESULT	InitialiseFonts( BOOL bUseDefaultFonts );
 	
@@ -230,6 +289,14 @@ private:
 
 	void	DrawFontBufferDX( void );
 	void	FontDefFreeAll( void );
+
+	// TrueType fonts (FontTrueType.cpp)
+	float	GetFontCellHeight( BYTE cChar, int nFont );
+	float	GetFontFlagScaling( int nFlags );
+	float	FontGetTrueTypeCharWidth( BYTE cChar, int nFont, int nFlags, float* pfUWidth, int* pnScrWidth, float *pfAdvance );
+	float	FontDrawTrueTypeChar( BYTE cChar, int nX, int nY, uint32 ulCol, int nFont, int nFlag );
+	void	GetTrueTypeRenderScale( float* pfScaleX, float* pfScaleY );
+	void	UpdateTrueTypeFonts( void );
 
 	int							mnCurrentRenderFont = 0;
 

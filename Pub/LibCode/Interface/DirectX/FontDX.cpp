@@ -63,6 +63,13 @@ byte		bR, bG, bB;
 int			nAlpha;
 int			nFormat;
 
+	// A TrueType font has no image file: make its texture again from the font (FontTrueType.cpp)
+	if ( mbIsTrueType )
+	{
+		BakeTrueType( pInterfaceInstance, mfTrueTypeBakedScaleX, mfTrueTypeBakedScaleY );
+		return;
+	}
+
 	if ( 0 )	// dont use alpha textures
 	{
 		mpTexture = pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( m_szTextureFilename, 0, 0, TRUE );
@@ -197,6 +204,111 @@ int			nFormat;
 }
 
 
+
+///--------------------------------------------------------------
+//CFontDef::LoadCoverageImage
+// Reads a bitmap font's image into an 8-bit coverage buffer (malloc'd), the brightness
+// becoming the coverage as in LoadTexture. NULL if it can't
+//---------------------------------------------------------------
+byte*	CFontDef::LoadCoverageImage( InterfaceInstance* pInterfaceInstance, const char* szFilename, int* pnWidth, int* pnHeight )
+{
+LPGRAPHICSTEXTURE	pxTexture;
+D3DSURFACE_DESC		xSurface;
+D3DLOCKED_RECT		xLockedRect;
+byte*				pbCoverage = NULL;
+ushort*				puwSrc;
+int					nX;
+int					nY;
+int					nR;
+int					nG;
+int					nB;
+
+	pxTexture = pInterfaceInstance->mpInterfaceInternals->LoadTextureDX( szFilename, 0, 0xFF, TRUE );
+	if ( pxTexture == NULL )
+	{
+		return( NULL );
+	}
+	pxTexture->GetLevelDesc( 0, &xSurface );
+	if ( ( xSurface.Format == D3DFMT_A1R5G5B5 ) &&
+		 ( SUCCEEDED( pxTexture->LockRect( 0, &xLockedRect, NULL, D3DLOCK_READONLY ) ) ) )
+	{
+		pbCoverage = (byte*)malloc( xSurface.Width * xSurface.Height );
+		for ( nY = 0; nY < (int)xSurface.Height; nY++ )
+		{
+			puwSrc = (ushort*)( (byte*)xLockedRect.pBits + ( nY * xLockedRect.Pitch ) );
+			for ( nX = 0; nX < (int)xSurface.Width; nX++ )
+			{
+				nR = ( ( puwSrc[nX] >> 10 ) & 0x1F ) << 3;
+				nG = ( ( puwSrc[nX] >> 5 ) & 0x1F ) << 3;
+				nB = ( puwSrc[nX] & 0x1F ) << 3;
+				pbCoverage[ ( nY * xSurface.Width ) + nX ] = (byte)( ( nR + nG + nB ) / 3 );
+			}
+		}
+		pxTexture->UnlockRect( 0 );
+		*pnWidth = xSurface.Width;
+		*pnHeight = xSurface.Height;
+	}
+	pxTexture->Release();
+	return( pbCoverage );
+}
+
+///--------------------------------------------------------------
+//CFontDef::CreateTextureFromAlpha
+// Makes the font's texture from an 8-bit coverage buffer (a TrueType font's glyphs):
+// white, with the coverage as alpha, as LoadTexture does from a greyscale image
+//---------------------------------------------------------------
+BOOL	CFontDef::CreateTextureFromAlpha( InterfaceInstance* pInterfaceInstance, const byte* pbAlpha, int nWidth, int nHeight )
+{
+LPGRAPHICSTEXTURE	pxTempTexture = NULL;
+LPGRAPHICSTEXTURE	pxFinalTexture = NULL;
+D3DLOCKED_RECT		xLockedRect;
+IDirect3DSurface9*	pSourceSurface = NULL;
+IDirect3DSurface9*	pDestSurface = NULL;
+byte*				pbDestRow;
+uint32*				pulDest;
+int					nX;
+int					nY;
+
+	pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &pxTempTexture, TRUE );
+	if ( pxTempTexture == NULL )
+	{
+		return( FALSE );
+	}
+	if ( FAILED( pxTempTexture->LockRect( 0, &xLockedRect, NULL, 0 ) ) )
+	{
+		pxTempTexture->Release();
+		return( FALSE );
+	}
+	pbDestRow = (byte*)xLockedRect.pBits;
+	for ( nY = 0; nY < nHeight; nY++ )
+	{
+		pulDest = (uint32*)pbDestRow;
+		for ( nX = 0; nX < nWidth; nX++ )
+		{
+			pulDest[nX] = ( (uint32)pbAlpha[ ( nY * nWidth ) + nX ] << 24 ) | 0x00FFFFFF;
+		}
+		pbDestRow += xLockedRect.Pitch;
+	}
+	pxTempTexture->UnlockRect( 0 );
+
+	pInterfaceInstance->mpInterfaceInternals->CreateTexture( nWidth, nHeight, 1, 0, FORMAT_A8R8G8B8, &pxFinalTexture, FALSE );
+	if ( pxFinalTexture == NULL )
+	{
+		pxTempTexture->Release();
+		return( FALSE );
+	}
+	pxTempTexture->GetSurfaceLevel( 0, &pSourceSurface );
+	pxFinalTexture->GetSurfaceLevel( 0, &pDestSurface );
+	pInterfaceInstance->mpInterfaceInternals->mpInterfaceD3DDevice->UpdateSurface( pSourceSurface, NULL, pDestSurface, NULL );
+	pSourceSurface->Release();
+	pDestSurface->Release();
+	pxTempTexture->Release();
+
+	mpTexture = pxFinalTexture;
+	m_TextureSizeX = nWidth;
+	m_TextureSizeY = nHeight;
+	return( TRUE );
+}
 
 //--------------------------------------------------------------------------------------------------
 
@@ -359,6 +471,8 @@ bool	bHasBegunStringRender = false;
 bool	bHasStringsInThisLayer = false;
 
 	if ( !mpxCurrentFontVertexBuffer ) return;
+
+	UpdateTrueTypeFonts();
 
 	xRect.right = 0;
 	xRect.bottom = 0;

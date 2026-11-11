@@ -313,6 +313,31 @@ extern INTERFACE_API BOOL	InterfaceFontIsLoaded( int nFontNum );
 extern INTERFACE_API BOOL	InterfaceFontSetFixedOffsets( int nFontNum, int nPosOffsetX, int nPosOffsetY, int nOccupyWidthReduction, int nOccupyHeightReduction );
 extern INTERFACE_API void	InterfaceFontFree( int nFontNum );
 
+//-------------------------------------------------------------
+// TrueType fonts (opt-in)
+//   InterfaceFontLoadTrueType puts a .ttf into a font slot instead of a bitmap font. Its glyphs are
+//   rasterised for the real pixel size of the 2D space (InterfaceSetUIScale) and again whenever that
+//   changes, so text stays sharp at any UI scale. Layout metrics (advances, line height) are whole 2D
+//   units worked out once from the font file, so InterfaceTextGetWidth / GetHeight give the same answer
+//   at every scale. Fonts loaded with InterfaceFontLoad are unaffected.
+//   Covers bytes 32-126 and 163 (pound), like the bitmap fonts, plus any the fallback bitmap font has.
+//   DX9 only: elsewhere it returns FALSE.
+//   If the load fails, whatever was in the slot before is left there.
+typedef struct
+{
+	float	fPixelHeight;		// Size: ascent minus descent, in 2D units
+	int		nCellHeight;		// Line cell in 2D units. InterfaceTextGetHeight gives this + 1, as with a bitmap font. 0 = from the font
+	float	fBaselineY;			// Baseline down from the top of the cell, 2D units. 0 = font centred in the cell
+	float	fLetterSpacing;		// Added to every advance before it's rounded to a whole unit (can be negative)
+	int		nSpaceAdvance;		// Advance of a space in 2D units. 0 = from the font
+	const char*	szFallbackImage;	// A bitmap font (the files InterfaceFontLoad takes) that fills in chars the TrueType font hasn't got,
+	const char*	szFallbackLayout;	// such as icons, scaled up to the same cell. NULL for none
+
+} INTERFACE_TRUETYPE_PARAMS;
+
+extern INTERFACE_API BOOL	InterfaceFontLoadTrueType( int nFontNum, const char* szTTFFilename, const INTERFACE_TRUETYPE_PARAMS* pxParams );
+extern INTERFACE_API BOOL	InterfaceFontIsTrueType( int nFontNum );
+
 /**********************************************************
  ***** Fancy stuff			                        *******
  *****											    *******

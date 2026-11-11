@@ -111,6 +111,9 @@
     <ClCompile Include="..\LibCode\Interface\Common\Font\FontCommon.cpp">
       <Filter>Common\Font</Filter>
     </ClCompile>
+    <ClCompile Include="..\LibCode\Interface\Common\Font\FontTrueType.cpp">
+      <Filter>Common\Font</Filter>
+    </ClCompile>
     <ClCompile Include="..\LibCode\Interface\DirectX\FontDX.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
@@ -174,6 +177,9 @@
       <Filter>DirectX\DX11Device</Filter>
     </ClInclude>
     <ClInclude Include="..\LibCode\Interface\Common\Font\FontCommon.h">
+      <Filter>Common\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LibCode\Interface\Common\Font\stb_truetype.h">
       <Filter>Common\Font</Filter>
     </ClInclude>
     <ClInclude Include="..\LibCode\Interface\DirectX\FontDX.h">

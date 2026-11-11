@@ -14,7 +14,7 @@ Working rules for AI agents
 - **Scope.** First-party code is Pub (except vendored headers/libs), GameCommon, Samples and Tools.
   Don't edit 3rdParty, Exe or Milkdrop unless explicitly asked. Treat vendored code inside first-party folders
   as read-only too: Pub\Include\{Bullet*,LinearMath,DirectX,GL,curl,fbxsdk,jpg,png,steam,zlib,cJSON},
-  Pub\LibCode\Lua and lua-5.4.6, GameCommon\tcp4u, GameCommon\WebServer\Tcp4u, GameCommon\BulletFileLoader,
+  Pub\LibCode\Lua and lua-5.4.6, Pub\LibCode\Interface\Common\Font\stb_truetype.h (v1.26), GameCommon\tcp4u, GameCommon\WebServer\Tcp4u, GameCommon\BulletFileLoader,
   GameCommon\Physics\bt*Importer*, cJSON.c copies, Util\Blowfish, Engine\CollisionMaths\.
 - **Interfaces are sacred.** Public functions, types, enum values and struct layouts in Pub\Include and the
   GameCommon module headers are used by shipped games (The Universal, Elemental). Add, don't change. See
@@ -26,7 +26,9 @@ Working rules for AI agents
   added to each consuming app's .vcxproj.
 - **Renderer.** DirectX 9 on Win32 is the only live back-end. Implement there first; keep other back-ends'
   signatures in sync only where mechanical.
-- **Verification.** There are no tests. Verify by building the affected solution (Pub\Libraries.sln, then
+- **UIX changes** follow GameCommon\UIX\UIX.md: additive and opt-in, a test in Tests\UIXTests for each, and the
+  harness (`Tests\UIXTests\RunUIXTests.ps1`) passing with its references unchanged, plus Elemental building.
+- **Verification.** Apart from the UIX harness there are no tests. Verify by building the affected solution (Pub\Libraries.sln, then
   Samples\Samples.sln and/or Tools\Tools.sln) for Debug|Win32, and running a relevant sample with the working
   directory set to Exe\. Projects target toolset v143; if only a newer toolset is installed, override it on the
   command line (`msbuild Pub\Libraries.sln /p:Configuration=Debug /p:Platform=Win32 /p:PlatformToolset=v145`)

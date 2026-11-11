@@ -1216,6 +1216,12 @@ float	fUWidth = GetFontUWidth( cChar, nFont );
 float	fScrWidth = 0.0f;
 float	fScreenScaling = 1.0f;
 
+	if ( ( mpFontDefs[nFont] ) &&
+		 ( mpFontDefs[nFont]->IsTrueType() ) )
+	{
+		return( FontGetTrueTypeCharWidth( (BYTE)cChar, nFont, nFlags, pfUWidth, pnScrWidth, pfAdvance ) );
+	}
+
 	if ( fUWidth == 0 )
 	{
 		fScrWidth = 2;
@@ -1326,6 +1332,11 @@ float		fAdvance = 0.0f;
 		break;
 	}
 	 
+	if ( pFontDef->IsTrueType() )
+	{
+		return( FontDrawTrueTypeChar( cChar, nX, nY, ulCol, nFont, nFlag ) );
+	}
+
 	fScreenScaling = FontGetCharUWidthAndScreenWidth( cChar, nFont, nFlag, &fCharUWidth, &nFontScreenWidth, &fAdvance ); 
 	fFontVHeight = GetFontVHeight(cChar,nFont);
 
@@ -1625,31 +1636,31 @@ int		nHeight = 0;
 
 	if ( mnCurrentFontFlags & FONT_FLAG_SMALL )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * 0.75f ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * 0.75f ) + 1;
 	}
 	else if ( mnCurrentFontFlags & FONT_FLAG_TINY )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * 0.25f ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * 0.25f ) + 1;
 	}
 	else if ( mnCurrentFontFlags & FONT_FLAG_GIANT )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * mfGiantFontScale ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * mfGiantFontScale ) + 1;
 	}
 	else if ( mnCurrentFontFlags & FONT_FLAG_ENORMOUS )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * 5.0f ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * 5.0f ) + 1;
 	}
 	else if ( mnCurrentFontFlags & FONT_FLAG_MASSIVE )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * 3.1f ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * 3.1f ) + 1;
 	}
 	else if ( mnCurrentFontFlags & FONT_FLAG_LARGE )
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) * 1.25f ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) * 1.25f ) + 1;
 	}
 	else 
 	{
-		nHeight = (int)( GetFontVHeight( nChar, nFont ) * GetFontTextureHeight(nFont) ) + 1;
+		nHeight = (int)( GetFontCellHeight( (BYTE)nChar, nFont ) ) + 1;
 	}
 
 	nHeight = (int)( nHeight * mfCurrentFontGlobalScale );
@@ -1675,7 +1686,7 @@ int		nBaseY = nY;
 int		nStringWidth;
 int		nMaxY = NOTFOUND;
 
-	nLineSep = (int)( GetFontVHeight( 'A', font ) * GetFontTextureHeight(font)) + 1;
+	nLineSep = (int)( GetFontCellHeight( 'A', font ) ) + 1;
 
 	if ( mnCurrentFontFlags & FONT_FLAG_SMALL )
 	{

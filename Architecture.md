@@ -41,7 +41,7 @@ Applications add `Pub\Include` to their include path and include headers with an
 | StandardDef.h    | The "everything" base header. Re-declares a minimal subset of windows.h types (BOOL, DWORD, BYTE, RECT, HWND...) when windows.h was *not* included, plus project types (`uint32`, `u64`, `ushort`, `uchar`, `byte`, `VECT`, `ENGINEQUATERNION`, `ENGINEMATRIX`), constants (`NOTFOUND`=-1, `PI`, `A90` etc), `SAFE_DELETE/SAFE_RELEASE/SAFE_FREE`, `DEGTORAD`. Includes CodeUtil.h and System.h. |
 | CodeUtil.h       | String helpers (`tinstricmp`, `SplitStringSep`, `ScriptGetNextLine`...), colour helpers (`COLOUR`, `GetBlendedCol`), `FRand/RandInt/FClamp`, archive mount/extract. |
 | System.h         | Platform abstraction: `SysDebugPrint`, `SysPanicIf`, time/tick (`SysGetTick`, `SysGetFrameDelta`), keyboard (`KEY_*`, `SysCheckKeyState`), files (`SysFileOpen`, `SysFileAllocateAndLoad`...), dialogs, threads, profiling (`SysProfileStartEvent`). One implementation per platform in Pub\LibCode\CodeUtil\Sys*.c/.cpp. |
-| Interface.h      | 2D API: window/device init, frame loop, rects/lines/text, textures, textured overlays, images, fonts. C linkage. |
+| Interface.h      | 2D API: window/device init, frame loop, rects/lines/text, textures, textured overlays, images, fonts (bitmap, or TrueType via `InterfaceFontLoadTrueType`, opt-in). C linkage. |
 | InterfaceEx.h    | Interface.h + `InterfaceInstance` class (multi-window / multi-device). |
 | Engine.h         | 3D API: render state, shaders (.fx), shadows, textures, render targets, camera, lights, collision, vertex/index buffers, materials. C linkage, plus C++ callback interfaces `EngineGameInterface`, `SceneMapGameInterface`. |
 | EngineEx.h       | Engine.h + `EngineInstance`. |
@@ -142,7 +142,8 @@ See GameCommon\Readme.md for the module list. Additional notes:
 
 - **UIX** (not in the readme) is the newer retained-mode UI (`UIXPage`, `UIXButton`, `UIXListBox`, ...,
   reserved button IDs from 0x550000). **UI** is the older immediate-mode UI (`UIInstance::ButtonDraw` each frame).
-  Prefer UIX for new screens; keep UI working for existing ones.
+  Prefer UIX for new screens; keep UI working for existing ones. **Before changing UIX, read
+  GameCommon\UIX\UIX.md**: changes are additive and opt-in, and the harness in Tests\UIXTests must still pass.
 - **Platform** is C-linkage like the Pub APIs; Win32, Marmalade and Steam-commerce implementations.
 - **Physics** wraps Bullet (`btBulletWorldImporter` etc are vendored Bullet extras). BulletFileLoader is vendored.
 - **WebServer\Tcp4u** and **tcp4u** are vendored copies of the tcp4u library.
@@ -229,4 +230,5 @@ Known quirks / gotchas
 - Typos baked into identifiers (`eCompronentBehaviourTypes`, `DXHeirarchyContainer`, `EngineCameraSetOthorgonalView`)
   are part of the API. Don't rename public ones; new code can use correct spelling.
 - Paths in source use backslashes in string literals (`"Data\\Samples\\caveman1.atm"`).
-- No automated tests exist anywhere. Verification = build the affected solution(s) and run a sample/tool.
+- The only automated tests are the UIX harness (Tests\UIXTests, see GameCommon\UIX\UIX.md). Elsewhere, verification
+  = build the affected solution(s) and run a sample/tool.
