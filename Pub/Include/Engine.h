@@ -146,6 +146,9 @@ extern	void	EngineSetModelMaterialChannel( int nChannel, float fStrength );
 // The same, but lit in this colour for this draw instead of the one in the model. For lamps that do two jobs, like brake and reverse
 extern	void	EngineSetModelMaterialChannelColour( int nChannel, float fStrength, float fRed, float fGreen, float fBlue );
 extern	void	EngineClearModelMaterialChannels( void );
+// Opt-in: adds this colour to the emissive of everything the model shader (ATMMaterial) draws until it's set back to 0, which
+// is the default. For highlighting one model: set it, draw the model, set it to 0. Fixed-function draws don't get it
+extern	void	EngineSetModelEmissiveBoost( float fRed, float fGreen, float fBlue );
 // How many separate lamps the model has on this channel, with the middle and facing of up to nMax of them in model space. Faces touching
 // at a corner are one lamp. Reads the mesh, so call it once per model, not per frame.
 extern	int		ModelGetMaterialChannelLamps( int nModelHandle, int nChannel, VECT* pxPositions, VECT* pxNormals, int nMax );

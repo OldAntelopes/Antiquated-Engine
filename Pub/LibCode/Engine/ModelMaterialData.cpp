@@ -42,7 +42,55 @@ BOOL		mbModelMaterialsHasLoadedShaders = FALSE;
 
 D3DXVECTOR4		mxEmssiveVecValue( 0.0f, 0.0f, 0.0f, 0.0f );
 
+// Added to every material's emissive in the model shader while the app has set it (EngineSetModelEmissiveBoost). 0 unless
+// an app sets it, which leaves the shader's emissive exactly as the material has it
+static MATERIAL_COLOUR	msxModelMaterialEmissiveBoost = { 0.0f, 0.0f, 0.0f, 0.0f };
+
 //----------------------------------------------------------------------------------------------------
+
+/***************************************************************************
+ * Function    : ModelMaterialShaderUploadEmissive
+ * Description : Sends the current material's emissive, plus any boost, to the model shader
+ ***************************************************************************/
+static void	ModelMaterialShaderUploadEmissive( void )
+{
+#ifdef ENGINEDX
+#ifdef TUD9
+	if ( mpNormalMapRenderPSConstantTable )
+	{
+	D3DXHANDLE		handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialEmissive");
+	MATERIAL_COLOUR	xEmissive = mxModelMaterialShaderEmissive;
+
+		if ( handle )
+		{
+			xEmissive.fRed += msxModelMaterialEmissiveBoost.fRed;
+			xEmissive.fGreen += msxModelMaterialEmissiveBoost.fGreen;
+			xEmissive.fBlue += msxModelMaterialEmissiveBoost.fBlue;
+			mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&xEmissive, 4 );
+		}
+	}
+#endif
+#endif
+}
+
+/***************************************************************************
+ * Function    : EngineSetModelEmissiveBoost
+ * Description : Opt-in: adds this colour to the emissive of everything the model shader draws from now on, until it's set
+ *				 back to 0. For highlighting one model: set it, draw, clear it. Takes effect straight away, so a model with no
+ *				 materials of its own (drawn with whatever material was last set) gets it too
+ ***************************************************************************/
+void	EngineSetModelEmissiveBoost( float fRed, float fGreen, float fBlue )
+{
+	if ( ( fRed != msxModelMaterialEmissiveBoost.fRed ) ||
+		 ( fGreen != msxModelMaterialEmissiveBoost.fGreen ) ||
+		 ( fBlue != msxModelMaterialEmissiveBoost.fBlue ) )
+	{
+		msxModelMaterialEmissiveBoost.fRed = fRed;
+		msxModelMaterialEmissiveBoost.fGreen = fGreen;
+		msxModelMaterialEmissiveBoost.fBlue = fBlue;
+		ModelMaterialShaderUploadEmissive();
+	}
+}
 
 void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATERIAL_COLOUR* pxAmbient, MATERIAL_COLOUR* pxSpecular, MATERIAL_COLOUR* pxEmissive, float fSpecularPower )
 {
@@ -94,11 +142,7 @@ void		ModelMaterialShaderSetMaterialProperties( MATERIAL_COLOUR* pxDiffuse, MATE
 				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderAmbient, 4 );
 			}
 
-			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialEmissive");
-			if ( handle )
-			{
-				mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderEmissive, 4 );
-			}
+			ModelMaterialShaderUploadEmissive();		// (plus any boost the app has set)
 
 			handle = mpNormalMapRenderPSConstantTable->GetConstantByName(NULL, "gMaterialSpecularPower");
 			if ( handle )
