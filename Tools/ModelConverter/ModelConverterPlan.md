@@ -300,8 +300,9 @@ Not done yet:
 - `-atminfo`.
 - The interactive checks in the Verification list: Save As round trip, missing-link round trip, relief against an in-game
   screenshot, lamps lighting the sign, Scale on the skinned model.
-- Opening a model from the command line (`ModelConverterD.exe file.atm`) shows nothing in the output list and no model. File > Open
-  works. Not yet known whether this predates Phase 1.
+
+Released as **2.50** (Exe\ModelConverter250.zip, 19 Nov 2026). That release also fixes the command-line load (a trailing
+space after the filename made it fail silently) and the Release link (it now links legacy_stdio_definitions.lib, as Debug did).
 
 ### Phase 2: Visualisation and inspection (about 1 week)
 
