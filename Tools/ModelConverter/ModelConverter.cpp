@@ -81,7 +81,7 @@ HWND	mhwndBatchConvertDialog;
 
 CSceneObject	m_MainSceneObject;
 
-#define	MODELCONV_VERSIONSTRING		"2.39"
+#define	MODELCONV_VERSIONSTRING		"2.50"
 
 BOOL	mbDisableWASD = FALSE;
 int		mnCurrentWheelMode = 0;
@@ -6130,26 +6130,27 @@ char*	pcRunner;
 	SysRegisterDebugPrintHandler( ModelConvPrintToConsole );
 #endif
 	m_MainSceneObject.SetViewInterface( &m_sModelConvViewInterface );
-	if ( lpCmdLine[0] != 0 )
+	// The model to open: the first argument, quoted or not. Launchers can add spaces around it (and the file open fails if a
+	// trailing space is left on), so take a quoted name up to its closing quote, and trim an unquoted one
+	mszCommandLineFile[0] = 0;
 	{
-		if ( lpCmdLine[0] == '\"' )
+	const char*	pcRunner = lpCmdLine;
+	int			nLen = 0;
+
+		while ( ( *pcRunner == ' ' ) || ( *pcRunner == '\t' ) ) pcRunner++;
+		if ( *pcRunner == '\"' )
 		{
-		int		nStrlen;
-			strcpy( mszCommandLineFile, lpCmdLine + 1 );
-			nStrlen = strlen( mszCommandLineFile );
-			if ( mszCommandLineFile[nStrlen-1] == '\"' )
-			{
-				mszCommandLineFile[nStrlen-1] = 0;
-			}
+			pcRunner++;
+			while ( ( pcRunner[nLen] != 0 ) && ( pcRunner[nLen] != '\"' ) ) nLen++;
 		}
 		else
 		{
-			strcpy( mszCommandLineFile, lpCmdLine );
+			nLen = (int)strlen( pcRunner );
+			while ( ( nLen > 0 ) && ( ( pcRunner[nLen-1] == ' ' ) || ( pcRunner[nLen-1] == '\t' ) || ( pcRunner[nLen-1] == '\r' ) || ( pcRunner[nLen-1] == '\n' ) ) ) nLen--;
 		}
-	}
-	else
-	{
-		mszCommandLineFile[0] = 0;
+		if ( nLen >= (int)sizeof( mszCommandLineFile ) ) nLen = (int)sizeof( mszCommandLineFile ) - 1;
+		memcpy( mszCommandLineFile, pcRunner, nLen );
+		mszCommandLineFile[nLen] = 0;
 	}
 
 //	xCommStruct.dwSize = sizeof( xCommStruct );
