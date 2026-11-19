@@ -453,6 +453,35 @@ extern void		ModelRemoveVertexAnimation( int nModelHandle );
 // Current (last rendered) model-space joint positions, for debug drawing. Returns number of bones written
 extern int		ModelSkeletonGetCurrentJointPositions( int nModelHandle, VECT* pxPositionsOut, int nMaxBones );
 
+// The model's animations (slots 0 to ModelSkeletonGetNumAnimations - 1). A link whose file couldn't be loaded is kept,
+// with bLoaded FALSE, so it's still saved with the model. ModelAnimationPause pauses skeletal animations too
+typedef struct
+{
+	char	acFilename[64];			// As linked (relative to the model's folder)
+	int		nAnimUse;				// ANIM_RUN etc
+	BOOL	bLinkInModel;			// Saved with the model by ModelExportATM
+	BOOL	bLoaded;				// FALSE if the file wasn't found or wouldn't load
+	int		nNumFrames;
+	float	fFrameTime;				// Seconds per frame
+	int		nLoopStart;				// The frames that play, looping (nLoopEnd exclusive)
+	int		nLoopEnd;
+	char	acLoadedFrom[256];		// Full path of the file it was loaded from ("" if not loaded)
+
+} MODEL_SKELETON_ANIM_INFO;
+
+extern BOOL		ModelSkeletonGetAnimationInfo( int nModelHandle, int nAnimNum, MODEL_SKELETON_ANIM_INFO* pxInfoOut );
+extern int		ModelSkeletonGetCurrentAnimation( int nModelHandle );			// slot, or NOTFOUND
+extern void		ModelSkeletonPlayAnimationSlot( int nModelHandle, int nAnimNum );	// by slot, where ModelSetAnimationImmediate goes by use
+// Seconds into the playing clip (wrapped to its loop). Setting it while paused shows that moment
+extern void		ModelSkeletonSetAnimationTime( int nModelHandle, float fSeconds );
+extern float	ModelSkeletonGetAnimationTime( int nModelHandle );
+// Tools: show the bind pose instead of the animation
+extern void		ModelSkeletonSetShowBindPose( int nModelHandle, BOOL bFlag );
+// Tools editing a skinned model's vertices: put the bind pose back in the mesh first, then afterwards tell the skeleton
+// to take its bind pose from the mesh again (the vertex count must not change, or the skin weights no longer fit)
+extern void		ModelSkeletonRestoreBindPose( int nModelHandle );
+extern void		ModelSkeletonRecaptureBindPose( int nModelHandle );
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef DIRECT3D_VERSION		// only include this stuff if directx has been included already // Hacky bits :)

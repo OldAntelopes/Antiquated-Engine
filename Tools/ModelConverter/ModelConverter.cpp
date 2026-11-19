@@ -44,8 +44,10 @@
 #include "Tools/PlaneCutter.h"
 #include "Tools/VertexColours.h"
 #include "Skeletal/SkeletalTools.h"
+#include "Skeletal/SkeletalView.h"
 #include "Tools/VertexManipulate.h"
 #include "RenderEffects\RenderEffects.h"
+#include "RenderEffects/ModelDisplayOptions.h"
 
 #include "CombineMaterials.h"
 #include "ModelConverter.h"
@@ -268,6 +270,12 @@ public:
 };
 
 ModelConvViewInterface		m_sModelConvViewInterface;
+
+// For the 2D overlays (skeleton, lamp markers)
+static void		ModelConvProjectForOverlay( VECT* pxWorldPos, int* pnScreenX, int* pnScreenY )
+{
+	m_sModelConvViewInterface.GetScreenCoordForWorldCoord( pxWorldPos, pnScreenX, pnScreenY );
+}
 
 void	ModelConvTextBoxSet( const char* format, ... )
 {
@@ -1227,6 +1235,19 @@ int		nFaceHit = 0;
 	}
 }
 
+// The animation combo's usual list: every animation use, for vertex-keyframe models
+void		ModelConvFillAnimUseCombo( void )
+{
+int		nLoop;
+
+	SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_RESETCONTENT, 0, 0 );
+	for ( nLoop = 0; nLoop < MAX_ANIMATION_USES; nLoop++ )
+	{
+		SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)maszAnimationUses[nLoop] );
+	}
+	SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_SETCURSEL, 0, 0 );
+}
+
 void		ModelConverterDisableButtons( void )
 {
 	EnableWindow( GetDlgItem( mhwndMainDialog, IDC_VIEWLODTEXT ), FALSE );
@@ -1251,6 +1272,16 @@ void		ModelConverterUpdateButtonStates( MODEL_RENDER_DATA* pxModelData )
 	{
 		EnableWindow( GetDlgItem( mhwndMainDialog, IDC_VIEWLODTEXT ), FALSE );
 		EnableWindow( GetDlgItem( mhwndMainDialog, IDC_MAINLODCOMBO ), FALSE );
+	}
+
+	// A skinned model's linked animations take over the animation controls
+	switch( SkeletalViewUpdateAnimControls( (int)( pxModelData - maxModelRenderData ), ( mnPickerControlMode != CONTROL_CAMERA ) ? TRUE : FALSE ) )
+	{
+	case 1:
+		return;
+	case -1:
+		ModelConvFillAnimUseCombo();
+		break;
 	}
 
 	if ( pxModelData->pxVertexKeyframes )
@@ -1459,7 +1490,7 @@ float	fDelta;
 	ulTickGap = GetTickCount()-gulLastTick;
 	if ( ulTickGap > 100 ) ulTickGap = 100;
 	ModelConverterKeyControlsUpdate( ulTickGap );
-	ModelRenderingUpdate( ulTickGap / 10 );
+	ModelRenderingUpdate( ModelDisplayOptionsScaleTick( ulTickGap ) );		// (was ulTickGap / 10 - everything played at a tenth of real speed)
 	ModelConvUpdated3dPointerCoord();
 	EngineUpdate(TRUE);
 
@@ -1558,6 +1589,7 @@ float	fDelta;
 		xPos.x = 0.0f;
 		xPos.y = 0.0f;
 		xPos.z = 0.0f;
+		ModelDisplayOptionsBeginModelDraw();		// material channels, and the lights the model's effects added last frame
 		if ( bDrawUsingSceneObject )
 		{
 		int		nRenderingMode = mnModelRenderingMode;
@@ -1630,7 +1662,11 @@ float	fDelta;
 				//-------------------------------------------------------------------
 			}
 		}
-		
+		ModelDisplayOptionsEndModelDraw();
+
+		SkeletalViewDrawOverlay( nHandleToDraw, ModelConvProjectForOverlay );
+		ModelDisplayOptionsDrawOverlay( ModelConvProjectForOverlay );
+
 		if ( AttachDlgBallAttachPoint() != 0 )
 		{
 			pxAttachPos = ModelGetAttachPoint( nHandleToDraw, AttachDlgBallAttachPoint() );
@@ -2013,6 +2049,70 @@ float		fCamDist = 1.0f;
  * Returns     :
  * Description : 
  ***************************************************************************/
+//-------------------------------------------------------------------------
+// Function    : ModelConvReportModelFeatures
+// Description : Lists the newer features a model uses (ATMFormat.md: night-only materials, material channels, relief,
+//				 effects), with the Rendering menu option that shows each
+//-------------------------------------------------------------------------
+static const char*	ModelConvGetEffectName( int nEffectType )
+{
+static const char*	aszEffectNames[] = { "none", "black smoke", "white smoke", "camp fire", "flashing neon", "soft light", "grey smoke",
+										 "soft light (night)", "grey smoke", "fountain", "fountain", "fountain", "fountain", "refinery flame", "sign lamp (night)" };
+
+	if ( ( nEffectType >= 0 ) && ( nEffectType < (int)( sizeof( aszEffectNames ) / sizeof( aszEffectNames[0] ) ) ) )
+	{
+		return( aszEffectNames[nEffectType] );
+	}
+	return( "unknown" );
+}
+
+void		ModelConvReportModelFeatures( int nHandle )
+{
+MODEL_RENDER_DATA*		pxModelData;
+ModelMaterialData*		pMaterial;
+int		nNumNightOnly = 0;
+int		nNumChannels = 0;
+int		nNumRelief = 0;
+char	acChannels[64] = "";
+char	acNum[8];
+
+	if ( nHandle == NOTFOUND ) return;
+	pxModelData = &maxModelRenderData[nHandle];
+
+	pMaterial = pxModelData->pMaterialData;
+	while ( pMaterial )
+	{
+		if ( pMaterial->IsMaterialPropertiesNightOnly() ) nNumNightOnly++;
+		if ( pMaterial->HasRelief() ) nNumRelief++;
+		if ( pMaterial->GetChannel() > 0 )
+		{
+			nNumChannels++;
+			if ( strlen( acChannels ) < sizeof( acChannels ) - 8 )
+			{
+				sprintf( acNum, "%s%d", ( acChannels[0] != 0 ) ? "," : "", pMaterial->GetChannel() );
+				strcat( acChannels, acNum );
+			}
+		}
+		pMaterial = pMaterial->GetNext();
+	}
+	if ( nNumNightOnly > 0 )
+	{
+		ModelConvTextAdd( "   %d night-only material(s) (Rendering > Day / Night)", nNumNightOnly );
+	}
+	if ( nNumChannels > 0 )
+	{
+		ModelConvTextAdd( "   %d material(s) lit by channels %s (Rendering > Material Channels)", nNumChannels, acChannels );
+	}
+	if ( nNumRelief > 0 )
+	{
+		ModelConvTextAdd( "   %d material(s) with relief (Rendering > Relief)", nNumRelief );
+	}
+	if ( pxModelData->xEffectAttachData.nEffectType != 0 )
+	{
+		ModelConvTextAdd( "   Effect %d: %s", pxModelData->xEffectAttachData.nEffectType, ModelConvGetEffectName( pxModelData->xEffectAttachData.nEffectType ) );
+	}
+}
+
 void		ModelConvLoadStart( eSUBMODEL_LIST nSubModelNum, const char* acFileName )
 {
 int		nHandle;
@@ -2047,7 +2147,12 @@ int		nHandle;
 
 		pxModelStats = ModelGetStats( nHandle );
 		ModelConvTextAdd( "   %d verts, %d faces, %d materials, %d embedded textures (+ %d sub-models : %d LOD levels, %d collision models)", pxModelStats->nNumVertices, pxModelStats->nNumIndices / 3, pxModelStats->nNumMaterials, pxModelStats->nNumEmbeddedTextures, pxModelStats->nNumSubmodels, pxModelStats->bNumLODs, pxModelStats->nNumCollisionMaps );
-		
+		ModelConvReportModelFeatures( nHandle );
+		if ( nSubModelNum == kMAIN )
+		{
+			SkeletalViewReportModel( nHandle );
+		}
+
 		if ( nSubModelNum == kMAIN )
 		{
 			ModelConvFocusCameraOnObject( nHandle );
@@ -4138,6 +4243,7 @@ uint32	ulLockFlags = 0;
 	{
 	case 0:
 		ModelExportATM( nModelHandle, acFilename, ulFlags, ulLockFlags );
+		SkeletalViewCopyLinkedAnimations( nModelHandle, acFilename );		// links are filenames next to the .atm
 		break;
 	case 1:
 		ModelLoaderExport3ds( nModelHandle, acFilename );
@@ -4522,6 +4628,10 @@ public:
 	virtual void			AddParticle( int nType, VECT* pxPos );
 	virtual void			AddLight( VECT* pxPos, float, float, float, float R, float G, float B );
 
+	// Rendering > Day / Night (night-only materials and effect lights)
+	virtual bool			IsDaytime( void ) { return( ModelDisplayOptionsIsDaytime() ? true : false ); }
+	virtual float			GetNightLightStrength( const VECT* pxPos ) { return( ModelDisplayOptionsIsDaytime() ? 0.0f : 1.0f ); }
+
 private:
 	VECT			mxNullPos;
 };
@@ -4556,7 +4666,8 @@ void	ModelConverterEngineGameInterface::AddParticle( int nType, VECT* pxPos )
 
 void	ModelConverterEngineGameInterface::AddLight( VECT* pxPos, float atten0, float atten1, float atten2, float R, float G, float B )
 {
-//	IslandLightingAddBulb( pxPos, atten0, atten1, atten2, R, G, B );
+	// (The engine passes range, then two attenuation terms - The Universal hands them to IslandLightingAddBulb)
+	ModelDisplayOptionsAddLight( pxPos, atten0, atten1, atten2, R, G, B );
 }
 
 
@@ -4577,7 +4688,6 @@ WNDCLASSEX*	pWinClass = &wc;
 DWORD		dwWindowStyle;
 TCITEM	xTCItem;
 char	acString[256];
-int		nLoop;
 
 	sprintf( acString, "3d View" );
 	xTCItem.mask = TCIF_TEXT;
@@ -4659,14 +4769,7 @@ int		nLoop;
 		ModelSetVertexColours( mnBallModelHandle, 0xA02020f0 );
 	}
 
-	SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_RESETCONTENT, 0, 0 );
-//	sprintf( acString, "<All>", nLoop );
-//	SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)acString );
-	for ( nLoop = 0; nLoop < MAX_ANIMATION_USES; nLoop++ )
-	{
-		SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)maszAnimationUses[nLoop] );
-	}
-	SendDlgItemMessage( mhwndMainDialog, IDC_COMBO1, CB_SETCURSEL, 0, 0 );
+	ModelConvFillAnimUseCombo();
 
 	SendDlgItemMessage( mhwndMainDialog, IDC_MAINLODCOMBO, CB_RESETCONTENT, 0, 0 );
 	SendDlgItemMessage( mhwndMainDialog, IDC_MAINLODCOMBO, CB_ADDSTRING, 0, (LPARAM)"<Automatic>" );
@@ -5073,6 +5176,53 @@ CUSTOMVERTEX* pxVertices;
  * Returns     :
  * Description : Message handler for the "save changes" dialog box
  ***************************************************************************/
+//-------------------------------------------------------------------------
+// Rendering > Material Channels : each a toggle (brake and reversing light the same lamps, so one turns the other off)
+//-------------------------------------------------------------------------
+void	ModelConvToggleChannel( int nMenuID )
+{
+uint32	ulFlags = ModelDisplayOptionsGetChannels();
+uint32	ulFlag = 0;
+
+	switch( nMenuID )
+	{
+	case ID_CHANNELS_HEADLIGHTS:	ulFlag = MODELDISPLAY_CHANNEL_HEADLIGHTS;	break;
+	case ID_CHANNELS_BRAKE:			ulFlag = MODELDISPLAY_CHANNEL_BRAKE;		break;
+	case ID_CHANNELS_REVERSE:		ulFlag = MODELDISPLAY_CHANNEL_REVERSE;		break;
+	case ID_CHANNELS_LEFT:			ulFlag = MODELDISPLAY_CHANNEL_LEFT;			break;
+	case ID_CHANNELS_RIGHT:			ulFlag = MODELDISPLAY_CHANNEL_RIGHT;		break;
+	}
+	ulFlags ^= ulFlag;
+	if ( ( ulFlag == MODELDISPLAY_CHANNEL_BRAKE ) && ( ulFlags & ulFlag ) ) ulFlags &= ~MODELDISPLAY_CHANNEL_REVERSE;
+	if ( ( ulFlag == MODELDISPLAY_CHANNEL_REVERSE ) && ( ulFlags & ulFlag ) ) ulFlags &= ~MODELDISPLAY_CHANNEL_BRAKE;
+	ModelDisplayOptionsSetChannels( ulFlags );
+
+	CheckMenuItem( GetMenu( mhwndMainDialog ), ID_CHANNELS_HEADLIGHTS, ( ulFlags & MODELDISPLAY_CHANNEL_HEADLIGHTS ) ? MF_CHECKED : MF_UNCHECKED );
+	CheckMenuItem( GetMenu( mhwndMainDialog ), ID_CHANNELS_BRAKE, ( ulFlags & MODELDISPLAY_CHANNEL_BRAKE ) ? MF_CHECKED : MF_UNCHECKED );
+	CheckMenuItem( GetMenu( mhwndMainDialog ), ID_CHANNELS_REVERSE, ( ulFlags & MODELDISPLAY_CHANNEL_REVERSE ) ? MF_CHECKED : MF_UNCHECKED );
+	CheckMenuItem( GetMenu( mhwndMainDialog ), ID_CHANNELS_LEFT, ( ulFlags & MODELDISPLAY_CHANNEL_LEFT ) ? MF_CHECKED : MF_UNCHECKED );
+	CheckMenuItem( GetMenu( mhwndMainDialog ), ID_CHANNELS_RIGHT, ( ulFlags & MODELDISPLAY_CHANNEL_RIGHT ) ? MF_CHECKED : MF_UNCHECKED );
+}
+
+//-------------------------------------------------------------------------
+// Animations && Effects > Playback Speed
+//-------------------------------------------------------------------------
+void	ModelConvSetPlaybackSpeedOption( int nMenuID )
+{
+static const int	anMenuIDs[] = { ID_PLAYBACK_SPEED_010, ID_PLAYBACK_SPEED_025, ID_PLAYBACK_SPEED_050, ID_PLAYBACK_SPEED_100, ID_PLAYBACK_SPEED_200 };
+static const float	afSpeeds[] = { 0.1f, 0.25f, 0.5f, 1.0f, 2.0f };
+int		nLoop;
+
+	for ( nLoop = 0; nLoop < 5; nLoop++ )
+	{
+		if ( anMenuIDs[nLoop] == nMenuID )
+		{
+			ModelDisplayOptionsSetPlaybackSpeed( afSpeeds[nLoop] );
+		}
+		CheckMenuItem( GetMenu( mhwndMainDialog ), anMenuIDs[nLoop], ( anMenuIDs[nLoop] == nMenuID ) ? MF_CHECKED : MF_UNCHECKED );
+	}
+}
+
 LRESULT CALLBACK ModelConverterMainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 short wNotifyCode;
@@ -5150,7 +5300,12 @@ int	nVal;
 		CheckMenuItem(GetMenu(mhwndMainDialog), IDM_DRAW_GRID_LINES, MF_CHECKED);
 		CheckMenuItem(GetMenu(mhwndMainDialog), ID_RENDERING_GOURAUDSHADING, MF_CHECKED);
 		CheckMenuItem(GetMenu(mhwndMainDialog), ID_RENDERING_CULLING_NORMAL, MF_CHECKED);
-		CheckMenuItem(GetMenu(mhwndMainDialog), ID_ANIMATIONS_BLENDING_LINEAR, MF_CHECKED);	
+		CheckMenuItem(GetMenu(mhwndMainDialog), ID_ANIMATIONS_BLENDING_LINEAR, MF_CHECKED);
+		// Show models as The Universal does: night (as the converter always has), relief on, real-time animation
+		CheckMenuItem(GetMenu(mhwndMainDialog), ID_RENDERING_NIGHT, MF_CHECKED);
+		ModelDisplayOptionsSetRelief( TRUE );
+		CheckMenuItem(GetMenu(mhwndMainDialog), ID_RENDERING_RELIEF, MF_CHECKED);
+		ModelConvSetPlaybackSpeedOption( ID_PLAYBACK_SPEED_100 );
 		ModelConvSetExportFlags( mulLastExportFlags );
 		SetTimer( mhwndMainDialog, 1, 50, NULL );
 		if ( mxConfig.nHeight != 0 )
@@ -5204,7 +5359,10 @@ int	nVal;
 				break;
 			case IDC_COMBO1:
 				nVal = SendDlgItemMessage( hDlg, IDC_COMBO1, CB_GETCURSEL, 0, 0 );
-				ModelSetAnimationImmediate( m_MainSceneObject.GetModelHandle(), nVal, 100, NULL, 0 );
+				if ( SkeletalViewOnAnimComboSelect( m_MainSceneObject.GetModelHandle(), nVal ) == FALSE )
+				{
+					ModelSetAnimationImmediate( m_MainSceneObject.GetModelHandle(), nVal, 100, NULL, 0 );
+				}
 				break;
 			}
 			break;
@@ -5222,10 +5380,44 @@ int	nVal;
 			}
 			break;
 		case BN_CLICKED:
+			// Commands run on a skinned model's bind pose, and any edit becomes its new bind pose (SkeletalView.cpp)
+			SkeletalViewBeginCommand( m_MainSceneObject.GetModelHandle() );
 			switch( LOWORD(wParam) )
 			{
 			case IDC_SLICE_FACES:
 				PlaneCutterSlice( &m_MainSceneObject );
+				break;
+			case ID_SKELETON_SHOWBONES:
+				SkeletalViewSetShowBones( !SkeletalViewGetShowBones() );
+				CheckMenuItem( GetMenu( mhwndMainDialog ), ID_SKELETON_SHOWBONES, SkeletalViewGetShowBones() ? MF_CHECKED : MF_UNCHECKED );
+				break;
+			case ID_SKELETON_SHOWBINDPOSE:
+				SkeletalViewSetShowBindPose( !SkeletalViewGetShowBindPose() );
+				CheckMenuItem( GetMenu( mhwndMainDialog ), ID_SKELETON_SHOWBINDPOSE, SkeletalViewGetShowBindPose() ? MF_CHECKED : MF_UNCHECKED );
+				break;
+			case ID_RENDERING_DAY:
+			case ID_RENDERING_NIGHT:
+				ModelDisplayOptionsSetDaytime( ( LOWORD(wParam) == ID_RENDERING_DAY ) ? TRUE : FALSE );
+				CheckMenuItem( GetMenu( mhwndMainDialog ), ID_RENDERING_DAY, ModelDisplayOptionsIsDaytime() ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( GetMenu( mhwndMainDialog ), ID_RENDERING_NIGHT, ModelDisplayOptionsIsDaytime() ? MF_UNCHECKED : MF_CHECKED );
+				break;
+			case ID_CHANNELS_HEADLIGHTS:
+			case ID_CHANNELS_BRAKE:
+			case ID_CHANNELS_REVERSE:
+			case ID_CHANNELS_LEFT:
+			case ID_CHANNELS_RIGHT:
+				ModelConvToggleChannel( LOWORD(wParam) );
+				break;
+			case ID_RENDERING_RELIEF:
+				ModelDisplayOptionsSetRelief( !ModelDisplayOptionsGetRelief() );
+				CheckMenuItem( GetMenu( mhwndMainDialog ), ID_RENDERING_RELIEF, ModelDisplayOptionsGetRelief() ? MF_CHECKED : MF_UNCHECKED );
+				break;
+			case ID_PLAYBACK_SPEED_010:
+			case ID_PLAYBACK_SPEED_025:
+			case ID_PLAYBACK_SPEED_050:
+			case ID_PLAYBACK_SPEED_100:
+			case ID_PLAYBACK_SPEED_200:
+				ModelConvSetPlaybackSpeedOption( LOWORD(wParam) );
 				break;
 			case IDC_CENTRE_BUT:
 				ModelConvResetCamera();
@@ -5832,6 +6024,7 @@ int	nVal;
 				ModelConverterDisplayFrame( FALSE );
 				break;
 			}
+			SkeletalViewEndCommand( m_MainSceneObject.GetModelHandle() );
 			break;
 		}
 		break;

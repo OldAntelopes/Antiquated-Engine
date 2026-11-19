@@ -10,9 +10,6 @@ extern float	gMaterialSpecularPower;
 extern float	gAmbientIntensity;
 extern float	gDiffuseIntensity;
 
-extern float	gShadowMapSize;
-extern float	gShadowEpsilon;
-
 extern float4	gAmbientColor;			// Light col
 extern float4	gSpecularColor;
 extern float4	gDiffuseColor;
@@ -26,6 +23,7 @@ extern float3	gLightDirection;
 extern float3	xCamPos;
 
 extern bool		gLightingEnabled;
+extern float	gHasOverlay;
 
 //------------------------------------------------------
 
@@ -41,34 +39,573 @@ sampler shadowMapSampler: register(s1);
 sampler normalMapSampler: register(s2);
 sampler specularMapSampler: register(s3);
 
+// Landscape materials (rendering refactor Stage 6, LibCode\Island\Landscape\MaterialMap.cpp). Set only while the
+// landscape draws; gLandMaterialParams.x is 0 for everything else, which leaves this shader as it was.
+//  gLandMaterialMask:   which channel of LandDetail.png (R asphalt grain, G gravel/dirt, B grass, A sand ripples)
+//  gLandMaterialParams: x = detail strength (0 = off), y = detail repeats per world unit, z = specular strength,
+//                       w = specular power
+//  gLandMaterialMacro:  x = macro strength, y = macro repeats per world unit (a much larger scale, so the variation
+//                       survives mipmapping at normal viewing distances and breaks up tiling)
+//                       z = 1 when a per-texel class texture is bound (landClassSampler): the detail channel and
+//                       the specular then follow the surface texture's own texels (grass ridge vs dirt ruts)
+//  gLandClassSpecular:  specular multiplier per class (R stone, G dirt, B grass, A sand)
+extern float4	gLandMaterialMask;
+extern float4	gLandMaterialParams;
+extern float4	gLandMaterialMacro;
+extern float4	gLandClassSpecular;
+//  gLandRelief:         x = relief depth in texture units, y = most parallax steps, z = normal strength, w = 1 when on.
+//                       Height comes from landReliefSampler (1 = unworn top, e.g. grass; 0 = bottom of a rut)
+//                       w = 2 is a model's material instead (ATMFormat.md chunk 0x1F, ModelMaterialData::Apply): x is then
+//                       the depth in world units
+extern float4	gLandRelief;
+//  gLandReliefEdge:     x, y = relief fade band at the texture's U and V edges (0 = the texture wraps seamlessly that way)
+//                       For a model: x, y = world distance the relief starts and finishes fading, z, w = a texel in U and V
+extern float4	gLandReliefEdge;
+//  gTreeDissolve:       while trees draw (TreeRender.cpp, TreeField.cpp). x = distance they start giving way to their far pictures, y = 1 / the length of that,
+//                       z = 1 for solid leaves: cut at half alpha and drawn opaque, so draw order doesn't matter, w = 1234 when on: so a stray value left in this register by another shader (Docs\RenderingHandover.md) can't switch it on
+extern float4	gTreeDissolve;
+//  gFarMap:             while far landscape cells draw (LandscapeFarMap.cpp). x = world to map, y = distance to mip level, z = strength, w = 4321 when on (a stray value can't switch it on).
+//  gFarMapInvMain:      1 / the main surface's average colour: plain main surface comes out unchanged, so there's no seam with near ground
+extern float4	gFarMap;
+extern float4	gFarMapInvMain;
+//  gTreeShade:          while landscape draws (LandscapeFarMap.cpp). Trees' shade on the ground, cast along the sun, for where real shadows don't reach.
+//                       x = world to map, y = distance it starts fading in, z = 1 / the length of that, w = 5678 when on. gTreeShade2.x = distance to mip level
+extern float4	gTreeShade;
+extern float4	gTreeShade2;
+sampler treeShadeSampler: register(s15);
+sampler farMapSampler: register(s13);
+sampler landDetailSampler: register(s4);
+sampler landClassSampler: register(s5);
+sampler landReliefSampler: register(s6);
+
+// Contact shadows (LibCode\Island\Landscape\ContactShadow.cpp): darkening where buildings, walls and vehicles meet the ground.
+// Main view's world pass only. gContactMap.w is 2468 when on, so a stray value left in its register can't switch it on.
+//  gContactMap:   xy = the camera's place in the map (m), z = 1 / the map's size (m)
+//  gContactLook:  x = strength, y = share of the direct light it takes, z = vehicles' strength, w = 1 / how far up a vehicle it climbs (m)
+//  gContactFade:  x = distance it starts fading, y = 1 / the fade's length (negative = debug view), z, w = ground height scale and offset
+//  The map: R = darkness at the ground, G = ground height (scaled), B = how far up a wall it climbs / 16 m
+//  gContactCarPos/Box 0-3: up to four vehicles as turned boxes. Pos: xy centre, z the ground under it, w 1 / reach (m).
+//                 Box: xy cos and sin of the heading, zw half length and width (a very negative half = none)
+extern float4	gContactMap;
+extern float4	gContactLook;
+extern float4	gContactFade;
+extern float4	gContactCarPos0;
+extern float4	gContactCarBox0;
+extern float4	gContactCarPos1;
+extern float4	gContactCarBox1;
+extern float4	gContactCarPos2;
+extern float4	gContactCarBox2;
+extern float4	gContactCarPos3;
+extern float4	gContactCarBox3;
+sampler contactSampler: register(s14);
+
+// Height and slope blend areas (LandBlend.cpp): on main surface landscape draws in the main view, the world's four
+// auto-texture layers blended by height and slope, as Landscape.psh does, where an area mask (a texel per map cell) says.
+// Only three samplers are free here (Clouds.psh has s7 and s9, Fog.psh s12), so the snow and rock layers are the world's
+// textures and the grass and sand bands are the main surface.
+//  gLandBlend:        x = world position to mask texture, z = strength, w = 1357 when on, so a stray value left in its register can't switch it on
+//  gLandBlendUV:      x, y = layer repeats per world unit (Landscape.psh's two scales), w = rock slope effect
+//  gLandBlendRange0-2: the snow, rock and grass height ranges, packed as for Landscape.psh's gHeightRange0-2
+extern float4	gLandBlend;
+extern float4	gLandBlendUV;
+extern float4	gLandBlendRange0;
+extern float4	gLandBlendRange1;
+extern float4	gLandBlendRange2;
+sampler landBlendMaskSampler: register(s8);
+sampler landBlendRockSampler: register(s10);
+sampler landBlendSnowSampler: register(s11);
+
 #include "Lighting.psh"
 #include "Shadows.psh"
 #include "Fog.psh"
+#include "Clouds.psh"
 
+//  gTreeSight, gTreeSight2: while trees draw in the main view (TreeField.cpp), only inside gTreeDissolve's gate. gTreeSight.xyz = the point the camera
+//                       looks at (the player), w = how much of a pixel in the clear zone goes (0-1). gTreeSight2.x, y = the clear tube's radius at the
+//                       camera and at the player, z = the clear ball round the lens, w = 4321 when on.
+//                       Declared last so they take new registers after everything else (Docs\RenderingHandover.md section 4: constants are shared)
+extern float4	gTreeSight;
+extern float4	gTreeSight2;
+
+// The trip-cave's wall hangings (GameCode\Buildings\Bar\PubCave.cpp, Docs\PubCaveTrip.md section 6a): while a hanging draws, its own
+// pattern turned slowly into a zooming kaleidoscope, and the cave's picture faded in on the cloth. Declared last, as gTreeSight is.
+//  gClothTrip:   x = the kaleidoscope's share (0-1), y = the picture's share (0-0.5), z = the texture's grid of pictures (1, or 2 for a
+//                2 x 2 atlas), w = 9753 when on, so a stray value left in its register can't switch it on
+//  gClothTrip2:  x = the zoom's phase (0-1, one doubling), y = the turn (radians), z = wedges, w = how much the picture glows
+//  gClothTrip3:  each picture's width over its height: x top left, y top right, z bottom left, w bottom right (x alone in a grid of 1)
+// The picture is bound to s4, the landscape's detail, which the landscape binds again whenever it draws
+extern float4	gClothTrip;
+extern float4	gClothTrip2;
+extern float4	gClothTrip3;
+//  gClothAt0-7:  each hanging's middle (world, xyz) and its own share of the effect (w, 0 still to about 1.5): a pixel takes the nearest's,
+//                so each cloth zooms and shows the picture by its own amount. Unused ones far away
+extern float4	gClothAt0;
+extern float4	gClothAt1;
+extern float4	gClothAt2;
+extern float4	gClothAt3;
+extern float4	gClothAt4;
+extern float4	gClothAt5;
+extern float4	gClothAt6;
+extern float4	gClothAt7;
+
+// The trip-cave's sofa as marshmallow jelly (PubCave.cpp's PubCaveTripSofaShader), only while gSofaTrip.w == 8642:
+//  gSofaTrip:   x = the jelly's share (0-1), y = its shine, z = its glow from within
+//  gSofaTrip2:  rgb = the jelly's pastel colour, w = how much of the cloth's pattern still shows through
+extern float4	gSofaTrip;
+extern float4	gSofaTrip2;
+
+// A tree dissolving from one level of detail to another for a moment as it changes (TreeRender.cpp, Docs\ProceduralTreesSpec.md section 7.2): it draws both, each
+// keeping its own side of the same screen-door pattern, so together they make one whole tree. Declared last, as gTreeSight is.
+//  gTreeLodFade: x = the share of pixels the incoming level takes (0-1, rising), y = 1 while the outgoing level draws (keeps the rest),
+//                -1 while the incoming one draws (keeps that share), w = 3579 when on, so a stray value left in its register can't switch it on
+extern float4	gTreeLodFade;
+
+// A generated tree's season and snow (TreeRender.cpp, TreeRenderSetSlotSeason; Docs\ProceduralTreesSpec.md section 9.2). Declared last,
+// as gTreeSight is. Only while gTreeSeason.w == 2468; each leaf card's own random comes from the vertex shader (TreeSeason).
+//  gTreeSeason:  x = cards below this are gone (the vertex shader drops them), y = how far the leaves have turned, z = how fresh they are
+//  gTreeAutumn:  rgb = the colour they turn, w = how spread out the cards' turning is
+//  gTreeAutumn2: rgb = a second colour, w = share of the cards that take it
+//  gTreeSpring:  rgb = multiplies new leaves, w = 1 / the brightness of an average leaf (so turned leaves average the autumn colour)
+//  gTreeSnow:    x = snow on the crown (0-2), y = patches a metre
+extern float4	gTreeSeason;
+extern float4	gTreeAutumn;
+extern float4	gTreeAutumn2;
+extern float4	gTreeSpring;
+extern float4	gTreeSnow;
+
+// A leaf's colour in its season: some cards turn before others (the lower its random, the sooner), to one of two colours, keeping the
+// texture's own light and dark; new leaves are fresher. Kept the same in TreeBake.psh
+float3	TreeSeasonLeafColour( float3 vColour, float fCard )
+{
+	float	fTurn = saturate( ( gTreeSeason.y * ( 1.0 + gTreeAutumn.w ) ) - ( fCard * gTreeAutumn.w ) );
+	float3	vTurned = ( frac( fCard * 7.31 ) < gTreeAutumn2.w ) ? gTreeAutumn2.rgb : gTreeAutumn.rgb;
+
+	vTurned *= dot( vColour, float3( 0.3, 0.59, 0.11 ) ) * gTreeSpring.w;
+	vColour = lerp( vColour, vTurned, fTurn );
+	return( vColour * lerp( float3( 1.0, 1.0, 1.0 ), gTreeSpring.rgb, gTreeSeason.z * ( 1.0 - fTurn ) ) );
+}
+
+// Value noise 0-1, for snow's patches
+float	TreeSnowHash( float2 vP )
+{
+	return( frac( sin( dot( vP, float2( 12.9898, 78.233 ) ) ) * 43758.5453 ) );
+}
+
+float	TreeSnowNoise( float3 vP )
+{
+	float2	vQ = vP.xy + ( vP.z * float2( 0.71, 0.37 ) );
+	float2	vI = floor( vQ );
+	float2	vF = frac( vQ );
+
+	vF = vF * vF * ( 3.0 - ( 2.0 * vF ) );
+	return( lerp( lerp( TreeSnowHash( vI ), TreeSnowHash( vI + float2( 1.0, 0.0 ) ), vF.x ),
+				  lerp( TreeSnowHash( vI + float2( 0.0, 1.0 ) ), TreeSnowHash( vI + float2( 1.0, 1.0 ) ), vF.x ), vF.y ) );
+}
+
+// How much of this pixel is snow: on what faces up (leaves' normals point out of the crown, so its top; a branch's upper side), in
+// patches that join up as more lies. Kept the same in TreeBake.psh
+float	TreeSnowShare( float3 vNormalWS, float3 vPosWS, float fLeaf )
+{
+	// A branch's upper side only; a leaf card anywhere but underneath, as each card stands for a spray or bough with its own top
+	float	fUp = saturate( ( normalize( vNormalWS ).z - lerp( 0.3, -0.25, fLeaf ) ) * lerp( 2.5, 1.4, fLeaf ) );
+	float	fNoise = TreeSnowNoise( vPosWS * gTreeSnow.y );
+
+	return( 0.85 * saturate( ( ( gTreeSnow.x * fUp ) - ( fNoise * 0.6 ) ) * 2.5 ) );
+}
+
+// 0-1 mirrored back and forth along the line, as the mirror address mode does
+float	ClothTripMirror( float fX )
+{
+	return( 1.0 - abs( 1.0 - ( 2.0 * frac( fX * 0.5 ) ) ) );
+}
+
+// The point of the hanging's picture (0-1 across it) at fR (in heights) and angle fA from its middle
+float2	ClothTripPoint( float fAspect, float fR, float fA )
+{
+	return( float2( 0.5 + ( fR * cos( fA ) / fAspect ), 0.5 + ( fR * sin( fA ) ) ) );
+}
+
+// The hanging's picture at vQ, mirrored back into the picture past its edges, kept fInset clear of its neighbours in an atlas
+float3	ClothTripSample( float2 vCell, float fGrid, float2 vQ, float fInset, float2 vDX, float2 vDY )
+{
+	vQ = float2( ClothTripMirror( vQ.x ), ClothTripMirror( vQ.y ) );
+	vQ = fInset + ( vQ * ( 1.0 - ( 2.0 * fInset ) ) );
+	return( tex2Dgrad( diffuseSampler, ( vCell + vQ ) / fGrid, vDX, vDY ).rgb );
+}
+
+// The share of the hanging this pixel is on (the nearest gClothAt)
+float	ClothTripShareAt( float3 vPos, float4 vAt, inout float fBest, float fShare )
+{
+	float3	vD = vPos - vAt.xyz;
+	float	fD = dot( vD, vD );
+
+	if ( fD < fBest ) { fBest = fD; fShare = vAt.w; }
+	return( fShare );
+}
+
+float	ClothTripShare( float3 vPos )
+{
+	float	fBest = 1.0e30;
+	float	fShare = 1.0;
+
+	fShare = ClothTripShareAt( vPos, gClothAt0, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt1, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt2, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt3, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt4, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt5, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt6, fBest, fShare );
+	fShare = ClothTripShareAt( vPos, gClothAt7, fBest, fShare );
+	return( fShare );
+}
+
+float3	ClothTripColour( float3 vTex, float2 vUV, float2 vDX, float2 vDY, float fShare, out float3 vGlow )
+{
+	float	fPicShare = min( gClothTrip.y * fShare, 0.5 );
+	float	fGrid = max( gClothTrip.z, 1.0 );
+	float2	vCell = min( floor( vUV * fGrid ), fGrid - 1.0 );
+	float2	vLocal = ( vUV * fGrid ) - vCell - 0.5;		// -0.5 to 0.5 across its own picture
+	float	fIndex = vCell.x + ( 2.0 * vCell.y );
+	float	fAspect = ( fIndex < 0.5 ) ? gClothTrip3.x : ( ( fIndex < 1.5 ) ? gClothTrip3.y : ( ( fIndex < 2.5 ) ? gClothTrip3.z : gClothTrip3.w ) );
+	fAspect = max( fAspect, 0.1 );
+	float2	vRound = float2( vLocal.x * fAspect, vLocal.y );		// in heights, so the circles are round on the cloth
+	float	fR = length( vRound );
+	float	fWedge = 6.2831853 / max( gClothTrip2.z, 1.0 );
+	float	fA = ( fR > 0.0001 ) ? atan2( vRound.y, vRound.x ) + gClothTrip2.y : 0.0;
+	float	fPhase = gClothTrip2.x;
+	float	fZoom = exp2( -fPhase );
+
+	// Mirrored wedges, at two scales an octave apart: the inner one grows into the outer as the phase runs, so it zooms in forever. The
+	// share warps where the cloth's own picture is read from, from where it is to the kaleidoscope's point, rather than fading one picture
+	// over another (which only muddies both); the two scales hand over late in each octave, so mostly one shows
+	fA = fA - ( fWedge * floor( fA / fWedge ) );
+	fA = abs( fA - ( 0.5 * fWedge ) );
+	float	fK = saturate( gClothTrip.x * fShare );
+	if ( fK > 0.0 )
+	{
+		float2	vQ0 = vLocal + 0.5;
+		float2	vQNear = lerp( vQ0, ClothTripPoint( fAspect, fR * fZoom, fA ), fK );
+		float2	vQFar = lerp( vQ0, ClothTripPoint( fAspect, fR * fZoom * 2.0, fA ), fK );
+		float	fInset = 0.01 * saturate( fK * 10.0 );
+		float	fNearGrad = lerp( 1.0, fZoom, fK );
+		float	fFarGrad = lerp( 1.0, fZoom * 2.0, fK );
+		float3	vNear = ClothTripSample( vCell, fGrid, vQNear, fInset, vDX * fNearGrad, vDY * fNearGrad );
+		float3	vFar = ClothTripSample( vCell, fGrid, vQFar, fInset, vDX * fFarGrad, vDY * fFarGrad );
+		vTex = lerp( vNear, vFar, smoothstep( 0.55, 1.0, fPhase ) );
+	}
+
+	// The picture over the cloth, filling it (16:9, cropped to the hanging's shape)
+	float	fFit = fAspect / 1.7777778;
+	float2	vV = ( fFit < 1.0 ) ? float2( vLocal.x * fFit, vLocal.y ) : float2( vLocal.x, vLocal.y / fFit );
+	float3	vPic = tex2Dlod( landDetailSampler, float4( vV + 0.5, 0.0, 0.0 ) ).rgb;
+	vTex = lerp( vTex, vPic, fPicShare );
+	vGlow = vPic * fPicShare * gClothTrip2.w;
+	return( vTex );
+}
+
+// How far up from the ground the darkening reaches, for a surface facing fUp (its normal's z): all of fClimb on a wall,
+// only the first 0.3 m on anything facing up (ground, roofs, a wall's top), so a low roof isn't shaded by its own footprint
+float	ContactHeightFade( float fHeight, float fClimb, float fUp )
+{
+	float	fReach = lerp( fClimb, min( fClimb, 0.3 ), saturate( ( fUp - 0.45 ) * 2.5 ) );
+	float	fFade = saturate( 1.0 - ( fHeight / max( fReach, 0.05 ) ) );
+	return( fFade * fFade );
+}
+
+float	ContactCarAmount( float3 vPos, float fUp, float4 vCarPos, float4 vCarBox )
+{
+	float2	vTo = vPos.xy - vCarPos.xy;
+	float2	vLocal = float2( dot( vTo, vCarBox.xy ), dot( vTo, float2( -vCarBox.y, vCarBox.x ) ) );
+	float2	vOut = max( abs( vLocal ) - vCarBox.zw, 0.0 );
+	float	fNear = saturate( 1.0 - ( length( vOut ) * vCarPos.w ) );
+	return( fNear * fNear * ContactHeightFade( vPos.z - vCarPos.z, 1.0 / gContactLook.w, fUp ) );
+}
+
+// 0 = no darkening, 1 = full
+float	ContactShadowAmount( float3 vPos, float fUp )
+{
+	float2	vFromCam = vPos.xy - xCamPos.xy;
+	float2	vUV = ( gContactMap.xy + vFromCam ) * gContactMap.z;
+	float4	vMap = tex2Dlod( contactSampler, float4( vUV, 0.0, 0.0 ) );
+	float	fGround = ( vMap.g * gContactFade.z ) + gContactFade.w;
+	float	fAmount = vMap.r * ContactHeightFade( vPos.z - fGround, vMap.b * 16.0, fUp );
+	float	fCars = ContactCarAmount( vPos, fUp, gContactCarPos0, gContactCarBox0 );
+	fCars = max( fCars, ContactCarAmount( vPos, fUp, gContactCarPos1, gContactCarBox1 ) );
+	fCars = max( fCars, ContactCarAmount( vPos, fUp, gContactCarPos2, gContactCarBox2 ) );
+	fCars = max( fCars, ContactCarAmount( vPos, fUp, gContactCarPos3, gContactCarBox3 ) );
+	fAmount = max( fAmount, fCars * gContactLook.z );
+	return( fAmount * gContactLook.x * saturate( 1.0 - ( ( length( vFromCam ) - gContactFade.x ) * abs( gContactFade.y ) ) ) );
+}
+
+// ---- Height and slope blend areas: the layer weights, the same rules as LandscapeGen.psh's LandscapeGetTexColor ----
+float	LandBlendHeightMod( float fHeight, float4 vRange, bool bTopLayer )
+{
+	if ( fHeight < vRange.w ) return( 0.0 );
+	if ( fHeight > vRange.x ) return( bTopLayer ? 1.0 : 0.0 );
+	if ( fHeight > vRange.y ) return( 1.0 - smoothstep( vRange.y, vRange.x, fHeight ) );
+	if ( fHeight < vRange.z ) return( smoothstep( vRange.w, vRange.z, fHeight ) );
+	return( 1.0 );
+}
+
+// x snow, y rock, z grass, w sand
+float4	LandBlendWeights( float fHeight, float fSlopeDot )
+{
+	float	fRockSlope = gLandBlendUV.w;
+	if ( fSlopeDot >= 0 )
+	{
+		fHeight *= 1.0 + ( ( 1.0 - fSlopeDot ) * fRockSlope );
+	}
+	float4	vMods;
+	vMods.x = LandBlendHeightMod( fHeight, gLandBlendRange0, true );
+	vMods.y = LandBlendHeightMod( fHeight, gLandBlendRange1, false );
+	vMods.z = LandBlendHeightMod( fHeight, gLandBlendRange2, false );
+	vMods.w = 0.0;		// sand: its band is the main surface here
+
+	if ( vMods.z > 0.0 )
+	{
+		// Grass gives way to rock on slopes
+		float	fMove = vMods.z * saturate( ( 1.0 - fSlopeDot ) * ( 25.0 * fRockSlope ) );
+		vMods.y = saturate( vMods.y + fMove );
+		vMods.z -= fMove;
+	}
+	else if ( vMods.x > 0.0 )
+	{
+		// No snow on steep slopes, less on moderate ones
+		float	fNoSnowSlopeDotMin = min( saturate( 0.9 * fRockSlope ), 0.9 );
+		if ( fSlopeDot < fNoSnowSlopeDotMin )
+		{
+			vMods.y = 1.0;
+			vMods.x = 0.0;
+		}
+		else
+		{
+			if ( fSlopeDot < 0.95 )
+			{
+				float	fMove = vMods.x * saturate( ( 0.95 - fSlopeDot ) * ( 20.0 * fRockSlope ) );
+				vMods.y = saturate( vMods.y + fMove );
+				vMods.x -= fMove;
+			}
+			float	fDiff = saturate( vMods.x * 2.0 ) - vMods.x;
+			vMods.y -= fDiff;
+			vMods.x += fDiff;
+		}
+	}
+	return( saturate( vMods ) );
+}
+
+// Landscape.psh's mix of its two scales: 3/4 of the coarse one, 1/4 of the fine one
+float3	LandBlendLayer( sampler sLayer, float2 vUV1, float2 vUV2, float2 vDX, float2 vDY )
+{
+	return( ( tex2Dgrad( sLayer, vUV1, vDX * gLandBlendUV.x, vDY * gLandBlendUV.x ).rgb * 0.75 ) +
+			( tex2Dgrad( sLayer, vUV2, vDX * gLandBlendUV.y, vDY * gLandBlendUV.y ).rgb * 0.25 ) );
+}
 
 //-------------------------------------
 // Standard material Pixel Shader
 //-------------------------------------
 PS_OUTPUT ps_main( float4  VertCol : COLOR0,
-				   float2 TexCoord : TEXCOORD0,
+				   float4 TexCoord : TEXCOORD0,
 				   float3 View : TEXCOORD1,
 				   float3 vNormal : TEXCOORD2,
 				   float4  vPosLight         : TEXCOORD3,
 				   float4  PositionWS : TEXCOORD4,
 				   float3  TangentWorldSpace : TEXCOORD5,
-				   float3  BiTangentWorldSpace : TEXCOORD6   )
+				   float3  BiTangentWorldSpace : TEXCOORD6,
+				   float2  vTreeSeason : TEXCOORD7,
+				   float2  vScreenPos : VPOS   )
 {
     PS_OUTPUT Out;                             //create an output pixel
 
 	float4 texColor;
 
+	// Trees giving way to their far pictures: the same pattern as TreeField.psh, the other way up, so a pixel shows one or the other
+	if ( gTreeDissolve.w == 1234.0 )
+	{
+		float2	vFromCamFlat = PositionWS.xy - xCamPos.xy;
+		float	fNoise = frac( 52.9829189 * frac( dot( vScreenPos, float2( 0.06711056, 0.00583715 ) ) ) );
+		clip( fNoise - saturate( ( length( vFromCamFlat ) - gTreeDissolve.x ) * gTreeDissolve.y ) );
+
+		// Trees between the camera and the player, or round the lens, dissolve so they don't hide the player (Docs\Camera.md)
+		if ( gTreeSight2.w == 4321.0 )
+		{
+			float3	vLine = gTreeSight.xyz - xCamPos;
+			float3	vRel = PositionWS.xyz - xCamPos;
+			float	fT = dot( vRel, vLine ) / max( dot( vLine, vLine ), 1.0 );
+			float	fTube = saturate( fT );
+			float	fRadius = lerp( gTreeSight2.x, gTreeSight2.y, fTube );
+			float	fFromLine = length( vRel - ( vLine * fTube ) );
+			float	fFade = ( 1.0 - saturate( ( ( fFromLine / fRadius ) - 0.6 ) * 2.5 ) ) * saturate( ( 0.95 - fT ) * 10.0 );
+			float	fLens = 1.0 - saturate( ( length( vRel ) / gTreeSight2.z ) * 2.0 - 1.0 );
+
+			clip( fNoise - ( max( fFade, fLens ) * gTreeSight.w ) );
+		}
+	}
+
+	// A tree changing level of detail: the outgoing level keeps pixels at or above the share, the incoming one those below it
+	if ( gTreeLodFade.w == 3579.0 )
+	{
+		float	fLodNoise = frac( 52.9829189 * frac( dot( vScreenPos, float2( 0.06711056, 0.00583715 ) ) ) );
+		float	fKeep = ( gTreeLodFade.y > 0.0 ) ? ( fLodNoise - gTreeLodFade.x ) : ( gTreeLodFade.x - fLodNoise - 0.0001 );
+
+		clip( fKeep );
+	}
+
+	// ---- Landscape relief (rendering Stage 6): parallax occlusion so ruts sit below the grass beside them ----
+	// The surface's orientation in texture space comes from screen derivatives (works for rotated road pieces too);
+	// these are taken outside any branch, as derivatives must be.
+	float2	vMainUV = TexCoord.xy;
+	float3	vReliefNormalTS = float3( 0.0, 0.0, 1.0 );
+	float3	vSurfN = normalize( vNormal );
+	float3	vDP1 = ddx( PositionWS.xyz );
+	float3	vDP2 = ddy( PositionWS.xyz );
+	float2	vDUV1 = ddx( TexCoord.xy );
+	float2	vDUV2 = ddy( TexCoord.xy );
+	float3	vDP2Perp = cross( vDP2, vSurfN );
+	float3	vDP1Perp = cross( vSurfN, vDP1 );
+	float3	vSurfT = ( vDP2Perp * vDUV1.x ) + ( vDP1Perp * vDUV2.x );
+	float3	vSurfB = ( vDP2Perp * vDUV1.y ) + ( vDP1Perp * vDUV2.y );
+	float3	vReliefNormalWS = vSurfN;
+
+	// ---- Model relief: the same idea on a model's flat faces, in any orientation and with any UV layout. vSurfT and
+	// vSurfB over the determinant are the gradients of U and V across the surface, per world unit, which turn a shift on
+	// the surface into a shift in the texture whatever the mapping does.
+	if ( gLandRelief.w > 1.5 )
+	{
+		float	fDet = dot( vDP1, vDP2Perp );
+		float	fInvDet = ( abs( fDet ) > 0.0000001 ) ? ( 1.0 / fDet ) : 0.0;
+		float3	vGradU = vSurfT * fInvDet;
+		float3	vGradV = vSurfB * fInvDet;
+		float3	vV = normalize( View );
+		float	fVN = dot( vV, vSurfN );
+		float	fDist = length( PositionWS.xyz - xCamPos );
+		float	fDepth = gLandRelief.x * saturate( ( gLandReliefEdge.y - fDist ) / max( gLandReliefEdge.y - gLandReliefEdge.x, 0.01 ) );
+		float3	vShift = ( ( vV - ( vSurfN * fVN ) ) / max( fVN, 0.3 ) ) * fDepth;
+		float	fNumSteps = lerp( gLandRelief.y, 4.0, saturate( fVN ) );
+		float	fLayer = 1.0 / fNumSteps;
+		float2	vDelta = float2( dot( vShift, vGradU ), dot( vShift, vGradV ) ) * fLayer;
+		float	fLayerDepth = 0.0;
+		float	fMapDepth = 1.0 - tex2Dlod( landReliefSampler, float4( vMainUV, 0.0, 0.0 ) ).a;
+		float2	vPrevUV = vMainUV;
+		float	fPrevMapDepth = fMapDepth;
+		float	fPrevLayerDepth = 0.0;
+
+		[loop] for ( int nStep = 0; nStep < 32; nStep++ )
+		{
+			if ( ( fLayerDepth >= fMapDepth ) || ( nStep >= fNumSteps ) ) break;
+			vPrevUV = vMainUV;
+			fPrevMapDepth = fMapDepth;
+			fPrevLayerDepth = fLayerDepth;
+			vMainUV -= vDelta;
+			fLayerDepth += fLayer;
+			fMapDepth = 1.0 - tex2Dlod( landReliefSampler, float4( vMainUV, 0.0, 0.0 ) ).a;
+		}
+		float	fAfter = fMapDepth - fLayerDepth;
+		float	fBefore = fPrevMapDepth - fPrevLayerDepth;
+		vMainUV = lerp( vMainUV, vPrevUV, saturate( fAfter / ( fAfter - fBefore - 0.0001 ) ) );
+
+		// The lighting normal from the height's slope there, in world units
+		float2	vTexel = gLandReliefEdge.zw;
+		float	fHL = tex2Dlod( landReliefSampler, float4( vMainUV - float2( vTexel.x, 0.0 ), 0.0, 0.0 ) ).a;
+		float	fHR = tex2Dlod( landReliefSampler, float4( vMainUV + float2( vTexel.x, 0.0 ), 0.0, 0.0 ) ).a;
+		float	fHD = tex2Dlod( landReliefSampler, float4( vMainUV - float2( 0.0, vTexel.y ), 0.0, 0.0 ) ).a;
+		float	fHU = tex2Dlod( landReliefSampler, float4( vMainUV + float2( 0.0, vTexel.y ), 0.0, 0.0 ) ).a;
+		float3	vSlope = ( vGradU * ( ( fHR - fHL ) / ( 2.0 * vTexel.x ) ) ) + ( vGradV * ( ( fHU - fHD ) / ( 2.0 * vTexel.y ) ) );
+		vReliefNormalWS = normalize( vSurfN - ( vSlope * fDepth * gLandRelief.z ) );
+	}
+	else if ( gLandRelief.w > 0.5 )
+	{
+		// Landscape texture coordinates run along world X and Y (road pieces are rotated in 90 degree steps), so snap
+		// the derivative axes to the nearest world axis and lay them on the smooth vertex normal. Derivatives alone
+		// differ between a tile's two triangles where the ground isn't flat, which showed as seams along the diagonals
+		// and the tile edges.
+		float2	vTxy = ( abs( vSurfT.x ) > abs( vSurfT.y ) ) ? float2( sign( vSurfT.x ), 0.0 ) : float2( 0.0, sign( vSurfT.y ) );
+		float2	vBxy = ( abs( vSurfB.x ) > abs( vSurfB.y ) ) ? float2( sign( vSurfB.x ), 0.0 ) : float2( 0.0, sign( vSurfB.y ) );
+		float3	vTAxis = float3( vTxy, 0.0 );
+		float3	vBAxis = float3( vBxy, 0.0 );
+		vSurfT = normalize( vTAxis - ( vSurfN * dot( vSurfN, vTAxis ) ) );
+		vSurfB = normalize( vBAxis - ( vSurfN * dot( vSurfN, vBAxis ) ) );
+		// The parallax shift is worked out against flat ground (world axes, world up), not the interpolated vertex normal:
+		// that normal bends at every triangle edge, which bent the shift with it and drew kinks and dark lines along
+		// the triangle diagonals. The view direction alone is smooth, so the shift is too. (Lighting still uses vSurfN.)
+		float3	vV = normalize( View );
+		float3	vViewTS = float3( dot( vV, vTAxis ), dot( vV, vBAxis ), vV.z );
+		float	fNumSteps = lerp( gLandRelief.y, 4.0, saturate( vViewTS.z ) );
+		float	fLayer = 1.0 / fNumSteps;
+		// Fade towards the texture's edges where it doesn't carry on across its own wrap (gLandReliefEdge.x for the U
+		// edges, .y for V, band widths; 0 = it does). Straight pieces wrap seamlessly, so their ruts run on across tile
+		// edges; diagonal and corner pieces sit next to other pieces in other rotations, and marching into their own
+		// wrapped texture drew lines along every tile edge.
+		float2	vInTile = frac( TexCoord.xy );
+		float2	vToEdge = min( vInTile, 1.0 - vInTile );
+		float	fEdgeFade = 1.0;
+		if ( gLandReliefEdge.x > 0.0 ) fEdgeFade = min( fEdgeFade, smoothstep( 0.0, gLandReliefEdge.x, vToEdge.x ) );
+		if ( gLandReliefEdge.y > 0.0 ) fEdgeFade = min( fEdgeFade, smoothstep( 0.0, gLandReliefEdge.y, vToEdge.y ) );
+		float2	vDelta = ( vViewTS.xy / max( vViewTS.z, 0.3 ) ) * gLandRelief.x * fEdgeFade * fLayer;
+		float	fLayerDepth = 0.0;
+		float	fMapDepth = 1.0 - tex2Dlod( landReliefSampler, float4( vMainUV, 0.0, 0.0 ) ).a;
+		float2	vPrevUV = vMainUV;
+		float	fPrevMapDepth = fMapDepth;
+		float	fPrevLayerDepth = 0.0;
+
+		[loop] for ( int nStep = 0; nStep < 32; nStep++ )
+		{
+			if ( ( fLayerDepth >= fMapDepth ) || ( nStep >= fNumSteps ) ) break;
+			vPrevUV = vMainUV;
+			fPrevMapDepth = fMapDepth;
+			fPrevLayerDepth = fLayerDepth;
+			vMainUV -= vDelta;
+			fLayerDepth += fLayer;
+			fMapDepth = 1.0 - tex2Dlod( landReliefSampler, float4( vMainUV, 0.0, 0.0 ) ).a;
+		}
+		// Refine between the last two steps
+		float	fAfter = fMapDepth - fLayerDepth;
+		float	fBefore = fPrevMapDepth - fPrevLayerDepth;
+		vMainUV = lerp( vMainUV, vPrevUV, saturate( fAfter / ( fAfter - fBefore - 0.0001 ) ) );
+
+		// Relief normal from the height slope there (texel = 1/128)
+		float	fTexel = 1.0 / 128.0;
+		float	fHL = tex2Dlod( landReliefSampler, float4( vMainUV - float2( fTexel, 0.0 ), 0.0, 0.0 ) ).a;
+		float	fHR = tex2Dlod( landReliefSampler, float4( vMainUV + float2( fTexel, 0.0 ), 0.0, 0.0 ) ).a;
+		float	fHD = tex2Dlod( landReliefSampler, float4( vMainUV - float2( 0.0, fTexel ), 0.0, 0.0 ) ).a;
+		float	fHU = tex2Dlod( landReliefSampler, float4( vMainUV + float2( 0.0, fTexel ), 0.0, 0.0 ) ).a;
+		float	fSlope = gLandRelief.x * gLandRelief.z * fEdgeFade / ( 2.0 * fTexel );
+		vReliefNormalTS = normalize( float3( -( fHR - fHL ) * fSlope, -( fHU - fHD ) * fSlope, 1.0 ) );
+	}
+
+	// Mip level from the unshifted coordinates' gradients (vDUV1/vDUV2): the relief shift jumps between neighbouring
+	// pixels, which would otherwise pick tiny mips in lines along tile and triangle edges. Without relief vMainUV is
+	// TexCoord.xy, so this is the same as tex2D.
 	if ( gHasDiffuseMap > 0 )
 	{
-		texColor = tex2D(diffuseSampler, TexCoord);
+		texColor = tex2Dgrad(diffuseSampler, vMainUV, vDUV1, vDUV2);
 	}
 	else
 	{
 		texColor = float4( 0.6f, 0.6, 0.6, 1.0 );
+	}
+
+	// The trip-cave's wall hangings (gClothTrip, above)
+	float3	vClothGlow = float3( 0.0, 0.0, 0.0 );
+	if ( gClothTrip.w == 9753.0 )
+	{
+		texColor.rgb = ClothTripColour( texColor.rgb, TexCoord.xy, vDUV1, vDUV2, ClothTripShare( PositionWS.xyz ), vClothGlow );
+	}
+
+	// The trip-cave's sofa turning to marshmallow jelly (gSofaTrip, above): the cloth fades to a pastel, a ghost of its pattern left
+	float	fSofaJelly = 0.0;
+	if ( gSofaTrip.w == 8642.0 )
+	{
+		float	fLum = dot( texColor.rgb, float3( 0.3, 0.59, 0.11 ) );
+		float3	vJelly = gSofaTrip2.rgb * lerp( 1.0, 0.7 + ( 0.8 * fLum ), gSofaTrip2.w );
+		fSofaJelly = gSofaTrip.x;
+		texColor.rgb = lerp( texColor.rgb, vJelly, fSofaJelly );
+	}
+
+	// Trees' leaves solid: blending them would rim each with whatever was drawn behind it first, often the sky
+	if ( ( gTreeDissolve.w == 1234.0 ) && ( gTreeDissolve.z > 0.5 ) )
+	{
+		clip( texColor.w - 0.5 );
+		texColor.w = 1.0;
 	}
 
 	if ( texColor.w == 0.0f )
@@ -77,14 +614,72 @@ PS_OUTPUT ps_main( float4  VertCol : COLOR0,
 		Out.Color.y = 0;
 		Out.Color.z = 0;
 		Out.Color.w = texColor.w;
-	    return Out;  
+	    return Out;
+	}
+
+	// Height and slope blend areas (LandBlend.cpp): only where the area mask has weight, so the rest of the ground pays for
+	// one texture read. Gradients for the layers come from the position's, taken outside the branch above.
+	if ( gLandBlend.w == 1357.0 )
+	{
+		float	fArea = tex2Dlod( landBlendMaskSampler, float4( PositionWS.xy * gLandBlend.x, 0.0, 0.0 ) ).r * gLandBlend.z;
+		if ( fArea > 0.002 )
+		{
+			float4	vLayers = LandBlendWeights( PositionWS.z, vSurfN.z );
+			float2	vUV1 = PositionWS.xy * gLandBlendUV.x;
+			float2	vUV2 = PositionWS.xy * gLandBlendUV.y;
+			float3	vBlend = float3( 0.0, 0.0, 0.0 );
+			if ( vLayers.x > 0.0 ) vBlend += LandBlendLayer( landBlendSnowSampler, vUV1, vUV2, vDP1.xy, vDP2.xy ) * vLayers.x;
+			if ( vLayers.y > 0.0 ) vBlend += LandBlendLayer( landBlendRockSampler, vUV1, vUV2, vDP1.xy, vDP2.xy ) * vLayers.y;
+			// Grass and sand bands are the main surface, which also fills any gap between bands (Landscape.psh goes darker there)
+			vBlend += texColor.rgb * saturate( 1.0 - vLayers.x - vLayers.y );
+			texColor.rgb = lerp( texColor.rgb, vBlend, fArea );
+		}
+	}
+
+	// A generated tree's season: its leaves turn (gTreeSeason, above)
+	if ( ( gTreeSeason.w == 2468.0 ) && ( vTreeSeason.y > 0.5 ) )
+	{
+		texColor.rgb = TreeSeasonLeafColour( texColor.rgb, vTreeSeason.x );
 	}
 	texColor *= VertCol;
+	// ... and snow lies on it, as bright as the crown's shading there allows
+	if ( ( gTreeSeason.w == 2468.0 ) && ( gTreeSnow.x > 0.0 ) )
+	{
+		texColor.rgb = lerp( texColor.rgb, float3( 0.86, 0.88, 0.92 ) * dot( VertCol.rgb, float3( 0.34, 0.33, 0.33 ) ), TreeSnowShare( vNormal, PositionWS.xyz, vTreeSeason.y ) );
+	}
 
-	// Shadowmap lookup 
+	// Landscape material: the surface colour times 2 x pattern (patterns are centred on 0.5), blended by strength.
+	// Fine detail shows close up (it mips to flat grey with distance); the macro layer is the same pattern at a much
+	// larger scale, which still shows at normal viewing distances and breaks up the surface texture's tiling.
+	float	fLandDetail = 0.5;
+	float	fLandClassSpecular = 1.0;
+	if ( gLandMaterialParams.x > 0.0 )
+	{
+		// Which pattern: per texel from the class texture when there is one, else the surface's environment
+		float4	vClass = lerp( gLandMaterialMask, tex2Dgrad( landClassSampler, vMainUV, vDUV1, vDUV2 ), gLandMaterialMacro.z );
+		float	fFine = dot( tex2D( landDetailSampler, PositionWS.xy * gLandMaterialParams.y ), vClass );
+		float	fMacro = dot( tex2D( landDetailSampler, PositionWS.xy * gLandMaterialMacro.y ), vClass );
+		fLandClassSpecular = lerp( 1.0, dot( vClass, gLandClassSpecular ), gLandMaterialMacro.z );
+		fLandDetail = fFine;
+		texColor.xyz *= lerp( 1.0, 2.0 * fFine, gLandMaterialParams.x );
+		texColor.xyz *= lerp( 1.0, 2.0 * fMacro, gLandMaterialMacro.x );
+	}
+
+	// Shadowmap lookup
 
 	float fPrimaryDiffuseShadowingStrength = ShadowMapGetPrimaryLightAmount( vPosLight );
+	// Trees' shade beyond real shadows: the darker of the two, so where both reach it isn't doubled
+	if ( gTreeShade.w == 5678.0 )
+	{
+		float	fShadeDist = length( PositionWS.xy - xCamPos.xy );
+		float	fShadeLit = tex2Dlod( treeShadeSampler, float4( PositionWS.xy * gTreeShade.x, 0.0, log2( max( fShadeDist * gTreeShade2.x, 1.0 ) ) ) ).r;
+		fPrimaryDiffuseShadowingStrength = min( fPrimaryDiffuseShadowingStrength, lerp( 1.0, fShadeLit, saturate( ( fShadeDist - gTreeShade.y ) * gTreeShade.z ) ) );
+	}
 //	fPrimaryDiffuseShadowingStrength = 1.0f;
+	if ( gCloudShadow2.w > 0.0 )
+	{
+		fPrimaryDiffuseShadowingStrength *= CloudShadowAmount( PositionWS );
+	}
 
 	float3x3  WorldToTangentSpace;
 
@@ -104,6 +699,41 @@ PS_OUTPUT ps_main( float4  VertCol : COLOR0,
 		normal = normalize( float4(vNormal,0.0) );
 	}
 
+	// Landscape relief tilts the lighting normal along the rut sides
+	if ( gLandRelief.w > 1.5 )
+	{
+		normal = float4( vReliefNormalWS, 0.0 );
+	}
+	else if ( gLandRelief.w > 0.5 )
+	{
+		normal = float4( normalize( ( vSurfT * vReliefNormalTS.x ) + ( vSurfB * vReliefNormalTS.y ) + ( vSurfN * vReliefNormalTS.z ) ), 0.0 );
+	}
+
+	if ( gHasOverlay > 0 )
+	{
+		float2		texCoord2;
+		texCoord2.x = TexCoord.z;
+		texCoord2.y = TexCoord.w;
+	
+		float4 texColor2;
+		texColor2 = tex2D(normalMapSampler, texCoord2);
+		float fInvSrcAlpha = (1.0f - texColor2.w);
+
+		texColor.x = (texColor.x * fInvSrcAlpha) + (texColor2.x * texColor2.w);
+		texColor.y = (texColor.y * fInvSrcAlpha) + (texColor2.y * texColor2.w);
+		texColor.z = (texColor.z * fInvSrcAlpha) + (texColor2.z * texColor2.w);
+		texColor.w = 1.0f;
+	}
+
+	// Far ground: what the tiles here really show (roads, fields), against the main surface tiled over it
+
+	if ( gFarMap.w == 4321.0 )
+	{
+		float	fFarLod = log2( max( length( PositionWS.xyz - xCamPos.xyz ) * gFarMap.y, 1.0 ) );
+		float3	vFarColour = tex2Dlod( farMapSampler, float4( PositionWS.xy * gFarMap.x, 0.0, fFarLod ) ).rgb;
+		texColor.rgb *= lerp( float3( 1.0, 1.0, 1.0 ), min( vFarColour * gFarMapInvMain.rgb, 3.0 ), gFarMap.z );
+	}
+
 	float4	lightDirection = float4(-gLightDirection,1.0);
     float4 ambientBounce = saturate(dot(-lightDirection,normal));
     float diffuse = saturate(dot(lightDirection,normal));
@@ -120,6 +750,15 @@ PS_OUTPUT ps_main( float4  VertCol : COLOR0,
 //			specularColor = float4(0.0f,0.0f,0.0f,0.0f);
 		}
    }
+
+	// Landscape material specular (tarmac sheen, wet mud, ice), broken up by the detail so it isn't a flat sheet
+	if ( gLandMaterialParams.z > 0.0 )
+	{
+		float3 landReflection = reflect( -lightDirection.xyz, normal.xyz );
+		float landSpecular = pow( saturate( dot( landReflection, View ) ), gLandMaterialParams.w ) * gLandMaterialParams.z * fLandClassSpecular;
+		landSpecular *= fPrimaryDiffuseShadowingStrength * ( 0.5 + fLandDetail );
+		specularColor = saturate( specularColor + ( gSpecularColor * landSpecular ) );
+	}
 
 	fPrimaryDiffuseShadowingStrength = gDiffuseIntensity * fPrimaryDiffuseShadowingStrength;
 	ambientBounce *= 0.125;
@@ -143,10 +782,45 @@ PS_OUTPUT ps_main( float4  VertCol : COLOR0,
 	float4		fAmbientMain = (gAmbientColor * gMaterialAmbient);
 	float4		fAmbientBounce = (gAmbientColor * gMaterialAmbient * ambientBounce);
 
+	// Contact shadows: all of the ambient, some of the direct light
+	if ( ( gContactMap.w == 2468.0 ) && ( gLightingEnabled == true ) )
+	{
+		float	fContact = ContactShadowAmount( PositionWS.xyz, vSurfN.z );
+		float	fOpen = saturate( 1.0 - fContact );
+		if ( gContactFade.y < 0.0 )
+		{
+			Out.Color = float4( fOpen, fOpen, fOpen, texColor.w );
+			return Out;
+		}
+		fAmbientMain *= fOpen;
+		fAmbientBounce *= fOpen;
+		diffuseMain *= lerp( 1.0, fOpen, gContactLook.y );
+	}
+
 	float4		lighting = float4( saturate( fAmbientMain.xyz + fAmbientBounce.xyz + diffuseMain.xyz ), 1.0f );
 	lighting.w = 1.0f;
-	Out.Color = saturate( (texColor * lighting) + (texColor * gMaterialEmissive) );
+	Out.Color = saturate( (texColor * lighting) + (texColor * gMaterialEmissive) + float4( vClothGlow, 0.0 ) );
 	Out.Color = saturate( Out.Color + specularColor );
+	// A generated tree's leaves with the sun behind them: sunlight through the leaf, in its own colour (ATMMaterial.vsh puts how
+	// much in PositionWS.w - 1; render.leafglow x the species' "leaves.translucency"). Strongest looking straight at the sun, a
+	// softer wash round it; leaves in the crown's own shadow keep a little (light through several leaves)
+	if ( PositionWS.w > 1.001 )
+	{
+		float	fBehind = saturate( dot( -normalize( View ), lightDirection.xyz ) );
+		float	fFaceAway = 0.5 + ( 0.5 * saturate( -dot( lightDirection.xyz, normal.xyz ) ) );
+		float	fLit = ( 0.3 * gDiffuseIntensity ) + ( 0.7 * fPrimaryDiffuseShadowingStrength );
+		float	fGlow = ( PositionWS.w - 1.0 ) * fLit * fFaceAway * ( ( 0.3 * fBehind * fBehind ) + ( 0.7 * pow( fBehind, 8.0 ) ) );
+		Out.Color.rgb = saturate( Out.Color.rgb + ( texColor.rgb * gDiffuseColor.rgb * fGlow * 1.5 ) );
+	}
+	// The sofa's jelly: a wet shine from the room's lamps, a soft rim where it turns away, and a glow as if lit from within
+	if ( gSofaTrip.w == 8642.0 )
+	{
+		float3	vJN = normalize( normal.xyz );
+		float3	vJV = normalize( View );
+		float	fRim = pow( 1.0 - saturate( dot( vJN, vJV ) ), 3.0 );
+		float3	vShine = GetCombinedPointLightSpecular( PositionWS.xyz, vJN, xCamPos, 28.0 ).rgb * gSofaTrip.y;
+		Out.Color.rgb = saturate( Out.Color.rgb + ( ( vShine + ( texColor.rgb * ( ( fRim * 0.3 ) + gSofaTrip.z ) ) ) * fSofaJelly ) );
+	}
 	// --------------- Fog ----------------------
 	Out.Color = FogApply( Out.Color, xCamPos, PositionWS );
     return Out;  

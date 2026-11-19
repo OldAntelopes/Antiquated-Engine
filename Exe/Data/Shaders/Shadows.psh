@@ -1,14 +1,113 @@
 
+extern float gShadowMapSize;
+extern float gShadowEpsilon;
+extern float gShadowStrength;
+// Shadow cascades (Antiquated EngineShadowMapGetCascadeInfo): x = cascades in the map (1 or 2), y = near scale (how many
+// times smaller the near view is), z = 1 / atlas width in texels, w = the width of the blend band (see below). All 0 if
+// the app never sets it, which reads as one cascade.
+extern float4 gShadowCascadeInfo;
 
+// Shadow-map lookup, shared by ATMMaterial.psh, Ground.psh and Landscape.psh (they declare shadowMapSampler).
+//
+// Rendering refactor Stage 4 (Docs\RenderingAnalysis.md §9): percentage-closer filtering over a 4x4 block of texels
+// with bilinear weights, i.e. a 3x3-texel box filter that slides smoothly with the position inside the texel. Edges
+// get about a 3-texel soft band instead of the old 1-texel one, and stair-steps along them are smoothed out.
+// Each tap is read at its texel's centre, so it works with point or linear sampling of the R32F map.
+// SHADOW_PCF_WIDE 0 gives the old 2x2 lookup (which was also half a texel out), for A/B checks; it ignores cascades.
+//
+// Cascades: with 2, the map is a 2:1 atlas, the usual view on the left and a near view (same light and centre, gShadow-
+// CascadeInfo.y times smaller) on the right. A point inside the near view, with room for the filter, uses it. Across a
+// band at the near view's edge (gShadowCascadeInfo.w, a fraction of the near view's half-width: 0.2, the default, is
+// about 8 m) the two are mixed, so shadows soften gradually instead of in a step. Only points in the band read both.
+// The app sets the band (The Universal: tweakable render.shadowcascadeblend; 0 = a hard border, for A/B checks).
+#define		SHADOW_PCF_WIDE			1
 
-//---------------------------------------------------------- ShadowMap : 0.1
-float		ShadowMapGetPrimaryLightAmount( float4 vPosLight  )
+// One shadow test. vTexel is the texel's centre in this cascade's own texel coordinates; it's clamped to the cascade so
+// the filter never reads the other half of the atlas.
+float		ShadowMapTap( float2 vTexel, float fCascadeLeft, float2 vInvAtlasSize, float fDepth )
 {
-	// Shadowmap lookup 
-    float2 ShadowTexC = (0.5 * (vPosLight.xy / vPosLight.w)) + float2( 0.5, 0.5 );
+	float2	vClamped = clamp( vTexel, float2( 0.5, 0.5 ), float2( gShadowMapSize - 0.5, gShadowMapSize - 0.5 ) );
+	float2	vUV = float2( vClamped.x + fCascadeLeft, vClamped.y ) * vInvAtlasSize;
+	// tex2Dlod: no gradients needed, so it's fine inside the branch and the loop
+	return( ( tex2Dlod( shadowMapSampler, float4( vUV, 0.0, 0.0 ) ).x + gShadowEpsilon < fDepth ) ? 0.0f : 1.0f );
+}
+
+// The filtered light amount from one cascade (1 = lit, 0 = in shadow). vLightXY is the light-space position in that
+// cascade's view (-1 to 1 across it); outside the view it's lit.
+float		ShadowMapFilter( float2 vLightXY, float fCascadeLeft, float2 vInvAtlasSize, float fDepth )
+{
+    float2 ShadowTexC = (0.5 * vLightXY) + float2( 0.5, 0.5 );
     ShadowTexC.y = 1.0f - ShadowTexC.y;
 
+	if ( ( ShadowTexC.x < 0 ) ||
+		 ( ShadowTexC.x >= 1.0 ) ||
+		 ( ShadowTexC.y < 0 ) ||
+		 ( ShadowTexC.y >= 1.0 ) )
+	{
+		return( 1.0 );
+	}
+
+	// Texel space, with texel centres at whole numbers + 0.5
+	float2	texelpos = ( gShadowMapSize * ShadowTexC ) - float2( 0.5, 0.5 );
+	float2	base = floor( texelpos );
+	float2	f = texelpos - base;
+	float2	centre = base + float2( 0.5, 0.5 );
+
+	// Column/row weights for offsets -1, 0, 1, 2: (1-f), 1, 1, f. They sum to 3 per axis, 9 in all.
+	float4	wx = float4( 1.0 - f.x, 1.0, 1.0, f.x );
+	float4	wy = float4( 1.0 - f.y, 1.0, 1.0, f.y );
+	float	fSum = 0.0;
+
+	[unroll] for ( int j = 0; j < 4; j++ )
+	{
+		float4	row;
+		row.x = ShadowMapTap( centre + float2( -1.0, j - 1.0 ), fCascadeLeft, vInvAtlasSize, fDepth );
+		row.y = ShadowMapTap( centre + float2(  0.0, j - 1.0 ), fCascadeLeft, vInvAtlasSize, fDepth );
+		row.z = ShadowMapTap( centre + float2(  1.0, j - 1.0 ), fCascadeLeft, vInvAtlasSize, fDepth );
+		row.w = ShadowMapTap( centre + float2(  2.0, j - 1.0 ), fCascadeLeft, vInvAtlasSize, fDepth );
+		fSum += dot( row, wx ) * wy[j];
+	}
+	return( fSum / 9.0 );
+}
+
+//---------------------------------------------------------- ShadowMap : 0.4
+float		ShadowMapGetPrimaryLightAmount( float4 vPosLight  )
+{
+	float2	vLightXY = vPosLight.xy / vPosLight.w;
+	float	fDepth = vPosLight.z / vPosLight.w;
 	float	LightAmount = 1.0;
+
+#if SHADOW_PCF_WIDE
+	float2	vInvAtlasSize = float2( 1.0 / gShadowMapSize, 1.0 / gShadowMapSize );
+	float	fNear = 1.0;
+	float	fFar = 1.0;
+	float	fFarWeight = 1.0;		// 1 = the usual view only, 0 = the near view only
+
+	if ( gShadowCascadeInfo.x > 1.5 )
+	{
+	float2	vNearXY = vLightXY * gShadowCascadeInfo.y;
+	float	fEdge = max( abs( vNearXY.x ), abs( vNearXY.y ) );
+	// Margin of 3 texels (in clip units, 2 per map width) so the near view's filter stays inside it
+	float	fLimit = 1.0 - ( 6.0 / gShadowMapSize );
+
+		vInvAtlasSize = float2( gShadowCascadeInfo.z, 1.0 / gShadowMapSize );
+		if ( fEdge < fLimit )
+		{
+			fNear = ShadowMapFilter( vNearXY, gShadowMapSize, vInvAtlasSize, fDepth );
+			fFarWeight = ( gShadowCascadeInfo.w > 0.0 ) ? smoothstep( fLimit - gShadowCascadeInfo.w, fLimit, fEdge ) : 0.0;
+		}
+	}
+
+	if ( fFarWeight > 0.0 )
+	{
+		fFar = ShadowMapFilter( vLightXY, 0.0, vInvAtlasSize, fDepth );
+	}
+	LightAmount = lerp( fNear, fFar, fFarWeight );
+	LightAmount = 1.0f - (gShadowStrength * (1.0f - LightAmount));
+#else
+	// Shadowmap lookup
+    float2 ShadowTexC = (0.5 * vLightXY) + float2( 0.5, 0.5 );
+    ShadowTexC.y = 1.0f - ShadowTexC.y;
 
 	if ( ( ShadowTexC.x >= 0 ) &&
 		 ( ShadowTexC.x < 1.0 ) &&
@@ -17,27 +116,27 @@ float		ShadowMapGetPrimaryLightAmount( float4 vPosLight  )
 	{
 		// transform to texel space
         float2 texelpos = gShadowMapSize * ShadowTexC;
-        
-        // Determine the lerp amounts           
+
+        // Determine the lerp amounts
         float2 lerps = frac( texelpos );
 
         //read in bilerp stamp, doing the shadow checks
         float sourcevals[4];
 		float dx = 1.0 / gShadowMapSize;
-        sourcevals[0] = (tex2D( shadowMapSampler, ShadowTexC ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
-        sourcevals[1] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, 0) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
-        sourcevals[2] = (tex2D( shadowMapSampler, ShadowTexC + float2(0, dx) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
-        sourcevals[3] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, dx) ) + gShadowEpsilon < vPosLight.z / vPosLight.w)? 0.0f: 1.0f;  
-        
+        sourcevals[0] = (tex2D( shadowMapSampler, ShadowTexC ) + gShadowEpsilon < fDepth)? 0.0f: 1.0f;
+        sourcevals[1] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, 0) ) + gShadowEpsilon < fDepth)? 0.0f: 1.0f;
+        sourcevals[2] = (tex2D( shadowMapSampler, ShadowTexC + float2(0, dx) ) + gShadowEpsilon < fDepth)? 0.0f: 1.0f;
+        sourcevals[3] = (tex2D( shadowMapSampler, ShadowTexC + float2(dx, dx) ) + gShadowEpsilon < fDepth)? 0.0f: 1.0f;
+
         // lerp between the shadow values to calculate our light amount
         LightAmount = lerp( lerp( sourcevals[0], sourcevals[1], lerps.x ),
                                   lerp( sourcevals[2], sourcevals[3], lerps.x ),
                                   lerps.y );
-
-//		LightAmount *= ((sourcevals[0]+sourcevals[1]+sourcevals[2]+sourcevals[3])*0.25f);
+		LightAmount = 1.0f - (gShadowStrength * (1.0f - LightAmount));
 	}
+#endif
 
-	return( saturate( LightAmount ) );  
+	return( saturate( LightAmount ) );
 }
 
 

@@ -1,7 +1,8 @@
 ModelConverter: Next Version Plan
 ---------------------------------
 
-Status: **reviewed; decisions recorded in section 5** (19 Nov 2026). Pre-work done and staged (section 6). Phase 1 not started.
+Status: **reviewed; decisions recorded in section 5** (19 Nov 2026). Pre-work committed (a7b14ae). **Phase 1 mostly done**
+(19 Nov 2026, see "Phase 1 status" in section 4).
 Paths are relative to the repo root. Line numbers are from the working tree on 19 Nov 2026 (including uncommitted work).
 
 Goal: an updated ModelConverter that shows every current .atm correctly (skinned and playing, relief, material channels,
@@ -269,6 +270,38 @@ Small extra: a `-atminfo <file>` command line that lists chunks, IDs, sizes and 
 makes the round-trip checks scriptable. About 0.5 day.
 
 Size: about 5-6 days (engine 1.5, tool 3.5, verification 1).
+
+**Phase 1 status (19 Nov 2026)**
+
+Built: tasks 2-10, 12, 13 and 14.
+- Engine: the Rendering.h skeletal additions (`ModelSkeletonGetAnimationInfo`, `...GetCurrentAnimation`, `...PlayAnimationSlot`,
+  `...Set/GetAnimationTime`, `...SetShowBindPose`, `...RestoreBindPose`, `...RecaptureBindPose`). Skeletal playback honours
+  `ModelAnimationPause`, and unresolved links are kept.
+- Tool code: `Skeletal\SkeletalView.cpp/.h` (anim controls, bones overlay, load report, edit guard, copying clips) and
+  `RenderEffects\ModelDisplayOptions.cpp/.h` (day/night, effect lights, channels, relief, playback speed).
+- Menus differ from the plan's wording:
+  - A top-level **Skeleton** menu replaces Animations & Effects > Skeletal.
+  - Day / Night, Material Channels and Relief are under **Rendering**.
+  - Playback Speed is under **Animations & Effects**.
+- Edit guard as built: every menu or button command runs with the bind pose shown, and the bind mesh is then re-taken from
+  the mesh. If the vertex count changed, it warns once that the weights no longer match. Vertex and poly picking show the
+  bind pose.
+- Shaders: copied the Universal's ATMMaterial.vsh/.psh, Lighting, Shadows, Fog and Clouds. Nothing includes
+  WeatherCover.fxh, so it wasn't copied. The constants the Universal sets for land, clouds and weather are left unset:
+  their branches only run when the constants are non-zero.
+- Fix: the view window is frameless again. Windowed device init no longer restyles a child window (InterfaceInstance::ApplyWindowStyle).
+
+Checked: all three solutions build. Sample 05 renders with the new shaders. In the converter, File > Open of the skinned caveman
+plays the run, with the combo, status text and load report working. The tractor reports its channels.
+
+Not done yet:
+- Task 11 (Material Browser night-only flag).
+- A scrub slider. The API exists; only play and pause have UI.
+- `-atminfo`.
+- The interactive checks in the Verification list: Save As round trip, missing-link round trip, relief against an in-game
+  screenshot, lamps lighting the sign, Scale on the skinned model.
+- Opening a model from the command line (`ModelConverterD.exe file.atm`) shows nothing in the output list and no model. File > Open
+  works. Not yet known whether this predates Phase 1.
 
 ### Phase 2: Visualisation and inspection (about 1 week)
 

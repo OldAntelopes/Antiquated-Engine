@@ -63,14 +63,25 @@ public:
 
 	// Animations
 	int			AddAnimation( const char* szLinkName, const char* szFullPath, int nAnimUse, BOOL bLinkInModel );
+	// A link whose file couldn't be loaded. It's kept (pSource NULL, no frames) so it isn't lost when the model is saved
+	int			AddUnresolvedLink( const char* szLinkName, int nAnimUse );
 	int			GetNumAnimations( void ) { return( mnNumAnims ); }
 	const MODEL_SKELETON_ANIM*	GetAnimation( int nAnim ) { return( &maxAnims[nAnim] ); }
 	void		PlayAnimation( int nAnimUse, uint32 ulTick );
+	void		PlayAnimationSlot( int nAnim, uint32 ulTick );
+	int			GetCurrentAnimation( void ) { return( mnCurrentAnim ); }
 	void		SetKeepRootMotion( BOOL bFlag ) { mbKeepRootMotion = bFlag; }
+
+	// Playback time (seconds into the clip) and bind pose display, for tools
+	void		SetAnimationTime( float fSeconds );
+	float		GetAnimationTime( void );
+	void		SetShowBindPose( BOOL bFlag ) { mbShowBindPose = bFlag; InvalidateSkinCache(); }
+	BOOL		GetShowBindPose( void ) { return( mbShowBindPose ); }
 
 	// Per-frame
 	void		UpdateAndSkin( MODEL_RENDER_DATA* pxModelData, uint32 ulTick );
 	void		RestoreBindPose( MODEL_RENDER_DATA* pxModelData );
+	void		RecaptureBindMesh( void );		// the mesh's vertices were edited: take the bind pose from the mesh again on next use
 	int			GetCurrentJointPositions( VECT* pxOut, int nMax );
 
 private:
@@ -99,6 +110,14 @@ private:
 
 	ENGINEQUATERNION*		mpxCurrentRots;
 	VECT*					mpxCurrentJoints;
+
+	// Pause (MODEL_RENDER_DATA::xAnimationState.boIsPaused, set by ModelAnimationPause) and playback time
+	BOOL					mbPaused;
+	uint32					mulPausedAtTick;
+	uint32					mulLastUpdateTick;
+	float					mfCurrentSpeed;
+	BOOL					mbShowBindPose;
+	BOOL					mbBindPoseShown;		// the mesh currently holds the bind pose
 
 	// Animate once per frame (opt-in, EngineSetAnimateOncePerFrame): what the last UpdateAndSkin wrote into which
 	// mesh, so a repeat in the same frame (shadow map, reflection...) can reuse it. Clones share the skeleton and the

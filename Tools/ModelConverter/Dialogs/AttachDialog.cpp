@@ -192,7 +192,7 @@ MODEL_RENDER_DATA*	pxModelData;
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Particle Fountain small" );
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Particle Fountain large" );
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Oil vapour flame" );
-	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Unknown effect (14)" );
+	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Sign lamp (night)" );
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Unknown effect (15)" );
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Unknown effect (16)" );
 	SendDlgItemMessage( mhwndTurretAttachDlg, IDC_EFFECT_TYPE_COMBO, CB_ADDSTRING, 0, (LPARAM)"Unknown effect (17)" );

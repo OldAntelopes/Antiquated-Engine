@@ -8,9 +8,13 @@ the CodeUtil, Interface and Engine library projects. The tools link the **Tool**
 - **ModelConverter** : The main authoring tool for the .atm model format (see ATMFormat.md). Loads and exports
   ATM, imports/exports FBX (Autodesk FBX SDK), edits materials, sub-models and attach points, builds
   animations, UV-unwraps and adds primitives. Win32 dialog app (`ModelConverter.rc`).
-- ModelConverter also has **Animations & Effects > Skeletal (Experimental)**: auto-rig as humanoid, link .bvh animations,
-  and FBX to .bvh animation import/export. Command line: `-fbxanim2bvh in.fbx out.bvh [fps]` and `-bvh2fbx in.bvh out.fbx`.
-  See Pub\skeletalanimation.md.
+- ModelConverter also has a **Skeleton** menu: show bones, show bind pose, auto-rig as humanoid, link .bvh animations
+  (copied next to the model), and FBX to .bvh animation import/export. Skinned models play their linked clips from the
+  toolbar's animation combo / Play / Stop, and Save As copies the linked .bvh files beside the new .atm.
+  Command line: `-fbxanim2bvh in.fbx out.bvh [fps]` and `-bvh2fbx in.bvh out.fbx`. See Pub\skeletalanimation.md.
+- To show models as The Universal does, it uses that game's ATMMaterial shaders. The **Rendering** menu has Day / Night,
+  Material Channels (headlights, brake, reverse, indicators) and Relief. **Animations & Effects > Playback Speed** sets the
+  animation speed (real time by default). Plans: `ModelConverter\ModelConverterPlan.md`.
 - **SceneEditor** : Editor for scene maps (collections of placed models) used by the Engine's SceneMap system.
 
 Source only, no project files in this repo:

@@ -422,6 +422,21 @@
 #define ID_SKELETAL_EXPORTBVHASFBX      40170
 #define ID_SKELETAL_AUTORIGHUMANOID     40171
 #define ID_SKELETAL_LINKANIMATION       40172
+#define ID_SKELETON_SHOWBONES           40173
+#define ID_SKELETON_SHOWBINDPOSE        40174
+#define ID_RENDERING_DAY                40175
+#define ID_RENDERING_NIGHT              40176
+#define ID_CHANNELS_HEADLIGHTS          40177
+#define ID_CHANNELS_BRAKE               40178
+#define ID_CHANNELS_REVERSE             40179
+#define ID_CHANNELS_LEFT                40180
+#define ID_CHANNELS_RIGHT               40181
+#define ID_RENDERING_RELIEF             40182
+#define ID_PLAYBACK_SPEED_010           40183
+#define ID_PLAYBACK_SPEED_025           40184
+#define ID_PLAYBACK_SPEED_050           40185
+#define ID_PLAYBACK_SPEED_100           40186
+#define ID_PLAYBACK_SPEED_200           40187
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -429,7 +444,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         40173
+#define _APS_NEXT_COMMAND_VALUE         40188
 #define _APS_NEXT_CONTROL_VALUE         1119
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

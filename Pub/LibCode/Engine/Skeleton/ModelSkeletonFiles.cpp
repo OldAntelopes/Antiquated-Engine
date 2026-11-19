@@ -196,6 +196,11 @@ int		nLoop;
 		pxEntry = (ATM_SKELETAL_ANIM_LINK_ENTRY*)( pbMem + (nLoop * pxChunkHeader->nSizeOfElement) );
 		memcpy( acFilename, pxEntry->acFilename, 64 );
 		acFilename[64] = 0;
-		ModelSkeletonAddAnimationForModel( pxModelData, acFilename, pxEntry->uwAnimUse, TRUE );
+		if ( ModelSkeletonAddAnimationForModel( pxModelData, acFilename, pxEntry->uwAnimUse, TRUE ) == NOTFOUND )
+		{
+			// Keep the link anyway, so saving the model doesn't lose it (ModelSkeletonGetAnimationInfo reports it as not loaded)
+			SysDebugPrint( "Skeletal animation '%s' (linked from %s) couldn't be loaded\n", acFilename, pxModelData->xStats.acFilename );
+			pxModelData->pSkeleton->AddUnresolvedLink( acFilename, pxEntry->uwAnimUse );
+		}
 	}
 }

@@ -229,6 +229,8 @@ Known quirks / gotchas
   Win32, differs on x64 Unix. Don't add more fallbacks.
 - Typos baked into identifiers (`eCompronentBehaviourTypes`, `DXHeirarchyContainer`, `EngineCameraSetOthorgonalView`)
   are part of the API. Don't rename public ones; new code can use correct spelling.
+- Windowed device init re-applies the Interface's standard window style (captioned, or popup), except to a `WS_CHILD`
+  window: tools that host the view in their own dialog (ModelConverter) keep the style they created it with.
 - Paths in source use backslashes in string literals (`"Data\\Samples\\caveman1.atm"`).
 - The only automated tests are the UIX harness (Tests\UIXTests, see GameCommon\UIX\UIX.md). Elsewhere, verification
   = build the affected solution(s) and run a sample/tool.

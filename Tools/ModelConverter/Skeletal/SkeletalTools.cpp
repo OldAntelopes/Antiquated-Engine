@@ -10,6 +10,7 @@
 #include "../../../Pub/LibCode/Engine/FileFormats/fbxAnimation.h"
 
 #include "SkeletalTools.h"
+#include "SkeletalView.h"
 
 //-------------------------------------------------------------------------
 // Pulls the next (optionally quoted) argument off the command line
@@ -179,6 +180,7 @@ void		SkeletalToolsLinkAnimation( int hModel )
 {
 char	acCurrentDir[MAX_PATH];
 char	acBVHFile[MAX_PATH] = "";
+char	acLinkFile[MAX_PATH];
 char	acLower[MAX_PATH];
 char	acMessage[512];
 int		nAnimUse = ANIM_RUN;
@@ -195,6 +197,13 @@ int		nAnimUse = ANIM_RUN;
 	{
 		return;
 	}
+
+	// Links are only filenames, found next to the model, so a clip from another folder is copied there first
+	if ( SkeletalViewCopyAnimationToModelFolder( acBVHFile, ModelGetStats( hModel )->acFilename, acLinkFile, MAX_PATH ) == FALSE )
+	{
+		return;
+	}
+	strcpy( acBVHFile, acLinkFile );
 
 	StringToLower( acBVHFile, acLower );
 	if ( strstr( acLower, "walk" ) ) nAnimUse = ANIM_WALK;

@@ -305,6 +305,13 @@ void		InterfaceInstance::SetWindowStyle(int type, BOOL bApply)
 
 void		InterfaceInstance::ApplyWindowStyle()
 {
+	// A child window (e.g. a tool's view panel inside its own dialog) keeps the style its app gave it -
+	// the standard styles are for top-level windows, and would give it a caption and frame
+	if ( ( mhWindow != NULL ) &&
+		 ( GetWindowLong( mhWindow, GWL_STYLE ) & WS_CHILD ) )
+	{
+		return;
+	}
 	SetWindowLong(mhWindow, GWL_STYLE, mdwWindowStyle);
 }
 

@@ -101,12 +101,24 @@ In code (this is what `Samples\05_SkeletalAnim` does with `-rig`):
     ModelSkeletonAddAnimation( hModel, "cmu_09_01_run.bvh", ANIM_RUN, TRUE );   // TRUE = save the link in the .atm
     ModelExportATM( hModel, "Data\\Samples\\caveman1_skinned.atm", ATM_EXPORT_FLAGS_MATERIALS | ATM_EXPORT_FLAGS_COMPRESSION, 0 );
 
-In the ModelConverter, under **Animations & Effects > Skeletal (Experimental)**:
+Playback and inspection (Rendering.h):
+- `ModelAnimationPause` pauses skeletal clips too, and `ModelSetAnimationImmediate` resumes them.
+- `ModelSkeletonGetAnimationInfo( hModel, nAnim, &xInfo )` returns a link's filename, use, whether it loaded, frames, frame
+  time, loop range, and the file it loaded from.
+- `ModelSkeletonGetCurrentAnimation` / `ModelSkeletonPlayAnimationSlot` work by slot, so two clips with the same use can be told apart.
+- `ModelSkeletonSetAnimationTime` / `ModelSkeletonGetAnimationTime` set or read the playback time in seconds.
+- `ModelSkeletonSetShowBindPose`, `ModelSkeletonRestoreBindPose` and `ModelSkeletonRecaptureBindPose` are for editors. After
+  editing the mesh in the bind pose, call Recapture so skinning starts from the edited vertices.
+- A link whose file can't be loaded is kept, reported as not loaded, and still saved with the model.
+
+In the ModelConverter, under the **Skeleton** menu:
+- **Show Bones** / **Show Bind Pose**
 - **Auto-rig as Humanoid**: removes vertex animation, adds estimated joints and automatic weights
-- **Link Animation (.bvh)...**: the anim use is guessed from the filename (walk/run/idle/jump/die/wave; anything else is run)
+- **Link Animation (.bvh)...**: copies the clip next to the model if it's elsewhere. The anim use is guessed from the
+  filename (walk/run/idle/jump/die/wave; anything else is run)
 - **Import FBX Animation as .bvh...**: bakes the FBX's first take, sampled at 30fps
 - **Export .bvh as FBX...**
-- Then **Save As** an .atm. Keep the .bvh files in the same folder.
+- Then **Save As** an .atm. The linked .bvh files are copied into the same folder (it asks before replacing a different file).
 
 Command line (no UI): `ModelConverter.exe -fbxanim2bvh in.fbx out.bvh [fps]` and `ModelConverter.exe -bvh2fbx in.bvh out.fbx`.
 

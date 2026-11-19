@@ -58,6 +58,12 @@ ModelSkeleton::ModelSkeleton()
 	mulLastSkinStartTick = 0;
 	mfLastSkinSpeed = 0.0f;
 	mbLastSkinKeepRootMotion = FALSE;
+	mbPaused = FALSE;
+	mulPausedAtTick = 0;
+	mulLastUpdateTick = 0;
+	mfCurrentSpeed = 1.0f;
+	mbShowBindPose = FALSE;
+	mbBindPoseShown = FALSE;
 }
 
 ModelSkeleton::~ModelSkeleton()
@@ -190,6 +196,22 @@ int				nLoop;
 		}
 		pxModelData->pxBaseMesh->UnlockVertexBuffer();
 	}
+	// The mesh now holds the bind pose: while the bind pose is being shown it isn't written again, so a tool's edits stay
+	for ( nLoop = 0; nLoop < mnNumBones; nLoop++ )
+	{
+		mpxCurrentRots[nLoop] = QuatIdentity();
+		mpxCurrentJoints[nLoop] = mpxBones[nLoop].xBindPos;
+	}
+	mbBindPoseShown = TRUE;
+}
+
+void	ModelSkeleton::RecaptureBindMesh( void )
+{
+	InvalidateSkinCache();
+	SAFE_FREE( mpxBindPositions );
+	SAFE_FREE( mpxBindNormals );
+	mnNumBindVertices = 0;
+	mbBindPoseShown = FALSE;
 }
 
 void	ModelSkeleton::SetWeights( int nNumVertices, const MODEL_SKIN_WEIGHT* pxWeights )
@@ -750,6 +772,20 @@ SkeletalAnimation*		pSource;
 	return( mnNumAnims++ );
 }
 
+int		ModelSkeleton::AddUnresolvedLink( const char* szLinkName, int nAnimUse )
+{
+MODEL_SKELETON_ANIM*	pxAnim;
+
+	if ( mnNumAnims >= MODEL_SKELETON_MAX_ANIMS ) return( NOTFOUND );
+
+	pxAnim = &maxAnims[mnNumAnims];
+	memset( pxAnim, 0, sizeof( MODEL_SKELETON_ANIM ) );
+	strncpy( pxAnim->acFilename, szLinkName, 63 );
+	pxAnim->nAnimUse = nAnimUse;
+	pxAnim->bLinkInModel = TRUE;
+	return( mnNumAnims++ );
+}
+
 //-------------------------------------------------------------------------
 // Function    : BakeAnimation
 // Description : Retargets every frame of the source clip onto this skeleton (see ModelSkeleton.h)
@@ -987,19 +1023,69 @@ float	fBestCost = 1000000.0f;
 void	ModelSkeleton::PlayAnimation( int nAnimUse, uint32 ulTick )
 {
 int		nLoop;
+int		nFound = NOTFOUND;
 
+	// The first link with that use, preferring one that loaded
 	for ( nLoop = 0; nLoop < mnNumAnims; nLoop++ )
 	{
 		if ( maxAnims[nLoop].nAnimUse == nAnimUse )
 		{
-			if ( mnCurrentAnim != nLoop )
+			if ( maxAnims[nLoop].nNumFrames > 0 )
 			{
-				mnCurrentAnim = nLoop;
-				mulAnimStartTick = ulTick;
+				nFound = nLoop;
+				break;
 			}
-			return;
+			if ( nFound == NOTFOUND ) nFound = nLoop;
 		}
 	}
+	if ( ( nFound != NOTFOUND ) && ( mnCurrentAnim != nFound ) )
+	{
+		PlayAnimationSlot( nFound, ulTick );
+	}
+}
+
+void	ModelSkeleton::PlayAnimationSlot( int nAnim, uint32 ulTick )
+{
+	if ( ( nAnim < 0 ) || ( nAnim >= mnNumAnims ) ) return;
+	mnCurrentAnim = nAnim;
+	// While paused the clock is held at the pause tick (see UpdateAndSkin), so start the clip from there
+	mulAnimStartTick = mbPaused ? mulPausedAtTick : ulTick;
+	InvalidateSkinCache();
+}
+
+void	ModelSkeleton::SetAnimationTime( float fSeconds )
+{
+uint32	ulNow = mbPaused ? mulPausedAtTick : mulLastUpdateTick;
+float	fSpeed = ( mfCurrentSpeed != 0.0f ) ? mfCurrentSpeed : 1.0f;
+
+	if ( fSeconds < 0.0f ) fSeconds = 0.0f;
+	mulAnimStartTick = ulNow - (uint32)( ( fSeconds * 1000.0f ) / fSpeed );
+	InvalidateSkinCache();
+}
+
+//-------------------------------------------------------------------------
+// Function    : GetAnimationTime
+// Description : Seconds into the playing clip (wrapped to its loop, as SamplePose plays it). 0 if nothing is playing
+//-------------------------------------------------------------------------
+float	ModelSkeleton::GetAnimationTime( void )
+{
+const MODEL_SKELETON_ANIM*	pxAnim;
+uint32	ulNow = mbPaused ? mulPausedAtTick : mulLastUpdateTick;
+float	fTime;
+float	fLoopTime;
+
+	if ( ( mnCurrentAnim < 0 ) || ( mnCurrentAnim >= mnNumAnims ) ) return( 0.0f );
+	pxAnim = &maxAnims[mnCurrentAnim];
+	if ( pxAnim->nNumFrames <= 0 ) return( 0.0f );
+
+	fTime = (float)( (int)( ulNow - mulAnimStartTick ) ) * 0.001f * mfCurrentSpeed;
+	fLoopTime = ( pxAnim->nLoopEnd - pxAnim->nLoopStart ) * pxAnim->fFrameTime;
+	if ( fLoopTime > 0.0f )
+	{
+		fTime = fmodf( fTime, fLoopTime );
+		if ( fTime < 0.0f ) fTime += fLoopTime;
+	}
+	return( fTime );
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -1079,20 +1165,61 @@ VECT			xRootPos;
 int				nVert;
 int				nSlot;
 
+int				nLoop;
+float			fSpeed = (pxModelData->fAnimSpeedMod != 0.0f) ? pxModelData->fAnimSpeedMod : 1.0f;
+
 	if ( ( mnNumBones == 0 ) || ( mnNumAnims == 0 ) || ( mpxWeights == NULL ) ) return;
 	if ( mnNumWeights != pxModelData->xStats.nNumVertices ) return;
 
 	CaptureBindMesh( pxModelData );
 	if ( mpxBindPositions == NULL ) return;
 
+	// ModelAnimationPause holds the clip's clock; on resume the clip carries on from where it stopped
+	if ( pxModelData->xAnimationState.boIsPaused )
+	{
+		if ( mbPaused == FALSE )
+		{
+			mbPaused = TRUE;
+			mulPausedAtTick = ulTick;
+		}
+	}
+	else if ( mbPaused )
+	{
+		mbPaused = FALSE;
+		mulAnimStartTick += ulTick - mulPausedAtTick;
+	}
+	mulLastUpdateTick = ulTick;
+	mfCurrentSpeed = fSpeed;
+	if ( mbPaused ) ulTick = mulPausedAtTick;
+
 	if ( mnCurrentAnim == NOTFOUND )
 	{
-		mnCurrentAnim = 0;
-		mulAnimStartTick = ulTick;
+		// Start on the first link that loaded
+		for ( nLoop = 0; nLoop < mnNumAnims; nLoop++ )
+		{
+			if ( maxAnims[nLoop].nNumFrames > 0 ) break;
+		}
+		if ( nLoop < mnNumAnims )
+		{
+			mnCurrentAnim = nLoop;
+			mulAnimStartTick = ulTick;
+		}
 	}
 
+	// Bind pose: asked for, or nothing playable (only links whose files are missing)
+	if ( ( mbShowBindPose ) ||
+		 ( mnCurrentAnim == NOTFOUND ) ||
+		 ( maxAnims[mnCurrentAnim].nNumFrames <= 0 ) )
+	{
+		if ( mbBindPoseShown == FALSE )
+		{
+			RestoreBindPose( pxModelData );
+		}
+		return;
+	}
+	mbBindPoseShown = FALSE;
+
 	// Animate once per frame (opt-in): the mesh already holds this exact pose, written earlier this frame
-	float	fSpeed = (pxModelData->fAnimSpeedMod != 0.0f) ? pxModelData->fAnimSpeedMod : 1.0f;
 	if ( ( ModelRenderingAnimateOncePerFrame() == TRUE ) &&
 		 ( mpLastSkinMesh == pxModelData->pxBaseMesh ) &&
 		 ( mulLastSkinTick == ulTick ) &&
@@ -1105,7 +1232,7 @@ int				nSlot;
 		return;
 	}
 
-	SamplePose( &maxAnims[mnCurrentAnim], (float)( ulTick - mulAnimStartTick ) * 0.001f * ( (pxModelData->fAnimSpeedMod != 0.0f) ? pxModelData->fAnimSpeedMod : 1.0f ), mpxCurrentRots, &xRootPos );
+	SamplePose( &maxAnims[mnCurrentAnim], (float)( (int)( ulTick - mulAnimStartTick ) ) * 0.001f * fSpeed, mpxCurrentRots, &xRootPos );
 	ComputeJointPositions( mpxCurrentRots, &xRootPos, mpxCurrentJoints );
 
 	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_Normal, (byte**)( &pxVertices ) );
@@ -1347,6 +1474,73 @@ int		ModelSkeletonGetCurrentJointPositions( int nModelHandle, VECT* pxPositionsO
 {
 ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
 	return( pSkeleton ? pSkeleton->GetCurrentJointPositions( pxPositionsOut, nMaxBones ) : 0 );
+}
+
+BOOL	ModelSkeletonGetAnimationInfo( int nModelHandle, int nAnimNum, MODEL_SKELETON_ANIM_INFO* pxInfoOut )
+{
+ModelSkeleton*				pSkeleton = ModelSkeletonGet( nModelHandle );
+const MODEL_SKELETON_ANIM*	pxAnim;
+
+	if ( pxInfoOut == NULL ) return( FALSE );
+	memset( pxInfoOut, 0, sizeof( MODEL_SKELETON_ANIM_INFO ) );
+	if ( ( pSkeleton == NULL ) || ( nAnimNum < 0 ) || ( nAnimNum >= pSkeleton->GetNumAnimations() ) ) return( FALSE );
+
+	pxAnim = pSkeleton->GetAnimation( nAnimNum );
+	strncpy( pxInfoOut->acFilename, pxAnim->acFilename, sizeof( pxInfoOut->acFilename ) - 1 );
+	pxInfoOut->nAnimUse = pxAnim->nAnimUse;
+	pxInfoOut->bLinkInModel = pxAnim->bLinkInModel;
+	pxInfoOut->bLoaded = ( pxAnim->nNumFrames > 0 ) ? TRUE : FALSE;
+	pxInfoOut->nNumFrames = pxAnim->nNumFrames;
+	pxInfoOut->fFrameTime = pxAnim->fFrameTime;
+	pxInfoOut->nLoopStart = pxAnim->nLoopStart;
+	pxInfoOut->nLoopEnd = pxAnim->nLoopEnd;
+	if ( pxAnim->pSource )
+	{
+		strncpy( pxInfoOut->acLoadedFrom, pxAnim->pSource->GetFilename(), sizeof( pxInfoOut->acLoadedFrom ) - 1 );
+	}
+	return( TRUE );
+}
+
+int		ModelSkeletonGetCurrentAnimation( int nModelHandle )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	return( pSkeleton ? pSkeleton->GetCurrentAnimation() : NOTFOUND );
+}
+
+void	ModelSkeletonPlayAnimationSlot( int nModelHandle, int nAnimNum )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	if ( pSkeleton ) pSkeleton->PlayAnimationSlot( nAnimNum, mulLastRenderingTick );
+}
+
+void	ModelSkeletonSetAnimationTime( int nModelHandle, float fSeconds )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	if ( pSkeleton ) pSkeleton->SetAnimationTime( fSeconds );
+}
+
+float	ModelSkeletonGetAnimationTime( int nModelHandle )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	return( pSkeleton ? pSkeleton->GetAnimationTime() : 0.0f );
+}
+
+void	ModelSkeletonSetShowBindPose( int nModelHandle, BOOL bFlag )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	if ( pSkeleton ) pSkeleton->SetShowBindPose( bFlag );
+}
+
+void	ModelSkeletonRestoreBindPose( int nModelHandle )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	if ( pSkeleton ) pSkeleton->RestoreBindPose( &maxModelRenderData[nModelHandle] );
+}
+
+void	ModelSkeletonRecaptureBindPose( int nModelHandle )
+{
+ModelSkeleton*	pSkeleton = ModelSkeletonGet( nModelHandle );
+	if ( pSkeleton ) pSkeleton->RecaptureBindMesh();
 }
 
 void	ModelRemoveVertexAnimation( int nModelHandle )

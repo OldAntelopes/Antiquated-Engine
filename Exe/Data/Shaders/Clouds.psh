@@ -1,0 +1,69 @@
+// Clouds.psh : the dynamic sky's cumulus layer (Sky Rendering Mode 27, LibCode\Island\Landscape\Sky\DynamicSky.cpp).
+// Included by DynamicSky.psh, which draws the clouds, and by ATMMaterial.psh, which darkens the landscape under them, so
+// the shadows on the ground always match the clouds overhead.
+//
+//  cloudNoiseSampler (s7): DynamicSky.cpp's tiling noise. r = soft fbm, g = finer fbm (cirrus), b = billowy cells,
+//                          a = fine detail
+//  gCloudShape: x = cover (0 none, 1 overcast), y = edge softness, z = how billowy (cell noise), w = edge erosion
+
+sampler cloudNoiseSampler : register(s7);
+extern float4 gCloudShape;
+
+float	CloudDensity( float2 vUV, float fLod )
+{
+	float4	vN1 = tex2Dlod( cloudNoiseSampler, float4( vUV, 0.0, fLod ) );
+	// (A whole number of repeats per tile: the drift wraps at one tile, and anything else jumps when it does)
+	float4	vN2 = tex2Dlod( cloudNoiseSampler, float4( ( vUV * 3.0 ) + float2( 0.37, 0.71 ), 0.0, fLod ) );
+	float	fBase = ( lerp( vN1.r, vN1.b, gCloudShape.z ) * 0.72 ) + ( vN2.r * 0.28 );
+	float	fCut = 1.0 - gCloudShape.x;
+	float	fDensity = saturate( ( fBase - fCut ) / gCloudShape.y );
+
+	// Wear the edges away with the fine noise, more where the cloud is thin
+	fDensity = saturate( fDensity - ( vN2.a * gCloudShape.w * ( 1.0 - fDensity ) ) );
+	return( fDensity );
+}
+
+// ---- The volumetric clouds' coverage (DynamicClouds.psh), and cloud shadows, which have to agree with it ----
+sampler volNoiseSampler : register(s9);
+
+// How much cloud the shell allows at this height, 0-1. It's a threshold on the 3D noise (CloudVolumeDensity), not a density:
+// where it's high the noise fills in solid, where it's low only the noise's peaks show, so edges and tops are carved into
+// billows and a faint wisp of cover can't clear it at all. Big masses of cloud grow tall and small ones stay short: the
+// top follows a broad, blurred view of the cover. The base is flat.
+float	CloudCoverage( float fHFrac, float fCover, float2 vCoverUV )
+{
+	float4	vBroad = tex2Dlod( cloudNoiseSampler, float4( vCoverUV, 0.0, 4.5 ) );
+	float	fTall = saturate( ( lerp( vBroad.r, vBroad.b, gCloudShape.z ) - ( 1.0 - gCloudShape.x ) + 0.2 ) / 0.35 );
+	float	fTop = 0.3 + ( 0.75 * fTall );
+
+	return( fCover * saturate( fHFrac / 0.07 ) * saturate( ( fTop - fHFrac ) / 0.4 ) );
+}
+
+// Cloud shadows (LibCode\Island\Landscape\Sky\DynamicSky.cpp, DynamicSkyApplyCloudShadows). On for the main world view only;
+// all zeros (the default, and whenever the dynamic sky is off) = no cloud shadows.
+//  gCloudShadow:  xy = the clouds' drift (in tiles), z = 1 / tile size (per world unit)
+//  gCloudShadow2: xy = the sun's direction x and y over its z, z = the height the shadow is taken at (world z), w = strength
+//  gCloudShadow3: when the volumetric clouds are on: x = 3D noise repeats per cover tile, y = the noise's z at that height,
+//                 z = how much of the big noise (as gVolShape.w). x = 0 uses the 2D cover alone
+extern float4	gCloudShadow;
+extern float4	gCloudShadow2;
+extern float4	gCloudShadow3;
+
+// 1 = in full sun, less under a cloud. A slice through the volumetric clouds just above the base, where the coverage is greatest and so most of what's seen from below: their carved shape, softened a little
+float	CloudShadowAmount( float3 vPosWS )
+{
+	float2	vOnLayer = vPosWS.xy + ( gCloudShadow2.xy * ( gCloudShadow2.z - vPosWS.z ) );
+	float2	vUV = ( vOnLayer * gCloudShadow.z ) + gCloudShadow.xy;
+	float	fCover = CloudDensity( vUV, 2.0 );
+	float	fShade = saturate( fCover * 1.4 );
+
+	if ( gCloudShadow3.x > 0.0 )
+	{
+		float	fCoverage = CloudCoverage( 0.08, fCover, vUV );
+		float	fNoise = tex3Dlod( volNoiseSampler, float4( vUV * gCloudShadow3.x, gCloudShadow3.y, 1.0 ) ).r;
+		float	fBig = tex3Dlod( volNoiseSampler, float4( vUV, gCloudShadow3.y / gCloudShadow3.x, 1.0 ) ).r;
+
+		fShade = saturate( ( lerp( fNoise, fBig, gCloudShadow3.z ) - ( 1.0 - fCoverage ) + 0.12 ) / 0.22 );
+	}
+	return( 1.0 - ( gCloudShadow2.w * fShade ) );
+}

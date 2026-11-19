@@ -1,18 +1,68 @@
-
 float4	xFogCol;
 extern float gFogStart;
 extern float gFogEnd;
 
+// Rendering refactor (atmosphere quick win, Docs\RenderingAnalysis.md "Further techniques"): set by Antiquated's
+// EngineSetFogExtras; all zeros (the default) leaves the old linear fog alone.
+//  gFogHeight:    x = base height (world z), y = falloff per world unit above it, z = density per world unit at the
+//                 base, w = 1 when on. Exponential height fog, integrated exactly along the view ray: valleys and
+//                 low distant ground haze over, hilltops stay clear.
+//  gFogSunColour: rgb = the sun's colour, a = how strongly fog looking towards the sun takes it (aerial perspective)
+//  gFogSunDir:    xyz = direction towards the sun
+extern float4 gFogHeight;
+extern float4 gFogSunColour;
+extern float4 gFogSunDir;
+//  gFogSkyInfo:   x = 1 when the sky drawn this frame is in fogSkySampler (SkyCapture.cpp), y = the horizon's screen v.
+//                 Fog then fades each pixel into the sky behind it at its screen column (at or above the horizon), so
+//                 distant land meets whatever the sky shows there: skybox, sunset, night.
+//  gFogSkyViewProj: the main camera's view-projection, to find that column
+extern float4 gFogSkyInfo;
+extern float4x4 gFogSkyViewProj;
+sampler fogSkySampler : register(s12);
+
 float4 FogApply( float4 color, float3 camPosWS, float3 pixelPosWS )
 {
+	float3	vRay = pixelPosWS - camPosWS;
+	float	fDist = length( vRay );
+	float	fFog = 0.0;
+	float4	vFogCol = xFogCol;
+
 	if ( gFogEnd > 0 )
 	{
-		float DistFog = distance(camPosWS, pixelPosWS);
-		float foglevel = saturate( (DistFog - gFogStart) / (gFogEnd - gFogStart ) );
-		float4 outColor = lerp( color, xFogCol, foglevel );
-		return( outColor );
+		fFog = saturate( (fDist - gFogStart) / (gFogEnd - gFogStart ) );
+	}
+
+	if ( gFogHeight.w > 0.5 )
+	{
+		// Optical depth of density * exp( -falloff * ( z - base ) ) from the camera to the pixel
+		float	fCamTerm = exp( -gFogHeight.y * ( camPosWS.z - gFogHeight.x ) );
+		float	fDZ = gFogHeight.y * vRay.z;
+		float	fLineTerm = ( abs( fDZ ) > 0.0001 ) ? ( ( 1.0 - exp( -fDZ ) ) / fDZ ) : 1.0;
+		float	fHeightFog = 1.0 - exp( -gFogHeight.z * fDist * fCamTerm * fLineTerm );
+		fFog = max( fFog, saturate( fHeightFog ) );
+	}
+
+	if ( ( gFogSunColour.a > 0.0 ) && ( fDist > 0.001 ) )
+	{
+		// Forward scattering: fog looking towards the sun glows with its colour
+		float	fGlow = pow( saturate( dot( vRay / fDist, gFogSunDir.xyz ) ), 6.0 ) * gFogSunColour.a;
+		vFogCol.xyz = lerp( vFogCol.xyz, gFogSunColour.xyz, saturate( fGlow ) );
+	}
+
+	if ( ( fFog > 0.0 ) && ( gFogSkyInfo.x > 0.5 ) )
+	{
+		float4	vClip = mul( float4( pixelPosWS, 1.0 ), gFogSkyViewProj );
+		float2	vSkyUV = float2( 0.5 + ( 0.5 * vClip.x / max( vClip.w, 0.001 ) ), 0.5 - ( 0.5 * vClip.y / max( vClip.w, 0.001 ) ) );
+		vSkyUV.y = min( vSkyUV.y, gFogSkyInfo.y - 0.015 );
+		// z: how far to stay with xFogCol instead. Fog in heavy snow is the snow, not the sky behind it
+		vFogCol.xyz = lerp( tex2Dlod( fogSkySampler, float4( saturate( vSkyUV ), 0.0, 0.0 ) ).xyz, vFogCol.xyz, gFogSkyInfo.z );
+	}
+
+	if ( fFog > 0.0 )
+	{
+		// Fog changes the colour, not how see-through it is. Fading the alpha towards xFogCol's 1.0 made distant grass,
+		// which fades out by alpha, solid again, so it ended in a hard line
+		return( float4( lerp( color.xyz, vFogCol.xyz, fFog ), color.w ) );
 	}
 	return( color );
-
-
 }

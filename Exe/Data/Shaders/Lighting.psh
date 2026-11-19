@@ -1,25 +1,24 @@
 
 extern float	gNumPointLights;
-extern float3	gPointLightPositions[8];
-extern float3	gPointLightColours[8];
-extern float	gPointLightRanges[8];
+extern float3	gPointLightPositions[16];		// 16: render.maxpointlights (EngineSetMaxPointLights) may hand over up to 16
+extern float3	gPointLightColours[16];
+extern float	gPointLightRanges[16];
+extern float	gPointLightSoft;				// LandscapeGen.psh: 0 = the old pool on the ground, 1 = a soft one (render.pointsoft)
+extern float	gPointSpecularAllLights;		// LandscapeGen.psh: 1 = shine from every point light, 0 = light 0 only (render.pointspecularall)
 
 extern float	gNumSpotLights;
 extern float3	gSpotLightPositions[8];
 extern float3	gSpotLightDirections[8];
 extern float3	gSpotLightColours[8];
+extern float	gSpotLightRanges[8];
 
 
 float4 GetSpotLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos, float fDistSqr, float LightRangeSquared, int bAdjustLightingForLandscape )
 {
-	float		lightRange = 400;
+	float		lightRange = gSpotLightRanges[lightNum];
 	float3		LightPosition = gSpotLightPositions[lightNum];
 	float3		LightDirection = gSpotLightDirections[lightNum];
-	float3		lightDiffuse;
-
-	lightDiffuse.x = 1.5;
-	lightDiffuse.y = 1.5;
-	lightDiffuse.z = 1.5;
+	float3		lightDiffuse = gSpotLightColours[lightNum];
 
     //Create the vector between light position and pixels position
     float3 lightToPixelVec = LightPosition - WorldPos;
@@ -64,6 +63,9 @@ float4 GetSpotLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3
         //Calculate falloff from center to edge of pointlight cone
 		float		fLightCone = 10.0f;
         diffuseLighting *= pow(max(dot(-lightToPixelVec, LightDirection), 0.0f), fLightCone);
+
+		// Fade out over the last quarter of the range, so its end doesn't show as a line
+		diffuseLighting *= saturate( ( lightRange - d ) / ( lightRange * 0.25 ) );
     }
  
    return float4( ( diffuseLighting), 1.0 );
@@ -88,6 +90,37 @@ float4 GetPointLightSpecular( int lightNum, float3 WorldPos, float3 Normal, floa
   specLighting *= saturate(LightDistanceSquared / (fDist * 0.5));		// Fixed range..
 
   return float4( ( LightSpecularColor * specLighting), 1.0 ); // Use light specular vector as intensity multiplier
+}
+
+// The shine from every point light in range (the same range test as GetCombinedPointLightDiffuse). Light 0 alone is
+// the nearest to the camera, so a dim light by the camera (a vehicle's brake light) took a street lamp's shine away
+float4 GetCombinedPointLightSpecular( float3 WorldPos, float3 Normal, float3 CameraPos, float specularPower )
+{
+	float4		specular = { 0.0f, 0.0f, 0.0f, 0.0f };
+	int			loop;
+
+	for( loop = 0; loop < gNumPointLights; loop++ )
+	{
+		float3	lightToPoint = gPointLightPositions[loop] - WorldPos;
+		float3	lightCol = gPointLightColours[loop];
+		float	fBrightness = (lightCol.x + lightCol.y + lightCol.z) / 3;
+		float	fRangeMod = 12.0f * max( fBrightness, 1.0f );
+		float	fCutoffSqr = gPointLightRanges[loop] * fRangeMod;
+		float	fDistSqr = dot(lightToPoint, lightToPoint);
+
+		if ( ( fBrightness > 0.0f ) &&
+			 ( fDistSqr < fCutoffSqr ) )
+		{
+			// The shine's own fall-off doesn't reach 0 at the cutoff, so fade it out over the last quarter of the
+			// distance, or a dim light near the camera (a brake light) shows a hard circle
+			float	fCutoff = sqrt( fCutoffSqr );
+			float	fEdgeFade = saturate( ( fCutoff - sqrt( fDistSqr ) ) / ( fCutoff * 0.25 ) );
+
+			specular += GetPointLightSpecular( loop, WorldPos, Normal, CameraPos, specularPower ) * fEdgeFade;
+		}
+	}
+	specular.w = 1.0f;
+	return( specular );
 }
 
 float4 GetPointLightDiffuse( int lightNum, float3 WorldPos, float3 Normal, float3 CameraPos, float fDistSqr, float LightRangeSquared, int bAdjustLightingForLandscape )
@@ -138,11 +171,11 @@ float4		GetCombinedSpotLightDiffuse( float3 WorldPos, float3 Normal, float3 Came
 
 	for( loop = 0; loop < gNumSpotLights; loop++ )
 	{
-	  	LightRangeSquared = 400;
+	  	LightRangeSquared = gSpotLightRanges[loop] * gSpotLightRanges[loop];
 
 		LightPosition = gSpotLightPositions[loop];
 		fDistSqr = dot(LightPosition - WorldPos, LightPosition - WorldPos);
-		if ( fDistSqr < LightRangeSquared * 80 )
+		if ( fDistSqr < LightRangeSquared )
 		{
 			colorPoint += GetSpotLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape); 
 		}
@@ -184,6 +217,53 @@ float4		GetCombinedPointLightDiffuse( float3 WorldPos, float3 Normal, float3 Cam
 	return( colorPoint );
 }
 
+
+// A point light's pool on the ground (LandscapeGen.psh), shaped by fSoft. 0 is the old curve: full strength out to a fifth of the
+// range, then 1/d squared, and a step to nothing where GetCombinedPointLightDiffuse's range test stops it (about 8% there), so a
+// lamp or torch drew a flat disc with a hard rim. 1 is a bell with no flat top that fades to nothing at that same test
+float4		GetCombinedPointLightDiffuseSoft( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape, float fSoft )
+{
+	float4		colorPoint = { 0.0f, 0.0f, 0.0f, 1.0f };
+	int		loop;
+
+	for( loop = 0; loop < gNumPointLights; loop++ )
+	{
+		float	LightRangeSquared = gPointLightRanges[loop];
+		float3	lightToPoint = gPointLightPositions[loop] - WorldPos;
+		float	fDistSqr = dot(lightToPoint, lightToPoint);
+		float3	lightCol = gPointLightColours[loop];
+		float	fBrightnessRangeMod = (lightCol.x + lightCol.y + lightCol.z) / 3;
+		float	fRangeMod = 12.0f;
+
+		if ( fBrightnessRangeMod > 0.0f )
+		{
+			if ( fBrightnessRangeMod > 1.0f )
+			{
+				fRangeMod *= fBrightnessRangeMod;
+			}
+
+			if ( fDistSqr < LightRangeSquared * fRangeMod )
+			{
+				float	fOld = saturate( LightRangeSquared / fDistSqr );
+				float	fBell = saturate( 1.5f / ( 1.0f + ( 0.5f * fDistSqr / LightRangeSquared ) ) );
+				float	fWindow = saturate( 1.0f - ( fDistSqr / ( LightRangeSquared * fRangeMod ) ) );
+				float	fFalloff = lerp( fOld, fBell * fWindow * fWindow, fSoft );
+				// GetPointLightDiffuse applies the old fall-off; swap it for this one
+				colorPoint += GetPointLightDiffuse( loop, WorldPos, Normal, CameraPos, fDistSqr, LightRangeSquared, bAdjustLightingForLandscape ) * ( fFalloff / fOld );
+			}
+		}
+	}
+	colorPoint.w = 1.0f;
+	return( colorPoint );
+}
+
+float4		GetCombinedLightingDiffuseSoft( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape, float fSoft )
+{
+	float4	diffuseCombined = GetCombinedPointLightDiffuseSoft( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape, fSoft );
+	diffuseCombined += GetCombinedSpotLightDiffuse( WorldPos, Normal, CameraPos, bAdjustLightingForLandscape );
+
+	return( diffuseCombined );
+}
 
 float4		GetCombinedLightingDiffuse( float3 WorldPos, float3 Normal, float3 CameraPos, int bAdjustLightingForLandscape )
 {

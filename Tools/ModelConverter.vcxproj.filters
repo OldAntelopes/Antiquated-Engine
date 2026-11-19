@@ -149,6 +149,18 @@
     <ClInclude Include="ModelConverter\Skeletal\SkeletalTools.h">
       <Filter>Skeletal</Filter>
     </ClInclude>
+    <ClCompile Include="ModelConverter\Skeletal\SkeletalView.cpp">
+      <Filter>Skeletal</Filter>
+    </ClCompile>
+    <ClInclude Include="ModelConverter\Skeletal\SkeletalView.h">
+      <Filter>Skeletal</Filter>
+    </ClInclude>
+    <ClCompile Include="ModelConverter\RenderEffects\ModelDisplayOptions.cpp">
+      <Filter>RenderEffects</Filter>
+    </ClCompile>
+    <ClInclude Include="ModelConverter\RenderEffects\ModelDisplayOptions.h">
+      <Filter>RenderEffects</Filter>
+    </ClInclude>
     <ClCompile Include="ModelConverter\Dialogs\MaterialsDialog.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>

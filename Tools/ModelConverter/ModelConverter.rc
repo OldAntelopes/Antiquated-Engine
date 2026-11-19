@@ -925,20 +925,30 @@ BEGIN
             MENUITEM "SLERP",                       ID_ANIMATIONS_BLENDING_SLERP, GRAYED
         END
         MENUITEM "Remove All Animations",       ID_REMOVEALLANIMATIONS
-        MENUITEM SEPARATOR
-        POPUP "&Skeletal (Experimental)"
+        POPUP "Playback Speed"
         BEGIN
-            MENUITEM "Auto-rig as Humanoid",        ID_SKELETAL_AUTORIGHUMANOID
-            MENUITEM "Link Animation (.bvh)...",    ID_SKELETAL_LINKANIMATION
-            MENUITEM SEPARATOR
-            MENUITEM "Import FBX Animation as .bvh...", ID_SKELETAL_IMPORTFBXANIMATION
-            MENUITEM "Export .bvh as FBX...",       ID_SKELETAL_EXPORTBVHASFBX
+            MENUITEM "0.1x",                        ID_PLAYBACK_SPEED_010
+            MENUITEM "0.25x",                       ID_PLAYBACK_SPEED_025
+            MENUITEM "0.5x",                        ID_PLAYBACK_SPEED_050
+            MENUITEM "1x (real time)",              ID_PLAYBACK_SPEED_100
+            MENUITEM "2x",                          ID_PLAYBACK_SPEED_200
         END
         MENUITEM SEPARATOR
         MENUITEM "Set Generic Weapon Attach point", ID_SPECIAL_SETGUNFIREATTACHVERTEX
         MENUITEM "Set Effect Attach Point",     ID_SPECIAL_SETEFFECTATTACHPOINT
         MENUITEM "Set Secondary Fire Attach Point", ID_SPECIAL_SETGUNFIREATTACHVERTEX, GRAYED
         MENUITEM "Set Carried Object Attach point", ID_SPECIAL_SETCARRIEDOBJECTATTACHPOINT, GRAYED
+    END
+    POPUP "S&keleton"
+    BEGIN
+        MENUITEM "Show &Bones",                 ID_SKELETON_SHOWBONES
+        MENUITEM "Show Bind &Pose",             ID_SKELETON_SHOWBINDPOSE
+        MENUITEM SEPARATOR
+        MENUITEM "Auto-rig as Humanoid",        ID_SKELETAL_AUTORIGHUMANOID
+        MENUITEM "Link Animation (.bvh)...",    ID_SKELETAL_LINKANIMATION
+        MENUITEM SEPARATOR
+        MENUITEM "Import FBX Animation as .bvh...", ID_SKELETAL_IMPORTFBXANIMATION
+        MENUITEM "Export .bvh as FBX...",       ID_SKELETAL_EXPORTBVHASFBX
     END
     POPUP "UVs && &Materials"
     BEGIN
@@ -1007,6 +1017,20 @@ BEGIN
             MENUITEM "White Above",                 ID_LIGHTING_WHITEABOVE
             MENUITEM "White Below",                 ID_LIGHTING_WHITEBELOW
         END
+        POPUP "Day / Night"
+        BEGIN
+            MENUITEM "Day",                         ID_RENDERING_DAY
+            MENUITEM "Night (night-only materials and lamps on)", ID_RENDERING_NIGHT
+        END
+        POPUP "Material Channels"
+        BEGIN
+            MENUITEM "Headlights",                  ID_CHANNELS_HEADLIGHTS
+            MENUITEM "Brake",                       ID_CHANNELS_BRAKE
+            MENUITEM "Reversing",                   ID_CHANNELS_REVERSE
+            MENUITEM "Left Indicator",              ID_CHANNELS_LEFT
+            MENUITEM "Right Indicator",             ID_CHANNELS_RIGHT
+        END
+        MENUITEM "Relief",                      ID_RENDERING_RELIEF
         POPUP "Aspect Ratio", GRAYED
         BEGIN
             MENUITEM "Variable",                    ID_RENDERING_ASPECTRATIO_VARIABLE, CHECKED

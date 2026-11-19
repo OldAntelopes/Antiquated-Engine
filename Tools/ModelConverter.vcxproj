@@ -178,6 +178,8 @@
     <ClInclude Include="ModelConverter\Util\Point Renderer.h" />
     <ClInclude Include="ModelConverter\Scene\ModelEditorSceneObject.h" />
     <ClInclude Include="ModelConverter\Skeletal\SkeletalTools.h" />
+    <ClInclude Include="ModelConverter\Skeletal\SkeletalView.h" />
+    <ClInclude Include="ModelConverter\RenderEffects\ModelDisplayOptions.h" />
     <ClInclude Include="..\Pub\Include\CodeUtil.h" />
     <ClInclude Include="..\Pub\Include\Engine.h" />
     <ClInclude Include="..\Pub\Include\EngineMaths.h" />
@@ -223,6 +225,8 @@
     <ClCompile Include="ModelConverter\ModelConverter.cpp" />
     <ClCompile Include="ModelConverter\SubModelBrowser.cpp" />
     <ClCompile Include="ModelConverter\Skeletal\SkeletalTools.cpp" />
+    <ClCompile Include="ModelConverter\Skeletal\SkeletalView.cpp" />
+    <ClCompile Include="ModelConverter\RenderEffects\ModelDisplayOptions.cpp" />
     <ClCompile Include="ModelConverter\UVUnwrap.cpp" />
   </ItemGroup>
   <ItemGroup>
