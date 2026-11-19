@@ -177,6 +177,7 @@
     <ClInclude Include="ModelConverter\Util\Line Renderer.h" />
     <ClInclude Include="ModelConverter\Util\Point Renderer.h" />
     <ClInclude Include="ModelConverter\Scene\ModelEditorSceneObject.h" />
+    <ClInclude Include="ModelConverter\Skeletal\SkeletalTools.h" />
     <ClInclude Include="..\Pub\Include\CodeUtil.h" />
     <ClInclude Include="..\Pub\Include\Engine.h" />
     <ClInclude Include="..\Pub\Include\EngineMaths.h" />

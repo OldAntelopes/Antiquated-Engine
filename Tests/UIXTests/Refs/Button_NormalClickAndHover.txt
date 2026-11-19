@@ -1,0 +1,8 @@
+click inside:
+button press id=0x7000 param=5 object=#1
+press inside, release outside:
+button press id=0x7000 param=5 object=#1
+press outside, release inside:
+click on the exact top left corner:
+click one pixel inside the corner:
+button press id=0x7000 param=5 object=#1

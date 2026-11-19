@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Harness">
+      <UniqueIdentifier>{3C1F2A6E-6B1D-4C59-9E0A-2B7A51C0D4E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{8E4B7D12-3F0C-4A7B-8C21-6D9E0F1A2B3C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameCommon">
+      <UniqueIdentifier>{5A2D9C47-1E8B-4F36-A0D5-7C3B2E9F8A16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\UIXTestMain.cpp"><Filter>Harness</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTestAccess.cpp"><Filter>Harness</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTestCore.cpp"><Filter>Harness</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTests_Basic.cpp"><Filter>Tests</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTests_Input.cpp"><Filter>Tests</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTests_Containers.cpp"><Filter>Tests</Filter></ClCompile>
+    <ClCompile Include="Source\UIXTests_System.cpp"><Filter>Tests</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\Console\Console.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\Platform\PlatformWin32.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\Platform\PlatformWin32Hardware.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UI.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UIButton.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UIDropdown.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UIListBox.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UIScreenClass.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UIScrollablePage.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UISlider.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UI\UITextBox.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIX.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXButton.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCheckbox.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCollapsableSection.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCustomRender.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXDial.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXDropdown.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXHorizScrollbar.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXListBox.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXMenu.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXModalPopup.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXPage.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXPopupMenu.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXScrollableSection.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXShape.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXSlider.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXTabBar.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXText.cpp"><Filter>GameCommon</Filter></ClCompile>
+    <ClCompile Include="..\..\GameCommon\UIX\UIXTextBox.cpp"><Filter>GameCommon</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\UIXTestAccess.h"><Filter>Harness</Filter></ClInclude>
+    <ClInclude Include="Source\UIXTestCore.h"><Filter>Harness</Filter></ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+layout shapes:
+  #0 UIXPage at 10,10 size 400,300 contents h 224
+  #1   UIXShape at 20,20 size 100,40 contents h 0
+  #2   UIXShape at 20,61 size 100,40 contents h 0
+  #3   UIXShape at 20,102 size 100,40 contents h 0
+  #4   UIXShape at 160,133 size 100,40 contents h 0
+  #5   UIXShape at 160,193 size 100,40 contents h 0
+  #6   UIXShape at 280,193 size 100,40 contents h 0
+click the pressable shape:
+after the animations: out time 0.00 phase 0.00, in time 0.00 phase 0.00

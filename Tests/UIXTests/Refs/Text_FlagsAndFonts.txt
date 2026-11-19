@@ -1,0 +1,17 @@
+layout text:
+  #0 UIXPage at 10,10 size 400,300 contents h 301
+  #1   UIXShape at 10,10 size 400,300 contents h 0
+  #2   UIXText at 20,20 size 380,18 contents h 0
+  #3   UIXText at 20,40 size 380,18 contents h 0
+  #4   UIXText at 20,60 size 380,18 contents h 0
+  #5   UIXText at 20,80 size 380,18 contents h 0
+  #6   UIXText at 20,100 size 380,18 contents h 0
+  #7   UIXText at 20,120 size 380,18 contents h 0
+  #8   UIXText at 20,140 size 380,18 contents h 0
+  #9   UIXText at 20,160 size 100,18 contents h 0
+  #10   UIXText at 20,185 size 70,30 contents h 0
+  #11   UIXText at 90,185 size 70,30 contents h 0
+  #12   UIXText at 160,185 size 70,30 contents h 0
+  #13   UIXText at 230,185 size 70,30 contents h 0
+  #14   UIXText at 300,185 size 70,30 contents h 0
+  #15   UIXText at 20,230 size 380,18 contents h 0

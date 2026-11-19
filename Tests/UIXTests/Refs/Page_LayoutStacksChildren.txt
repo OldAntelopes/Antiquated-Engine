@@ -1,0 +1,9 @@
+layout page:
+  #0 UIXPage at 20,30 size 300,200 contents h 201
+  #1   UIXShape at 20,30 size 300,200 contents h 0
+  #2   UIXButton at 30,40 size 120,20 contents h 0
+  #3   UIXButton at 30,51 size 120,20 contents h 0
+  #4   UIXButton at 30,72 size 120,20 contents h 0
+  #5   UIXButton at 160,72 size 120,20 contents h 0
+  #6   UIXButton at 190,93 size 120,20 contents h 0
+  #7   UIXButton at 30,114 size 281,20 contents h 0

@@ -1,0 +1,19 @@
+layout text boxes:
+  #0 UIXPage at 10,10 size 400,300 contents h 100
+  #1   UIXTextBox at 30,30 size 200,20 contents h 0
+  #2   UIXTextBox at 30,60 size 200,20 contents h 0
+  #3   UIXTextBox at 30,90 size 100,20 contents h 0
+click the first box:
+keyboard string 'Hello'
+typed 'World': text 'World'
+end edit #1 text='Worl!'
+after enter: text 'Worl!' focus #-1
+click first, type, then tab:
+end edit #1 text='Tabbed'
+after tab: text 'Tabbed' focus #-1
+click first, type, then click the second box:
+end edit #1 text='Switched'
+first 'Switched', second 'Second', focus #2
+end edit #2 text='Second'
+click first, type, then click empty page:
+first 'Abandoned', focus #1

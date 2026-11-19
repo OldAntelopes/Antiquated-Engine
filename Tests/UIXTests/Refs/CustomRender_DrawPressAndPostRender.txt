@@ -1,0 +1,13 @@
+renders after 2 frames: 4
+layout custom:
+  #0 UIXPage at 10,10 size 400,300 contents h 50
+  #1   UIXCustomRender at 20,20 size 150,40 contents h 0
+  #2     UIXText at 20,65 size 150,18 contents h 0
+  #3   UIXText at 20,10 size 200,18 contents h 0
+  #4   UIXCustomRender at 210,20 size 150,40 contents h 0
+click the normal one:
+button press id=0x7000 param=1 object=#1
+right click the normal one:
+button press id=0x7000 param=101 object=#1
+click the post-render one:
+button press id=0x7000 param=2 object=#4

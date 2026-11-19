@@ -1,0 +1,10 @@
+dropdown #1 selection changed param=102
+SetSelectedElementIndex 2: expanded 0 selected 2
+dropdown #1 selection changed param=101
+SetSelectedElementName 'one' (case-insensitive): expanded 0 selected 1
+SetSelectedElementName of a missing name: expanded 0 selected 1
+SetSelectedElementIndex 7 (out of range clears it, no callback): expanded 0 selected -1
+element 1 'One'
+element 3 (null)
+update handler returns 0: expanded 0 selected 0
+update handler returns 9 (ignored): expanded 0 selected 0

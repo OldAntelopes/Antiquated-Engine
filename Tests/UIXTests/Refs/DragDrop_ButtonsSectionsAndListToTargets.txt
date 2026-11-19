@@ -1,0 +1,23 @@
+layout drag:
+  #0 UIXPage at 0,0 size 640,480 contents h 243
+  #1   UIXButton at 20,20 size 120,24 contents h 0
+  #2   UIXButton at 20,60 size 120,24 contents h 0
+  #3   UIXCollapsableSection at 20,100 size 200,0 contents h 0
+  #4   UIXListBox at 20,181 size 150,100 contents h 0
+  #5   UIXShape at 350,142 size 150,100 contents h 0
+drag the plain-rect button onto the target:
+after press: drag type 7, source dragging 1
+over the target: destination hover #5
+drag received: source #1 param 11 -> dest #5 dest param 99
+after release: drag type 0, source dragging 0
+drag the plain-rect button and drop it on empty space:
+button press id=0x7000 param=1 object=#1
+drag the normal button onto the target:
+drag received: source #2 param 12 -> dest #5 dest param 99
+drag the section header onto the target:
+drag received: source #3 param 0 -> dest #5 dest param 99
+section collapsed 0
+drag list entry 1 onto the target:
+drag received: source #4 param 1 -> dest #5 dest param 99
+drag with a 2 pixel move (not counted as a drag move) onto the source itself:
+button press id=0x7000 param=1 object=#1

@@ -1,0 +1,7 @@
+wheel with the mouse outside the page:
+default wheel -15.00
+wheel over the page:
+page wheel -15.00
+page wheel 30.00
+wheel after moving away again:
+page wheel -15.00

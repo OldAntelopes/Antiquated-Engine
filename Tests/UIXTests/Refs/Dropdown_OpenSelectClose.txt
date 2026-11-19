@@ -1,0 +1,14 @@
+start: expanded 0 selected -1
+click the header:
+after header click: expanded 1 selected -1
+click entry 1:
+dropdown #1 selection changed param=20
+after entry click: expanded 0 selected 1
+open, click the greyed entry:
+after greyed click: expanded 1 selected 1
+click the header again:
+after second header click: expanded 0 selected 1
+open, then escape:
+after escape: expanded 0 selected 1
+open, then click elsewhere on the page:
+after clicking elsewhere: expanded 1 selected 1

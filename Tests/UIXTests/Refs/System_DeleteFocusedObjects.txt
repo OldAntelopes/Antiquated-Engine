@@ -1,0 +1,4 @@
+wheel hover #4
+before delete: edit focus #1, focused #2, text input active 1
+after deleting the page: edit focus NULL, focused NULL, text input active 1
+after deleting the scroll section's page: wheel hover NULL

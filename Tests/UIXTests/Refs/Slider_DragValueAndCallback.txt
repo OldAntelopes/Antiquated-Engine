@@ -1,0 +1,28 @@
+slider param 1 value 0.250 range 0.000..1.000 held 0
+slider param 2 value 0.500 range 0.000..1.000 held 0
+value bar at 20,20 size 400,18
+drag from a quarter to three quarters:
+slider param 1 value 0.250 range 0.000..1.000 held 1
+slider param 1 value 0.375 range 0.000..1.000 held 1
+slider param 1 value 0.500 range 0.000..1.000 held 1
+slider param 1 value 0.625 range 0.000..1.000 held 1
+slider param 1 value 0.750 range 0.000..1.000 held 1
+slider param 1 value 0.750 range 0.000..1.000 held 0
+after drag: value 0.750 range 0.000..1.000
+drag past the right end:
+slider param 1 value 0.500 range 0.000..1.000 held 1
+slider param 1 value 0.688 range 0.000..1.000 held 1
+slider param 1 value 0.875 range 0.000..1.000 held 1
+slider param 1 value 1.000 range 0.000..1.000 held 1
+slider param 1 value 1.000 range 0.000..1.000 held 0
+after drag past the end: value 1.000 range 0.000..1.000
+vertical bar at 460,20 size 30,200; drag from the middle to the top:
+slider param 2 value 0.500 range 0.000..1.000 held 1
+slider param 2 value 0.615 range 0.000..1.000 held 1
+slider param 2 value 0.735 range 0.000..1.000 held 1
+slider param 2 value 0.855 range 0.000..1.000 held 1
+slider param 2 value 0.975 range 0.000..1.000 held 1
+slider param 2 value 0.975 range 0.000..1.000 held 0
+vertical: value 0.975 range 0.000..1.000
+angle bar at 20,70 size 400,18; click three quarters along:
+angle: value 4.712 range 0.000..6.283

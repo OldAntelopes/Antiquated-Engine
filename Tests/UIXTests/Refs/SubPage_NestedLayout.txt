@@ -1,0 +1,10 @@
+layout nested:
+  #0 UIXPage at 10,10 size 400,300 contents h 301
+  #1   UIXShape at 10,10 size 400,300 contents h 0
+  #2   UIXText at 20,10 size 200,20 contents h 0
+  #3   UIXPage at 30,40 size 200,100 contents h 101
+  #4     UIXShape at 30,40 size 200,100 contents h 0
+  #5     UIXButton at 40,50 size 120,20 contents h 0
+  #6   UIXText at 20,111 size 200,20 contents h 0
+  #7   UIXPage at 250,141 size 100,60 contents h 191
+  #8     UIXShape at 340,131 size 200,200 contents h 0

@@ -1,0 +1,4 @@
+label edit callback object=#1 text='New' -> accept
+title after accepted edit 'New'
+label edit callback object=#1 text='Rejected' -> reject
+title after rejected edit 'New'

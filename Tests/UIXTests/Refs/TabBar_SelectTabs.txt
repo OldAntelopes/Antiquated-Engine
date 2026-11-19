@@ -1,0 +1,14 @@
+layout tabs:
+  #0 UIXPage at 10,10 size 400,100 contents h 42
+  #1   UIXTabBar at 20,20 size 380,20 contents h 0
+  #2   UIXTabBar at 20,41 size 380,20 contents h 0
+click tab 0 'General' (x 20, width 64):
+selected #1 param=0
+tab 0 selected flag 0
+click tab 1 'Audio' (x 85, width 50):
+selected #1 param=1
+tab 1 selected flag 1
+click tab 2 'A longer tab name' (x 136, width 129):
+selected #1 param=2
+tab 2 selected flag 0
+click the tab bar without a callback:

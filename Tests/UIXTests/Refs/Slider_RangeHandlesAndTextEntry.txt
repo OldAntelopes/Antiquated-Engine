@@ -1,0 +1,41 @@
+slider param 4 value 5.000 range 0.000..10.000 held 0
+slider param 5 value 5.000 range 0.000..10.000 held 0
+bar at 200,20 size 240,18
+drag the value grab from the middle to 80%:
+slider param 4 value 5.000 range 0.000..10.000 held 1
+slider param 4 value 5.750 range 0.000..10.000 held 1
+slider param 4 value 6.500 range 0.000..10.000 held 1
+slider param 4 value 7.250 range 0.000..10.000 held 1
+slider param 4 value 8.000 range 0.000..10.000 held 1
+slider param 4 value 8.000 range 0.000..10.000 held 0
+after value drag: value 8.000 range 0.000..10.000
+drag the min handle from 0 to 30%:
+slider param 4 value 8.000 range 0.000..10.000 held 1
+slider param 4 value 8.000 range 0.625..10.000 held 1
+slider param 4 value 8.000 range 1.417..10.000 held 1
+slider param 4 value 8.000 range 2.208..10.000 held 1
+slider param 4 value 8.000 range 3.000..10.000 held 1
+slider param 4 value 8.000 range 3.000..10.000 held 0
+after min drag: value 8.000 range 3.000..10.000
+drag the max handle from the end to 60%:
+slider param 4 value 8.000 range 3.000..10.000 held 1
+slider param 4 value 8.000 range 3.000..9.083 held 1
+slider param 4 value 8.000 range 3.000..8.042 held 1
+slider param 4 value 7.042 range 3.000..7.042 held 1
+slider param 4 value 6.000 range 3.000..6.000 held 1
+slider param 4 value 6.000 range 3.000..6.000 held 0
+after max drag: value 6.000 range 3.000..6.000
+a frame later (value is clamped into the range in OnUpdate): value 6.000 range 3.000..6.000
+type 25 into the max box (range expand allowed):
+max box at 116,0 size 42,16
+focus is the max box: 0
+after typing 25: value 6.000 range 3.000..6.000
+type 25 into the max box of the limited slider:
+limited after typing 25: value 5.000 range 0.000..10.000
+max box now shows '10.00'
+type 1 into the limited slider's value box:
+limited after typing 1: value 5.000 range 0.000..10.000
+ModifySliderRange 3, -5..20 (expand allowed): value 3.000 range -5.000..20.000
+ModifySliderRange 3, -5..20 (limited): value 3.000 range 0.000..10.000
+slider param 4 value 3.000 range -5.000..20.000 held 0
+slider param 5 value 3.000 range 0.000..10.000 held 0

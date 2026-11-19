@@ -1,0 +1,20 @@
+item 'Header 1' at 101,54 size 176,18 header 1 checkbox 0 checked 0
+item 'First' at 101,69 size 176,18 header 0 checkbox 0 checked 0
+item '-' at 0,0 size 0,0 header 0 checkbox 0 checked 0
+item 'Checkbox item' at 101,93 size 176,18 header 0 checkbox 1 checked 1
+item 'Greyed' at 101,112 size 176,18 header 0 checkbox 0 checked 0
+item 'Submenu' at 101,131 size 176,18 header 0 checkbox 0 checked 0
+click First:
+selected #3 param=1
+right click First:
+popup item right click #3 param=11
+click the checkbox item:
+selected #5 param=2
+checkbox item checked 1 (the app toggles it)
+hover the submenu for 10 frames:
+submenu expanded 0
+hover 20 more frames:
+submenu expanded 1
+sub one at 279,135 size 176,17; click it:
+selected #8 param=3
+submenu expanded 1 after choosing

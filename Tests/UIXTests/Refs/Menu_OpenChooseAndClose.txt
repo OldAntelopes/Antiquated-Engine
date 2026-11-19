@@ -1,0 +1,14 @@
+File at 2,6 size 29,17; View at 40,6 size 35,17
+click File:
+File expanded 1
+click Open:
+selected #4 param=2
+File expanded 1 after choosing an item
+click the greyed item:
+click View while File is open:
+File expanded 0, View expanded 1
+escape:
+View expanded 0
+open View, then UIX::CloseAllMenus:
+View expanded 0
+click the Empty top item:

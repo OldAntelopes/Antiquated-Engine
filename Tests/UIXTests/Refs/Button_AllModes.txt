@@ -1,0 +1,45 @@
+layout button modes:
+  #0 UIXPage at 10,10 size 600,400 contents h 231
+  #1   UIXButton at 20,20 size 160,22 contents h 0
+  #2   UIXButton at 20,38 size 160,22 contents h 0
+  #3   UIXButton at 20,61 size 160,22 contents h 0
+  #4   UIXButton at 20,84 size 160,22 contents h 0
+  #5   UIXButton at 20,107 size 160,22 contents h 0
+  #6   UIXButton at 20,130 size 160,22 contents h 0
+  #7   UIXButton at 20,153 size 30,30 contents h 0
+  #8   UIXButton at 20,184 size 30,30 contents h 0
+  #9   UIXButton at 20,215 size 30,30 contents h 0
+  #10 UIXPage at 260,20 size 340,200 contents h 65
+  #11   UIXButton at 260,20 size 64,64 contents h 0
+  #12   UIXButton at 340,20 size 64,64 contents h 0
+  #13   UIXButton at 420,20 size 64,64 contents h 0
+  #14   UIXButton at 260,100 size 64,64 contents h 0
+  #15   UIXButton at 340,100 size 64,64 contents h 0
+click each button in turn:
+click #1 (100,31):
+button press id=0x7000 param=1 object=#1
+click #2 (100,49):
+click #3 (100,72):
+button press id=0x7000 param=3 object=#3
+click #4 (100,95):
+button press id=0x7000 param=4 object=#4
+click #5 (100,118):
+button press id=0x7000 param=5 object=#5
+click #6 (100,141):
+button press id=0x7000 param=6 object=#6
+click #7 (35,168):
+button press id=0x7000 param=7 object=#7
+click #8 (35,199):
+button press id=0x7000 param=8 object=#8
+click #9 (35,230):
+button press id=0x7000 param=9 object=#9
+click #11 (292,52):
+button press id=0x7000 param=10 object=#11
+click #12 (372,52):
+button press id=0x7000 param=11 object=#12
+click #13 (452,52):
+button press id=0x7000 param=12 object=#13
+click #14 (292,132):
+button press id=0x7000 param=13 object=#14
+click #15 (372,132):
+button press id=0x7000 param=14 object=#15

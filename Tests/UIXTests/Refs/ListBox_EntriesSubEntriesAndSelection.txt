@@ -1,0 +1,22 @@
+layout list:
+  #0 UIXPage at 10,10 size 400,300 contents h 262
+  #1   UIXListBox at 20,20 size 250,200 contents h 0
+  #2   UIXListBox at 290,211 size 100,60 contents h 0
+entry 0 'First' at 20,20 size 250,21
+entry 1 'Second' at 20,42 size 250,21
+entry 2 'Third' at 20,64 size 250,21
+entry 3 'Fourth' at 20,86 size 250,21
+entry 4 'Not selectable' at 20,108 size 250,21
+entry 5 'Last' at 20,130 size 250,21
+click entry 0:
+listbox #1 selection param=1
+click entry 1:
+listbox #1 selection param=2
+click entry 2:
+listbox #1 selection param=21
+click entry 3:
+listbox #1 selection param=22
+click entry 4:
+click entry 5:
+listbox #1 selection param=4
+click the list without a callback:

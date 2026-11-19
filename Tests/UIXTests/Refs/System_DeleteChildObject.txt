@@ -1,0 +1,1 @@
+after DeleteObject on a child: in the ID map 0, still in its parent's child list 1

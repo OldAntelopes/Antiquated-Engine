@@ -1,0 +1,2 @@
+handler: param 42, GetCurrentPressObjectID is object #1
+user object destructors run when its owner was deleted: 0

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    UIX test harness. Standalone: compiles GameCommon UI, UIX, Platform and Console from source (the way an app does)
+    and links the Pub libraries. Doesn't use anything from Elemental. See ..\..\GameCommon\UIX\UIX.md.
+    Run it with RunUIXTests.ps1 in this folder.
+  -->
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7628189A-7806-4393-831A-8A5947D8D70E}</ProjectGuid>
+    <RootNamespace>UIXTests</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(ProjectDir)Out\</OutDir>
+    <IntDir>$(ProjectDir)Out\Obj\Debug\</IntDir>
+    <TargetName>UIXTestsD</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\Pub\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SDLCheck>false</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <!-- A console program whose entry is WinMain (PlatformWin32.cpp owns WinMain), so printf reaches the console and the exit code is ours -->
+      <SubSystem>Console</SubSystem>
+      <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\Pub\Libs;..\..\Pub\Libs\DirectX;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>InterfaceD-DX9.lib;EngineD-DX9.lib;CodeUtilD.lib;d3dx9.lib;d3d9.lib;dxerr9.lib;dxguid.lib;jpeglib.lib;zlib.lib;IPHlpApi.lib;ws2_32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\UIXTestMain.cpp" />
+    <ClCompile Include="Source\UIXTestAccess.cpp" />
+    <ClCompile Include="Source\UIXTestCore.cpp" />
+    <ClCompile Include="Source\UIXTests_Basic.cpp" />
+    <ClCompile Include="Source\UIXTests_Input.cpp" />
+    <ClCompile Include="Source\UIXTests_Containers.cpp" />
+    <ClCompile Include="Source\UIXTests_System.cpp" />
+    <ClCompile Include="..\..\GameCommon\Console\Console.cpp" />
+    <ClCompile Include="..\..\GameCommon\Platform\PlatformWin32.cpp" />
+    <ClCompile Include="..\..\GameCommon\Platform\PlatformWin32Hardware.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UI.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UIButton.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UIDropdown.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UIListBox.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UIScreenClass.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UIScrollablePage.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UISlider.cpp" />
+    <ClCompile Include="..\..\GameCommon\UI\UITextBox.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIX.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXButton.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCheckbox.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCollapsableSection.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXCustomRender.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXDial.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXDropdown.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXHorizScrollbar.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXListBox.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXMenu.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXModalPopup.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXPage.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXPopupMenu.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXScrollableSection.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXShape.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXSlider.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXTabBar.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXText.cpp" />
+    <ClCompile Include="..\..\GameCommon\UIX\UIXTextBox.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\UIXTestAccess.h" />
+    <ClInclude Include="Source\UIXTestCore.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

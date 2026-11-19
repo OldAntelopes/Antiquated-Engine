@@ -1,0 +1,35 @@
+after one frame: contents h 420, scroll 0
+layout scroll section:
+  #2 UIXScrollableSection at 20,20 size 300,200 contents h 420
+  #3   UIXButton at 30,22 size 200,20 contents h 0
+  #4   UIXButton at 30,43 size 200,20 contents h 0
+  #5   UIXButton at 30,64 size 200,20 contents h 0
+  #6   UIXButton at 30,85 size 200,20 contents h 0
+  #7   UIXButton at 30,106 size 200,20 contents h 0
+  #8   UIXButton at 30,127 size 200,20 contents h 0
+  #9   UIXButton at 30,148 size 200,20 contents h 0
+  #10   UIXButton at 30,169 size 200,20 contents h 0
+  #11   UIXButton at 30,190 size 200,20 contents h 0
+  #12   UIXButton at 30,211 size 200,20 contents h 0
+  #13   UIXButton at 30,232 size 200,20 contents h 0
+  #14   UIXButton at 30,253 size 200,20 contents h 0
+  #15   UIXButton at 30,274 size 200,20 contents h 0
+  #16   UIXButton at 30,295 size 200,20 contents h 0
+  #17   UIXButton at 30,316 size 200,20 contents h 0
+  #18   UIXButton at 30,337 size 200,20 contents h 0
+  #19   UIXButton at 30,358 size 200,20 contents h 0
+  #20   UIXButton at 30,379 size 200,20 contents h 0
+  #21   UIXButton at 30,400 size 200,20 contents h 0
+  #22   UIXButton at 30,421 size 200,20 contents h 0
+scrollbar at 308,21 size 12,200
+wheel down 2 notches over the section:
+scroll 30
+click what is now under 100,60:
+button press id=0x7003 param=3 object=#6
+wheel up 10 notches (clamps at the top):
+scroll 0
+drag the scrollbar down 60 pixels:
+scroll 127
+drag far past the bottom:
+scroll 222
+restored scroll 222

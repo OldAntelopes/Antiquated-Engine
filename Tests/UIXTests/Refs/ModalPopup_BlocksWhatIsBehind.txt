@@ -1,0 +1,11 @@
+layout modal:
+  #0 UIXPage at 0,0 size 640,480 contents h 25
+  #1   UIXButton at 50,50 size 200,24 contents h 0
+  #2   UIXModalPopup at 100,30 size 300,150 contents h 25
+  #3     UIXButton at 120,110 size 160,24 contents h 0
+click the part of the button behind the popup that the popup covers:
+button press id=0x7000 param=1 object=#1
+click the part outside the popup:
+button press id=0x7000 param=1 object=#1
+click the popup's own button:
+button press id=0x7000 param=2 object=#3

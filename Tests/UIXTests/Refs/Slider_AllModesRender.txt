@@ -1,0 +1,29 @@
+layout sliders:
+  #0 UIXPage at 10,10 size 620,460 contents h 269
+  #1   UIXSlider at 20,20 size 400,18 contents h 0
+  #2     UIXTextBox (not drawn)
+  #3     UIXTextBox (not drawn)
+  #4     UIXTextBox (not drawn)
+  #5   UIXSlider at 20,50 size 400,18 contents h 0
+  #6     UIXTextBox (not drawn)
+  #7     UIXTextBox (not drawn)
+  #8     UIXTextBox (not drawn)
+  #9   UIXSlider at 20,80 size 400,18 contents h 0
+  #10   UIXSlider at 20,110 size 400,18 contents h 0
+  #11   UIXSlider at 20,140 size 400,18 contents h 0
+  #12     UIXTextBox (not drawn)
+  #13     UIXTextBox (not drawn)
+  #14   UIXSlider at 20,170 size 400,18 contents h 0
+  #15     UIXTextBox (not drawn)
+  #16     UIXTextBox (not drawn)
+  #17   UIXSlider at 20,200 size 400,18 contents h 0
+  #18     UIXTextBox (not drawn)
+  #19   UIXSlider at 20,230 size 400,18 contents h 0
+  #20     UIXTextBox (not drawn)
+  #21     UIXTextBox (not drawn)
+  #22     UIXTextBox (not drawn)
+  #23   UIXSlider at 20,260 size 400,18 contents h 0
+  #24     UIXTextBox (not drawn)
+  #25     UIXTextBox (not drawn)
+  #26     UIXTextBox (not drawn)
+  #27   UIXSlider at 460,20 size 30,200 contents h 0

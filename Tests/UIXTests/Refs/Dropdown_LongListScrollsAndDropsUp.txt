@@ -1,0 +1,8 @@
+wheel down 3 notches over the list:
+scroll position 9
+click the first visible line:
+dropdown #1 selection changed param=9
+top: expanded 0 selected 9
+reopened: scroll position 9
+open the one near the bottom of the screen:
+bottom: expanded 1 selected -1

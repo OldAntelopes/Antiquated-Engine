@@ -1,0 +1,19 @@
+hscroll control held 0 value 0 max 100 view 25
+layout hscroll:
+  #0 UIXPage at 10,10 size 400,300 contents h 57
+  #1   UIXHorizScrollbar at 20,20 size 300,16 contents h 0
+  #2   UIXHorizScrollbar at 20,50 size 300,16 contents h 0
+drag the bar right by 100 pixels:
+hscroll control held 1 value 0 max 100 view 25
+hscroll control held 1 value 8 max 100 view 25
+hscroll control held 1 value 17 max 100 view 25
+hscroll control held 1 value 25 max 100 view 25
+hscroll control held 1 value 34 max 100 view 25
+position 34
+drag far past the end:
+hscroll control held 1 value 33 max 100 view 25
+hscroll control held 1 value 75 max 100 view 25
+hscroll control held 1 value 75 max 100 view 25
+hscroll control held 1 value 75 max 100 view 25
+hscroll control held 1 value 75 max 100 view 25
+position 75

@@ -1,0 +1,25 @@
+layout checkboxes:
+  #0 UIXPage at 10,10 size 400,300 contents h 186
+  #1   UIXCheckbox at 20,20 size 16,16 contents h 0
+  #2   UIXCheckbox at 20,45 size 160,18 contents h 0
+  #3   UIXCheckbox at 20,70 size 160,20 contents h 0
+  #4   UIXCheckbox at 20,95 size 24,24 contents h 0
+  #5   UIXCheckbox at 50,95 size 24,24 contents h 0
+  #6   UIXCheckbox at 20,125 size 160,20 contents h 0
+  #7   UIXCheckbox at 20,150 size 160,20 contents h 0
+  #8   UIXCheckbox at 20,175 size 160,20 contents h 0
+selected object=#1 param=1
+checkbox #1 checked 0 -> 1
+selected object=#2 param=2
+checkbox #2 checked 1 -> 0
+selected object=#3 param=3
+checkbox #3 checked 1 -> 0
+selected object=#4 param=4
+checkbox #4 checked 0 -> 1
+selected object=#5 param=5
+checkbox #5 checked 1 -> 0
+selected object=#6 param=6
+checkbox #6 checked 0 -> 1
+selected object=#7 param=7
+checkbox #7 checked 1 -> 0
+checkbox #8 checked 0 -> 1

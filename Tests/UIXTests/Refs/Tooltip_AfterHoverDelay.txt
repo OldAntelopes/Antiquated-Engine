@@ -1,0 +1,2 @@
+after half a second: tooltip text ''
+after over a second: tooltip text 'A helpful tooltip'

@@ -1,0 +1,4 @@
+click where both buttons are:
+button press id=0x7000 param=2 object=#5
+after deleting page B:
+button press id=0x7000 param=1 object=#2

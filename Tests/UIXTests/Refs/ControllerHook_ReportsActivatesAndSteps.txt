@@ -1,0 +1,6 @@
+with the hook: 1 reported
+  kind 0 rect 30,30,140,24
+activate the button's report:
+button press id=0x7000 param=9 object=#1
+slider after a step right: 55
+dropdown after stepping right: param 3

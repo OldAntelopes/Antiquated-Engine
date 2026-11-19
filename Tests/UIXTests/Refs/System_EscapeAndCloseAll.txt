@@ -1,0 +1,4 @@
+third open: 1
+after escape, third open: 0
+CloseAllDropdowns except the first: first open 1
+CloseAllDropdowns: first open 0

@@ -1,0 +1,9 @@
+layout dials:
+  #0 UIXPage at 10,10 size 400,300 contents h 71
+  #1   UIXDial at 20,20 size 60,60 contents h 0
+  #2   UIXDial at 90,20 size 60,60 contents h 0
+  #3   UIXDial at 160,20 size 60,60 contents h 0
+  #4   UIXDial at 230,20 size 60,60 contents h 0
+  #5   UIXDial at 300,20 size 60,60 contents h 0
+dial 0 after a drag: 0.000
+dial 0 after handler returns 0.6: 0.600

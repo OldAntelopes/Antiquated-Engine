@@ -1,0 +1,8 @@
+right click the one with a right press ID:
+button press id=0x7001 param=99 object=#1
+right click the one with a right click callback:
+right click callback object=#2 param=55
+right click a button with neither (nothing happens):
+focused object #-1
+left click the right press one:
+button press id=0x7000 param=1 object=#1

@@ -34,6 +34,9 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{370c6110-f9f8-46ae-938f-73e5d43fe23d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Skeletal">
+      <UniqueIdentifier>{4b2d8e71-6c3a-4f59-9a1e-2d7c5f0b8e34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\GameCommon\Util\cJSON.h" />
@@ -140,6 +143,12 @@
     <ClCompile Include="ModelConverter\ModelConverter.cpp" />
     <ClCompile Include="ModelConverter\SubModelBrowser.cpp" />
     <ClCompile Include="ModelConverter\UVUnwrap.cpp" />
+    <ClCompile Include="ModelConverter\Skeletal\SkeletalTools.cpp">
+      <Filter>Skeletal</Filter>
+    </ClCompile>
+    <ClInclude Include="ModelConverter\Skeletal\SkeletalTools.h">
+      <Filter>Skeletal</Filter>
+    </ClInclude>
     <ClCompile Include="ModelConverter\Dialogs\MaterialsDialog.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>

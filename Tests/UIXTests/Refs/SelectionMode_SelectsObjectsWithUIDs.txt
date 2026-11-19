@@ -1,0 +1,12 @@
+click each in selection mode:
+object selection handler #1 uid 1001
+object selection handler #2 uid 1002
+button press id=0x7000 param=3 object=#3
+object selection handler #4 uid 1003
+object selection handler #5 uid 1004
+focused #5
+SetSelectedUIXObjectID of the first button:
+object selection handler #1 uid 1001
+focused #1
+click the first button with selection mode off:
+button press id=0x7000 param=1 object=#1

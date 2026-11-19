@@ -1,0 +1,24 @@
+layout nested open:
+  #0 UIXPage at 10,10 size 300,400 contents h 105
+  #1   UIXCollapsableSection at 10,10 size 280,0 contents h 63
+  #2     UIXCollapsableSection at 20,31 size 261,0 contents h 42
+  #3       UIXText at 30,54 size 200,18 contents h 0
+  #4   UIXCollapsableSection at 10,73 size 280,0 contents h 42
+  #5     UIXText at 20,96 size 200,18 contents h 0
+layout inner collapsed:
+  #0 UIXPage at 10,10 size 300,400 contents h 84
+  #1   UIXCollapsableSection at 10,10 size 280,0 contents h 42
+  #2     UIXCollapsableSection at 20,31 size 261,0 contents h 42
+  #3       UIXText (not drawn)
+  #4   UIXCollapsableSection at 10,52 size 280,0 contents h 42
+  #5     UIXText at 20,75 size 200,18 contents h 0
+layout outer collapsed:
+  #0 UIXPage at 10,10 size 300,400 contents h 63
+  #1   UIXCollapsableSection at 10,10 size 280,0 contents h 42
+  #2     UIXCollapsableSection (not drawn)
+  #3       UIXText (not drawn)
+  #4   UIXCollapsableSection at 10,31 size 280,0 contents h 42
+  #5     UIXText at 20,54 size 200,18 contents h 0
+right click the outer header:
+section right click #1 param=3
+outer collapsed 1

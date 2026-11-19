@@ -1,0 +1,15 @@
+opened first then second: first expanded 0, second expanded 1
+down arrow before focusing:
+first: expanded 0 selected -1
+right click to focus, then arrows:
+focused #1
+dropdown #1 selection changed param=0
+after down: expanded 0 selected 0
+dropdown #1 selection changed param=2
+after up: expanded 0 selected 2
+dropdown #1 selection changed param=1
+after up (wraps): expanded 0 selected 1
+dropdown #1 selection changed param=2
+after down (wraps): expanded 0 selected 2
+right click again to unfocus:
+focused #-1

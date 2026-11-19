@@ -1,0 +1,26 @@
+layout start:
+  #0 UIXPage at 10,10 size 300,400 contents h 126
+  #1   UIXCollapsableSection at 10,10 size 280,0 contents h 63
+  #2     UIXButton at 20,33 size 150,20 contents h 0
+  #3     UIXText at 20,54 size 200,18 contents h 0
+  #4   UIXCollapsableSection at 10,73 size 280,0 contents h 0
+  #5     UIXButton (not drawn)
+  #6   UIXCollapsableSection at 10,94 size 280,0 contents h 42
+  #7     UIXButton at 20,117 size 150,20 contents h 0
+click section 0's header:
+section 0 collapsed 1, state data says opened 0
+click section 1's header:
+section 1 collapsed 0, state data says opened 1
+click section 2's header:
+section 2 collapsed 1, state data says opened 0
+layout after toggling:
+  #0 UIXPage at 10,10 size 300,400 contents h 84
+  #1   UIXCollapsableSection at 10,10 size 280,0 contents h 63
+  #2     UIXButton (not drawn)
+  #3     UIXText (not drawn)
+  #4   UIXCollapsableSection at 10,31 size 280,0 contents h 42
+  #5     UIXButton at 20,54 size 150,20 contents h 0
+  #6   UIXCollapsableSection at 10,73 size 280,0 contents h 42
+  #7     UIXButton (not drawn)
+click the button inside section 1:
+button press id=0x7001 param=2 object=#5
