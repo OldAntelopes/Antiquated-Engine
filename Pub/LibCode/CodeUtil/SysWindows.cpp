@@ -291,14 +291,26 @@ BOOL	SysLaunchBrowserWindow( const char* szWeblink )
 }
 
 
+static char		msacSysPanicContext[256] = "";
+
+/***************************************************************************
+ * Function    : SysSetPanicContext
+ * Description : See System.h
+ ***************************************************************************/
+void	SysSetPanicContext( const char* szContext )
+{
+	snprintf( msacSysPanicContext, sizeof( msacSysPanicContext ), "%s", ( szContext != NULL ) ? szContext : "" );
+}
+
 void	SysPanicImplShowDialog( const char* szErrorString )
 {
 	if ( mboSysPanicDontShowAnyMoreWarnings == FALSE )
 	{
-	char	acString[512];
+	char	acString[1536];
 	int		nRet;
 
-		sprintf( acString, "**** Error Message ****\n%s\n", szErrorString);
+		snprintf( acString, sizeof( acString ), "**** Error Message ****\n%s\n%s%s", szErrorString,
+				  ( msacSysPanicContext[0] != 0 ) ? "\n" : "", msacSysPanicContext );
 		nRet = MessageBox( mhSysMainWindow, acString, "Error message", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION);
 		if ( nRet == IDIGNORE )
 		{
@@ -533,7 +545,18 @@ UINT	unWinFlags = 0;
 	}
 	
 	
-	nRet = MessageBox( mhSysMainWindow, acError, acTitle, unWinFlags );
+	if ( ( msacSysPanicContext[0] != 0 ) && ( acError != NULL ) )
+	{
+	char	acText[4096];
+
+		// Same context line as the panic dialog (e.g. who launched the process). With none set, the text is unchanged
+		snprintf( acText, sizeof( acText ), "%s\n\n%s", acError, msacSysPanicContext );
+		nRet = MessageBox( mhSysMainWindow, acText, acTitle, unWinFlags );
+	}
+	else
+	{
+		nRet = MessageBox( mhSysMainWindow, acError, acTitle, unWinFlags );
+	}
 
 	return( (nRet == IDNO) ? FALSE : TRUE );
 }

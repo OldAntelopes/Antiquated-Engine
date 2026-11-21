@@ -291,6 +291,10 @@ void		InterfaceInstance::SetWindowStyle(int type, BOOL bApply)
 	case 0:
 	default:
 		mdwWindowStyle = WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_VISIBLE;
+		if ( mbWindowMaximiseBox )
+		{
+			mdwWindowStyle |= WS_MAXIMIZEBOX;
+		}
 		break;
 	case 1:
 		mdwWindowStyle = WS_POPUP | WS_VISIBLE | WS_EX_TOPMOST;

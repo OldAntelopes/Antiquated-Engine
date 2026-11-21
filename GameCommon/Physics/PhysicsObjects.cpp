@@ -20,12 +20,14 @@ public:
 		mnHandleID = 0;
 		mpNext = NULL;
 		mpCollisionShape =  NULL;
+		mpTriangleMesh = NULL;
 	}
 
 	btCollisionShape*	mpCollisionShape;
 	btRigidBody*		mpRigidBody;
 	int					mnHandleID;
 	PhysicsObject*		mpNext;
+	btTriangleMesh*		mpTriangleMesh;		// the triangles a btBvhTriangleMeshShape refers to (PhysicsObjectAddStaticModelMesh)
 };
 
 
@@ -236,6 +238,87 @@ btVector3	inertia(0, 0, 0);
 }
 
 
+/***************************************************************************
+ * Function    : PhysicsObjectAddStaticModelMesh
+ * Params      : nModelHandle - the model as drawn; its collision sub-model is used if it has one
+ *				 pxPos - where the model's origin is in the world
+ *				 fZRot - its turn about z, radians, as the model is drawn
+ * Returns     : the physics object handle, or NOTFOUND
+ * Description : A static triangle mesh, so concave shapes (an arch, a courtyard, a ramp's open side) are as modelled.
+ *				 Reads the mesh's CPU copy of its triangles (EngineMesh::GetCollisionTris), not the vertex buffer
+ ***************************************************************************/
+int		PhysicsObjectAddStaticModelMesh( int nModelHandle, const VECT* pxPos, float fZRot )
+{
+MODEL_RENDER_DATA*		pxModelData;
+const ENGINEMESH_COLLISION_TRIS*	pxTris;
+PhysicsObject*		pPhysicsObject;
+btTriangleMesh*		pTriangleMesh;
+btDefaultMotionState* pMotionState;
+btQuaternion	rotationQuat( btVector3( 0.0f, 0.0f, 1.0f ), fZRot );
+int				nLoop;
+
+	if ( ( mpDynamicsWorld == NULL ) || ( nModelHandle == NOTFOUND ) ) return( NOTFOUND );
+
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->xCollisionAttachData.nModelHandle != NOTFOUND )
+	{
+		pxModelData = &maxModelRenderData[ pxModelData->xCollisionAttachData.nModelHandle ];
+	}
+	if ( pxModelData->pxBaseMesh == NULL ) return( NOTFOUND );
+
+	pxTris = pxModelData->pxBaseMesh->GetCollisionTris( pxModelData->xStats.nNumIndices );
+	if ( ( pxTris == NULL ) || ( pxTris->nNumTris <= 0 ) ) return( NOTFOUND );
+
+	pTriangleMesh = new btTriangleMesh();
+	for ( nLoop = 0; nLoop < pxTris->nNumTris; nLoop++ )
+	{
+	const VECT*		pxV = pxTris->pxVerts + ( nLoop * 3 );
+
+		pTriangleMesh->addTriangle( btVector3( pxV[0].x, pxV[0].y, pxV[0].z ), btVector3( pxV[1].x, pxV[1].y, pxV[1].z ), btVector3( pxV[2].x, pxV[2].y, pxV[2].z ), true );
+	}
+
+	pPhysicsObject = PhysicsObjectCreateNew();
+	pPhysicsObject->mpTriangleMesh = pTriangleMesh;
+	pPhysicsObject->mpCollisionShape = new btBvhTriangleMeshShape( pTriangleMesh, true );
+
+	pMotionState = new btDefaultMotionState( btTransform( rotationQuat, btVector3( pxPos->x, pxPos->y, pxPos->z ) ) );
+
+	btRigidBody::btRigidBodyConstructionInfo   rigidBodyCI( 0.0f, pMotionState, pPhysicsObject->mpCollisionShape, btVector3( 0, 0, 0 ) );
+	rigidBodyCI.m_restitution = 0.0f;
+	pPhysicsObject->mpRigidBody = new btRigidBody( rigidBodyCI );
+
+	mpDynamicsWorld->addRigidBody( pPhysicsObject->mpRigidBody, COLLISION_FILTER_STATIC_OBJECT, COLLISION_FILTER_LOCAL_VEHICLE | COLLISION_FILTER_REMOTE_VEHICLE | COLLISION_FILTER_REMOTE_PREDICTION_VEHICLE | COLLISION_FILTER_WEAPON_RAY | COLLISION_FILTER_PHYSICS_OBJECTS );
+
+	return( pPhysicsObject->mnHandleID );
+}
+
+/***************************************************************************
+ * Function    : PhysicsObjectAddStaticBox
+ * Params      : pxCentre - the box's middle; pxSize - its full size; fZRot - its turn about z, radians
+ * Returns     : the physics object handle, or NOTFOUND
+ * Description : A static box in the static object group, so vehicles and their wheel rays hit it
+ *				 (PhysicsObjectAddPrimitive's boxes are dynamic objects' group, which vehicles don't collide with)
+ ***************************************************************************/
+int		PhysicsObjectAddStaticBox( const VECT* pxCentre, const VECT* pxSize, float fZRot )
+{
+PhysicsObject*		pPhysicsObject;
+btDefaultMotionState* pMotionState;
+btQuaternion	rotationQuat( btVector3( 0.0f, 0.0f, 1.0f ), fZRot );
+
+	if ( mpDynamicsWorld == NULL ) return( NOTFOUND );
+
+	pPhysicsObject = PhysicsObjectCreateNew();
+	pPhysicsObject->mpCollisionShape = new btBoxShape( btVector3( pxSize->x * 0.5f, pxSize->y * 0.5f, pxSize->z * 0.5f ) );
+	pMotionState = new btDefaultMotionState( btTransform( rotationQuat, btVector3( pxCentre->x, pxCentre->y, pxCentre->z ) ) );
+
+	btRigidBody::btRigidBodyConstructionInfo   rigidBodyCI( 0.0f, pMotionState, pPhysicsObject->mpCollisionShape, btVector3( 0, 0, 0 ) );
+	rigidBodyCI.m_restitution = 0.0f;
+	pPhysicsObject->mpRigidBody = new btRigidBody( rigidBodyCI );
+
+	mpDynamicsWorld->addRigidBody( pPhysicsObject->mpRigidBody, COLLISION_FILTER_STATIC_OBJECT, COLLISION_FILTER_LOCAL_VEHICLE | COLLISION_FILTER_REMOTE_VEHICLE | COLLISION_FILTER_REMOTE_PREDICTION_VEHICLE | COLLISION_FILTER_WEAPON_RAY | COLLISION_FILTER_PHYSICS_OBJECTS );
+
+	return( pPhysicsObject->mnHandleID );
+}
 
 
 int		PhysicsObjectAddMesh( int nModelHandle, VECT* pxPos, VECT* pxRot, float fMass )

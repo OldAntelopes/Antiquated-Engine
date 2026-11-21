@@ -28,7 +28,9 @@ PhysicsVehicleControllerComponent::PhysicsVehicleControllerComponent()
 	mfWheelSpin = 0.0F;
 	mpPhysicsVehicle = NULL;
 	mfSteeringSpeed = 0.1f;
-
+	mbCanReverse = FALSE;				// These two were left uninitialised
+	mfBrakeReverseDelayTimer = 0.0f;
+	memset( matWheelTransforms, 0, sizeof( matWheelTransforms ) );
 }
 
 
@@ -79,26 +81,39 @@ void	PhysicsVehicleControllerComponent::RenderDebug( void )
 void	PhysicsVehicleControllerComponent::ApplySteering( float fDelta )
 {
 float	fTurnSpeed = mfSteeringSpeed;			// Should lower as we get faster?		// SHould come from the game
+PhysicsVehicleSetup*	pSetup = mpPhysicsVehicle->GetCurrentSetup();
+float	fMaxAngle = pSetup->GetSteeringMaxAngle();
+float	fTurnSpeedWhenReturningToMiddle = pSetup->GetSteeringReturnSpeed();
+float	fCounterSteerSpeed;
+
+	// The lock narrows with speed when a fade speed is set: halved at that many mph
+	if ( pSetup->GetSteeringFadeMPH() > 0.0f )
+	{
+		fMaxAngle = fMaxAngle / ( 1.0f + ( fabsf( mpPhysicsVehicle->GetCurrentSpeedMPH() ) / pSetup->GetSteeringFadeMPH() ) );
+	}
+	// Steering back across the middle goes at least as fast as letting go would
+	fCounterSteerSpeed = ( fTurnSpeedWhenReturningToMiddle > fTurnSpeed ) ? fTurnSpeedWhenReturningToMiddle : fTurnSpeed;
 
 	if ( GetControlState( CONTROL_STEER_LEFT ) > 0.0f )
 	{
-		mfSteeringAngle -= fTurnSpeed * fDelta;
-		if ( mfSteeringAngle < -A30 )
-		{ 
-			mfSteeringAngle = -A30;
+		mfSteeringAngle -= ( ( mfSteeringAngle > 0.0f ) ? fCounterSteerSpeed : fTurnSpeed ) * fDelta;
+		if ( mfSteeringAngle < -fMaxAngle )
+		{
+			mfSteeringAngle = -fMaxAngle;
 		}
+		if ( mfSteeringAngle > fMaxAngle ) mfSteeringAngle = fMaxAngle;
 	}
 	else if ( GetControlState( CONTROL_STEER_RIGHT ) > 0.0f )
 	{
-		mfSteeringAngle += fTurnSpeed * fDelta;
-		if ( mfSteeringAngle > A30 )
+		mfSteeringAngle += ( ( mfSteeringAngle < 0.0f ) ? fCounterSteerSpeed : fTurnSpeed ) * fDelta;
+		if ( mfSteeringAngle > fMaxAngle )
 		{
-			mfSteeringAngle = A30;
+			mfSteeringAngle = fMaxAngle;
 		}
+		if ( mfSteeringAngle < -fMaxAngle ) mfSteeringAngle = -fMaxAngle;
 	}
 	else
 	{
-	float	fTurnSpeedWhenReturningToMiddle = 2.0f;
 
 		if ( mfSteeringAngle < 0.0f )
 		{
@@ -130,6 +145,8 @@ ENGINEQUATERNION	xQuat = { 0.0f, 0.0f, 0.0f, 1.0f };
 //VECT				xVel = { 0.0f, 0.0f, 0.0f };
 
 	mpPhysicsVehicle->OverridePositionAndOrientation( pxSpawnPos, &xQuat );
+	// Without this a vehicle respawned after falling through the world kept its falling speed
+	mpPhysicsVehicle->StopMoving();
 
 }
 
@@ -177,6 +194,12 @@ float		fSpeed = mpPhysicsVehicle->GetCurrentSpeedMPH();
 					mfBrakeReverseDelayTimer = 0.3f;
 				}
 			}
+			else if ( mpPhysicsVehicle->GetCurrentSpeedMPH() >= 1.0f )
+			{
+				// Moving forward again (coasting): the brake brakes until we've stopped
+				mbCanReverse = FALSE;
+				mfBrakeReverseDelayTimer = 0.3f;
+			}
 			else
 			{
 				if ( fBrakeState > 0.0f )
@@ -188,6 +211,9 @@ float		fSpeed = mpPhysicsVehicle->GetCurrentSpeedMPH();
 		}
 		else
 		{
+			// Driving forward. Without this, having once stopped left reverse armed, so the brake at speed drove
+			// the engine backwards instead of braking
+			mbCanReverse = FALSE;
 			mfBrakeReverseDelayTimer = 0.3f;
 		}
 	}

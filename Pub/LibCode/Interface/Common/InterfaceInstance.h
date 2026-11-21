@@ -142,6 +142,15 @@ protected:
 	bool	mbIsInScene = false;
 	HWND	mhWindow = NULL;
 	int		mnAdapterUsedForDevice = 0;
+public:
+	BOOL	mbKeepDeviceOnMonitorChange = FALSE;		// InterfaceSetKeepDeviceOnMonitorChange
+	BOOL	mbWindowMaximiseBox = FALSE;				// InterfaceSetWindowMaximiseBox
+	int		mnLastDeviceChange = 0;						// INTERFACE_DEVICE_CHANGE_*
+	int		mnLastWindowAdapter = 0;
+	int		GetAdapterUsedForDevice() { return( mnAdapterUsedForDevice ); }
+	// Per instance, for windows with their own device (InterfaceSetKeepDeviceOnMonitorChange sets the main one)
+	void	SetKeepDeviceOnMonitorChange( BOOL bKeep ) { mbKeepDeviceOnMonitorChange = bKeep; }
+protected:
 	BOOL	mboBorderlessFullscreen = FALSE;
 	BOOL	mbIsLinkedToEngine = FALSE;
 	u64		mullInterfaceLastPresentTick = 0;

@@ -227,8 +227,22 @@ void		PhysicsWorldEnableDebugRender( BOOL bFlag )
 	}
 }
 
+static int		msnPhysicsWorldGeneration = 0;
+
+/***************************************************************************
+ * Function    : PhysicsWorldGetGeneration
+ * Returns     : 0 before the first PhysicsWorldInit, then one more for each one
+ * Description : Physics object handles kept from an earlier world are no good in a new one. A caller holding handles
+ *				 compares this with the value it saw when it made them
+ ***************************************************************************/
+int		PhysicsWorldGetGeneration( void )
+{
+	return( msnPhysicsWorldGeneration );
+}
+
 void		PhysicsWorldInit( void )
 {
+	msnPhysicsWorldGeneration++;
 	gContactAddedCallback = myCustomMaterialCombinerCallback;
 
 	mpBroadphase = new btDbvtBroadphase();

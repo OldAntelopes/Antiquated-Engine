@@ -606,6 +606,8 @@ void		EnginePostProcessSetValue( const char* szName, float fValue )
 
 			if ( fValue < 0.0f ) fValue = 0.0f;
 			if ( fValue > 1.0f ) fValue = 1.0f;
+			// Kept, so a RELOAD (device reset) rebuilds the quad at this value rather than the start-up default
+			msfPostProcessDefaultBloomValue = fValue;
 			ulCol = (uint32)( fValue * 255.0f );
 			ulCol <<= 24;
 			ulCol |= 0xFFFFFF;

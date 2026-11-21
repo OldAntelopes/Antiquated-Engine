@@ -303,6 +303,21 @@ void		EngineSceneShadowsBeginCascade( int nCascade )
 	EngineShadowMapSetCascadeConstant();
 }
 
+// Public (Engine.h): a float4 constant on the casters' vertex shader, if it declares one
+void		EngineSceneShadowsSetCasterFloat4( const char* szConstantName, const float* pafValues )
+{
+#ifndef TUD11
+	if ( mpShadowMapRenderConstantTable == NULL ) return;
+
+	D3DXHANDLE handle = mpShadowMapRenderConstantTable->GetConstantByName( NULL, szConstantName );
+
+	if ( handle )
+	{
+		mpShadowMapRenderConstantTable->SetFloatArray( mpEngineDevice, handle, pafValues, 4 );
+	}
+#endif
+}
+
 // Public (Engine.h): how wide the band is where receivers mix the near and usual cascades, as a fraction of the near
 // view's half-width (0 = a hard border). Only passed on to the receiver shaders.
 void		EngineSceneShadowsSetCascadeBlend( float fBand )

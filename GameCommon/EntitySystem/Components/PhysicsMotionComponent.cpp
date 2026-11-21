@@ -64,7 +64,12 @@ void	PhysicsMotionComponent::OnUpdateComponent( float fDelta )
 PhysicsObjectTransform		mPhysicsTransform;
 VECT	xLinearVel;
 
-	PhysicsObjectGetTransform( mhPhysicsObject, &mPhysicsTransform );
+	if ( PhysicsObjectGetTransform( mhPhysicsObject, &mPhysicsTransform ) == FALSE )
+	{
+		// No body (no physics world, so PhysicsObjectAddPrimitive gave NOTFOUND): leave the entity as it is, rather than
+		// copying an unset transform onto it
+		return;
+	}
 	GetEntity()->SetOrientation( &mPhysicsTransform.mxQuatRotation );
 	GetEntity()->SetPos( &mPhysicsTransform.mxPosition );
 

@@ -1176,6 +1176,20 @@ void Sprites3DCommonRenderSetup( BOOL bUseZWrite )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Managed groups (Sprites3DGetManagedGroupHandle) are drawn straight away by Sprites3DFlush and
+// Sprites3DFlushLayer, not through a RenderObjectList, so nothing else binds their texture or
+// blend mode. Without this they draw with whatever texture was bound last.
+static void	Sprites3DRenderManagedGroup( SpriteGroup* pSpriteGroup )
+{
+	EngineSetColourMode( 0, COLOUR_MODE_TEXTURE_MODULATE );
+	EngineSetTexture( 0, pSpriteGroup->GetTextureHandle() );
+	// The texture bound no longer matches what a RenderObjectList last set
+	RenderObjectGroup::msLastSetTexture = NOTFOUND;
+	RenderObject::ForgetAppliedRenderFlags();
+	pSpriteGroup->Render();
+}
+
 void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite )
 {
 	Sprites3DCommonRenderSetup(bUseZWrite);
@@ -1184,7 +1198,7 @@ void Sprites3DFlushLayer( int nLayerNum, BOOL bUseZWrite )
 	{
 		if ( pSpriteGroup->mLayer == nLayerNum )
 		{
-			pSpriteGroup->Render();
+			Sprites3DRenderManagedGroup( pSpriteGroup );
 		}
 	}
 
@@ -1203,7 +1217,7 @@ void Sprites3DFlush( BOOL bUseZWrite )
 		{	
 			if ( pSpriteGroup->mLayer == layerActive.first )
 			{
-				pSpriteGroup->Render();
+				Sprites3DRenderManagedGroup( pSpriteGroup );
 			}
 		}
 	}

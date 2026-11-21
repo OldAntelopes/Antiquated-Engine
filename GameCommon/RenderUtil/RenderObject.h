@@ -67,6 +67,10 @@ public:
 
 	int		GetTextureHandle() const { return(mTextureHandle); }
 	int		GetRenderType() const { return(mRenderType); }
+
+	// Makes the next Render() apply its render flags even if they match the last ones applied. For code that
+	// renders an object outside a RenderObjectList, after other code may have changed the blend mode
+	static void	ForgetAppliedRenderFlags();
 protected:
 	void	SetTextureHandle(int hTex);
 	void	SetRenderType(int nType) { mRenderType = nType; }

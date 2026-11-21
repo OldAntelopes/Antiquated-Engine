@@ -88,7 +88,13 @@ void	RenderObject::ApplyRenderFlags( uint32 renderFlags  )
 }
 
 
-void	RenderObject::SetTextureHandle(int hTex) 
+void	RenderObject::ForgetAppliedRenderFlags()
+{
+	// No object has every flag set, so the next Render() always applies its own
+	mulLastAppliedRenderFlags = 0xFFFFFFFF;
+}
+
+void	RenderObject::SetTextureHandle(int hTex)
 {
 	mTextureHandle = hTex; 
 }
@@ -150,6 +156,8 @@ BOOL	bShouldLogRO = TRUE;
 #endif
 		}
 	}
+	// A subtractive object (kRenderFlag_Subtractive) leaves the blend op at REVSUBTRACT: don't let it outlive the group
+	EngineResetBlendOp();
 	return count;
 }
 

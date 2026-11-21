@@ -53,6 +53,11 @@ typedef unsigned int			uint;
 
 extern INTERFACE_API void	InterfaceInitWindow( const char* pcWindowTitle, void* pWinClass, BOOL bAllowResize  );
 
+// Opt-in (default off): keep the maximise box on the standard window style (SetWindowStyle type 0, which every
+// windowed device init re-applies). The app decides what maximise does, e.g. go full screen on WM_SYSCOMMAND SC_MAXIMIZE.
+// Applies at once if the window exists and is windowed. Win32 only.
+extern INTERFACE_API void	InterfaceSetWindowMaximiseBox( BOOL bOn );
+
 // First initialisation call - intialises the display device (e.g. Direct3d)
 extern INTERFACE_API void	InterfaceInitDisplayDevice( BOOL boMinRenderPageSize, int nBackBufferMinW = 0, int nBackBufferMinH = 0 );
 
@@ -267,6 +272,20 @@ extern INTERFACE_API BOOL InterfaceIsSmall ( void );
 extern INTERFACE_API BOOL InterfaceDoesNeedChanging ( void );
 extern INTERFACE_API void	InterfaceSetWindowHasChanged( BOOL bFlag );
 
+// DX9: what to do when a display change (resize, device lost) finds the window on another monitor, which D3D9 counts as another
+// adapter even on the same graphics card. FALSE, the default, releases and recreates the device there, which frees every
+// engine resource. TRUE keeps the device and resets it like any resize: D3D9Ex presents a windowed device on any monitor
+enum
+{
+	INTERFACE_DEVICE_CHANGE_NONE = 0,		// No display change handled yet
+	INTERFACE_DEVICE_CHANGE_RESET,			// Reset on the adapter it was made on
+	INTERFACE_DEVICE_CHANGE_RESET_KEPT,		// Reset, kept across a move to another adapter (InterfaceSetKeepDeviceOnMonitorChange)
+	INTERFACE_DEVICE_CHANGE_RECREATED,		// Released and made again on another adapter: resources made on the old one are gone
+};
+extern INTERFACE_API void	InterfaceSetKeepDeviceOnMonitorChange( BOOL bKeep );
+// The kind of the last display change (INTERFACE_DEVICE_CHANGE_*), the adapter the device was made on, and the one the window was on
+extern INTERFACE_API int	InterfaceGetLastDeviceChange( int* pnDeviceAdapter, int* pnWindowAdapter );
+
 extern INTERFACE_API int InterfaceGetWindowWidth( void );
 extern INTERFACE_API int InterfaceGetWindowHeight( void );
 
@@ -440,6 +459,10 @@ extern INTERFACE_API void	ClearBufferedJpegs( void );
 
 #ifndef SERVER
 extern void		PanicImpl( const char* szErrorString );
+
+// Optional extra line for every PanicImpl dialog (e.g. who launched the process), shown under the message. NULL or ""
+// for none, the default. The text is copied.
+extern void		InterfaceSetPanicContext( const char* szContext );
 
 #define		PANIC_IF(a,b)		if( a ) PanicImpl( b );
 #endif

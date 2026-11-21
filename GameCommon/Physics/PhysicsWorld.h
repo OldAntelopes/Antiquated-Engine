@@ -19,6 +19,7 @@ enum
 
 
 extern BOOL		PhysicsWorldIsEnabled( void );
+extern int		PhysicsWorldGetGeneration( void );		// 0 before the first PhysicsWorldInit, +1 each one after
 extern void		PhysicsWorldSetEnabled( BOOL bFlag );
 
 extern void		PhysicsWorldInit( void );

@@ -26,6 +26,11 @@ void	EngineDefaultState( void )
 
 }
 
+void	EngineResetBlendOp( void )
+{
+	// todo (blend modes are TODO in the OpenGL back-end)
+}
+
 void	EngineSetDefaultStateAlphaFunc( int nCompareFunc )
 {
 	// todo (DX9 only for now, see EngineDX.cpp)
@@ -58,6 +63,11 @@ void	EngineSceneShadowsBeginCascade( int nCascade )
 }
 
 void	EngineSceneShadowsSetCascadeBlend( float fBand )
+{
+	// No shadow maps in the OpenGL back-end yet
+}
+
+void	EngineSceneShadowsSetCasterFloat4( const char* szConstantName, const float* pafValues )
 {
 	// No shadow maps in the OpenGL back-end yet
 }
@@ -266,6 +276,11 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 }
 
 void	EngineSetLightSlotTracking( BOOL bFlag )
+{
+	// todo
+}
+
+void	EngineSetMaxPointLights( int nMax )
 {
 	// todo
 }

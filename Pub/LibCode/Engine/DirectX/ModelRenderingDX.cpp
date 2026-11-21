@@ -1480,6 +1480,175 @@ int		nVertsTotal;
 	}
 }
 
+/***************************************************************************
+ * Function    : ModelGetVertexPositions
+ * Params      : pxOut - filled with up to nMax positions, model space, in the vertex buffer's order
+ * Returns     : How many vertices the mesh has (0 if none). Only min( that, nMax ) are written
+ * Description : Reads the mesh through a lock, so call it once and keep the copy. Added for The Universal's trip-cave
+ ***************************************************************************/
+int		ModelGetVertexPositions( int nModelHandle, VECT* pxOut, int nMax )
+{
+MODEL_RENDER_DATA*	pxModelData;
+CUSTOMVERTEX*	pxVertices = NULL;
+int		nVertsInMesh;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) ) return( 0 );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->pxBaseMesh == NULL ) return( 0 );
+	nVertsInMesh = pxModelData->xStats.nNumVertices;
+	if ( ( pxOut == NULL ) || ( nMax <= 0 ) ) return( nVertsInMesh );
+	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly, (byte**)( &pxVertices ) );
+	if ( pxVertices == NULL ) return( 0 );
+	for ( nLoop = 0; ( nLoop < nVertsInMesh ) && ( nLoop < nMax ); nLoop++ )
+	{
+		pxOut[nLoop] = pxVertices[nLoop].position;
+	}
+	pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	return( nVertsInMesh );
+}
+
+/***************************************************************************
+ * Function    : ModelSetVertexPositions
+ * Params      : pxPositions - nNum positions, model space, in the vertex buffer's order; nNum must be the mesh's vertex count
+ * Returns     : TRUE if written
+ * Description : Moves a model's vertices, for a model that changes shape on the CPU. Normals, colours and texture coordinates are
+ *				 left as they are, and so are the collision copy (ModelGetTriangles), the bounds and any keyframes. Locks the vertex
+ *				 buffer, so at most once a frame and only for small models. Added for The Universal's trip-cave
+ ***************************************************************************/
+BOOL	ModelSetVertexPositions( int nModelHandle, const VECT* pxPositions, int nNum )
+{
+MODEL_RENDER_DATA*	pxModelData;
+CUSTOMVERTEX*	pxVertices = NULL;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) || ( pxPositions == NULL ) ) return( FALSE );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( ( pxModelData->pxBaseMesh == NULL ) || ( nNum != pxModelData->xStats.nNumVertices ) ) return( FALSE );
+	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_Normal, (byte**)( &pxVertices ) );
+	if ( pxVertices == NULL ) return( FALSE );
+	for ( nLoop = 0; nLoop < nNum; nLoop++ )
+	{
+		pxVertices[nLoop].position = pxPositions[nLoop];
+	}
+	pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	return( TRUE );
+}
+
+/***************************************************************************
+ * Function    : ModelSetVertexPositionsRange
+ * Params      : pxPositions - nNum positions, model space, in the vertex buffer's order; nNum must be the mesh's vertex count.
+ *				 nFirst, nCount - the vertices to write (the rest are left as they are)
+ * Returns     : TRUE if written
+ * Description : As ModelSetVertexPositions, writing only a run of the vertices, for a big model of which only a few move (writing into
+ *				 the locked buffer is what costs). Added for The Universal's trip-cave (its rippling floor)
+ ***************************************************************************/
+BOOL	ModelSetVertexPositionsRange( int nModelHandle, const VECT* pxPositions, int nNum, int nFirst, int nCount )
+{
+MODEL_RENDER_DATA*	pxModelData;
+CUSTOMVERTEX*	pxVertices = NULL;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) || ( pxPositions == NULL ) ) return( FALSE );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( ( pxModelData->pxBaseMesh == NULL ) || ( nNum != pxModelData->xStats.nNumVertices ) ) return( FALSE );
+	if ( ( nFirst < 0 ) || ( nCount <= 0 ) || ( nFirst + nCount > nNum ) ) return( FALSE );
+	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_Normal, (byte**)( &pxVertices ) );
+	if ( pxVertices == NULL ) return( FALSE );
+	for ( nLoop = nFirst; nLoop < nFirst + nCount; nLoop++ )
+	{
+		pxVertices[nLoop].position = pxPositions[nLoop];
+	}
+	pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	return( TRUE );
+}
+
+/***************************************************************************
+ * Function    : ModelGetVertexNormals
+ * Params      : pxOut - filled with up to nMax normals, model space, in the vertex buffer's order
+ * Returns     : How many vertices the mesh has (0 if none). Only min( that, nMax ) are written
+ * Description : As ModelGetVertexPositions, for the normals. Added for The Universal's trip-cave (cloth that ripples)
+ ***************************************************************************/
+int		ModelGetVertexNormals( int nModelHandle, VECT* pxOut, int nMax )
+{
+MODEL_RENDER_DATA*	pxModelData;
+CUSTOMVERTEX*	pxVertices = NULL;
+int		nVertsInMesh;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) ) return( 0 );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->pxBaseMesh == NULL ) return( 0 );
+	nVertsInMesh = pxModelData->xStats.nNumVertices;
+	if ( ( pxOut == NULL ) || ( nMax <= 0 ) ) return( nVertsInMesh );
+	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_ReadOnly, (byte**)( &pxVertices ) );
+	if ( pxVertices == NULL ) return( 0 );
+	for ( nLoop = 0; ( nLoop < nVertsInMesh ) && ( nLoop < nMax ); nLoop++ )
+	{
+		pxOut[nLoop] = pxVertices[nLoop].normal;
+	}
+	pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	return( nVertsInMesh );
+}
+
+/***************************************************************************
+ * Function    : ModelSetVertexPositionsNormals
+ * Params      : pxPositions, pxNormals - nNum of each, model space, in the vertex buffer's order; nNum must be the mesh's vertex count
+ * Returns     : TRUE if written
+ * Description : ModelSetVertexPositions with the normals too, in one lock, so the light follows a moving surface. Colours, texture
+ *				 coordinates, tangents, the collision copy and the bounds are left as they are. Added for The Universal's trip-cave
+ ***************************************************************************/
+BOOL	ModelSetVertexPositionsNormals( int nModelHandle, const VECT* pxPositions, const VECT* pxNormals, int nNum )
+{
+MODEL_RENDER_DATA*	pxModelData;
+CUSTOMVERTEX*	pxVertices = NULL;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) || ( pxPositions == NULL ) || ( pxNormals == NULL ) ) return( FALSE );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( ( pxModelData->pxBaseMesh == NULL ) || ( nNum != pxModelData->xStats.nNumVertices ) ) return( FALSE );
+	pxModelData->pxBaseMesh->LockVertexBuffer( kLock_Normal, (byte**)( &pxVertices ) );
+	if ( pxVertices == NULL ) return( FALSE );
+	for ( nLoop = 0; nLoop < nNum; nLoop++ )
+	{
+		pxVertices[nLoop].position = pxPositions[nLoop];
+		pxVertices[nLoop].normal = pxNormals[nLoop];
+	}
+	pxModelData->pxBaseMesh->UnlockVertexBuffer();
+	return( TRUE );
+}
+
+/***************************************************************************
+ * Function    : ModelGetFaceIndices
+ * Params      : pnOut - filled with up to nMax vertex indices, three a face, in the index buffer's order
+ * Returns     : How many indices the mesh has (0 if none). Only min( that, nMax ) are written
+ * Description : Reads the mesh through a lock, so call it once and keep the copy. Added for The Universal's trip-cave
+ ***************************************************************************/
+int		ModelGetFaceIndices( int nModelHandle, int* pnOut, int nMax )
+{
+MODEL_RENDER_DATA*	pxModelData;
+unsigned char*	pbIndices = NULL;
+BOOL	b32Bit;
+int		nIndices;
+int		nLoop;
+
+	if ( ( nModelHandle < 0 ) || ( nModelHandle >= MAX_MODELS_LOADED ) ) return( 0 );
+	pxModelData = &maxModelRenderData[ nModelHandle ];
+	if ( pxModelData->pxBaseMesh == NULL ) return( 0 );
+	nIndices = pxModelData->pxBaseMesh->GetNumFaces() * 3;
+	if ( ( pnOut == NULL ) || ( nMax <= 0 ) ) return( nIndices );
+	b32Bit = pxModelData->pxBaseMesh->Is32BitIndexBuffer();
+	pxModelData->pxBaseMesh->LockIndexBuffer( kLock_ReadOnly, &pbIndices );
+	if ( pbIndices == NULL ) return( 0 );
+	for ( nLoop = 0; ( nLoop < nIndices ) && ( nLoop < nMax ); nLoop++ )
+	{
+		if ( b32Bit == TRUE ) pnOut[nLoop] = (int)( ( (const uint32*)pbIndices )[nLoop] );
+		else pnOut[nLoop] = (int)( ( (const unsigned short*)pbIndices )[nLoop] );
+	}
+	pxModelData->pxBaseMesh->UnlockIndexBuffer();
+	return( nIndices );
+}
+
 int		ModelRenderScaled( int nModelHandle, VECT* pxPos, VECT* pxRot, uint32 ulRenderFlags, VECT* pxScale )
 {
 ENGINEMATRIX	matWorld;

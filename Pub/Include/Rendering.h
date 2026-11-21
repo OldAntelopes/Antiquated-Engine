@@ -25,6 +25,9 @@ extern void		ModelRenderingFlush( void );
 
 extern void		ModelRenderingSetShadowPass( BOOL bFlag );
 extern BOOL		ModelRenderingIsShadowPass( void );
+// Opt-in, default FALSE: double-sided materials drawn with culling off in the shadow pass (leaves facing away from the light cast)
+extern void		ModelRenderingSetShadowPassDoubleSided( BOOL bFlag );
+extern BOOL		ModelRenderingIsShadowPassDoubleSided( void );
 extern void		ModelRenderingActivateSceneShadowMap( BOOL bFlag );
 extern BOOL		ModelRenderingIsSceneShadowMapActive( void );
 
@@ -77,6 +80,18 @@ extern int		ModelCopy( int nModelHandle );
 extern void		ModelScale( int nModelHandle, float fX, float fY, float fZ );
 extern void		ModelRotate( int nModelHandle, float fX, float fY, float fZ, BOOL bAffectSubModels );
 extern void		ModelMoveVerts( int nModelHandle, float fX, float fY, float fZ );
+// A model that changes shape on the CPU: read its vertex positions once (model space, vertex buffer order; returns the mesh's count),
+// then write moved ones back, at most once a frame and only for small models (it locks the vertex buffer). Normals, texture coordinates,
+// bounds and the collision copy (ModelGetTriangles) stay as they were. Added for The Universal's trip-cave
+extern int		ModelGetVertexPositions( int nModelHandle, VECT* pxOut, int nMax );
+extern BOOL		ModelSetVertexPositions( int nModelHandle, const VECT* pxPositions, int nNum );
+extern BOOL		ModelSetVertexPositionsRange( int nModelHandle, const VECT* pxPositions, int nNum, int nFirst, int nCount );	// only vertices nFirst to nFirst + nCount - 1 written
+// The same for the normals: read them once, then write positions and normals together (one lock), so the light follows the moved surface
+extern int		ModelGetVertexNormals( int nModelHandle, VECT* pxOut, int nMax );
+extern BOOL		ModelSetVertexPositionsNormals( int nModelHandle, const VECT* pxPositions, const VECT* pxNormals, int nNum );
+// The mesh's triangles as vertex indices, three a face (up to nMax written); returns the mesh's count of indices. Read through a
+// lock, so call it once and keep the copy. Added for The Universal's trip-cave (finding a model's separate pieces)
+extern int		ModelGetFaceIndices( int nModelHandle, int* pnOut, int nMax );
 extern int		ModelCreate( int nNumFaces, int nNumVerts, int nFlags );
 extern int		ModelCreateCombinedModel( int nModelHandle );
 extern void		ModelRecalcBounds( int nModelHandle );

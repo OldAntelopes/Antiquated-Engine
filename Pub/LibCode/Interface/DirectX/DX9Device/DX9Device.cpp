@@ -857,10 +857,26 @@ LPGRAPHICSDEVICE	pNewGraphicsDevice;
 
 		int		nAdapterToUse = mpInterfaceInternals->GetDXDeviceCreateParams( hWindow, boMinPageSize, &d3dpp, nBackBufferMinW, nBackBufferMinH, mboFullScreen, mnRequestedMonitorNum );
 
-		// If we've changed which monitor we're displaying on, we'll need ro recreate the d3dDevice
+		mnLastWindowAdapter = nAdapterToUse;
+		if ( mpInterfaceInternals->mpInterfaceD3DDevice )
+		{
+			mnLastDeviceChange = INTERFACE_DEVICE_CHANGE_RESET;
+		}
+
+		// The window is on another monitor (each one is its own D3D9 adapter, even on one card). Opted in: keep the device and
+		// reset it below like any resize, so nothing made on it is lost. The back buffer keeps the format the device was made with
 		if ( ( mpInterfaceInternals->mpInterfaceD3DDevice ) &&
+			 ( mnAdapterUsedForDevice != nAdapterToUse ) &&
+			 ( mbKeepDeviceOnMonitorChange == TRUE ) )
+		{
+			d3dpp.BackBufferFormat = mLastUsedD3dpp.BackBufferFormat;
+			mnLastDeviceChange = INTERFACE_DEVICE_CHANGE_RESET_KEPT;
+		}
+		// If we've changed which monitor we're displaying on, we'll need ro recreate the d3dDevice
+		else if ( ( mpInterfaceInternals->mpInterfaceD3DDevice ) &&
 			 ( mnAdapterUsedForDevice != nAdapterToUse ) )
-		{	
+		{
+			mnLastDeviceChange = INTERFACE_DEVICE_CHANGE_RECREATED;
 			if ( mfnPreDeviceResetCallback )
 			{
 				mfnPreDeviceResetCallback( this );
@@ -1212,6 +1228,28 @@ void	InterfaceChangeDisplay( BOOL bFullScreen, int nMonitorNum )
 {
 	InterfaceInstanceMain()->ChangeDisplay( bFullScreen, nMonitorNum );
 
+}
+
+/***************************************************************************
+ * Function    : InterfaceSetKeepDeviceOnMonitorChange
+ * Description : TRUE: a display change with the window on another adapter resets the device instead of recreating it
+ ***************************************************************************/
+INTERFACE_API void	InterfaceSetKeepDeviceOnMonitorChange( BOOL bKeep )
+{
+	InterfaceInstanceMain()->mbKeepDeviceOnMonitorChange = bKeep;
+}
+
+/***************************************************************************
+ * Function    : InterfaceGetLastDeviceChange
+ * Returns     : INTERFACE_DEVICE_CHANGE_* for the last display change; either pointer may be NULL
+ ***************************************************************************/
+INTERFACE_API int	InterfaceGetLastDeviceChange( int* pnDeviceAdapter, int* pnWindowAdapter )
+{
+InterfaceInstance*	pInstance = InterfaceInstanceMain();
+
+	if ( pnDeviceAdapter ) *pnDeviceAdapter = pInstance->GetAdapterUsedForDevice();
+	if ( pnWindowAdapter ) *pnWindowAdapter = pInstance->mnLastWindowAdapter;
+	return( pInstance->mnLastDeviceChange );
 }
 
 /***************************************************************************

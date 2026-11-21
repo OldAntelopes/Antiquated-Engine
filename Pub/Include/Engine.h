@@ -120,6 +120,11 @@ extern  void	EngineRestart( void );
 extern	void	EngineFree( BOOL bFreeForShutdown );
 extern	void	EngineSetOptions( ENGINE_OPTIONS* );
 extern void		EngineReloadShaders( void );
+// Opt-in compiled shader cache (DX9): shaders loaded through EngineLoadVertexShader / EngineLoadPixelShader* keep their bytecode
+// in szFolder, keyed by a hash of the source, its #includes, defines, profile and D3DX version, so a slow compile happens once per
+// source change. NULL or "" turns it off (the default: every load compiles, as before). pfnLog (optional) gets a line per load.
+typedef void	(*fnEngineShaderCacheLog)( const char* szText );
+extern void		EngineSetShaderCache( const char* szFolder, fnEngineShaderCacheLog pfnLog );
 extern	BOOL	EngineIsInitialised( void );
 
 extern	void	EngineDefaultState( void );
@@ -164,6 +169,9 @@ extern	void	EngineGetModelAnimationStats( int* pnBlendsDone, int* pnBlendsSkippe
 extern	void	EngineSetModelRenderReleasesSavedTexture( BOOL bFlag );
 
 extern	void	EngineSetBlendMode( int nBlendMode );
+// Puts the blend op back to ADD and turns separate alpha blending off, without touching the blend factors. The subtractive
+// blend modes leave REVSUBTRACT, and a later draw that sets only its factors then darkens instead. EngineDefaultState calls it.
+extern	void	EngineResetBlendOp( void );
 extern	void	EngineSetColourMode( int nTexLayer, int nBlendMode );
 extern void		EngineResetColourMode( void );
 
@@ -208,6 +216,10 @@ extern BOOL		EngineGetMaterialBlendOverride( void );
 
 extern uint32	EngineGetColValue( int R, int G, int B, int A );
 extern void		EngineSetMipBias( float );
+// Opt-in: EngineSetMipBias used to pass the float to D3DSAMP_MIPMAPLODBIAS converted by value, so 0.0 arrived right
+// but a negative bias (the -1.0 for models flagged bMipBias) arrived as 0xFFFFFFFF, a NaN, and D3D9 wants the float's bits.
+// TRUE passes the bits, so the bias does what it asks. Off by default, so existing apps see no change.
+extern void		EngineSetMipBiasPassesFloatBits( BOOL bFlag );
 
 //-----------------------------------------------------------------------------
 //  .fx / Shader interface
@@ -259,6 +271,9 @@ extern void		EngineSceneShadowsBeginCascade( int nCascade );
 // Width of the band where receivers mix the two cascades, as a fraction of the near view's half-width (default 0.2;
 // 0 = a hard border). Passed to receiver shaders in gShadowCascadeInfo.w.
 extern void		EngineSceneShadowsSetCascadeBlend( float fBand );
+// Sets a float4 constant by name on the shadow casters' vertex shader (ShadowMapPass1.vsh), if it declares one; does nothing
+// otherwise, or before the shadow shaders are loaded. For an app's own caster shader (The Universal's tree wind).
+extern void		EngineSceneShadowsSetCasterFloat4( const char* szConstantName, const float* pafValues );
 extern void		EngineShadowMapActivateTexture( BOOL bFlag );
 extern BOOL		EngineShadowMapTexturesAreActive( void );
 
@@ -428,6 +443,9 @@ extern void		EngineActivateSimpleLight( int lightNum, int mode, unsigned int ulC
 extern void		EngineDeactivateLight( int lightNum );
 // Opt-in, off by default: lights keep one slot each in what shaders are given, and deactivating really removes them (EngineDX.cpp)
 extern void		EngineSetLightSlotTracking( BOOL bFlag );
+// Opt-in: how many point lights shaders are given, 1-16 (default 8, as always). Raise it only if every shader the app draws with
+// declares its gPointLight* arrays at least that big (EngineDX.cpp)
+extern void		EngineSetMaxPointLights( int nMax );
 extern void		EngineGetPrimaryLight( ENGINE_LIGHT* pxOut );
 extern void		EngineResetLighting( void );
 

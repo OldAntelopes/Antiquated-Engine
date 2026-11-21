@@ -7,6 +7,11 @@
 
 #define		MAX_HTTP_DOWNLOADS		16
 
+// The in-memory response buffer for HTTPGet and HTTPPost: HTTPDataReceive accepts up to this many bytes and then
+// writes a 0 after them, so the buffer is allocated one byte bigger for that terminator (a body of exactly this size
+// used to write it one byte past the end)
+#define		HTTP_RESPONSE_BUFFER_SIZE		16384
+
 enum
 {
 	HTTP_DOWNLOAD_STATE_NONE = 0,
@@ -135,8 +140,8 @@ int		HTTPPostEx( const char *acFullURL, BYTE* pbBody, int nBodyLen, HTTPResponse
 			pxNewDetails->vpCBParam = vpParam;
 			pxNewDetails->nPartialDownloadStart = 0;
 			pxNewDetails->nPartialDownloadEnd = 0;
-			pxNewDetails->pbResponseBuffer = (BYTE*)( SystemMalloc( 16384 ) );
-			pxNewDetails->nResponseBufferSize = 16384;
+			pxNewDetails->pbResponseBuffer = (BYTE*)( SystemMalloc( HTTP_RESPONSE_BUFFER_SIZE + 1 ) );		// +1: the terminator
+			pxNewDetails->nResponseBufferSize = HTTP_RESPONSE_BUFFER_SIZE;
 			pxNewDetails->acLocalFilename[0] = 0;
 			pxNewDetails->nPostBodyLen = nBodyLen;
 
@@ -226,8 +231,8 @@ int		HTTPGet( const char *acFullURL, HTTPResponseHandler fnResponseHandler, void
 			pxNewDetails->vpCBParam = vpParam;
 			pxNewDetails->nPartialDownloadStart = 0;
 			pxNewDetails->nPartialDownloadEnd = 0;
-			pxNewDetails->pbResponseBuffer = (BYTE*)( SystemMalloc( 16384 ) );
-			pxNewDetails->nResponseBufferSize = 16384;
+			pxNewDetails->pbResponseBuffer = (BYTE*)( SystemMalloc( HTTP_RESPONSE_BUFFER_SIZE + 1 ) );		// +1: the terminator
+			pxNewDetails->nResponseBufferSize = HTTP_RESPONSE_BUFFER_SIZE;
 			pxNewDetails->acLocalFilename[0] = 0;
 			pxNewDetails->pcPostFields = NULL;
 		

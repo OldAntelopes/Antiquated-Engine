@@ -17,6 +17,15 @@ extern int		PhysicsObjectAddMesh( int nModelHandle, VECT* pxPos, VECT* pxRot, fl
 
 extern int		PhysicsObjectAddConvexHull( VECT* pxPointsList, int nNumPoints, float fMass );
 
+// A static, concave triangle mesh of a model as placed in the world: its collision sub-model if it has one (else the
+// drawn mesh), turned fZRot radians about z. For buildings and scenery a vehicle drives over, into and through
+// (ramps, arches). NOTFOUND if there's no physics world or the model has no triangles
+extern int		PhysicsObjectAddStaticModelMesh( int nModelHandle, const VECT* pxPos, float fZRot );
+
+// A static box that vehicles collide with (scenery: walls, fences). pxCentre is its middle, pxSize its full size
+// before it's turned fZRot radians about z
+extern int		PhysicsObjectAddStaticBox( const VECT* pxCentre, const VECT* pxSize, float fZRot );
+
 //----------------------------------------------------------
 
 extern void		PhysicsObjectRemove( int hPhysicsObject );

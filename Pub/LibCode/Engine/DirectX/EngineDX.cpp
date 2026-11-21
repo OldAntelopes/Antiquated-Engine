@@ -932,9 +932,30 @@ void				EngineSetVertexShader( LPGRAPHICSVERTEXSHADER pVertexShader, const char*
 }
 
 
+static BOOL	msbMipBiasPassesFloatBits = FALSE;
+
+/***************************************************************************
+ * Function    : EngineSetMipBiasPassesFloatBits
+ * Params      : TRUE to pass the bias to D3D as the float's bits
+ * Description : Opt-in fix for EngineSetMipBias (see Engine.h). Off by default.
+ ***************************************************************************/
+void		EngineSetMipBiasPassesFloatBits( BOOL bFlag )
+{
+	msbMipBiasPassesFloatBits = bFlag;
+}
+
 void		EngineSetMipBias( float fVal  )
 {
-	mpEngineDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, (DWORD)fVal);
+	if ( msbMipBiasPassesFloatBits )
+	{
+		// D3DSAMP_MIPMAPLODBIAS takes a float, passed as its bits
+		mpEngineDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, *( (DWORD*)&fVal ) );
+	}
+	else
+	{
+		// The old conversion by value: 0.0 is right, a negative bias arrives as 0xFFFFFFFF (a NaN). Kept so existing apps see no change.
+		mpEngineDevice->SetSamplerState(0, D3DSAMP_MIPMAPLODBIAS, (DWORD)fVal);
+	}
 }
 
 
@@ -1300,6 +1321,21 @@ void		EngineSetMaterialColourSource( BOOL bFlag )
 }
 
 //--------------------------------------------------
+// EngineResetBlendOp
+//	See Engine.h. Leaves the blend factors alone
+//--------------------------------------------------
+void	EngineResetBlendOp( void )
+{
+#ifndef TUD11
+	if ( mpEngineDevice )
+	{
+		mpEngineDevice->SetRenderState( D3DRS_BLENDOP, D3DBLENDOP_ADD );
+		mpEngineDevice->SetRenderState( D3DRS_SEPARATEALPHABLENDENABLE, FALSE );
+	}
+#endif
+}
+
+//--------------------------------------------------
 // EngineSetBlendMode
 //	Sets the type of semi-transparent blending
 //--------------------------------------------------
@@ -1639,6 +1675,7 @@ void	EngineDefaultState( void )
 		EngineEnableLighting( FALSE );
 		EngineEnableFog( 0 );
 		EngineEnableBlend( 1 );
+		EngineResetBlendOp();		// a subtractive blend mode would otherwise outlive this
 		EngineEnableTextureAddressClamp( 1 );
 		mpEngineDevice->SetRenderState( D3DRS_ALPHAREF, 0x1 );
 		if ( msnEngineDefaultStateAlphaFunc != NOTFOUND )
@@ -1718,8 +1755,11 @@ void		EngineDeactivateLight( int lightNum )
 
 ENGINE_LIGHT		mxMainLight;
 
-#define			SHADER_MAX_NUM_POINT_LIGHTS		8
+#define			SHADER_MAX_NUM_POINT_LIGHTS		16		// room kept; shaders are given msnEngineMaxPointLights of them
+#define			SHADER_DEFAULT_NUM_POINT_LIGHTS	8
 #define			SHADER_MAX_NUM_SPOT_LIGHTS		8
+
+static int			msnEngineMaxPointLights = SHADER_DEFAULT_NUM_POINT_LIGHTS;
 
 VECT				maxPointLightPositions[SHADER_MAX_NUM_POINT_LIGHTS];
 VECT				maxPointLightColours[SHADER_MAX_NUM_POINT_LIGHTS];
@@ -1746,6 +1786,19 @@ float				mafSpotLightRange[SHADER_MAX_NUM_SPOT_LIGHTS];
 void	EngineSetLightSlotTracking( BOOL bFlag )
 {
 	msbEngineLightSlotTracking = bFlag;
+}
+
+/***************************************************************************
+ * Function    : EngineSetMaxPointLights
+ * Params      : nMax - how many point lights shaders are given, 1 to 16. Default 8, as always
+ * Description : Opt-in. Every shader the app draws with must declare gPointLightPositions, gPointLightColours and
+ *				 gPointLightRanges at least this big, or its loop reads past them. Takes effect from the next light activated
+ ***************************************************************************/
+void	EngineSetMaxPointLights( int nMax )
+{
+	if ( nMax < 1 ) nMax = 1;
+	if ( nMax > SHADER_MAX_NUM_POINT_LIGHTS ) nMax = SHADER_MAX_NUM_POINT_LIGHTS;
+	msnEngineMaxPointLights = nMax;
 }
 
 static BOOL		EngineLightIsInFixedFunctionRange( int nLightNum )
@@ -2052,7 +2105,7 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 					nSlot = mnNumActivePointLights;
 					if ( msbEngineLightSlotTracking == TRUE )
 					{
-						if ( nSlot < SHADER_MAX_NUM_POINT_LIGHTS )
+						if ( nSlot < msnEngineMaxPointLights )
 						{
 							manPointLightSlotNums[nSlot] = nLightNum;
 							mnNumActivePointLights++;
@@ -2062,7 +2115,7 @@ void		EngineActivateLight( int nLightNum, ENGINE_LIGHT* pLight )
 							nSlot = NOTFOUND;		// No room: whoever's calling should hand over the most important lights first
 						}
 					}
-					else if ( mnNumActivePointLights < (SHADER_MAX_NUM_POINT_LIGHTS - 1) )
+					else if ( mnNumActivePointLights < (msnEngineMaxPointLights - 1) )
 					{
 						mnNumActivePointLights++;
 					}

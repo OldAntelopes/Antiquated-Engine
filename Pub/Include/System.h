@@ -27,6 +27,9 @@ extern void		SystemFree( void* pMem );
 extern void		SysDebugPrint( const char*, ... );
 extern void		SysUserPrint( int mode, const char*, ... );
 extern void		SysPanicIf( int condition, const char*, ... );
+// Optional extra line for every SysPanicIf dialog and SysMessageBox (e.g. who launched the process), shown under the
+// message. NULL or "" for none, the default, which leaves both unchanged. The text is copied.
+extern void		SysSetPanicContext( const char* szContext );
 
 typedef	void(*fnDebugPrintHandler)( const char* szMessage );
 extern void		SysRegisterDebugPrintHandler( fnDebugPrintHandler pDebugPrintHandler );

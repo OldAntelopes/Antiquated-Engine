@@ -37,12 +37,24 @@ INTERFACE_API BOOL	InterfaceWaitingForMessageBox( void )
 }
 
 
+static char		msacPanicContext[256] = "";
+
+/***************************************************************************
+ * Function    : InterfaceSetPanicContext
+ * Description : See Interface.h
+ ***************************************************************************/
+void	InterfaceSetPanicContext( const char* szContext )
+{
+	snprintf( msacPanicContext, sizeof( msacPanicContext ), "%s", ( szContext != NULL ) ? szContext : "" );
+}
+
 void	PanicImplShowDialog( const char* szErrorString )
 {
-char	acString[512];
+char	acString[768];
 int		nRet;
 
-	sprintf( acString, "**** Error Message ****\n%s\n", szErrorString);
+	snprintf( acString, sizeof( acString ), "**** Error Message ****\n%s\n%s%s", szErrorString,
+			  ( msacPanicContext[0] != 0 ) ? "\n" : "", msacPanicContext );
 	nRet = MessageBox( mhwndInterfaceMain, acString, "Error message", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION);
 	if ( nRet == IDIGNORE )
 	{
@@ -250,6 +262,29 @@ void	InterfaceInstance::SetInitialWindowSize( int sizeX, int sizeY )
 	}
 }
 
+
+/***************************************************************************
+ * Function    : InterfaceSetWindowMaximiseBox
+ * Description : See Interface.h
+ ***************************************************************************/
+INTERFACE_API void	InterfaceSetWindowMaximiseBox( BOOL bOn )
+{
+InterfaceInstance*	pInstance = InterfaceInstanceMain();
+
+	pInstance->mbWindowMaximiseBox = bOn;
+	if ( ( mhwndInterfaceMain != NULL ) &&
+		 ( pInstance->IsFullscreen() == FALSE ) )
+	{
+	LONG	lStyle = GetWindowLong( mhwndInterfaceMain, GWL_STYLE );
+
+		if ( lStyle & WS_CAPTION )
+		{
+			lStyle = ( bOn ) ? ( lStyle | WS_MAXIMIZEBOX ) : ( lStyle & ~WS_MAXIMIZEBOX );
+			SetWindowLong( mhwndInterfaceMain, GWL_STYLE, lStyle );
+			SetWindowPos( mhwndInterfaceMain, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED );
+		}
+	}
+}
 
 void	InterfaceSetWindowStyle( HWND hWindow, bool bFullscreen )
 {

@@ -190,6 +190,16 @@ extern void		ModelMaterialsEnableLighting( BOOL bLightingEnable );
 // Puts things back after a draw with a relief material (Apply returned RELIEF_ACTIVATED)
 extern void		ModelMaterialsEndRelief( void );
 
+// Pixel shader variants of the model material shader (opt-in; nothing changes until an app adds one). A variant is the app's
+// ATMMaterial.psh compiled again with szDefine set to 1 (e.g. The Universal's landscape-only build), labelled szLabel for draw
+// probes. Add returns its number (1 up), or NOTFOUND. Selecting one makes it the model material pixel shader from then on:
+// ModelMaterialsActivateNormalShader binds it, and every constant set goes to it. On a switch the engine's constants and the
+// last value of every float4 set through ModelMaterialsShaderSetFloat4 are sent to the new one, so the variants needn't share
+// a register layout. 0 is ATMMaterial itself. Variants are rebuilt by EngineReloadShaders, which leaves 0 selected.
+extern int		ModelMaterialsAddPixelShaderVariant( const char* szDefine, const char* szLabel );
+extern void		ModelMaterialsSelectPixelShaderVariant( int nVariant );
+extern int		ModelMaterialsGetPixelShaderVariant( void );
+
 #ifdef TOOL
 extern void	ModelDeleteAllMaterials( int nModelHandle );
 extern void	ModelCreateDefaultMaterials( int nModelHandle, const char* acTexture );

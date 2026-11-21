@@ -69,6 +69,13 @@ void	PhysicsVehicleSetup::SetSteeringSpeed( float fSteeringSpeed )
 
 //----------------------------------------------------------------------------
 
+static PhysicsGroundHeightOffsetFunc	mspfnGroundHeightOffset = NULL;
+
+void		PhysicsVehicleSetGroundHeightOffsetFunc( PhysicsGroundHeightOffsetFunc pfnOffset )
+{
+	mspfnGroundHeightOffset = pfnOffset;
+}
+
 class PhysicsVehicleRaycaster : public btVehicleRaycaster
 {
 public:
@@ -93,16 +100,74 @@ public:
 			mCollisionFilterGroup = COLLISION_FILTER_REMOTE_PREDICTION_VEHICLE;
 			break;
 		}
+		mfGroundNormalSmoothing = 0.0f;
 	}
 
 	virtual void* castRay(const btVector3& from,const btVector3& to, btVehicleRaycasterResult& result);
+
+	void	SetGroundNormalSmoothing( float fDistance ) { mfGroundNormalSmoothing = fDistance; }
 
 	btDynamicsWorld*	mpDynamicsWorld;
 	bool	mUseFilter;
 	ushort	mCollisionFilterMask;
 	ushort	mCollisionFilterGroup;
+	float	mfGroundNormalSmoothing;
 
+private:
+	BOOL	LandscapeHeightAt( float fX, float fY, float fNearZ, float* pfHeight );
+	BOOL	SmoothLandscapeNormal( const btVector3& xHit, btVector3* pxNormal );
 };
+
+//-------------------------------------------------------------
+// Function    : LandscapeHeightAt
+// Description : The landscape's height straight below (or above) a point, within 10 m of fNearZ
+//-------------------------------------------------------------
+BOOL	PhysicsVehicleRaycaster::LandscapeHeightAt( float fX, float fY, float fNearZ, float* pfHeight )
+{
+btVector3	xFrom( fX, fY, fNearZ + 10.0f );
+btVector3	xTo( fX, fY, fNearZ - 10.0f );
+btCollisionWorld::ClosestRayResultCallback	rayCallback( xFrom, xTo );
+
+	rayCallback.m_collisionFilterMask = COLLISION_FILTER_LANDSCAPE;
+	rayCallback.m_collisionFilterGroup = mCollisionFilterGroup;
+	mpDynamicsWorld->rayTest( xFrom, xTo, rayCallback );
+	if ( rayCallback.hasHit() == false )
+	{
+		return( FALSE );
+	}
+	*pfHeight = rayCallback.m_hitPointWorld.getZ();
+	if ( mspfnGroundHeightOffset )
+	{
+		*pfHeight += mspfnGroundHeightOffset( fX, fY );
+	}
+	return( TRUE );
+}
+
+//-------------------------------------------------------------
+// Function    : SmoothLandscapeNormal
+// Description : The landscape's slope at a point from its heights mfGroundNormalSmoothing either side, in x and y.
+//               Unlike the hit triangle's normal it changes smoothly as the point moves, so crossing a triangle edge
+//               doesn't kick the suspension. FALSE (keep the triangle's normal) if any sample misses.
+//-------------------------------------------------------------
+BOOL	PhysicsVehicleRaycaster::SmoothLandscapeNormal( const btVector3& xHit, btVector3* pxNormal )
+{
+float	fDist = mfGroundNormalSmoothing;
+float	fX = xHit.getX();
+float	fY = xHit.getY();
+float	fZ = xHit.getZ();
+float	fXPlus, fXMinus, fYPlus, fYMinus;
+
+	if ( ( LandscapeHeightAt( fX + fDist, fY, fZ, &fXPlus ) == FALSE ) ||
+		 ( LandscapeHeightAt( fX - fDist, fY, fZ, &fXMinus ) == FALSE ) ||
+		 ( LandscapeHeightAt( fX, fY + fDist, fZ, &fYPlus ) == FALSE ) ||
+		 ( LandscapeHeightAt( fX, fY - fDist, fZ, &fYMinus ) == FALSE ) )
+	{
+		return( FALSE );
+	}
+	pxNormal->setValue( ( fXMinus - fXPlus ) / ( 2.0f * fDist ), ( fYMinus - fYPlus ) / ( 2.0f * fDist ), 1.0f );
+	pxNormal->normalize();
+	return( TRUE );
+}
 
 
 void* PhysicsVehicleRaycaster::castRay(const btVector3& from,const btVector3& to, btVehicleRaycasterResult& result)
@@ -127,6 +192,37 @@ void* PhysicsVehicleRaycaster::castRay(const btVector3& from,const btVector3& to
 			result.m_hitNormalInWorld = rayCallback.m_hitNormalWorld;
 			result.m_hitNormalInWorld.normalize();
 			result.m_distFraction = rayCallback.m_closestHitFraction;
+
+			BOOL	bLandscape = ( ( rayCallback.m_collisionObject->getBroadphaseHandle() != NULL ) &&
+								   ( rayCallback.m_collisionObject->getBroadphaseHandle()->m_collisionFilterGroup & COLLISION_FILTER_LANDSCAPE ) ) ? TRUE : FALSE;
+
+			// The drawn ground, when the game says it differs from the landscape: move the hit along the ray
+			if ( ( bLandscape ) &&
+				 ( mspfnGroundHeightOffset ) &&
+				 ( from.getZ() - to.getZ() > 0.01f ) )
+			{
+			float	fOffset = mspfnGroundHeightOffset( rayCallback.m_hitPointWorld.getX(), rayCallback.m_hitPointWorld.getY() );
+			float	fFraction = rayCallback.m_closestHitFraction - ( fOffset / ( from.getZ() - to.getZ() ) );
+
+				if ( fFraction > 1.0f )
+				{
+					return 0;		// The drawn ground is below the ray's reach: the wheel's in the air
+				}
+				if ( fFraction < 0.0f ) fFraction = 0.0f;
+				result.m_distFraction = fFraction;
+				result.m_hitPointInWorld = from.lerp( to, fFraction );
+			}
+
+			if ( ( mfGroundNormalSmoothing > 0.0f ) &&
+				 ( bLandscape ) )
+			{
+			btVector3	xSmoothNormal;
+
+				if ( SmoothLandscapeNormal( result.m_hitPointInWorld, &xSmoothNormal ) )
+				{
+					result.m_hitNormalInWorld = xSmoothNormal;
+				}
+			}
 			return body;
 		}
 	}
@@ -138,6 +234,16 @@ void* PhysicsVehicleRaycaster::castRay(const btVector3& from,const btVector3& to
 PhysicsVehicle::PhysicsVehicle()
 {
 	m_pRaycastVehicle = NULL;
+	m_pCarChassisRigidBody = NULL;
+	m_pVehicleRaycaster = NULL;
+	m_pFrontWheelShape = NULL;
+	m_pRearWheelShape = NULL;
+	m_pChassisCompoundShape = NULL;
+	mfChassisShapeHeight = 0.0f;
+	mafWheelRadius[0] = mafWheelRadius[1] = mafWheelRadius[2] = mafWheelRadius[3] = 0.0f;
+	mafDefaultWheelRadius[0] = mafDefaultWheelRadius[1] = mafDefaultWheelRadius[2] = mafDefaultWheelRadius[3] = 0.0f;
+	memset( maxDefaultWheelPos, 0, sizeof( maxDefaultWheelPos ) );
+	mnCurrentRPM = 0;
 	mfVehicleSteering = 0.0f;
 	mfVehicleBrakeForce = 0.0f;
 	mfVehicleEngineForce = 0.0f;
@@ -260,6 +366,17 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 
 	mPhysicsVehicleSetup = *pSetup;
 
+	// The rigid body's origin is its centre of mass. With mfCentreOfMassHeight 0 that origin sits at ground level
+	// under the chassis (the wheels' contact points), so no tyre force can roll or pitch it. A real height moves
+	// the chassis box and the wheels down relative to the body by that much.
+	float	fCOMHeight = mPhysicsVehicleSetup.mfCentreOfMassHeight;
+
+	mfChassisShapeHeight = fChassisCOMAdjustHeight;
+	mafWheelRadius[0] = fFrontWheelRadius;
+	mafWheelRadius[1] = fFrontWheelRadius;
+	mafWheelRadius[2] = fRearWheelRadius;
+	mafWheelRadius[3] = fRearWheelRadius;
+
 	tr.setIdentity();
 
 	btCollisionShape* chassisShape = new btBoxShape(btVector3(fChassisHalfWidth,fChassisHalfLength,fChassisHalfHeight));
@@ -267,15 +384,16 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 
 	btCompoundShape* compound = new btCompoundShape();
 	m_apCollisionShapes.push_back(compound);
+	m_pChassisCompoundShape = compound;
 
 	btTransform localTrans;
 	localTrans.setIdentity();
 
-	localTrans.setOrigin(btVector3(0,0,fChassisCOMAdjustHeight));
+	localTrans.setOrigin(btVector3(0,0,fChassisCOMAdjustHeight - fCOMHeight));
 
 	compound->addChildShape(localTrans,chassisShape);
 
-	tr.setOrigin(btVector3(pxPos->x, pxPos->y, pxPos->z + 3.0f ));
+	tr.setOrigin(btVector3(pxPos->x, pxPos->y, pxPos->z + 3.0f + fCOMHeight ));
 
 	m_pCarChassisRigidBody = localCreateRigidBody(pSetup->mfMass,tr,compound, collisionType, mPhysicsVehicleSetup.mfCentreOfMassOffsetZ );//chassisShape);
 
@@ -297,7 +415,7 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 	//choose coordinate system
 	m_pRaycastVehicle->setCoordinateSystem( 0, 2, 1 );
 
-	float fContactPointOffsetZ = fSuspensionRestLength;// * 0.5f;
+	float fContactPointOffsetZ = fSuspensionRestLength - fCOMHeight;// * 0.5f;
 	// Front Right ( +X, -Y )
 	btVector3 connectionPointCS0(fChassisHalfWidth-(0.5f*wheelWidth),fChassisHalfLength-(fFrontWheelRadius*1.8f), fFrontWheelRadius + fContactPointOffsetZ);
 	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fFrontWheelRadius,m_tuning,isFrontWheel);
@@ -314,7 +432,22 @@ float		fWheelConnectionHeight = fFrontWheelRadius;// - fSuspensionRestLength;// 
 	// Rear Right ( +X, +Y )
 	connectionPointCS0 = btVector3(fChassisHalfWidth-(0.3f*wheelWidth),(0.0f-fChassisHalfLength)+fRearWheelRadius,fRearWheelRadius + fContactPointOffsetZ);
 	m_pRaycastVehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,fSuspensionRestLength,fRearWheelRadius,m_tuning,isFrontWheel);
-	
+
+	// Keep the built-in layout's wheel centres (resting on the ground) for when the setup doesn't give its own
+	for ( int nLoop = 0; ( nLoop < m_pRaycastVehicle->getNumWheels() ) && ( nLoop < 4 ); nLoop++ )
+	{
+	btWheelInfo&	wheel = m_pRaycastVehicle->getWheelInfo( nLoop );
+
+		maxDefaultWheelPos[nLoop].x = wheel.m_chassisConnectionPointCS.getX();
+		maxDefaultWheelPos[nLoop].y = wheel.m_chassisConnectionPointCS.getY();
+		maxDefaultWheelPos[nLoop].z = mafWheelRadius[nLoop];
+		mafDefaultWheelRadius[nLoop] = mafWheelRadius[nLoop];
+	}
+	if ( mPhysicsVehicleSetup.HasWheelGeometry() )
+	{
+		ApplyGeometry();
+	}
+
 	SetAllWheelSettings( pSetup );
 
 }
@@ -344,8 +477,60 @@ void		PhysicsVehicle::SetAllWheelSettings( const PhysicsVehicleSetup* pSetup )
           /// Set large (10000.0) for kart racers
 		wheel.m_frictionSlip = mPhysicsVehicleSetup.mfFrictionSlip;
 		wheel.m_rollInfluence = mPhysicsVehicleSetup.mfRollInfluence;
+		wheel.m_maxSuspensionForce = mPhysicsVehicleSetup.mfMaxSuspensionForce;
+	}
+	if ( m_pVehicleRaycaster )
+	{
+		m_pVehicleRaycaster->SetGroundNormalSmoothing( mPhysicsVehicleSetup.mfGroundNormalSmoothing );
 	}
 
+}
+
+//-------------------------------------------------------------
+// Function    : ApplyGeometry
+// Description : Puts the chassis box and the wheel mounts where the current setup's rest length and centre of mass
+//               height say, relative to the rigid body (whose origin is the centre of mass)
+//-------------------------------------------------------------
+void		PhysicsVehicle::ApplyGeometry( void )
+{
+float	fCOMHeight = mPhysicsVehicleSetup.mfCentreOfMassHeight;
+float	fRestLength = mPhysicsVehicleSetup.mfSuspensionRestLength;
+int		nLoop;
+
+	if ( ( m_pChassisCompoundShape ) &&
+		 ( m_pChassisCompoundShape->getNumChildShapes() > 0 ) )
+	{
+	btTransform		xChildTrans;
+
+		xChildTrans.setIdentity();
+		xChildTrans.setOrigin( btVector3( 0.0f, 0.0f, mfChassisShapeHeight - fCOMHeight ) );
+		m_pChassisCompoundShape->updateChildTransform( 0, xChildTrans, true );
+	}
+
+	for ( nLoop = 0; ( nLoop < m_pRaycastVehicle->getNumWheels() ) && ( nLoop < 4 ); nLoop++ )
+	{
+	btWheelInfo&	wheel = m_pRaycastVehicle->getWheelInfo( nLoop );
+	const VECT*		pxCentre = &maxDefaultWheelPos[nLoop];
+	float			fRadius = mafDefaultWheelRadius[nLoop];
+
+		// The setup's own wheel centres (e.g. from the model) when it has them
+		if ( ( mPhysicsVehicleSetup.mbWheelGeometrySet ) &&
+			 ( mPhysicsVehicleSetup.mafWheelRadius[nLoop] > 0.0f ) )
+		{
+			pxCentre = &mPhysicsVehicleSetup.maxWheelPos[nLoop];
+			fRadius = mPhysicsVehicleSetup.mafWheelRadius[nLoop];
+		}
+		mafWheelRadius[nLoop] = fRadius;
+		wheel.m_wheelsRadius = fRadius;
+		wheel.m_suspensionRestLength1 = fRestLength;
+		// The mount sits a rest length above the wheel's centre, which is pxCentre->z above the ground under the vehicle
+		wheel.m_chassisConnectionPointCS.setValue( pxCentre->x, pxCentre->y, pxCentre->z + fRestLength - fCOMHeight );
+	}
+}
+
+PhysicsVehicleSetup*		PhysicsVehicle::GetCurrentSetup( void )
+{
+	return( &mPhysicsVehicleSetup );
 }
 
 void		PhysicsVehicle::ModifySettings( const PhysicsVehicleSetup* pSetup )
@@ -354,18 +539,110 @@ btVector3		inertia( 0.0f, 0.0f, 0.0f );
 
 	if ( mPhysicsVehicleSetup.IsDifferent( pSetup ) )
 	{
+	float	fOldCOMHeight = mPhysicsVehicleSetup.mfCentreOfMassHeight;
+	BOOL	bGeometryChanged = FALSE;
+
+		if ( ( pSetup->mfSuspensionRestLength != mPhysicsVehicleSetup.mfSuspensionRestLength ) ||
+			 ( pSetup->mfCentreOfMassHeight != mPhysicsVehicleSetup.mfCentreOfMassHeight ) ||
+			 ( mPhysicsVehicleSetup.IsWheelGeometryDifferent( pSetup ) ) )
+		{
+			bGeometryChanged = TRUE;
+		}
 
 		// mfEnginePowerRating is used in the UpdateEngine call every frame
 		mPhysicsVehicleSetup = *pSetup;
 
 		// SetAllWheelSettings updates mfWheelsDampingCompression, mfWheelsDampingRelaxation, mfFrictionSlip, mfRollInfluence, mfSuspensionStiffness
 		SetAllWheelSettings( pSetup );
-		// Update rigid body mass 
-		inertia = m_pCarChassisRigidBody->getLocalInertia();
-		m_pCarChassisRigidBody->setMassProps( pSetup->mfMass, inertia );
 
-		//		Note - mfSuspensionRestLength  cant be updated without re-adding the wheels (i.e. recreating the vehicle anew) 
+		if ( bGeometryChanged )
+		{
+			ApplyGeometry();
+			// Keep the vehicle where it was: the centre of mass moved within it
+			if ( pSetup->mfCentreOfMassHeight != fOldCOMHeight )
+			{
+			btTransform		xTrans = m_pCarChassisRigidBody->getWorldTransform();
+
+				xTrans.setOrigin( xTrans( btVector3( 0.0f, 0.0f, pSetup->mfCentreOfMassHeight - fOldCOMHeight ) ) );
+				m_pCarChassisRigidBody->proceedToTransform( xTrans );
+			}
+		}
+
+		// Update rigid body mass, with the inertia worked out again for the new mass (keeping the old inertia
+		// made a heavier vehicle twist as if it were the old weight)
+		if ( m_pChassisCompoundShape )
+		{
+			m_pChassisCompoundShape->calculateLocalInertia( pSetup->mfMass, inertia );
+		}
+		else
+		{
+			inertia = m_pCarChassisRigidBody->getLocalInertia();
+		}
+		m_pCarChassisRigidBody->setMassProps( pSetup->mfMass, inertia );
+		m_pCarChassisRigidBody->updateInertiaTensor();
 	}
+}
+
+int		PhysicsVehicle::GetNumWheelsOnGround( void )
+{
+int		nLoop;
+int		nCount = 0;
+
+	for ( nLoop = 0; nLoop < m_pRaycastVehicle->getNumWheels(); nLoop++ )
+	{
+		if ( m_pRaycastVehicle->getWheelInfo( nLoop ).m_raycastInfo.m_isInContact )
+		{
+			nCount++;
+		}
+	}
+	return( nCount );
+}
+
+float	PhysicsVehicle::GetWheelSuspensionLength( int nWheelNum )
+{
+	if ( ( nWheelNum < 0 ) || ( nWheelNum >= m_pRaycastVehicle->getNumWheels() ) ) return( 0.0f );
+	return( m_pRaycastVehicle->getWheelInfo( nWheelNum ).m_raycastInfo.m_suspensionLength );
+}
+
+BOOL	PhysicsVehicle::IsWheelSliding( int nWheelNum )
+{
+	if ( ( nWheelNum < 0 ) || ( nWheelNum >= m_pRaycastVehicle->getNumWheels() ) ) return( FALSE );
+	return( ( m_pRaycastVehicle->getWheelInfo( nWheelNum ).m_skidInfo < 1.0f ) ? TRUE : FALSE );
+}
+
+//-------------------------------------------------------------
+// Function    : ApplyDragForces
+// Description : Air drag and rolling resistance. Without them nothing but the brake slows the vehicle, and it
+//               speeds up for as long as the accelerator is held. Applied before the next physics step.
+//-------------------------------------------------------------
+void		PhysicsVehicle::ApplyDragForces( void )
+{
+btVector3	xVel = m_pCarChassisRigidBody->getLinearVelocity();
+float		fSpeed = xVel.length();
+float		fForce;
+
+	if ( fSpeed < 0.01f ) return;
+
+	fForce = GetDragCoefficientInUse() * fSpeed * fSpeed;
+	if ( ( mPhysicsVehicleSetup.mfRollingResistance > 0.0f ) &&
+		 ( GetNumWheelsOnGround() > 0 ) )
+	{
+	float	fRamp = fSpeed / 0.5f;		// Fade out near standstill so it can't push the vehicle backwards
+
+		if ( fRamp > 1.0f ) fRamp = 1.0f;
+		fForce += mPhysicsVehicleSetup.mfRollingResistance * mPhysicsVehicleSetup.mfMass * fRamp;
+	}
+
+	if ( fForce > 0.0f )
+	{
+		m_pCarChassisRigidBody->applyCentralForce( xVel * ( 0.0f - ( fForce / fSpeed ) ) );
+	}
+}
+
+void		PhysicsVehicle::StopMoving( void )
+{
+	m_pCarChassisRigidBody->setLinearVelocity( btVector3( 0.0f, 0.0f, 0.0f ) );
+	m_pCarChassisRigidBody->setAngularVelocity( btVector3( 0.0f, 0.0f, 0.0f ) );
 }
 
 void		PhysicsVehicle::Initialise( const VECT* pxPos, eVehicleCollisionType collisionType, const PhysicsVehicleSetup* pSetup )
@@ -387,6 +664,15 @@ void	PhysicsVehicle::GetPosition( VECT* pxOut )
 btTransform trans;
 
 	m_pRaycastVehicle->getRigidBody()->getMotionState()->getWorldTransform( trans );
+	if ( mPhysicsVehicleSetup.mfCentreOfMassHeight != 0.0f )
+	{
+	btVector3	xGroundPos = trans( btVector3( 0.0f, 0.0f, 0.0f - mPhysicsVehicleSetup.mfCentreOfMassHeight ) );
+
+		pxOut->x = xGroundPos.getX();
+		pxOut->y = xGroundPos.getY();
+		pxOut->z = xGroundPos.getZ();
+		return;
+	}
 	*pxOut = *( (VECT*)&trans.getOrigin() );
 }
 
@@ -396,7 +682,11 @@ btTransform rTrans;
 btMatrix3x3 rRotMat;
 
 	memset( pxOut, 0, sizeof( ENGINEMATRIX ) );
+	// updateWheelTransform clears the wheel's in-contact flag as a side effect. Keep it, so it still says what the
+	// last physics step found until the next one (frames without a step used to read every wheel as airborne)
+	bool	bWasInContact = m_pRaycastVehicle->getWheelInfo( nWheelNum ).m_raycastInfo.m_isInContact;
 	m_pRaycastVehicle->updateWheelTransform( nWheelNum );
+	m_pRaycastVehicle->getWheelInfo( nWheelNum ).m_raycastInfo.m_isInContact = bWasInContact;
 	rTrans = m_pRaycastVehicle->getWheelTransformWS( nWheelNum );
 	rRotMat = rTrans.getBasis();
 	pxOut->_11 = rRotMat[0][0];
@@ -440,6 +730,8 @@ btVector3		xPos;
 
 	m_pRaycastVehicle->getRigidBody()->getMotionState()->getWorldTransform( trans );
 	xPos.setValue( pxPos->x, pxPos->y, pxPos->z );
+	// pxPos is the ground-level position GetPosition reports; the body sits mfCentreOfMassHeight above it
+	xPos += trans.getBasis() * btVector3( 0.0f, 0.0f, mPhysicsVehicleSetup.mfCentreOfMassHeight );
 	trans.setOrigin( xPos );
 	m_pRaycastVehicle->getRigidBody()->proceedToTransform( trans );
 }
@@ -476,6 +768,7 @@ btVector3		xPos;
 	xPos.setValue( pxPos->x, pxPos->y, pxPos->z );
 
 	trans.setRotation( xQuat );
+	xPos += trans.getBasis() * btVector3( 0.0f, 0.0f, mPhysicsVehicleSetup.mfCentreOfMassHeight );
 	trans.setOrigin( xPos );
 
 	if ( ( !SysIsFinite( pQuat->x ) ) ||
@@ -527,11 +820,61 @@ GEAR_SETTINGS		maGearSettings[] =
 	{ 0.0f, 0.0f, -1.0f, -1.0f },
 };
 
+//-------------------------------------------------------------
+// Function    : GetEngineForceAtMPH
+// Description : The full-throttle force one driven wheel gets at a speed, from the gear table and the engine power
+//-------------------------------------------------------------
+float		PhysicsVehicle::GetEngineForceAtMPH( float fSpeed )
+{
+GEAR_SETTINGS*		pxGearSettings = maGearSettings;
+float	fGearRange;
+
+	fSpeed = fabsf( fSpeed );
+	while( fSpeed > pxGearSettings->fMaxSpeed )
+	{
+		pxGearSettings++;
+		if ( pxGearSettings->fMaxSpeed == -1.0f )
+		{
+			pxGearSettings--;
+			break;
+		}
+	}
+	fGearRange = ( fSpeed - pxGearSettings->fMinSpeed ) / ( pxGearSettings->fMaxSpeed - pxGearSettings->fMinSpeed );
+	return( ( pxGearSettings->fBaseForce + ( pxGearSettings->fPeakExtraForce * sinf( A45 + ( fGearRange * A90 ) ) ) ) * 1.75f * mPhysicsVehicleSetup.mfEnginePowerRating );
+}
+
+//-------------------------------------------------------------
+// Function    : GetDragCoefficientInUse
+// Description : The setup's drag, or with a top speed set, the drag at which the two driven wheels' full-throttle
+//               force (less rolling resistance) only just holds that speed on the flat
+//-------------------------------------------------------------
+float		PhysicsVehicle::GetDragCoefficientInUse( void )
+{
+float	fTopMPH = mPhysicsVehicleSetup.mfTopSpeedMPH;
+float	fTopMetresPerSec;
+float	fForce;
+
+	if ( fTopMPH <= 0.0f )
+	{
+		return( mPhysicsVehicleSetup.mfDragCoefficient );
+	}
+	fTopMetresPerSec = fTopMPH * 0.44704f;
+	fForce = ( 2.0f * GetEngineForceAtMPH( fTopMPH ) ) - ( mPhysicsVehicleSetup.mfRollingResistance * mPhysicsVehicleSetup.mfMass );
+	if ( fForce <= 0.0f )
+	{
+		return( mPhysicsVehicleSetup.mfDragCoefficient );
+	}
+	return( fForce / ( fTopMetresPerSec * fTopMetresPerSec ) );
+}
+
 void		PhysicsVehicle::UpdateEngine( float fDelta )
 {
-float	fSpeed = GetCurrentSpeedMPH();
+float	fSignedSpeed = GetCurrentSpeedMPH();
+// The gear table is for speeds forward or back: with the signed speed, reversing ran the gear maths on negative
+// numbers, giving a force that rose and fell erratically (and negative RPMs)
+float	fSpeed = fabsf( fSignedSpeed );
 float	fMaxEngineForce;
-float	fMaxBreakingForce = 200.f;
+float	fMaxBreakingForce = mPhysicsVehicleSetup.mfBrakeForce;
 float	fEngineForceMod = 1.75f * mPhysicsVehicleSetup.mfEnginePowerRating;
 int		nChosenGear = 1;
 float	fGearRange;
@@ -563,6 +906,14 @@ GEAR_SETTINGS*		pxGearSettings;
 	
 	mfVehicleBrakeForce = mfVehicleBrakeAmount * fMaxBreakingForce;
 	mfVehicleEngineForce = mfVehicleAcceleratorAmount * fMaxEngineForce * fEngineForceMod;
+
+	// Reverse speed limit, when one is set
+	if ( ( mfVehicleAcceleratorAmount < 0.0f ) &&
+		 ( mPhysicsVehicleSetup.mfReverseMaxMPH > 0.0f ) &&
+		 ( ( 0.0f - fSignedSpeed ) >= mPhysicsVehicleSetup.mfReverseMaxMPH ) )
+	{
+		mfVehicleEngineForce = 0.0f;
+	}
 }
 
 void		PhysicsVehicle::Update( float fDelta )
@@ -581,6 +932,8 @@ int wheelIndex = 2;
 	m_pRaycastVehicle->setSteeringValue(mfVehicleSteering,wheelIndex);
 	wheelIndex = 1;
 	m_pRaycastVehicle->setSteeringValue(mfVehicleSteering,wheelIndex);
+
+	ApplyDragForces();
 
 #ifdef PHYSICS_VEHICLE_ONSCREENDEBUG
 	char		acString[256];

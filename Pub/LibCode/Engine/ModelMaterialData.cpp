@@ -47,6 +47,46 @@ D3DXVECTOR4		mxEmssiveVecValue( 0.0f, 0.0f, 0.0f, 0.0f );
 static MATERIAL_COLOUR	msxModelMaterialEmissiveBoost = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 //----------------------------------------------------------------------------------------------------
+// Pixel shader variants of the model material shader (opt-in, ModelMaterialsAddPixelShaderVariant; Elemental doesn't use
+// them). An app can compile its ATMMaterial.psh again with a preprocessor define (The Universal: a landscape-only build) and
+// select it round some draws. The selected variant takes ATMMaterial's place everywhere in this file:
+// ModelMaterialsActivateNormalShader binds it and every constant goes to its registers. Each variant has its own register
+// layout, so on a switch the engine's constants (lights, fog, shadows, material, the flags) and the last value of every
+// float4 the app set through ModelMaterialsShaderSetFloat4 are sent again to the newly bound one. Variant 0 is ATMMaterial.
+#define	MAX_MODEL_PS_VARIANTS			4
+#define	MAX_MODEL_PS_FLOAT4_CACHE		128
+
+typedef struct
+{
+	char						szDefine[32];
+	char						szLabel[32];
+#ifdef ENGINEDX
+	LPGRAPHICSPIXELSHADER		pShader;
+	LPGRAPHICSCONSTANTBUFFER	pConstantTable;
+#endif
+} MODEL_PS_VARIANT;
+
+typedef struct
+{
+	char		szName[48];
+	float		afValue[4];
+} MODEL_PS_FLOAT4;
+
+static MODEL_PS_VARIANT	msaxModelPSVariants[MAX_MODEL_PS_VARIANTS];		// [0] holds ATMMaterial's while another is selected
+static int				msnNumModelPSVariants = 0;						// 0 until an app adds one: the feature is off
+static int				msnModelPSVariantSelected = 0;
+static BOOL				msbModelPSVariantNeedsResend = FALSE;			// selected while not bound: resend when next activated
+static MODEL_PS_FLOAT4	msaxModelPSFloat4Cache[MAX_MODEL_PS_FLOAT4_CACHE];
+static int				msnModelPSFloat4CacheUsed = 0;
+static BOOL				msbModelPSLastFlags[3] = { TRUE, FALSE, FALSE };	// last activation's diffuse, normal, specular map flags
+static int				msnModelPSLastLighting = -1;					// -1 = never set
+static int				msnModelPSLastOverlay = -1;
+
+static void		ModelMaterialsSetPixelShaderConstants( BOOL bHasDiffuseMap, BOOL bHasNormalMap, BOOL bHasSpecularMap );
+static void		ModelMaterialsBindSelectedShaders( void );
+static void		ModelMaterialsResendVariantState( void );
+
+//----------------------------------------------------------------------------------------------------
 
 /***************************************************************************
  * Function    : ModelMaterialShaderUploadEmissive
@@ -161,6 +201,18 @@ void		ModelMaterialsFreeShader( void )
 {
 #ifdef ENGINEDX
 #ifdef TUD9
+int		nLoop;
+
+	// Variants first (their defines are kept, so ModelMaterialsLoadShader builds them again), with ATMMaterial's own back in place
+	if ( msnNumModelPSVariants > 0 )
+	{
+		ModelMaterialsSelectPixelShaderVariant( 0 );
+		for ( nLoop = 1; nLoop < msnNumModelPSVariants; nLoop++ )
+		{
+			SAFE_RELEASE( msaxModelPSVariants[nLoop].pConstantTable );
+			SAFE_RELEASE( msaxModelPSVariants[nLoop].pShader );
+		}
+	}
 	SAFE_RELEASE( mpNormalMapRenderConstantTable );
 	SAFE_RELEASE( mpNormalMapRenderPSConstantTable );
 #endif
@@ -186,10 +238,162 @@ void		ModelMaterialsLoadShader( void )
 #else
 			mpNormalMapRenderVertexShader = EngineLoadVertexShader( "ATMMaterial", &mpNormalMapRenderConstantTable, 0 );
 			mpNormalMapRenderPixelShader = EngineLoadPixelShader( "ATMMaterial", &mpNormalMapRenderPSConstantTable, 0 );
+			if ( msnNumModelPSVariants > 0 )
+			{
+			int		nLoop;
+
+				for ( nLoop = 1; nLoop < msnNumModelPSVariants; nLoop++ )
+				{
+					msaxModelPSVariants[nLoop].pShader = EngineLoadPixelShaderWithDefine( "ATMMaterial", msaxModelPSVariants[nLoop].szDefine, &msaxModelPSVariants[nLoop].pConstantTable );
+				}
+			}
 #endif
 		}
 #endif
 	}
+}
+
+/***************************************************************************
+ * Function    : ModelMaterialsAddPixelShaderVariant
+ * Description : Opt-in (see above). Builds the app's ATMMaterial.psh again with szDefine set to 1, as another variant of the
+ *				 model material pixel shader, named szLabel (draw probes show it). Returns its number for
+ *				 ModelMaterialsSelectPixelShaderVariant (1 up), or NOTFOUND if it didn't compile or there's no room.
+ *				 Adding the same define again returns the one already made.
+ ***************************************************************************/
+int		ModelMaterialsAddPixelShaderVariant( const char* szDefine, const char* szLabel )
+{
+#ifdef TUD9
+int		nLoop;
+int		nNew;
+
+	if ( ( szDefine == NULL ) || ( szDefine[0] == 0 ) ) return( NOTFOUND );
+	if ( !mbModelMaterialsHasLoadedShaders )
+	{
+		ModelMaterialsLoadShader();
+	}
+	if ( ( mpEngineDevice == NULL ) || ( mpNormalMapRenderPixelShader == NULL ) ) return( NOTFOUND );
+
+	for ( nLoop = 1; nLoop < msnNumModelPSVariants; nLoop++ )
+	{
+		if ( strcmp( msaxModelPSVariants[nLoop].szDefine, szDefine ) == 0 )
+		{
+			return( ( msaxModelPSVariants[nLoop].pShader != NULL ) ? nLoop : NOTFOUND );
+		}
+	}
+	if ( msnNumModelPSVariants == 0 )
+	{
+		memset( msaxModelPSVariants, 0, sizeof( msaxModelPSVariants ) );
+		strcpy( msaxModelPSVariants[0].szLabel, "ATMMaterial" );
+		msnNumModelPSVariants = 1;
+	}
+	if ( msnNumModelPSVariants >= MAX_MODEL_PS_VARIANTS ) return( NOTFOUND );
+
+	nNew = msnNumModelPSVariants;
+	strncpy( msaxModelPSVariants[nNew].szDefine, szDefine, sizeof( msaxModelPSVariants[nNew].szDefine ) - 1 );
+	strncpy( msaxModelPSVariants[nNew].szLabel, ( szLabel != NULL ) ? szLabel : szDefine, sizeof( msaxModelPSVariants[nNew].szLabel ) - 1 );
+	msaxModelPSVariants[nNew].pShader = EngineLoadPixelShaderWithDefine( "ATMMaterial", szDefine, &msaxModelPSVariants[nNew].pConstantTable );
+	msnNumModelPSVariants++;
+	return( ( msaxModelPSVariants[nNew].pShader != NULL ) ? nNew : NOTFOUND );
+#else
+	return( NOTFOUND );
+#endif
+}
+
+int		ModelMaterialsGetPixelShaderVariant( void )
+{
+	return( msnModelPSVariantSelected );
+}
+
+/***************************************************************************
+ * Function    : ModelMaterialsSelectPixelShaderVariant
+ * Description : Makes variant nVariant (0 = ATMMaterial) the model material pixel shader from now on. If the one it
+ *				 replaces is bound, the new one is bound straight away and given the current state; otherwise that
+ *				 happens when ModelMaterialsActivateNormalShader next binds it. A variant that failed to build is ignored.
+ ***************************************************************************/
+void	ModelMaterialsSelectPixelShaderVariant( int nVariant )
+{
+#ifdef TUD9
+LPGRAPHICSPIXELSHADER	pCurrentShader = NULL;
+BOOL					bWasBound = FALSE;
+
+	if ( ( nVariant < 0 ) || ( nVariant >= msnNumModelPSVariants ) || ( nVariant == msnModelPSVariantSelected ) ) return;
+	if ( ( nVariant > 0 ) && ( msaxModelPSVariants[nVariant].pShader == NULL ) ) return;
+
+	if ( ( mpEngineDevice ) && ( mpNormalMapRenderPixelShader != NULL ) )
+	{
+		mpEngineDevice->GetPixelShader( &pCurrentShader );
+		bWasBound = ( pCurrentShader == mpNormalMapRenderPixelShader ) ? TRUE : FALSE;
+		if ( pCurrentShader != NULL )
+		{
+			pCurrentShader->Release();
+		}
+	}
+
+	// Put the current one back in its slot and take the new one's
+	msaxModelPSVariants[msnModelPSVariantSelected].pShader = mpNormalMapRenderPixelShader;
+	msaxModelPSVariants[msnModelPSVariantSelected].pConstantTable = mpNormalMapRenderPSConstantTable;
+	mpNormalMapRenderPixelShader = msaxModelPSVariants[nVariant].pShader;
+	mpNormalMapRenderPSConstantTable = msaxModelPSVariants[nVariant].pConstantTable;
+	msaxModelPSVariants[nVariant].pShader = NULL;
+	msaxModelPSVariants[nVariant].pConstantTable = NULL;
+	msnModelPSVariantSelected = nVariant;
+
+	if ( bWasBound )
+	{
+		ModelMaterialsSetPixelShaderConstants( msbModelPSLastFlags[0], msbModelPSLastFlags[1], msbModelPSLastFlags[2] );
+		EngineSetPixelShader( mpNormalMapRenderPixelShader, msaxModelPSVariants[nVariant].szLabel );
+		ModelMaterialsResendVariantState();
+		msbModelPSVariantNeedsResend = FALSE;
+	}
+	else
+	{
+		msbModelPSVariantNeedsResend = TRUE;
+	}
+#endif
+}
+
+/***************************************************************************
+ * Function    : ModelMaterialsResendVariantState
+ * Description : After a switch of variant: what ModelMaterialsSetPixelShaderConstants doesn't send. The material (cached
+ *				 by ModelMaterialShaderSetMaterialProperties, so sent only on a change), the lighting and overlay flags,
+ *				 and every float4 the app has set
+ ***************************************************************************/
+static void	ModelMaterialsResendVariantState( void )
+{
+#ifdef TUD9
+D3DXHANDLE	handle;
+int			nLoop;
+
+	if ( mpNormalMapRenderPSConstantTable == NULL ) return;
+
+	handle = mpNormalMapRenderPSConstantTable->GetConstantByName( NULL, "gMaterialSpecular" );
+	if ( handle )
+	{
+		mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, (float*)&mxModelMaterialShaderSpecular, 4 );
+	}
+	handle = mpNormalMapRenderPSConstantTable->GetConstantByName( NULL, "gMaterialSpecularPower" );
+	if ( handle )
+	{
+		mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, mModelMaterialShaderSpecularPower );
+	}
+	ModelMaterialShaderUploadEmissive();
+	if ( msnModelPSLastLighting >= 0 )
+	{
+		ModelMaterialsEnableLighting( msnModelPSLastLighting );
+	}
+	if ( msnModelPSLastOverlay >= 0 )
+	{
+		ModelMaterialsShaderEnableOverlay( msnModelPSLastOverlay );
+	}
+	for ( nLoop = 0; nLoop < msnModelPSFloat4CacheUsed; nLoop++ )
+	{
+		handle = mpNormalMapRenderPSConstantTable->GetConstantByName( NULL, msaxModelPSFloat4Cache[nLoop].szName );
+		if ( handle )
+		{
+			mpNormalMapRenderPSConstantTable->SetFloatArray( mpEngineDevice, handle, msaxModelPSFloat4Cache[nLoop].afValue, 4 );
+		}
+	}
+#endif
 }
 
 void		EngineReloadShaders( void )
@@ -266,6 +470,7 @@ float		EngineSceneShadowsGetShaderEpsilon( void )
 
 void		ModelMaterialsEnableLighting( BOOL bLightingEnable )
 {
+	msnModelPSLastLighting = bLightingEnable ? 1 : 0;
 #ifdef ENGINEDX
 	if ( mpNormalMapRenderPSConstantTable )
 	{
@@ -283,6 +488,27 @@ void		ModelMaterialsEnableLighting( BOOL bLightingEnable )
 // Public (ModelMaterialData.h): set a float4 constant by name on the model material pixel shader, if it declares one
 void		ModelMaterialsShaderSetFloat4( const char* szConstantName, const float* pafValues )
 {
+	// With variants in use, remember it, so a variant selected later gets it too (whether or not this one declares it)
+	if ( msnNumModelPSVariants > 0 )
+	{
+	int		nLoop;
+
+		for ( nLoop = 0; nLoop < msnModelPSFloat4CacheUsed; nLoop++ )
+		{
+			if ( strcmp( msaxModelPSFloat4Cache[nLoop].szName, szConstantName ) == 0 ) break;
+		}
+		if ( ( nLoop == msnModelPSFloat4CacheUsed ) &&
+			 ( msnModelPSFloat4CacheUsed < MAX_MODEL_PS_FLOAT4_CACHE ) &&
+			 ( strlen( szConstantName ) < sizeof( msaxModelPSFloat4Cache[0].szName ) ) )
+		{
+			strcpy( msaxModelPSFloat4Cache[nLoop].szName, szConstantName );
+			msnModelPSFloat4CacheUsed++;
+		}
+		if ( nLoop < msnModelPSFloat4CacheUsed )
+		{
+			memcpy( msaxModelPSFloat4Cache[nLoop].afValue, pafValues, sizeof( float ) * 4 );
+		}
+	}
 	if ( mpNormalMapRenderPSConstantTable )
 	{
 	D3DXHANDLE handle = mpNormalMapRenderPSConstantTable->GetConstantByName( NULL, szConstantName );
@@ -309,6 +535,7 @@ void		ModelMaterialsVertexShaderSetFloat4( const char* szConstantName, const flo
 }
 void		ModelMaterialsShaderEnableOverlay( BOOL bHasOverlay )
 {
+	msnModelPSLastOverlay = bHasOverlay ? 1 : 0;
 	if ( mpNormalMapRenderPSConstantTable )
 	{
 	D3DXHANDLE handle; 
@@ -395,13 +622,60 @@ D3DXMATRIX	matLightViewProj;
 		}
 
 		// -------- psh constants
+		msbModelPSLastFlags[0] = bHasDiffuseMap;
+		msbModelPSLastFlags[1] = bHasNormalMap;
+		msbModelPSLastFlags[2] = bHasSpecularMap;
+		ModelMaterialsSetPixelShaderConstants( bHasDiffuseMap, bHasNormalMap, bHasSpecularMap );
+		ModelMaterialsBindSelectedShaders();
+	}
+#endif // tud9
+}
+
+/***************************************************************************
+ * Function    : ModelMaterialsBindSelectedShaders
+ * Description : The end of ModelMaterialsActivateNormalShader: binds the shaders (the selected pixel shader variant, normally
+ *				 ATMMaterial), and gives a newly selected variant the state it missed
+ ***************************************************************************/
+static void	ModelMaterialsBindSelectedShaders( void )
+{
+#ifdef TUD9
+	EngineShadersStandardVertexDeclaration(0);
+
+	mpEngineDevice->SetVertexShader(mpNormalMapRenderVertexShader);
+	if ( msnNumModelPSVariants == 0 )
+	{
+		EngineSetPixelShader(mpNormalMapRenderPixelShader, "ATMMaterial");
+	}
+	else
+	{
+		EngineSetPixelShader( mpNormalMapRenderPixelShader, msaxModelPSVariants[msnModelPSVariantSelected].szLabel );
+		if ( msbModelPSVariantNeedsResend )
+		{
+			msbModelPSVariantNeedsResend = FALSE;
+			ModelMaterialsResendVariantState();
+		}
+	}
+#endif
+}
+
+/***************************************************************************
+ * Function    : ModelMaterialsSetPixelShaderConstants
+ * Description : The engine's own constants on the model material pixel shader: lights, fog, light colours and direction,
+ *				 the material's diffuse and ambient, camera, shadow map, and which maps the material has
+ ***************************************************************************/
+static void	ModelMaterialsSetPixelShaderConstants( BOOL bHasDiffuseMap, BOOL bHasNormalMap, BOOL bHasSpecularMap )
+{
+#ifdef TUD9
+D3DXHANDLE handle;
+
+	{
 		// float4 AmbientColor;
 		// --float AmbientIntensity;
 
 		// -- float3 LightDirection;
 		// float4 DiffuseColor;
 		// --float DiffuseIntensity;
- 
+
 		// float4 SpecularColor;
 		// -- float3 EyePosition;
 		if ( mpNormalMapRenderPSConstantTable )
@@ -547,11 +821,6 @@ D3DXMATRIX	matLightViewProj;
 				mpNormalMapRenderPSConstantTable->SetFloat( mpEngineDevice, handle, fDiffuseIntensity );
 			}
 		}
-
-		EngineShadersStandardVertexDeclaration(0);
-
-		mpEngineDevice->SetVertexShader(mpNormalMapRenderVertexShader);
-		EngineSetPixelShader(mpNormalMapRenderPixelShader, "ATMMaterial");
 	}
 #endif // tud9
 }
@@ -915,6 +1184,13 @@ int	ret = NO_CHANGES;
 	// If this is the shadowmap first pass, we only care about the main diffuse texture
 	if ( ModelRenderingIsShadowPass() == TRUE )
 	{
+		// Opt-in: a double-sided material casts from both sides (leaf cards and fronds facing away from the light).
+		// The caller turns culling back on when it sees DOUBLESIDED_ACTIVATED
+		if ( ( m_bDoubleSided ) && ( ModelRenderingIsShadowPassDoubleSided() == TRUE ) )
+		{
+			EngineEnableCulling( 0 );
+			ret |= DOUBLESIDED_ACTIVATED;
+		}
 		return ret;
 	}
 

@@ -330,6 +330,9 @@ VECT	mxAttachPoint;
 int		mnNextModelData = 0;
 uint32	mulLastRenderingTick = 0;
 BOOL	mbRenderingIsShadowPass = FALSE;
+// Opt-in (ModelRenderingSetShadowPassDoubleSided): double-sided materials draw with culling off in the shadow pass too, so leaves
+// facing away from the light still cast. FALSE = as before: the shadow pass culls them like any other face
+BOOL	mbRenderingShadowPassDoubleSided = FALSE;
 BOOL	mbRenderingShadowMapActive = FALSE;
 float	msfFireVFXAngle1 = 0.4f;
 float	msfFireVFXAngle2 = 1.7f;
@@ -465,6 +468,22 @@ void		ModelRenderingActivateSceneShadowMap( BOOL bFlag )
 BOOL		ModelRenderingIsShadowPass( void )
 {
 	return( mbRenderingIsShadowPass );
+}
+
+/***************************************************************************
+ * Function    : ModelRenderingSetShadowPassDoubleSided
+ * Params      : bFlag - TRUE: double-sided materials are drawn without culling in the shadow pass
+ * Description : Opt-in, default FALSE (as before). Without it the shadow pass culls a double-sided materials back faces,
+ *               so leaf cards or fronds turned away from the light cast no shadow
+ ***************************************************************************/
+void		ModelRenderingSetShadowPassDoubleSided( BOOL bFlag )
+{
+	mbRenderingShadowPassDoubleSided = bFlag;
+}
+
+BOOL		ModelRenderingIsShadowPassDoubleSided( void )
+{
+	return( mbRenderingShadowPassDoubleSided );
 }
 
 BOOL		ModelRenderingIsSceneShadowMapActive( void )
