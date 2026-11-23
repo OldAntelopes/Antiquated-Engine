@@ -13,6 +13,7 @@
 #include <sys/param.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 
 #ifndef TYPE_SOCKET_DEF

@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <fnmatch.h>
+#include <string.h>
 
 //#include <Compat.h>
 #include "System.h"
@@ -81,59 +83,122 @@ BOOL boFinished = FALSE;
 }
 
 
-void		SysGetAllFilesInFolder( const char* szSrcFolder, fnDirListingCallback callback )
+/***************************************************************************
+ * Function    : SysGetAllFilesInFolder
+ * Params      : szFilenameSearch - wildcard patterns separated by ';' (e.g. "*.mit;*.txt")
+ * Description : As the Windows version: each subfolder (when bIncludeSubFolders, not recursed) with bIsDirectory
+ *				 TRUE, then each file matching a pattern, as "<folder>/<name>"
+ ***************************************************************************/
+void		SysGetAllFilesInFolder( const char* szSrcFolder, const char* szFilenameSearch, BOOL bIncludeSubFolders, fnDirListingCallback callback )
 {
-DIR* dirp;
-struct dirent* dp = NULL;
-char	acString[256];
-BOOL boFinished = FALSE; 
+DIR*			dirp;
+struct dirent*	dp;
+struct stat		xStat;
+char			acString[512];
+char			acSearchCopy[256];
+char*			pcToken;
+char*			pcSave = NULL;
+BOOL			bIsDir;
 
-//	sprintf( acString, "%s/*", szDirectoryName );	 
-	dirp = opendir(szSrcFolder);
-	if (dirp != NULL)
-	{
-		dp = readdir(dirp);
-	}
-	
-	if (dp == NULL)
+	dirp = opendir( szSrcFolder );
+	if ( dirp == NULL )
 	{
 		return;
 	}
 
-	while ( !boFinished )
-	{ 
-		if ( dp->d_name[0] != '.' )
+	while ( ( dp = readdir( dirp ) ) != NULL )
+	{
+		if ( ( strcmp( dp->d_name, "." ) == 0 ) || ( strcmp( dp->d_name, ".." ) == 0 ) )
 		{
-			if (dp->d_type != DT_DIR)
+			continue;
+		}
+		snprintf( acString, sizeof( acString ), "%s/%s", szSrcFolder, dp->d_name );
+		if ( dp->d_type == DT_UNKNOWN )
+		{
+			bIsDir = ( ( stat( acString, &xStat ) == 0 ) && S_ISDIR( xStat.st_mode ) ) ? TRUE : FALSE;
+		}
+		else
+		{
+			bIsDir = ( dp->d_type == DT_DIR ) ? TRUE : FALSE;
+		}
+
+		if ( bIsDir )
+		{
+			if ( bIncludeSubFolders )
 			{
-				sprintf( acString, "%s/%s", szSrcFolder, dp->d_name );
-				callback( acString );
+				callback( acString, TRUE );
+			}
+			continue;
+		}
+
+		strncpy( acSearchCopy, szFilenameSearch ? szFilenameSearch : "*", sizeof( acSearchCopy ) - 1 );
+		acSearchCopy[ sizeof( acSearchCopy ) - 1 ] = 0;
+		for ( pcToken = strtok_r( acSearchCopy, ";", &pcSave ); pcToken != NULL; pcToken = strtok_r( NULL, ";", &pcSave ) )
+		{
+			if ( fnmatch( pcToken, dp->d_name, FNM_CASEFOLD ) == 0 )
+			{
+				callback( acString, FALSE );
+				break;
 			}
 		}
-
-	    dp = readdir(dirp);
-	    if (dp == NULL)
-		{
-		    boFinished = TRUE; 
-		}
 	}
-	closedir(dirp);
+	closedir( dirp );
 }
 
+/***************************************************************************
+ * Function    : SysUnixFillLocalTime
+ * Description : SYS_LOCALTIME as Windows fills it (SYSTEMTIME): the full year (2026), the month 1-12, wDay the day of
+ *				 the month and wDayOfWeek 0-6 from Sunday. Unix's struct tm counts years from 1900 and months from 0.
+ ***************************************************************************/
+static void		SysUnixFillLocalTime( const struct tm* pxTm, SYS_LOCALTIME* pTime )
+{
+	pTime->wYear = (short)( pxTm->tm_year + 1900 );
+	pTime->wMonth = (short)( pxTm->tm_mon + 1 );
+	pTime->wDay = (short)pxTm->tm_mday;
+	pTime->wHour = (short)pxTm->tm_hour;
+	pTime->wMinute = (short)pxTm->tm_min;
+	pTime->wSecond = (short)pxTm->tm_sec;
+	pTime->wDayOfWeek = (short)pxTm->tm_wday;
+}
+
+/***************************************************************************
+ * Function    : SysGetUnixTimestampFromLocalTime
+ * Description : The inverse of SysGetLocalTime: takes the full year and a 1-12 month (as SysGetLocalTime gives them)
+ ***************************************************************************/
 uint32				SysGetUnixTimestampFromLocalTime( SYS_LOCALTIME* pTime )
 {
 time_t	epoch;
 struct tm		xTime;
 
+	memset( &xTime, 0, sizeof( xTime ) );
 	xTime.tm_hour = pTime->wHour;
 	xTime.tm_mday = pTime->wDay;
 	xTime.tm_min = pTime->wMinute;
-	xTime.tm_mon = pTime->wMonth;
+	xTime.tm_mon = pTime->wMonth - 1;
 	xTime.tm_sec = pTime->wSecond;
-	xTime.tm_year = pTime->wYear;
+	xTime.tm_year = pTime->wYear - 1900;
+	xTime.tm_isdst = -1;		// let mktime decide whether summer time applies
 	epoch = mktime( &xTime );
 
-	return( *( (uint32*)( &epoch ) ) );
+	return( (uint32)epoch );
+}
+
+/***************************************************************************
+ * Function    : SysGetLocalTimeFromUnixTimestamp
+ ***************************************************************************/
+void		SysGetLocalTimeFromUnixTimestamp( uint32 ulUnixTime, SYS_LOCALTIME* pTime )
+{
+time_t		xTime = (time_t)ulUnixTime;
+struct tm	xTm;
+
+	if ( localtime_r( &xTime, &xTm ) != NULL )
+	{
+		SysUnixFillLocalTime( &xTm, pTime );
+	}
+	else
+	{
+		memset( pTime, 0, sizeof( SYS_LOCALTIME ) );
+	}
 }
 
 
@@ -175,7 +240,7 @@ pthread_t	threadHandle;
 //		SetThreadPriority( hThread, THREAD_PRIORITY_BELOW_NORMAL );
 //	}
 
-	ret = pthread_create( &threadHandle, NULL, pfnThreadFunction, pThreadPointerParam);
+	ret = pthread_create( &threadHandle, NULL, (void*(*)(void*))pfnThreadFunction, pThreadPointerParam);
 
 	return( (unsigned int)( threadHandle ) );
 }
@@ -197,38 +262,31 @@ void		SysSleep( int millisecs )
 	usleep(millisecs * 1000);
 }
 
+/***************************************************************************
+ * Function    : SysGetUTCTime
+ * Description : As on Windows (SysUnixFillLocalTime). Before 2026-11-23 the Unix build gave years since 1900, a 0-11
+ *				 month and the weekday as wDay
+ ***************************************************************************/
 void            SysGetUTCTime( SYS_LOCALTIME* pTime )
 {
-time_t xTime;
-struct tm* systime;
+time_t		xTime = time( NULL );
+struct tm	xTm;
 
-	time( &xTime );
-	systime = gmtime( &xTime );
-     
-	pTime->wDay = systime->tm_wday;
-    pTime->wHour = systime->tm_hour;
-    pTime->wMinute = systime->tm_min;
-    pTime->wMonth = systime->tm_mon;
-    pTime->wSecond = systime->tm_sec;
-    pTime->wYear = systime->tm_year;
-	pTime->wDayOfWeek = systime->tm_wday;
+	gmtime_r( &xTime, &xTm );
+	SysUnixFillLocalTime( &xTm, pTime );
 }
 
+/***************************************************************************
+ * Function    : SysGetLocalTime
+ * Description : As on Windows (SysUnixFillLocalTime)
+ ***************************************************************************/
 void            SysGetLocalTime( SYS_LOCALTIME* pTime )
 {
-time_t xTime;
-struct tm* systime;
+time_t		xTime = time( NULL );
+struct tm	xTm;
 
-	time( &xTime );
-	systime = localtime( &xTime );
-     
-	pTime->wDay = systime->tm_wday;
-    pTime->wHour = systime->tm_hour;
-    pTime->wMinute = systime->tm_min;
-    pTime->wMonth = systime->tm_mon;
-    pTime->wSecond = systime->tm_sec;
-    pTime->wYear = systime->tm_year;
-	pTime->wDayOfWeek = systime->tm_wday;
+	localtime_r( &xTime, &xTm );
+	SysUnixFillLocalTime( &xTm, pTime );
 }
 
 void SysGetCurrentDir( int nStrLen, char* szBuffer )

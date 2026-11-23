@@ -171,6 +171,21 @@ typedef UINT WPARAM;
 typedef LONG LPARAM;
 typedef LONG LRESULT;
 #ifndef NOMINMAX
+#if defined( UNIX ) && defined( __cplusplus )
+// The C++ library headers use min and max as names (std::min, numeric_limits<>::max()...), which the macros
+// below break. Include them first, so a later #include of them is a no-op (Windows headers avoid this with (std::min)).
+// extern "C++" because some headers include this one inside an extern "C" block
+extern "C++"
+{
+#include <algorithm>
+#include <limits>
+#include <random>
+#include <chrono>
+#include <vector>
+#include <string>
+#include <functional>
+}
+#endif
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
@@ -312,6 +327,32 @@ extern int		gnLandscapeWorldHeightToHeightmapScale;
 #ifdef UNIX
 // Some windows funky naming
 #define	_stroi64		strtoll
+// Windows' case-insensitive compares
+#include <strings.h>
+#ifndef stricmp
+#define stricmp(s1, s2) strcasecmp(s1, s2)
+#endif
+#ifndef _stricmp
+#define _stricmp(s1, s2) strcasecmp(s1, s2)
+#endif
+#ifndef strnicmp
+#define strnicmp(s1, s2, n) strncasecmp(s1, s2, n)
+#endif
+#ifndef _strnicmp
+#define _strnicmp(s1, s2, n) strncasecmp(s1, s2, n)
+#endif
+// Other MSVC names
+#include <stddef.h>		// offsetof
+#include <math.h>
+#ifndef _snprintf
+#define _snprintf		snprintf
+#endif
+#ifndef _isnan
+#define _isnan(x)		isnan(x)
+#endif
+#ifndef _strtoui64
+#define _strtoui64		strtoull
+#endif
 
 #endif
 /**********************************************

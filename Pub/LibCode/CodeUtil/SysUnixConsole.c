@@ -43,7 +43,7 @@ void MenuEntrySetEnabled( void* pTargetTopParent, int nTarget, BOOL boNewState )
 //   should create a popup messagebox window.
 //   Returns FALSE if user pressed "NO" or "Cancel", TRUE otherwise.
 //--------------------------------------------------------
-BOOL	SysMessageBox( char* acError, char* acTitle, int nFlags )
+BOOL	SysMessageBox( const char* acError, const char* acTitle, int nFlags )
 {
 	printf( "%s\n", acTitle );
 	printf( "%s\n", acError );
@@ -129,11 +129,11 @@ int		nFileSize;
 
 		while ( nRead < nFileSize )
 		{
-			nReadBlock = SysFileRead( buf, 1, 4096, pFileFrom );
+			nReadBlock = SysFileRead( (unsigned char*)buf, 1, 4096, pFileFrom );
 			if ( nReadBlock > 0 )
 			{
 				nRead += nReadBlock;
-				SysFileWrite( buf, 1, nReadBlock, pFileTo );
+				SysFileWrite( (unsigned char*)buf, 1, nReadBlock, pFileTo );
 			}
 			else
 			{
@@ -153,7 +153,7 @@ int		nFileSize;
 //   szOutputFile where the filename will be stocked is expected to be an allocated 256 char string.
 //   Returns True if all ok, False if error or user pressed cancel button.
 //--------------------------------------------------------
-BOOL SysGetSaveFilenameDialog( char* szFileFilter, char* szTitle, char* szDefaultFolder, int nFlags, char* szOutputFile )
+BOOL SysGetSaveFilenameDialog( const char* szFileFilter, const char* szTitle, const char* szDefaultFolder, int nFlags, char* szOutputFile )
 {
 	return( FALSE );
 }
@@ -163,7 +163,7 @@ BOOL SysGetSaveFilenameDialog( char* szFileFilter, char* szTitle, char* szDefaul
 // Function : SysGetOpenFilenameDialog				UnixConsole Implementation
 //   This function is used to allow the user to select a file from the folders on their puter
 //--------------------------------------------------------
-BOOL SysGetOpenFilenameDialog( char* szFileFilter, char* szTitle, char* szDefaultFolder, int nFlags, char* szOutputFile )
+BOOL SysGetOpenFilenameDialog( const char* szFileFilter, const char* szTitle, const char* szDefaultFolder, int nFlags, char* szOutputFile )
 {
 	return(  FALSE );
 }

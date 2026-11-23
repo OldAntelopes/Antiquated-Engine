@@ -1269,6 +1269,14 @@ BOOL	ModelRenderingAnimateOncePerFrame( void )
 	return( msbEngineAnimateOncePerFrame );
 }
 
+// Opt-in (EngineSetKeyframeShadowPassNoBlend): keyframe models don't blend in shadow passes. Off by default
+static BOOL		msbKeyframeShadowPassNoBlend = FALSE;
+
+void	EngineSetKeyframeShadowPassNoBlend( BOOL bFlag )
+{
+	msbKeyframeShadowPassNoBlend = bFlag;
+}
+
 // (Used by skeletal skinning, ModelSkeleton::UpdateAndSkin, which keeps its own same-frame check)
 void	ModelRenderingNoteAnimationBlend( BOOL bSkipped )
 {
@@ -1381,6 +1389,12 @@ uint32		ulTickGap;
 	}
 
 	if ( pxModelData->xStats.nNumVertKeyframes <= 0 )
+	{
+		return;
+	}
+
+	// Shadow passes cast the pose already in the buffer (opt-in, see EngineSetKeyframeShadowPassNoBlend)
+	if ( ( msbKeyframeShadowPassNoBlend == TRUE ) && ( mbRenderingIsShadowPass == TRUE ) )
 	{
 		return;
 	}

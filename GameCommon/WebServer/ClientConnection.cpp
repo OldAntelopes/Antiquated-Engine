@@ -30,16 +30,27 @@ void		DebugTCPReceive( const char* szText )
 #endif
 }
 
-void		DecodeHeaderLine( const char* szLine, char* szWordOut, char* szValueOut )
+//---------------------------------------------------------------------------
+// DecodeHeaderLine
+//  Splits "Name: value" into its name and value, each cut to fit its buffer (sizes include the terminator).
+//  A header line can be up to 1000 bytes, longer than the name buffer, so the copies must be bounded: an
+//  unbounded copy here let one long header line overrun the caller's stack.
+//---------------------------------------------------------------------------
+static void		DecodeHeaderLine( const char* szLine, char* szWordOut, int nWordOutSize, char* szValueOut, int nValueOutSize )
 {
 const char*	pcLineRunner = szLine;
 char*	pcOutRunner = szWordOut;
+char*	pcOutEnd = szWordOut + nWordOutSize - 1;
 
+	szValueOut[0] = 0;
 	while( ( *pcLineRunner != ':' ) &&
 		   ( *pcLineRunner != 0 ) )
 	{
-		*pcOutRunner = *pcLineRunner;
-		pcOutRunner++;
+		if ( pcOutRunner < pcOutEnd )
+		{
+			*pcOutRunner = *pcLineRunner;
+			pcOutRunner++;
+		}
 		pcLineRunner++;
 	}
 
@@ -51,15 +62,17 @@ char*	pcOutRunner = szWordOut;
 		if ( *pcLineRunner == ' ' )
 		{
 			pcOutRunner = szValueOut;
+			pcOutEnd = szValueOut + nValueOutSize - 1;
 			while( ( *pcLineRunner != '\r' ) &&
-				   ( *pcLineRunner != 0 ) )
+				   ( *pcLineRunner != 0 ) &&
+				   ( pcOutRunner < pcOutEnd ) )
 			{
 				*pcOutRunner = *pcLineRunner;
 				pcOutRunner++;
 				pcLineRunner++;
-			}		
+			}
+			*pcOutRunner = 0;
 		}
-		*pcOutRunner = 0;
 	}
 
 }
@@ -185,7 +198,7 @@ int		ret;
 
 				DebugTCPReceive( "Header:" );
 				DebugTCPReceive( szRecvBuffer );
-				DecodeHeaderLine( szRecvBuffer, acHeaderName, acHeaderValue );
+				DecodeHeaderLine( szRecvBuffer, acHeaderName, sizeof( acHeaderName ), acHeaderValue, sizeof( acHeaderValue ) );
 
 				if ( tinstricmp( acHeaderName, "Content-length" ) == 0 )
 				{
@@ -456,11 +469,17 @@ const char*		ClientConnection::GetNextWord( const char* szLine, char* szWordOut,
 {
 const char*		pcInRunner = szLine;
 char*			pcOutRunner = szWordOut;
+char*			pcOutEnd = szWordOut + nWordOutBufferSize;		// callers pass the most characters to copy (buffer size - 1)
 
+	// The word is cut to fit, but the whole word is still skipped so the caller's length checks see its real length
 	while( ( *pcInRunner != 0 ) &&
 		   ( *pcInRunner != ' ' ) )
 	{
-		*pcOutRunner++ = *pcInRunner++;
+		if ( pcOutRunner < pcOutEnd )
+		{
+			*pcOutRunner++ = *pcInRunner;
+		}
+		pcInRunner++;
 	}
 
 	*pcOutRunner = 0;

@@ -98,6 +98,7 @@
     <ClCompile Include="..\LibCode\CodeUtil\SysUnixConsole.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\LibCode\CodeUtil\AsyncFile.h" />
     <ClInclude Include="..\Include\CodeUtil.h" />
     <ClInclude Include="..\Include\StandardDef.h" />
     <ClInclude Include="..\Include\System.h" />
@@ -105,12 +106,18 @@
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>-fpermissive %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>UNIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CLanguageStandard>gnu11</CLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>-fpermissive %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>UNIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CLanguageStandard>gnu11</CLanguageStandard>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <AdditionalIncludeDirectories>%(ClCompile.AdditionalIncludeDirectories)$(ProjectDir)</AdditionalIncludeDirectories>

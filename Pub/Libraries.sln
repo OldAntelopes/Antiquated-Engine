@@ -20,6 +20,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletDynamics", "Projects\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LinearMath", "Projects\LinearMath.vcxproj", "{73E707AE-B305-4C79-9FBC-E7A9C2477BEA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Opus", "Projects\Opus.vcxproj", "{0947612D-7C46-420D-90AA-AF6E86C4C131}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpeexDsp", "Projects\SpeexDsp.vcxproj", "{A2DF292F-CC79-49F4-961E-079C80C7D803}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug DX11|Win32 = Debug DX11|Win32
@@ -115,6 +119,34 @@ Global
 		{73E707AE-B305-4C79-9FBC-E7A9C2477BEA}.Tool Debug|Win32.Build.0 = Debug|Win32
 		{73E707AE-B305-4C79-9FBC-E7A9C2477BEA}.Tool Release|Win32.ActiveCfg = Release|Win32
 		{73E707AE-B305-4C79-9FBC-E7A9C2477BEA}.Tool Release|Win32.Build.0 = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug DX11|Win32.ActiveCfg = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug DX11|Win32.Build.0 = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug GL|Win32.ActiveCfg = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug GL|Win32.Build.0 = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Debug|Win32.Build.0 = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Release GL|Win32.ActiveCfg = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Release GL|Win32.Build.0 = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Release|Win32.ActiveCfg = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Release|Win32.Build.0 = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Tool Debug|Win32.ActiveCfg = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Tool Debug|Win32.Build.0 = Debug|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{0947612D-7C46-420D-90AA-AF6E86C4C131}.Tool Release|Win32.Build.0 = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug DX11|Win32.ActiveCfg = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug DX11|Win32.Build.0 = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug GL|Win32.ActiveCfg = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug GL|Win32.Build.0 = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Debug|Win32.Build.0 = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Release GL|Win32.ActiveCfg = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Release GL|Win32.Build.0 = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Release|Win32.ActiveCfg = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Release|Win32.Build.0 = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Tool Debug|Win32.ActiveCfg = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Tool Debug|Win32.Build.0 = Debug|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Tool Release|Win32.ActiveCfg = Release|Win32
+		{A2DF292F-CC79-49F4-961E-079C80C7D803}.Tool Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

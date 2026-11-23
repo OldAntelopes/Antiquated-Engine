@@ -137,6 +137,11 @@ extern	void	EngineSetDefaultStateAlphaFunc( int nCompareFunc );
 // redoing it. Keyframe clones share a buffer, so a clone drawn in between still makes the next one re-blend.
 // Off by default (every draw animates, as before).
 extern	void	EngineSetAnimateOncePerFrame( BOOL bFlag );
+// Opt-in: a keyframe-animated model drawn in a shadow pass doesn't blend or advance its animation; it casts whatever
+// pose its vertex buffer holds. Clones share that buffer, so with many clones (a crowd of players or animals) every
+// shadow draw would otherwise re-blend the whole mesh and relock the buffer. The pose in a shadow can be a frame or a
+// clone out, which doesn't show. Off by default (shadow draws blend, as before).
+extern	void	EngineSetKeyframeShadowPassNoBlend( BOOL bFlag );
 // Opt-in: draw the height maps a model's materials carry (ATMFormat.md, chunk 0x1F), as parallax and surface lighting. Needs
 // the app's ATMMaterial pixel shader to have the relief path. Off by default, so such models draw plain. fDepthScale scales
 // each material's depth, fMaxSteps is the most parallax steps per pixel, fNormalStrength how much it tilts the lighting

@@ -256,7 +256,8 @@ Chunk starts with a custom header :
 	0x18	[4 bytes]		Max Position Y
 	0x1C	[4 bytes]		Max Position Z
 
-This header is followed by 3x short vertex positions  
+This header is followed by 3x short vertex positions, vertex-major (each vertex's keyframes together, as the engine holds
+them in memory: pxVertexKeyframes[ vertex * keyframes + keyframe ])  
 
 	[
 		[
@@ -264,15 +265,15 @@ This header is followed by 3x short vertex positions
 			0x2		[2 bytes]		Low-res position Y
 			0x4		[2 bytes]		Low-res position Z
 
-			x number of vertices in the model
+			x number of keyframes in chunk
 		]
-		x number of keyframes in chunk
+		x number of vertices in the model
 	]	
 
 0xF		Low-resolution normal keyframes
 ------------------------------------
-
-TBD
+The same header and layout as 0xE (the loader reads only the header's size, keyframe and vertex counts; the min and max are
+unused), but each short is a normal component packed as ( n + 1 ) / 2 x 65535, so 0 = -1.0 and 65535 = +1.0.
 
 0x10	Animated UVs
 ------------------------------------

@@ -60,8 +60,11 @@ int			nLen;
 
 	pArgs = (uint32*)( &text ) + 1;
 
-	va_start( marker, text );     
-	vsprintf( acString, text, marker );
+	va_start( marker, text );
+	// Bounded: a long message is cut short rather than overrunning the stack
+	vsnprintf( acString, sizeof( acString ), text, marker );
+	va_end( marker );
+	acString[sizeof( acString ) - 1] = 0;
 
 	nLen = strlen( acString );
 	if ( nLen > 0)
@@ -76,7 +79,7 @@ int			nLen;
 
 			SysGetLocalTime( &xTime );
 			printf( "[%d-%d]%02d:%02d:%02d ", xTime.wDay, xTime.wMonth, xTime.wHour, xTime.wMinute, xTime.wSecond );
-			printf( acString );
+			printf( "%s", acString );
 			printf( "\n" );
 		}
 	}
